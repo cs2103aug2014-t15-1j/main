@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public abstract class Command {
     // Full content for tracing/debugging purposes
-    private String[] content;
+    private ArrayList<TaskParam> content;
     
     // Basic task info
     private String type;
@@ -60,8 +60,8 @@ public abstract class Command {
         uid_counter++;
     }
     
-    protected Command(String[] content){
-        this.content = content.clone();
+    protected Command(ArrayList<TaskParam> content){
+        this.content = content;
         this.uid = uid_counter;
         uid_counter++;
     }

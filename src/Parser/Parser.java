@@ -1,5 +1,8 @@
 package Parser;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 public class Parser {
 
     private static final String TYPE_HELP = "help";
@@ -19,6 +22,10 @@ public class Parser {
     private static final String TYPE_JOKE = "joke";
     private static final String TYPE_EXIT = "exit";
 
+    private static final String[] ADD_PARAM_LIST = { "name", "n", "more", "m",
+                                                    "due", "d", "start", "s",
+                                                    "end", "e", "priority", "p" };
+
     public static Command parse(String input) {
         // TODO: check command for errors
 
@@ -30,54 +37,168 @@ public class Parser {
         switch (commandType) {
             case TYPE_HELP:
                 return parseHelp(commandItems);
-                
+
             case TYPE_ADD:
                 return parseAdd(commandItems);
-                
+
             case TYPE_EDIT:
                 return parseEdit(commandItems);
-                
+
             case TYPE_DELETE:
                 return parseDelete(commandItems);
-                
+
             case TYPE_RESTORE:
                 return parseRestore(commandItems);
-                
+
             case TYPE_SEARCH:
                 return parseSearch(commandItems);
-                
+
             case TYPE_DISPLAY:
                 return parseDisplay(commandItems);
-                
+
             case TYPE_BLOCK:
                 return parseBlock(commandItems);
-                
+
             case TYPE_UNBLOCK:
                 return parseUnblock(commandItems);
-                
+
             case TYPE_DONE:
                 return parseDone(commandItems);
-                
+
             case TYPE_UNDONE:
                 return parseUndone(commandItems);
-                
+
             case TYPE_UNDO:
                 return new CommandUndo();
-                
+
             case TYPE_REDO:
                 return new CommandRedo();
-                
+
             case TYPE_CLEAR:
                 return new CommandClear();
-                
+
             case TYPE_JOKE:
                 return new CommandJoke();
-                
+
             case TYPE_EXIT:
+                // TODO: Maybe just do a CommandSimple(commandType);
                 return new CommandExit();
-                
+
             default:
                 return null;
         }
     }
+
+    private static Command parseUndone(String[] commandItems) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    private static Command parseDone(String[] commandItems) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    private static Command parseUnblock(String[] commandItems) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    private static Command parseBlock(String[] commandItems) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    private static Command parseDisplay(String[] commandItems) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    private static Command parseSearch(String[] commandItems) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    private static Command parseRestore(String[] commandItems) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    private static Command parseDelete(String[] commandItems) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    private static Command parseEdit(String[] commandItems) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    private static Command parseHelp(String[] commandItems) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    private static Command parseAdd(String[] commandItems) {
+        String currField = "name";
+        String currContent = "";
+        ArrayList<TaskParam> addFields = new ArrayList<TaskParam>();
+        ArrayList<String> parsed = new ArrayList<String>();
+
+        for (int i = 1; i < commandItems.length; i++) {
+            String currWord = commandItems[i];
+            if (isParamName(currWord)) {
+                if (!parsed.contains(currField)) {
+                    addFields.add(new TaskParam(currField, currContent.trim()));
+                    // TODO: parsed can be "n" or "name". problem
+                    // Change .contains to alreadyFilled or something
+                    // This one should check shorthands for the full words
+                    parsed.add(currField);
+                    currContent = "";
+                } else {
+                    // TODO: GETTER function for parsed fields
+                    // PLUS concat for already parsed.
+                }
+                // TODO: Change removeLastChar to getParamName()
+                currField = removeLastChar(currWord);
+            } else if (hasValidHashTag(currWord)) {
+                // TODO: Maybe no need to remove first char
+                addFields.add(new TaskParam("tag", removeFirstChar(currWord)));
+            } else {
+                currContent = currContent.concat(" " + currWord);
+            }
+        }
+        
+        if (!currContent.isEmpty()) {
+            addFields.add(new TaskParam(currField, currContent.trim()));
+        }
+        
+        System.out.println(addFields);
+        return new CommandAdd(addFields);
+    }
+
+    private static boolean isParamName(String str) {
+        // TODO: Could just change the ADD_PARAM_LIST to "name:", etc.
+        // Wouldn't that be so much easier?
+        String strMinusLastChar = removeLastChar(str);
+        return (str.length() > 1) && str.endsWith(":") &&
+               Arrays.asList(ADD_PARAM_LIST).contains(strMinusLastChar);
+    }
+
+    private static String removeLastChar(String word) {
+        return word.substring(0, word.length() - 1);
+    }
+
+    private static boolean hasValidHashTag(String word) {
+        return word.startsWith("#") && (word.length() > 1);
+    }
+
+    private static String removeFirstChar(String word) {
+        return word.substring(1);
+    }
+    
+    public static void main(String[] args) {
+        System.out.println(Parser.parse("add do homework m: it's cs2103 due: tomorrow end: #cs2103"));
+    }
+
 }
