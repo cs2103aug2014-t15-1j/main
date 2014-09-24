@@ -85,10 +85,23 @@ public class DataFile {
         return "";
     }
     
-    // TODO
     public boolean deleteTask(int id) {
+        for (int i = 0; i < toDoTasks.size(); i++) {
+            Task currentTask = toDoTasks.get(i); 
+            if (currentTask.getId() == id) {
+                currentTask.setDeleted(true);
+                return true;
+            }
+        }
         
-        return true;
+        for (int i = 0; i < doneTasks.size(); i++) {
+            Task currentTask = doneTasks.get(i); 
+            if (currentTask.getId() == id) {
+                currentTask.setDeleted(true);
+                return true;
+            }
+        }
+        return false;
     }
     
     // TODO
