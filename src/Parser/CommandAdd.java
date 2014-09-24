@@ -23,7 +23,6 @@ public class CommandAdd extends Command {
     private static final String PARAM_TAGS = "tags";
 
     public CommandAdd(ArrayList<TaskParam> content) {
-        super(content);
         this.cmd_type = "add";
         
         for (TaskParam param : content) {
