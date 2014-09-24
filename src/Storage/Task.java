@@ -15,6 +15,7 @@ public class Task {
     private String priority = "";
     private ArrayList<String> tags = new ArrayList<String>();
     private boolean deleted = false;  // useful?
+    private boolean done = false;
     
     // Constructor
     public Task(String name, String more, String due, String start, 
@@ -68,6 +69,10 @@ public class Task {
         return deleted;
     }
     
+    public boolean isDone() {
+        return done;
+    }
+    
     // Setters
     public void setId() {
         this.id = newId;
@@ -105,6 +110,11 @@ public class Task {
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;
     }
+    
+    public void setDone(boolean done) {
+        this.done = done;
+    }
+    
     
     
     
