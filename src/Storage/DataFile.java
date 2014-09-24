@@ -40,7 +40,8 @@ public class DataFile {
         Scanner scanner = new Scanner(file);
         while (scanner.hasNextLine()) {
             String unparsedText = scanner.nextLine();
-            Task newTask = Parser.parseRawText(unparsedText);
+            String parsedText = Parser.parseRawText(unparsedText);
+            Task newTask = magic(parsedText); //TODO
             if (newTask.isDeleted()) {
                 deletedTasks.add(newTask);
             } else if (newTask.isDone()) {
