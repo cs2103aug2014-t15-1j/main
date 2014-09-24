@@ -69,21 +69,12 @@ public class Parser {
                 return parseUndone(commandItems);
 
             case TYPE_UNDO:
-                return new CommandUndo();
-
             case TYPE_REDO:
-                return new CommandRedo();
-
             case TYPE_CLEAR:
-                return new CommandClear();
-
             case TYPE_JOKE:
-                return new CommandJoke();
-
             case TYPE_EXIT:
-                // TODO: Maybe just do a CommandSimple(commandType);
-                return new CommandExit();
-
+                return new Command(commandType);
+                
             default:
                 return null;
         }
@@ -163,7 +154,7 @@ public class Parser {
                 currField = removeLastChar(currWord);
             } else if (hasValidHashTag(currWord)) {
                 // TODO: Maybe no need to remove first char
-                addFields.add(new TaskParam("tag", removeFirstChar(currWord)));
+                addFields.add(new TaskParam("tag", currWord));
             } else {
                 currContent = currContent.concat(" " + currWord);
             }
@@ -192,14 +183,10 @@ public class Parser {
     private static boolean hasValidHashTag(String word) {
         return word.startsWith("#") && (word.length() > 1);
     }
-
-    private static String removeFirstChar(String word) {
-        return word.substring(1);
-    }
     
     public static void main(String[] args) {
         System.out.println(Parser.parse("add do homework m: it's #cs2103 cs2103 due: tomorrow end:"));
-        System.out.println(Parser.parse("add due: wednesday m: dead task\n"));
+        System.out.println(Parser.parse("add name: do do due: wednesday m: dead task\n"));
     }
 
 }
