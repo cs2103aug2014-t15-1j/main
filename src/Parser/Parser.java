@@ -22,9 +22,9 @@ public class Parser {
     private static final String TYPE_JOKE = "joke";
     private static final String TYPE_EXIT = "exit";
 
-    private static final String[] ADD_PARAM_LIST = { "name", "n", "more", "m",
-                                                    "due", "d", "start", "s",
-                                                    "end", "e", "priority", "p" };
+    private static final String[] ADD_PARAM_LIST = { "name:", "n:", "more:", "m:",
+                                                    "due:", "d;", "start:", "s:",
+                                                    "end:", "e:", "priority:", "p:" };
 
     public static Command parse(String input) {
         // TODO: check command for errors
@@ -73,10 +73,10 @@ public class Parser {
             case TYPE_CLEAR:
             case TYPE_JOKE:
             case TYPE_EXIT:
-                return new Command(commandType);
+                return new CommandOthers(commandType);
                 
             default:
-                return null;
+                return new CommandOthers("error");
         }
     }
 
@@ -116,7 +116,6 @@ public class Parser {
     }
 
     private static Command parseDelete(String[] commandItems) {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -169,11 +168,7 @@ public class Parser {
     }
 
     private static boolean isParamName(String str) {
-        // TODO: Could just change the ADD_PARAM_LIST to "name:", etc.
-        // Wouldn't that be so much easier?
-        String strMinusLastChar = removeLastChar(str);
-        return (str.length() > 1) && str.endsWith(":") &&
-               Arrays.asList(ADD_PARAM_LIST).contains(strMinusLastChar);
+        return Arrays.asList(ADD_PARAM_LIST).contains(str);
     }
 
     private static String removeLastChar(String word) {
