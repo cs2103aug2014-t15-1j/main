@@ -198,7 +198,8 @@ public class Parser {
     }
     
     public static void main(String[] args) {
-        System.out.println(Parser.parse("add do homework m: it's cs2103 due: tomorrow end: #cs2103"));
+        System.out.println(Parser.parse("add do homework m: it's #cs2103 cs2103 due: tomorrow end:"));
+        System.out.println(Parser.parse("add due: wednesday m: dead task\n"));
     }
 
 }

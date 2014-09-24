@@ -4,6 +4,8 @@ import java.util.ArrayList;
 
 public class CommandAdd extends Command {
 
+    private String cmd_type;
+    
     private String name;
     private String more;
     private String due;
@@ -11,9 +13,19 @@ public class CommandAdd extends Command {
     private String end;
     private String priority;
     private ArrayList<String> tags = new ArrayList<String>();
+    
+    private static final String PARAM_NAME = "name";
+    private static final String PARAM_MORE = "more";
+    private static final String PARAM_DUE = "due";
+    private static final String PARAM_START = "start";
+    private static final String PARAM_END = "end";
+    private static final String PARAM_PRIO = "priority";
+    private static final String PARAM_TAGS = "tags";
 
     public CommandAdd(ArrayList<TaskParam> content) {
         super(content);
+        this.cmd_type = "add";
+        
         for (TaskParam param : content) {
             switch (param.getName()){
                 case "name":
@@ -53,6 +65,44 @@ public class CommandAdd extends Command {
                 default:
                     System.out.println("Houston, we have a problem.");    
             }
+        }
+    }
+    
+    public String getType() {
+        return this.cmd_type;
+    }
+    
+    public String get(String paramName){
+        switch(paramName){
+            case PARAM_NAME:
+                return this.name;
+            
+            case PARAM_MORE:
+                return this.more;
+            
+            case PARAM_DUE:
+                return this.due;
+            
+            case PARAM_START:
+                return this.start;
+            
+            case PARAM_END:
+                return this.end;
+                
+            case PARAM_PRIO:
+                return this.priority;
+                
+            default:
+                System.out.println("Get's got a problem!");
+                return null;
+        }
+    }
+    
+    public ArrayList<String> getTags(String tags){
+        if (tags.equals(PARAM_TAGS)) {
+            return this.tags;
+        } else {
+            return null;
         }
     }
     
