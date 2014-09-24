@@ -2,9 +2,9 @@ package Parser;
 
 import java.util.ArrayList;
 
-public class CommandAdd extends Command {
+import Logic.CommandType;
 
-    private String cmd_type;
+public class CommandAdd extends Command {
     
     private String name;
     private String more;
@@ -23,8 +23,7 @@ public class CommandAdd extends Command {
     private static final String PARAM_TAGS = "tags";
 
     public CommandAdd(ArrayList<TaskParam> content) {
-        super(content);
-        this.cmd_type = "add";
+        this.type = CommandType.ADD;
         
         for (TaskParam param : content) {
             switch (param.getName()){
@@ -59,6 +58,7 @@ public class CommandAdd extends Command {
                     break;
                     
                 case "tag":
+                    // NOTE: possible change to string (tags = tags.concat())
                     this.tags.add(param.getField());
                     break;
                     
@@ -66,10 +66,6 @@ public class CommandAdd extends Command {
                     System.out.println("Houston, we have a problem.");    
             }
         }
-    }
-    
-    public String getType() {
-        return this.cmd_type;
     }
     
     public String get(String paramName){

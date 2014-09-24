@@ -17,5 +17,6 @@ public enum CommandType {
 	REDO,
 	CLEAR,
 	JOKE,
-	EXIT;
+	EXIT,
+	ERROR;
 }

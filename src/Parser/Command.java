@@ -1,70 +1,77 @@
 package Parser;
-import java.util.ArrayList;
 
+import Logic.CommandType;
 
-public abstract class Command {
-    // Full content for tracing/debugging purposes
-    private ArrayList<TaskParam> content;
-    
-    // Basic task info
-    private String type;
-    
-    // Unique ID. Counter keeps track of UIDs assigned.
-    private int uid;
-    private static int uid_counter = 1; // how to set this properly if program closes? get storage to save? init()?
-    
-    // Consideration: "edit last"
-    // Also can just be a string, let the logic handle?
-    private static Command last;
-    
-    // 'Add' and 'Edit' fields
-    private String name;
-    private String more;
-    private String due;
-    private String start;
-    private String end;
-    private String priority;
-    private String[] tags;
-    private String delete;
-    
+public class Command {
+
+    // Variables for all Commands
+    protected CommandType type;
+    protected String error;
+
     // Delete fields [all, search, id, date/date_range, done]
-    private String delete_type;
-    private String delete_field;
-    
+    protected String delete_type;
+    protected String delete_field;
+
     // Restore fields [all, id]
-    private String restore_type;
-    private String restore_id;
-    
+    protected String restore_type;
+    protected String restore_id;
+
     // Search fields [combine-able?]
-    private String[] search_tags;
-    private String[] search_keywords;
-    private String[] search_dates;      // single date: start=end
-    
+    protected String[] search_tags;
+    protected String[] search_keywords;
+    protected String[] search_dates; // single date: start=end
+
     // Display fields [all, id, block - only id needs field]
-    private String display_type;
-    private String display_field;
-    
+    protected String display_type;
+    protected String display_field;
+
     // Block fields [single date: start=end]
-    private String[] block_dates_times;
-    
+    protected String[] block_dates_times;
+
     // Done fields [all, id, date/date_range]
-    private String done_type;
-    private String done_field;
-    
+    protected String done_type;
+    protected String done_field;
+
     // Undone fields [last, id]
-    private String undone_type;
-    private String undone_id;
-    
-    protected Command(){
-        this.uid = uid_counter;
-        uid_counter++;
+    protected String undone_type;
+    protected String undone_id;
+   
+
+    public Command(){
+        this.type = CommandType.ERROR;
+        this.error = "Empty Command constructor";
     }
     
-    protected Command(ArrayList<TaskParam> content){
-        this.content = content;
-        this.uid = uid_counter;
-        uid_counter++;
+    public Command(String type) {
+        switch(type.toLowerCase()) {
+            case "clear":
+                this.type = CommandType.CLEAR;
+                break;
+            
+            case "exit":
+                this.type = CommandType.EXIT;
+                break;
+            
+            case "joke":
+                this.type = CommandType.JOKE;
+                break;
+            
+            case "redo":
+                this.type = CommandType.REDO;
+                break;
+                
+            case "undo":
+                this.type = CommandType.UNDO;
+                break;
+            
+            default:
+                this.type = CommandType.ERROR;
+                this.error = "Error in Command constructor (command type)";
+        }
     }
-    
-    
+
+    public CommandType getType() {
+        return this.type;
+    }
+
 }
