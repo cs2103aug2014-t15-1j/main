@@ -5,6 +5,7 @@ import java.util.Map;
 
 import Parser.Command;
 import Parser.Parser;
+import Storage.DataFile;
 
 public class Processor {
 	
@@ -32,7 +33,7 @@ public class Processor {
 				success = restoreTask(cmd, tasks);
 				break;
 			case SEARCH:
-				success = searchTasks(cmd);
+				success = searchTasks(cmd, tasks);
 				break;
 			case DISPLAY:
 				success = displayTask(cmd, tasks);
@@ -75,12 +76,9 @@ public class Processor {
 		if (isBlocked(cmd)) {
 			return false;
 		}
-		//Create Task Object using cmd
-		//throw this to pierce.
 		Task newTask = new Task(cmd.get("name"), cmd.get("more"), cmd.get("due"), cmd.get("start"), cmd.get("end"), cmd.get("piority"), cmd.get("tags"));
-		return true;
-		// TODO Auto-generated method stub
-		
+		tasks.add(newTask);
+		return DataFile.write(newTask);
 	}
 	
 	//Check if the date is blocked and allowed to be added
@@ -90,67 +88,67 @@ public class Processor {
 
 	private boolean editTask(Command cmd, ArrayList<Task> tasks) {
 		// TODO Auto-generated method stub
-		
+		DataFile.read(cmd.get(""));
+		return false;
 	}
 
-	private boolean deleteTask(Command cmd) {
+	private boolean deleteTask(Command cmd, ArrayList<Task> tasks) {
 		// TODO Auto-generated method stub
-		
+		return false;
 	}
 
-	private boolean restoreTask(Command cmd) {
+	private boolean restoreTask(Command cmd, ArrayList<Task> tasks) {
 		// TODO Auto-generated method stub
-		
+		return false;
 	}
 
-	private boolean searchTasks(Command cmd) {
+	private boolean searchTasks(Command cmd, ArrayList<Task> tasks) {
 		// TODO Auto-generated method stub
-		
+		return false;
 	}
 
-	private boolean displayTask(Command cmd) {
+	private boolean displayTask(Command cmd, ArrayList<Task> tasks) {
 		// TODO Auto-generated method stub
-		
+		return false;
 	}
 
 	private boolean blockDates(Command cmd) {
 		// TODO Auto-generated method stub
-		
+		return false;
 	}
 
 	private boolean unblockDates(Command cmd) {
 		// TODO Auto-generated method stub
-		
+		return false;
 	}
 
 	private boolean doneTasks(Command cmd) {
 		// TODO Auto-generated method stub
-		
+		return false;
 	}
 
 	private boolean undoneTasks(Command cmd) {
 		// TODO Auto-generated method stub
-		
+		return false;
 	}
 
 	private boolean undoCommand(Command cmd) {
 		// TODO Auto-generated method stub
-		
+		return false;
 	}
 
 	private boolean redoCommand(Command cmd) {
 		// TODO Auto-generated method stub
-		
+		return false;
 	}
 
 	private boolean clearScreen(Command cmd) {
-		// TODO Auto-generated method stub
-		
+		return true;
 	}
 
 	private boolean showJoke(Command cmd) {
-		// TODO Auto-generated method stub
-		
+		//Show joke
+		return true;
 	}
 
 	
