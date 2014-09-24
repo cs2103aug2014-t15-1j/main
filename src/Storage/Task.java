@@ -6,7 +6,7 @@ public class Task {
     private static int newId = 1;   // ID for each new task object
 	
 	// Task Object Attributes
-    private int id = 0; // ID only changes once, at each program start
+    private final int id; // ID only changes once, at each program start
     private String name = "";
     private String more = "";
     private String due = "";   //CHANGE TO DATE type?
@@ -20,6 +20,8 @@ public class Task {
     // Constructor
     public Task(String name, String more, String due, String start, 
             String end, String priority, ArrayList<String> tags) {
+        this.id = newId;
+        newId++;
         this.name = name;
         this.more = more;
         this.due = due;
@@ -27,7 +29,6 @@ public class Task {
         this.end = end;
         this.priority = priority;
         this.tags = tags;
-        this.setId();
     }
     
     //===== Getters and setters =====//
@@ -74,11 +75,6 @@ public class Task {
     }
     
     // Setters
-    public void setId() {
-        this.id = newId;
-        newId++;
-    }
-    
     public void setName(String name) {
         this.name = name;
     }
