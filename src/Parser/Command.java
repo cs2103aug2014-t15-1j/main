@@ -1,5 +1,7 @@
 package Parser;
 
+import java.util.ArrayList;
+
 import Logic.CommandType;
 
 public abstract class Command {
@@ -8,6 +10,9 @@ public abstract class Command {
     protected CommandType type;
     protected String error;
 
+    // Tags
+    protected ArrayList<String> tags = new ArrayList<String>();
+    
     // Delete fields [all, search, id, date/date_range, done]
     protected String delete_type;
     protected String delete_field;
@@ -35,13 +40,16 @@ public abstract class Command {
     // Undone fields [last, id]
     protected String undone_type;
     protected String undone_id;
-   
-
+    
     public CommandType getType() {
         return this.type;
     }
     
     public String get(String str) {
+        return null;
+    }
+    
+    public ArrayList<String> getTags() {
         return null;
     }
 

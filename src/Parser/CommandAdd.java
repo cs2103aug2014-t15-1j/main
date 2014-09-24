@@ -12,7 +12,6 @@ public class CommandAdd extends Command {
     private String start;
     private String end;
     private String priority;
-    private ArrayList<String> tags = new ArrayList<String>();
     
     private static final String PARAM_NAME = "name";
     private static final String PARAM_MORE = "more";

@@ -22,9 +22,10 @@ public class Parser {
     private static final String TYPE_JOKE = "joke";
     private static final String TYPE_EXIT = "exit";
 
-    private static final String[] ADD_PARAM_LIST = { "name:", "n:", "more:", "m:",
-                                                    "due:", "d;", "start:", "s:",
-                                                    "end:", "e:", "priority:", "p:" };
+    private static final String[] ADD_PARAM_LIST = { "name:", "n:", "more:",
+                                                    "m:", "due:", "d;",
+                                                    "start:", "s:", "end:",
+                                                    "e:", "priority:", "p:" };
 
     public static Command parse(String input) {
         // TODO: check command for errors
@@ -74,7 +75,7 @@ public class Parser {
             case TYPE_JOKE:
             case TYPE_EXIT:
                 return new CommandOthers(commandType);
-                
+
             default:
                 return new CommandOthers("error");
         }
@@ -116,7 +117,45 @@ public class Parser {
     }
 
     private static Command parseDelete(String[] commandItems) {
-        return null;
+        ArrayList<TaskParam> deleteFields = new ArrayList<TaskParam>();
+
+        String firstWord = commandItems[1];
+        if (isDeleteParamName(firstWord.toLowerCase())) {
+            deleteFields.add(new TaskParam("rangeType", firstWord));
+        } else if (isInteger(firstWord)) {
+            deleteFields.add(new TaskParam("rangeType", "id"));
+            deleteFields.add(new TaskParam("id", firstWord));
+        } else if (isDate(firstWord)) {
+            deleteFields.add(new TaskParam("rangeType", "dates"));
+            deleteFields.add(new TaskParam("start", firstWord));
+            if (commandItems.length > 2 &&
+                commandItems[2].toLowerCase().equals("to")) {
+                deleteFields.add(new TaskParam("end", commandItems[3]));
+            } else {
+                deleteFields.add(new TaskParam("end", firstWord));
+            }
+        }
+
+        return new CommandDelete(deleteFields);
+    }
+
+    private static boolean isDate(String firstWord) {
+        // TODO Auto-generated method stub
+        return true;
+    }
+
+    private static boolean isInteger(String str) {
+        try {
+            Integer.parseInt(str);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    private static boolean isDeleteParamName(String firstWord) {
+        return firstWord.equals("all") || firstWord.equals("search") ||
+               firstWord.equals("done");
     }
 
     private static Command parseEdit(String[] commandItems) {
@@ -137,7 +176,7 @@ public class Parser {
 
         for (int i = 1; i < commandItems.length; i++) {
             String currWord = commandItems[i];
-            if (isParamName(currWord)) {
+            if (isAddParamName(currWord)) {
                 if (!parsed.contains(currField)) {
                     addFields.add(new TaskParam(currField, currContent.trim()));
                     // TODO: parsed can be "n" or "name". problem
@@ -158,16 +197,16 @@ public class Parser {
                 currContent = currContent.concat(" " + currWord);
             }
         }
-        
+
         if (!currContent.isEmpty()) {
             addFields.add(new TaskParam(currField, currContent.trim()));
         }
-        
+
         System.out.println(addFields);
         return new CommandAdd(addFields);
     }
 
-    private static boolean isParamName(String str) {
+    private static boolean isAddParamName(String str) {
         return Arrays.asList(ADD_PARAM_LIST).contains(str);
     }
 
@@ -178,10 +217,20 @@ public class Parser {
     private static boolean hasValidHashTag(String word) {
         return word.startsWith("#") && (word.length() > 1);
     }
-    
+
     public static void main(String[] args) {
-        System.out.println(Parser.parse("add do homework m: it's #cs2103 cs2103 due: tomorrow end:"));
-        System.out.println(Parser.parse("add name: do do due: wednesday m: dead task\n"));
+        System.out
+                .println(Parser
+                        .parse("add do homework m: it's #cs2103 cs2103 due: tomorrow end:"));
+        System.out.println(Parser
+                .parse("add name: do do due: wednesday m: dead task\n"));
+        
+        System.out.println(Parser.parse("delete all"));
+        System.out.println(Parser.parse("delete search"));
+        System.out.println(Parser.parse("delete done"));
+        System.out.println(Parser.parse("delete 11"));
+        System.out.println(Parser.parse("delete days"));
+        
     }
 
 }
