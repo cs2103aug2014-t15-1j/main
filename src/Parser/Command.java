@@ -1,23 +1,12 @@
 package Parser;
 
-import java.util.ArrayList;
-
 import Logic.CommandType;
 
 public class Command {
 
-    // Basic task info
+    // Variables for all Commands
     protected CommandType type;
-
-    // 'Add' and 'Edit' fields
-    protected String name;
-    protected String more;
-    protected String due;
-    protected String start;
-    protected String end;
-    protected String priority;
-    protected String[] tags;
-    protected String delete;
+    protected String error;
 
     // Delete fields [all, search, id, date/date_range, done]
     protected String delete_type;
@@ -46,10 +35,13 @@ public class Command {
     // Undone fields [last, id]
     protected String undone_type;
     protected String undone_id;
-    
-    // Error Message
-    protected String error;
+   
 
+    public Command(){
+        this.type = CommandType.ERROR;
+        this.error = "Empty Command constructor";
+    }
+    
     public Command(String type) {
         switch(type.toLowerCase()) {
             case "clear":
