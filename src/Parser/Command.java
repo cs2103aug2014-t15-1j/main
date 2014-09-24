@@ -45,6 +45,10 @@ public abstract class Command {
         return this.type;
     }
     
+    public String get() {
+        return null;
+    }
+    
     public String get(String str) {
         return null;
     }

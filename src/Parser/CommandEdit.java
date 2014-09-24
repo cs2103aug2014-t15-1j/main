@@ -4,15 +4,18 @@ import java.util.ArrayList;
 
 import Logic.CommandType;
 
-public class CommandAdd extends Command {
+public class CommandEdit extends Command {
     
+    private String id;
     private String name;
     private String more;
     private String due;
     private String start;
     private String end;
     private String priority;
+    private String delete;
     
+    private static final String PARAM_ID = "id";
     private static final String PARAM_NAME = "name";
     private static final String PARAM_MORE = "more";
     private static final String PARAM_DUE = "due";
@@ -20,12 +23,17 @@ public class CommandAdd extends Command {
     private static final String PARAM_END = "end";
     private static final String PARAM_PRIO = "priority";
     private static final String PARAM_TAGS = "tags";
+    private static final String PARAM_DEL = "delete";
 
-    public CommandAdd(ArrayList<TaskParam> content) {
-        this.type = CommandType.ADD;
+    public CommandEdit(ArrayList<TaskParam> content) {
+        this.type = CommandType.EDIT;
         
         for (TaskParam param : content) {
             switch (param.getName()){
+                case "id":
+                    this.id = param.getField();
+                    break;
+                    
                 case "name":
                 case "n":
                     this.name = param.getField();
@@ -61,14 +69,21 @@ public class CommandAdd extends Command {
                     this.tags.add(param.getField());
                     break;
                     
+                case "delete":
+                    this.delete = param.getField();
+                    break;
+                    
                 default:
-                    System.out.println("Houston, we have a problem.");    
+                    System.out.println("EDITor, we have a problem.");    
             }
         }
     }
     
     public String get(String paramName){
         switch(paramName){
+            case PARAM_ID:
+                return this.id;
+                
             case PARAM_NAME:
                 return this.name;
             
@@ -87,8 +102,11 @@ public class CommandAdd extends Command {
             case PARAM_PRIO:
                 return this.priority;
                 
+            case PARAM_DEL:
+                return this.delete;
+                
             default:
-                System.out.println("Get's got a problem!");
+                System.out.println("Edit get's got a problem!");
                 return null;
         }
     }
@@ -111,6 +129,7 @@ public class CommandAdd extends Command {
         result = result.concat("\n" + "end: " + end);
         result = result.concat("\n" + "priority: " + priority);
         result = result.concat("\n" + "tags: " + tags);
+        result = result.concat("\n" + "delete: " + delete);
         
         return result;
     }

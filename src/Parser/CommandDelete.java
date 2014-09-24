@@ -6,7 +6,7 @@ import Logic.CommandType;
 
 public class CommandDelete extends Command {
     
-    // Delete types [all, search, id, dates, done]
+    // Delete types ["all", "search", "id", "dates", "done"]
     protected String rangeType;
     
     // Delete type data
@@ -62,11 +62,11 @@ public class CommandDelete extends Command {
     }
     
     public String toString() {
-        String result = "[[ CMD-Delete: ]]\n";
+        String result = "\n[[ CMD-Delete: ]]\n";
         result = result.concat("rangeType: " + rangeType + "\n");
         result = result.concat("id: " + id + "\n");
         result = result.concat("start: " + start + "\n");
-        result = result.concat("end: " + end + "\n");
+        result = result.concat("end: " + end);
         
         return result;
     }

@@ -5,8 +5,8 @@ public class TaskParam {
     private String field;
 
     public TaskParam(String name, String field) {
-        this.name = name;
-        this.field = field;
+        this.name = name.trim();
+        this.field = field.trim();
     }
 
     public String getName() {
@@ -18,7 +18,11 @@ public class TaskParam {
     }
     
     public void addToField(String str) {
-        field = field.concat(" " + str);
+        if (field.length()>0) {
+            this.field = this.field.concat(" " + str.trim());
+        } else {
+            this.field = str.trim();
+        }
     }
     
     public String toString() {

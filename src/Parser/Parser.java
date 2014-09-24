@@ -15,7 +15,7 @@ public class Parser {
     private static final String TYPE_BLOCK = "block";
     private static final String TYPE_UNBLOCK = "unblock";
     private static final String TYPE_DONE = "done";
-    private static final String TYPE_UNDONE = "undone";
+    private static final String TYPE_TODO = "todo";
     private static final String TYPE_UNDO = "undo";
     private static final String TYPE_REDO = "redo";
     private static final String TYPE_CLEAR = "clear";
@@ -26,6 +26,14 @@ public class Parser {
                                                     "m:", "due:", "d;",
                                                     "start:", "s:", "end:",
                                                     "e:", "priority:", "p:" };
+    private static final String[] HELP_CMD_LIST = { TYPE_ADD, TYPE_EDIT,
+                                                   TYPE_DELETE, TYPE_RESTORE,
+                                                   TYPE_SEARCH, TYPE_DISPLAY,
+                                                   TYPE_BLOCK, TYPE_UNBLOCK,
+                                                   TYPE_DONE, TYPE_TODO,
+                                                   TYPE_UNDO, TYPE_REDO,
+                                                   TYPE_CLEAR, TYPE_JOKE,
+                                                   TYPE_EXIT };
 
     public static Command parse(String input) {
         // TODO: check command for errors
@@ -66,7 +74,7 @@ public class Parser {
             case TYPE_DONE:
                 return parseDone(commandItems);
 
-            case TYPE_UNDONE:
+            case TYPE_TODO:
                 return parseUndone(commandItems);
 
             case TYPE_UNDO:
@@ -159,13 +167,61 @@ public class Parser {
     }
 
     private static Command parseEdit(String[] commandItems) {
-        // TODO Auto-generated method stub
-        return null;
+        String currField = "name";
+        String currContent = "";
+        ArrayList<TaskParam> editFields = new ArrayList<TaskParam>();
+        ArrayList<String> parsed = new ArrayList<String>();
+
+        // TODO: first word ID
+        
+        for (int i = 1; i < commandItems.length; i++) {
+            String currWord = commandItems[i];
+            if (isAddParamName(currWord)) {
+                if (currContent.length() > 0) {
+                    if (paramAlreadyFilled(parsed, currField)) {
+                        getTaskParam(editFields, currField)
+                                .addToField(currContent);
+                    } else {
+                        editFields.add(new TaskParam(currField, currContent));
+                        parsed.add(currField);
+                    }
+                }
+                currField = getParamName(currWord);
+                currContent = "";
+            } else if (hasValidHashTag(currWord)) {
+                editFields.add(new TaskParam("tag", currWord));
+            } else {
+                currContent = currContent.concat(" " + currWord);
+            }
+        }
+
+        if (!currContent.isEmpty()) {
+            if (paramAlreadyFilled(parsed, currField)) {
+                getTaskParam(editFields, currField).addToField(currContent);
+            } else {
+                editFields.add(new TaskParam(currField, currContent));
+            }
+        }
+
+        return new CommandEdit(editFields);
     }
 
     private static Command parseHelp(String[] commandItems) {
-        // TODO Auto-generated method stub
-        return null;
+        String helpField = null;
+
+        if (commandItems.length > 1) {
+            if (isHelpParam(commandItems[1])) {
+                helpField = commandItems[1].toLowerCase();
+            } else {
+                helpField = "invalid";
+            }
+        }
+
+        return new CommandHelp(helpField);
+    }
+
+    private static boolean isHelpParam(String string) {
+        return Arrays.asList(HELP_CMD_LIST).contains(string.toLowerCase());
     }
 
     private static Command parseAdd(String[] commandItems) {
@@ -177,21 +233,18 @@ public class Parser {
         for (int i = 1; i < commandItems.length; i++) {
             String currWord = commandItems[i];
             if (isAddParamName(currWord)) {
-                if (!parsed.contains(currField)) {
-                    addFields.add(new TaskParam(currField, currContent.trim()));
-                    // TODO: parsed can be "n" or "name". problem
-                    // Change .contains to alreadyFilled or something
-                    // This one should check shorthands for the full words
-                    parsed.add(currField);
-                    currContent = "";
-                } else {
-                    // TODO: GETTER function for parsed fields
-                    // PLUS concat for already parsed.
+                if (currContent.length() > 0) {
+                    if (paramAlreadyFilled(parsed, currField)) {
+                        getTaskParam(addFields, currField)
+                                .addToField(currContent);
+                    } else {
+                        addFields.add(new TaskParam(currField, currContent));
+                        parsed.add(currField);
+                    }
                 }
-                // TODO: Change removeLastChar to getParamName()
-                currField = removeLastChar(currWord);
+                currField = getParamName(currWord);
+                currContent = "";
             } else if (hasValidHashTag(currWord)) {
-                // TODO: Maybe no need to remove first char
                 addFields.add(new TaskParam("tag", currWord));
             } else {
                 currContent = currContent.concat(" " + currWord);
@@ -199,11 +252,58 @@ public class Parser {
         }
 
         if (!currContent.isEmpty()) {
-            addFields.add(new TaskParam(currField, currContent.trim()));
+            if (paramAlreadyFilled(parsed, currField)) {
+                getTaskParam(addFields, currField).addToField(currContent);
+            } else {
+                addFields.add(new TaskParam(currField, currContent));
+            }
         }
 
-        System.out.println(addFields);
         return new CommandAdd(addFields);
+    }
+
+    private static String getParamName(String currWord) {
+        String validParamName = removeLastChar(currWord);
+        String longParamName = convertIfShorthand(validParamName);
+        return longParamName;
+    }
+
+    private static TaskParam getTaskParam(ArrayList<TaskParam> addFields,
+                                          String currField) {
+        for (TaskParam tp : addFields) {
+            if (tp.getName().equals(currField)) {
+                return tp;
+            }
+        }
+
+        // Code should not reach this point
+        TaskParam failSafe = new TaskParam(currField, "");
+        addFields.add(failSafe);
+        return failSafe;
+
+    }
+
+    private static boolean paramAlreadyFilled(ArrayList<String> parsed,
+                                              String currField) {
+        return parsed.contains(currField);
+    }
+
+    private static String convertIfShorthand(String currField) {
+        switch (currField) {
+            case "n":
+                return "name";
+            case "m":
+                return "more";
+            case "d":
+                return "due";
+            case "s":
+                return "start";
+            case "e":
+                return "end";
+            case "p":
+                return "priority";
+        }
+        return currField;
     }
 
     private static boolean isAddParamName(String str) {
@@ -218,19 +318,32 @@ public class Parser {
         return word.startsWith("#") && (word.length() > 1);
     }
 
+    public static String parseRawText(String text) {
+        //TODO: create text-parsing function for pierce
+        return null;
+    }
+    
+    
     public static void main(String[] args) {
         System.out
                 .println(Parser
                         .parse("add do homework m: it's #cs2103 cs2103 due: tomorrow end:"));
         System.out.println(Parser
                 .parse("add name: do do due: wednesday m: dead task\n"));
-        
+        System.out
+                .println(Parser
+                        .parse("add name: do due: #cs2103 wed name: homework m: late start: priority: due: 9am end: now name: quickly\n"));
+
         System.out.println(Parser.parse("delete all"));
         System.out.println(Parser.parse("delete search"));
         System.out.println(Parser.parse("delete done"));
         System.out.println(Parser.parse("delete 11"));
         System.out.println(Parser.parse("delete days"));
-        
+
+        System.out.println(Parser.parse("help me"));
+        System.out.println(Parser.parse("help"));
+        System.out.println(Parser.parse("help add"));
+
     }
 
 }
