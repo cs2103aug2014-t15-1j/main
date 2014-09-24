@@ -6,7 +6,7 @@ public class Task {
     private static int newId = 1;   // ID for each new task object
 	
 	// Task Object Attributes
-    private final int id; // ID only changes once, at each program start
+    private final int ID; // ID only changes once, at each program start
     private String name = "";
     private String more = "";
     private String due = "";   //CHANGE TO DATE type?
@@ -20,7 +20,7 @@ public class Task {
     // Constructor
     public Task(String name, String more, String due, String start, 
             String end, String priority, ArrayList<String> tags) {
-        this.id = newId;
+        this.ID = newId;
         newId++;
         this.name = name;
         this.more = more;
@@ -35,7 +35,7 @@ public class Task {
     
     // Getters
     public int getId() {
-        return id;
+        return ID;
     }
     
     public String getName() {
