@@ -2,7 +2,7 @@ package Parser;
 
 import Logic.CommandType;
 
-public class Command {
+public abstract class Command {
 
     // Variables for all Commands
     protected CommandType type;
@@ -37,41 +37,12 @@ public class Command {
     protected String undone_id;
    
 
-    public Command(){
-        this.type = CommandType.ERROR;
-        this.error = "Empty Command constructor";
-    }
-    
-    public Command(String type) {
-        switch(type.toLowerCase()) {
-            case "clear":
-                this.type = CommandType.CLEAR;
-                break;
-            
-            case "exit":
-                this.type = CommandType.EXIT;
-                break;
-            
-            case "joke":
-                this.type = CommandType.JOKE;
-                break;
-            
-            case "redo":
-                this.type = CommandType.REDO;
-                break;
-                
-            case "undo":
-                this.type = CommandType.UNDO;
-                break;
-            
-            default:
-                this.type = CommandType.ERROR;
-                this.error = "Error in Command constructor (command type)";
-        }
-    }
-
     public CommandType getType() {
         return this.type;
+    }
+    
+    public String get(String str) {
+        return null;
     }
 
 }
