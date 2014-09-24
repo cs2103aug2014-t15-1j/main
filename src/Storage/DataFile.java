@@ -14,6 +14,18 @@ public class DataFile {
     private static ArrayList<Task> doneTasks;
     private static ArrayList<Task> deletedTasks;
     
+    public ArrayList<Task> getToDoTasks() {
+        return toDoTasks;
+    }
+    
+    public ArrayList<Task> getDoneTasks() {
+        return doneTasks;
+    }
+    
+    public ArrayList<Task> getDeletedTasks() {
+        return deletedTasks;
+    }
+    
     public void initialize() throws FileNotFoundException, IOException {
         final String filename = "Data";
         File file = new File(filename);
@@ -102,10 +114,5 @@ public class DataFile {
             }
         }
         return false;
-    }
-    
-    // TODO
-    public ArrayList<Task> getAllTasks() {
-        
     }
 }
