@@ -93,7 +93,7 @@ public class CommandAdd extends Command {
         }
     }
     
-    public ArrayList<String> getTags(String tags){
+    public ArrayList<String> getTags(){
         if (tags.equals(PARAM_TAGS)) {
             return this.tags;
         } else {
