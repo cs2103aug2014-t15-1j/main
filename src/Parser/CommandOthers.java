@@ -31,8 +31,19 @@ public class CommandOthers extends Command {
         }
     }
     
+    public CommandOthers(String type, String msg) {
+        this(type);
+        if(type.equals("error")) {
+            this.error = msg;
+        }
+    }
+    
     public String toString() {
-        return "command:" + type;
+        String result = "\n[[ CMD-OTHERS ]]";
+        result = result.concat("\ncmd-type: " + type);
+        result = result.concat("\ncmd-info: " + error);
+        
+        return result;
     }
 
 }

@@ -45,6 +45,10 @@ public abstract class Command {
         return this.type;
     }
     
+    public String getError() {
+        return this.error;
+    }
+    
     public String get() {
         return null;
     }

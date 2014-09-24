@@ -4,70 +4,67 @@ import java.util.ArrayList;
 
 import Logic.CommandType;
 
+/**
+ * This Command stores the delete type and if applicable, an id value.
+ * 
+ * Delete type: get("rangeType") [Values: "all", "search", "done", "id" ].
+ * 
+ * Delete id: get("id") [Value: string that can be parsed as int].
+ * 
+ * @author Nitsuj Portable
+ *
+ */
 public class CommandDelete extends Command {
-    
-    // Delete types ["all", "search", "id", "dates", "done"]
+
+    // Delete types
     protected String rangeType;
-    
-    // Delete type data
+
+    // Delete type data [get("id")]
     protected String id;
-    protected String start;
-    protected String end;
 
     public CommandDelete(ArrayList<TaskParam> content) {
-        this.type = CommandType.DELETE;
-        
-        for (TaskParam param : content) {
-            switch (param.getName()){
-                case "rangeType":
-                    this.rangeType = param.getField();
-                    break;
-                    
-                case "id":
-                    this.id = param.getField();
-                    break;
-                    
-                case "start":
-                    this.start = param.getField();
-                    break;
-                    
-                case "end":
-                    this.end = param.getField();
-                    break;
-                    
-                default:
-                    this.type = CommandType.ERROR;
-                    this.error = "Deleter, we have a problem.";    
+        if (content.isEmpty()) {
+            this.type = CommandType.ERROR;
+            this.error = "No arguments for delete";
+        } else {
+            this.type = CommandType.DELETE;
+
+            for (TaskParam param : content) {
+                switch (param.getName()) {
+                    case "rangeType":
+                        this.rangeType = param.getField();
+                        break;
+
+                    case "id":
+                        this.id = param.getField();
+                        break;
+
+                    default:
+                        this.type = CommandType.ERROR;
+                        this.error = "Delete constructor parameter error";
+                }
             }
         }
     }
-    
-    public String get(String field){
+
+    public String get(String field) {
         switch (field) {
             case "rangeType":
                 return this.rangeType;
-            
+
             case "id":
                 return this.id;
-                
-            case "start":
-                return this.start;
-            
-            case "end":
-                return this.end;
-                
+
             default:
                 return null;
         }
     }
-    
+
     public String toString() {
-        String result = "\n[[ CMD-Delete: ]]\n";
-        result = result.concat("rangeType: " + rangeType + "\n");
-        result = result.concat("id: " + id + "\n");
-        result = result.concat("start: " + start + "\n");
-        result = result.concat("end: " + end);
-        
+        String result = "\n[[ CMD-Delete: ]]";
+        result = result.concat("\nrangeType: " + rangeType);
+        result = result.concat("\nid: " + id);
+
         return result;
     }
 

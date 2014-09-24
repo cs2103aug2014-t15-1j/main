@@ -121,7 +121,8 @@ public class CommandEdit extends Command {
     
     public String toString() {
         
-        String result = "\n[[ CMD-ADD: ]]";
+        String result = "\n[[ CMD-EDIT: ]]";
+        result = result.concat("\n" + "id: " + id);
         result = result.concat("\n" + "name: " + name);
         result = result.concat("\n" + "more: " + more);
         result = result.concat("\n" + "due: " + due);
