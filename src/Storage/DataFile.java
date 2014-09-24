@@ -92,9 +92,17 @@ public class DataFile {
         return true;
     }
     
-    // TODO
     public String changeToString(Task task) {
-        return "";
+        String stringifiedTask = "Name: " + task.getName();
+        stringifiedTask += "More: " + task.getMore();
+        stringifiedTask += "Due: " + task.getDue();
+        stringifiedTask += "Start: " + task.getStart();
+        stringifiedTask += "End: " + task.getEnd();
+        stringifiedTask += "Priority: " + task.getPriority();
+        stringifiedTask += task.getTags();
+        stringifiedTask += task.isDone() ? "#Done" : "#To Do";
+        
+        return stringifiedTask;
     }
     
     public boolean deleteTask(int id) {
