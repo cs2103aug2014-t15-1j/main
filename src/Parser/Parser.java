@@ -340,7 +340,7 @@ public class Parser {
 
     public static Task parseRawText(String text) {
         String currField = "name";
-        String[] textItems = text.split(" ");
+        String[] textItems = text.trim().split(" ");
         String[] param = new String[] { "", "", "", "", "", "" };
         ArrayList<String> tags = new ArrayList<String>();
 
@@ -353,9 +353,9 @@ public class Parser {
             } else {
                 int pIndex = getParamIndex(currField);
                 if (param[pIndex].isEmpty()) {
-                    param[pIndex].concat(currWord);
+                    param[pIndex] = param[pIndex].concat(currWord);
                 } else {
-                    param[pIndex].concat(" " + currWord);
+                    param[pIndex] = param[pIndex].concat(" " + currWord);
                 }
             }
         }
@@ -365,7 +365,7 @@ public class Parser {
     }
 
     private static int getParamIndex(String currField) {
-        switch (currField) {
+        switch (currField.toLowerCase()) {
             case "name":
                 return 0;
             case "more":
@@ -382,6 +382,18 @@ public class Parser {
                 System.out.println("rawparsing getParamIndex failure");
                 return -1;
         }
+    }
+    
+    public static String tempTaskToString(Task task) {
+        String result = "\n[[ Task ]]";
+        result = result.concat("\nName: " + task.getName());
+        result = result.concat("\nMore: " + task.getMore());
+        result = result.concat("\nDue: " + task.getDue());
+        result = result.concat("\nStart: " + task.getStart());
+        result = result.concat("\nEnd: " + task.getEnd());
+        result = result.concat("\nPriority: " + task.getPriority());
+        result = result.concat("\nTags: " + task.getTags());
+        return result;
     }
 
     public static void main(String[] args) {
@@ -424,9 +436,9 @@ public class Parser {
 
         // TEST RAW PARSE
         System.out
-                .println(Parser
-                        .parseRawText("add name: do due: #cs2103 wed name: homework m: late "
-                                      + "start: priority: due: 9am end: now name: quickly\n"));
+                .println(tempTaskToString(Parser
+                        .parseRawText("nAme: do Due: #cs2103 wed namE: homework M: late "
+                                      + "start: priority: due: 9am eNd: now name: quickly\n")));
 
     }
 
