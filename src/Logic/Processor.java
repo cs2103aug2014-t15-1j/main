@@ -32,6 +32,7 @@ public class Processor {
 		if (cmd == null || cmd.getType() == CommandType.ERROR) {
 			return new Result(null, false, CommandType.ERROR);
 		}
+		
 		CommandType cmdType = cmd.getType();
 		
 		switch (cmdType) {
@@ -87,16 +88,17 @@ public class Processor {
 	/* All the methods below returns true/false depending on the success
 	 * Tasks to be display will be added to tasks.
 	 */
-	//Command Object: getType, get("asdasdjas]");
 	private boolean addTask(Command cmd, ArrayList<Task> tasks, boolean userInput) throws IOException {
 		if (isBlocked(cmd)) {
 			return false;
 		}
 		Task newTask = new Task(cmd.get("name"), cmd.get("more"), cmd.get("due"), cmd.get("start"), cmd.get("end"), cmd.get("priority"), cmd.getTags());
+		
 		tasks.add(newTask);
 		if (userInput) {
 			backwardHistory.push(cmd);
 		}
+		
 		return file.write(newTask);
 	}
 	
@@ -109,33 +111,10 @@ public class Processor {
 		Task existingTask = file.read(Integer.parseInt(cmd.get("id")));
 		if (existingTask != null) {
 			editedTask.push(existingTask);
-			//Replace task with the new parameters
-			Task updatedTask = new Task(existingTask.getName(), existingTask.getMore(), existingTask.getDue(), existingTask.getStart(), existingTask.getEnd(), existingTask.getPriority(), existingTask.getTags());
-			//Store updatedTask to storage
 			
-			if (cmd.get("name") != null) {
-				updatedTask.setName(cmd.get("name"));
-			}
-			if (cmd.get("more") != null) {
-				updatedTask.setMore(cmd.get("more"));
-			}
-			if (cmd.get("due") != null) {
-				updatedTask.setDue(cmd.get("due"));				
-			}
-			if (cmd.get("start") != null) {
-				updatedTask.setStart(cmd.get("start"));
-			}
-			if (cmd.get("end") != null) {
-				updatedTask.setEnd(cmd.get("end"));
-			}
-			if (cmd.get("priority") != null) {
-				updatedTask.setPriority(cmd.get("priority"));
-			}
-			if (cmd.getTags() != null) {
-				updatedTask.setTags(cmd.getTags());
-			}
+			Task task = updateTaskParameters(cmd, existingTask);
 			
-			file.write(updatedTask);
+			file.write(task);
 			tasks.add(existingTask);
 			editedTask.push(existingTask);
 			backwardHistory.push(cmd);
@@ -143,12 +122,38 @@ public class Processor {
 		return false;
 	}
 
+	public Task updateTaskParameters(Command cmd, Task existingTask) {
+		Task task = new Task(existingTask.getName(), existingTask.getMore(), existingTask.getDue(), existingTask.getStart(), existingTask.getEnd(), existingTask.getPriority(), existingTask.getTags());
+		//Store updatedTask to storage	
+		if (cmd.get("name") != null) {
+			task.setName(cmd.get("name"));
+		}
+		if (cmd.get("more") != null) {
+			task.setMore(cmd.get("more"));
+		}
+		if (cmd.get("due") != null) {
+			task.setDue(cmd.get("due"));				
+		}
+		if (cmd.get("start") != null) {
+			task.setStart(cmd.get("start"));
+		}
+		if (cmd.get("end") != null) {
+			task.setEnd(cmd.get("end"));
+		}
+		if (cmd.get("priority") != null) {
+			task.setPriority(cmd.get("priority"));
+		}
+		if (cmd.getTags() != null) {
+			task.setTags(cmd.getTags());
+		}
+		return task;
+	}
+
 	//Returns true if delete is executable.
 	//ArrayList<Task> tasks = empty if deleting all the file.
 	//else will contain at least 1 task.	
 	private boolean deleteTask(Command cmd, ArrayList<Task> tasks, boolean userInput) {
 		switch (cmd.get("rangeType")) {
-		//case delete <id>
 			case "id":
 				Task t = file.read(Integer.parseInt(cmd.get("id")));
 				if (t != null) {
@@ -158,7 +163,6 @@ public class Processor {
 					return false;
 				}
 				break;
-		//case delete search		
 			case "search":
 				if (!searchList.isEmpty()) {
 					for (Task existingTask : searchList) {
@@ -183,31 +187,42 @@ public class Processor {
 	}
 
 	private boolean restoreTask(Command cmd, ArrayList<Task> tasks, boolean userInput) throws IOException {
-		//case: restore all
 		switch (cmd.get("rangeType")) {
 			case "id":
-				for (Task t: file.getDeletedTasks()) {
-					if (t.getId() == Integer.parseInt(cmd.get("id"))) {
-						tasks.add(t);
-						file.getDeletedTasks().remove(t);
-						file.write(t);
-						break;
-					}
-				}
+				restoreUsingId(cmd, tasks);
+				break;
 			case "all":
-				for (Task t: file.getDeletedTasks()) {
-					tasks.add(t);
-					file.getDeletedTasks().remove(t);
-					file.write(t);
-				}
+				restoreAll(tasks);
 				break;
 			default:
 				return false;
 		}
+		
 		if (userInput) {
 			backwardHistory.push(cmd);
 		}
+		
 		return true;
+	}
+
+	public void restoreUsingId(Command cmd, ArrayList<Task> tasks)
+			throws IOException {
+		for (Task t: file.getDeletedTasks()) {
+			if (t.getId() == Integer.parseInt(cmd.get("id"))) {
+				tasks.add(t);
+				file.getDeletedTasks().remove(t);
+				file.write(t);
+				break;
+			}
+		}
+	}
+
+	public void restoreAll(ArrayList<Task> tasks) throws IOException {
+		for (Task t: file.getDeletedTasks()) {
+			tasks.add(t);
+			file.getDeletedTasks().remove(t);
+			file.write(t);
+		}
 	}
 	
 	public boolean deleteAllData() {
@@ -306,13 +321,11 @@ public class Processor {
 					//delete using last added ID;
 					break;
 				case EDIT:
-					//pop from editedTask and restore to datafile
 					Task prevTask = editedTask.pop();
-					for (Task newTask : file.getToDoTasks()) {
-						if (newTask.getId() == prevTask.getId()) {
-							//replace newTask attributes with prevTask attributes
+					for (Task existingTask: file.getToDoTasks()) {
+						if (existingTask.getId() == prevTask.getId()) {
+							copyTaskParameters(prevTask, existingTask);
 						}
-						break;
 					}
 					break;
 				case DELETE:
@@ -341,12 +354,21 @@ public class Processor {
 		forwardHistory.push(backwardCommand);
 		return true;
 	}
+
+	public void copyTaskParameters(Task prevTask, Task existingTask) {
+		existingTask.setName(prevTask.getName());
+		existingTask.setMore(prevTask.getMore());
+		existingTask.setDue(prevTask.getDue());
+		existingTask.setPriority(prevTask.getPriority());
+		existingTask.setStart(prevTask.getStart());
+		existingTask.setEnd(prevTask.getEnd());
+		existingTask.setTags(prevTask.getTags());
+	}
 	
 	//APPLICABLE FOR ADD, EDIT, DELETE, RESTORE, BLOCK, UNBLOCK, UNDONE, DONE
 	private boolean redoCommand(Command cmd, boolean userInput) throws IOException {
 		if (!forwardHistory.isEmpty()) {
 			Command forwardCommand = forwardHistory.pop();
-			//Execute the forwardCommand
 			Result result = processCommand(forwardCommand, false);
 			backwardHistory.push(forwardCommand);
 			return result.isSuccess();
