@@ -1,6 +1,7 @@
 package Logic;
 
 import java.util.ArrayList;
+import Storage.Task;
 
 public class Result {
 	private ArrayList<Task> tasks;
@@ -23,5 +24,9 @@ public class Result {
 	
 	public CommandType cmdExecuted() {
 		return cmdExecuted;
+	}
+	
+	public void setCommandType(CommandType cmdType) {
+		this.cmdExecuted = cmdType;
 	}
 }

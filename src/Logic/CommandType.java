@@ -12,7 +12,7 @@ public enum CommandType {
 	BLOCK,
 	UNBLOCK,
 	DONE,
-	UNDONE,
+	TODO,
 	UNDO,
 	REDO,
 	CLEAR,
