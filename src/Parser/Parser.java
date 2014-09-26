@@ -24,6 +24,7 @@ public class Parser {
     private static final String TYPE_JOKE = "joke";
     private static final String TYPE_EXIT = "exit";
 
+    // TODO: CONSIDER USING PARAM_FIRST_WORD = 1
     private static final String[] ADD_PARAM_LIST = { "name:", "n:", "more:",
                                                     "m:", "due:", "d;",
                                                     "start:", "s:", "end:",
@@ -39,6 +40,8 @@ public class Parser {
                                                    TYPE_UNDO, TYPE_REDO,
                                                    TYPE_CLEAR, TYPE_JOKE,
                                                    TYPE_EXIT };
+
+    // ========== MAIN PARSE METHOD ==========//
 
     public static Command parse(String input) {
         // TODO: check command for errors
@@ -80,7 +83,7 @@ public class Parser {
                 return parseDone(commandItems);
 
             case TYPE_TODO:
-                return parseUndone(commandItems);
+                return parseTodo(commandItems);
 
             case TYPE_UNDO:
             case TYPE_REDO:
@@ -94,9 +97,28 @@ public class Parser {
         }
     }
 
-    private static Command parseUndone(String[] commandItems) {
-        // TODO Auto-generated method stub
-        return null;
+    // ========== INDIVIDUAL PARSE-COMMAND FUNCTIONS ==========//
+
+    private static Command parseTodo(String[] commandItems) {
+        ArrayList<TaskParam> todoFields = new ArrayList<TaskParam>();
+
+        try {
+            String firstWord = commandItems[1];
+            String firstWordLC = firstWord.toLowerCase();
+            if (firstWordLC.equals("last")) {
+                todoFields.add(new TaskParam("rangeType", firstWordLC));
+            } else if (isInteger(firstWord)) {
+                todoFields.add(new TaskParam("rangeType", "id"));
+                todoFields.add(new TaskParam("id", firstWord));
+            } else {
+                return new CommandOthers("error",
+                        "Invalid argument for todo");
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
+            return new CommandOthers("error", "No arguments for todo");
+        }
+
+        return new CommandTodo(todoFields);
     }
 
     private static Command parseDone(String[] commandItems) {
@@ -105,18 +127,68 @@ public class Parser {
     }
 
     private static Command parseUnblock(String[] commandItems) {
-        // TODO Auto-generated method stub
-        return null;
+        ArrayList<TaskParam> unblockFields = new ArrayList<TaskParam>();
+
+        try {
+            String firstWord = commandItems[1];
+            if (isInteger(firstWord)) {
+                unblockFields.add(new TaskParam("id", firstWord));
+            } else {
+                return new CommandOthers("error",
+                        "Invalid argument for unblock");
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
+            return new CommandOthers("error", "No arguments for unblock");
+        }
+
+        return new CommandUnblock(unblockFields);
     }
 
     private static Command parseBlock(String[] commandItems) {
-        // TODO Auto-generated method stub
-        return null;
+        ArrayList<TaskParam> blockFields = new ArrayList<TaskParam>();
+
+        // TODO: Consider date format (length 1, 2, 3?)
+        try {
+            /*String firstWord = commandItems[1];
+            String firstWordLC = firstWord.toLowerCase();
+            if (isDate(firstWord)) {
+                blockFields.add(new TaskParam("rangeType", firstWordLC));
+            } else if (isInteger(firstWord)) {
+                blockFields.add(new TaskParam("rangeType", "id"));
+                blockFields.add(new TaskParam("id", firstWord));
+            } else {
+                return new CommandOthers("error",
+                        "Invalid argument for block");
+            }*/
+        } catch (ArrayIndexOutOfBoundsException e) {
+            return new CommandOthers("error", "No arguments for block");
+        }
+
+        return new CommandBlock(blockFields);
     }
 
     private static Command parseDisplay(String[] commandItems) {
-        // TODO Auto-generated method stub
-        return null;
+        ArrayList<TaskParam> displayFields = new ArrayList<TaskParam>();
+
+        // CONSIDER: No arguments "display"?
+        // TODO: MERGE DISPLAY, DELETE, RESTORE?
+        try {
+            String firstWord = commandItems[1];
+            String firstWordLC = firstWord.toLowerCase();
+            if (firstWordLC.equals("all") || firstWordLC.equals("block")) {
+                displayFields.add(new TaskParam("rangeType", firstWordLC));
+            } else if (isInteger(firstWord)) {
+                displayFields.add(new TaskParam("rangeType", "id"));
+                displayFields.add(new TaskParam("id", firstWord));
+            } else {
+                return new CommandOthers("error",
+                        "Invalid argument for display");
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
+            return new CommandOthers("error", "No arguments for display");
+        }
+
+        return new CommandDisplay(displayFields);
     }
 
     private static Command parseSearch(String[] commandItems) {
@@ -125,8 +197,25 @@ public class Parser {
     }
 
     private static Command parseRestore(String[] commandItems) {
-        // TODO Auto-generated method stub
-        return null;
+        ArrayList<TaskParam> restoreFields = new ArrayList<TaskParam>();
+
+        try {
+            String firstWord = commandItems[1];
+            if (firstWord.toLowerCase().equals("all")) {
+                restoreFields.add(new TaskParam("rangeType", firstWord
+                        .toLowerCase()));
+            } else if (isInteger(firstWord)) {
+                restoreFields.add(new TaskParam("rangeType", "id"));
+                restoreFields.add(new TaskParam("id", firstWord));
+            } else {
+                return new CommandOthers("error",
+                        "Invalid argument for restore");
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
+            return new CommandOthers("error", "No arguments for restore");
+        }
+
+        return new CommandRestore(restoreFields);
     }
 
     private static Command parseDelete(String[] commandItems) {
@@ -135,7 +224,8 @@ public class Parser {
         try {
             String firstWord = commandItems[1];
             if (isDeleteParamName(firstWord.toLowerCase())) {
-                deleteFields.add(new TaskParam("rangeType", firstWord.toLowerCase()));
+                deleteFields.add(new TaskParam("rangeType", firstWord
+                        .toLowerCase()));
             } else if (isInteger(firstWord)) {
                 deleteFields.add(new TaskParam("rangeType", "id"));
                 deleteFields.add(new TaskParam("id", firstWord));
@@ -170,6 +260,7 @@ public class Parser {
 
         String id;
 
+        // TODO: Check "edit <id>" with no parameters
         if (commandItems.length > 1 && isInteger(commandItems[1])) {
             id = commandItems[1];
             editFields.add(new TaskParam("id", id));
@@ -188,8 +279,7 @@ public class Parser {
             } else if (currField.equals("delete")) {
                 // if it's a delete
                 // check if it's a valid delete keyword (ignore otherwise)
-                if (Arrays.asList(EDIT_DEL_LIST)
-                        .contains(currWordLC)) {
+                if (Arrays.asList(EDIT_DEL_LIST).contains(currWordLC)) {
                     // if delete already has content
                     if (paramAlreadyFilled(parsed, currField)) {
                         // check for duplicate words (TODO: unnecessary?)
@@ -338,12 +428,14 @@ public class Parser {
         return word.startsWith("#") && (word.length() > 1);
     }
 
+    // ========== TASK PARSING METHODS ==========//
     public static Task parseRawText(String text) {
         String currField = "name";
         String[] textItems = text.trim().split(" ");
         String[] param = new String[] { "", "", "", "", "", "" };
         ArrayList<String> tags = new ArrayList<String>();
 
+        // Note: No support for shorthand
         for (int i = 0; i < textItems.length; i++) {
             String currWord = textItems[i];
             if (isAddParamName(currWord)) {
@@ -379,12 +471,12 @@ public class Parser {
             case "priority":
                 return 5;
             default:
-                System.out.println("rawparsing getParamIndex failure");
+                System.out.println("raw-parsing getParamIndex failure");
                 return -1;
         }
     }
-    
-    public static String tempTaskToString(Task task) {
+
+    private static String tempTaskToString(Task task) {
         String result = "\n[[ Task ]]";
         result = result.concat("\nName: " + task.getName());
         result = result.concat("\nMore: " + task.getMore());
@@ -396,16 +488,23 @@ public class Parser {
         return result;
     }
 
+    // ========== TESTING (TO REMOVE) ==========//
+
     public static void main(String[] args) {
+        // TODO: Test "\n" when input from command line
+
+        // TEST INVALID COMMAND
+        System.out.println(Parser.parse("that homework m: it's #cs2103"));
+
         // TEST ADD
         System.out
                 .println(Parser
                         .parse("add do homework m: it's #cs2103 cs2103 due: tomorrow end:"));
         System.out.println(Parser
                 .parse("add name: do do due: wednesday m: dead task\n"));
-        System.out
-                .println(Parser
-                        .parse("add name: do due: #cs2103 wed name: homework m: late start: priority: due: 9am end: now name: quickly\n"));
+        System.out.println(Parser
+                .parse("add name: do due: #cs2103 wed name: homework m: late "
+                       + "start: priority: due: 9am end: now name: quickly\n"));
         System.out.println(Parser.parse("add"));
 
         // TEST DELETE
@@ -426,19 +525,62 @@ public class Parser {
         System.out
                 .println(Parser
                         .parse("edit 1 ten twenty more: addmore start: #cs2103 #cs2103 end: due: tmr delete: name"));
-        System.out.println(Parser.parse("edit one two"));
-        System.out.println(Parser.parse("edit"));
         System.out.println(Parser
                 .parse("edit 2 delete: nil n: to: do: #cs2103 #cs2103"));
         System.out
                 .println(Parser
                         .parse("edit 3 delete: name name nil name name n: todo homework delete: name name"));
+        System.out.println(Parser.parse("edit one two"));
+        System.out.println(Parser.parse("edit"));
+        System.out.println(Parser.parse("edit 1"));
+
+        // TEST GET()
+        Command testEdit = Parser
+                .parse("edit 3 delete: name name nil name name n: todo homework delete: name name");
+        System.out.println("\n[[ Test get() ]]");
+        System.out.println("type: " + testEdit.getType());
+        System.out.println("error: " + testEdit.getError());
+        System.out.println("name: " + testEdit.get("name"));
+        System.out.println("tags: " + testEdit.getTags());
 
         // TEST RAW PARSE
         System.out
                 .println(tempTaskToString(Parser
                         .parseRawText("nAme: do Due: #cs2103 wed namE: homework M: late "
                                       + "start: priority: due: 9am eNd: now name: quickly\n")));
+        
+        // TEST RESTORE
+        System.out.println(Parser.parse("restore all"));
+        System.out.println(Parser.parse("restore 2"));
+        System.out.println(Parser.parse("restore"));
+        System.out.println(Parser.parse("restore b"));
+        
+        // TEST DISPLAY
+        System.out.println(Parser.parse("display all"));
+        System.out.println(Parser.parse("display 2"));
+        System.out.println(Parser.parse("display block"));
+        System.out.println(Parser.parse("display"));
+        System.out.println(Parser.parse("display b"));
+        
+        // TEST OTHERS
+        System.out.println(Parser.parse("clear"));
+        System.out.println(Parser.parse("joke"));
+        System.out.println(Parser.parse("undo"));
+        System.out.println(Parser.parse("redo"));
+        System.out.println(Parser.parse("exit"));
+        
+        // TEST UNBLOCK
+        System.out.println(Parser.parse("unblock 2"));
+        System.out.println(Parser.parse("unblock 2 3"));
+        System.out.println(Parser.parse("unblock one"));
+        System.out.println(Parser.parse("unblock"));
+        
+        // TEST TODO
+        System.out.println(Parser.parse("todo 1"));
+        System.out.println(Parser.parse("todo 1 3"));
+        System.out.println(Parser.parse("todo lAst"));
+        System.out.println(Parser.parse("todo one"));
+        System.out.println(Parser.parse("tODo"));
 
     }
 
