@@ -318,7 +318,10 @@ public class Processor {
 		try {
 			switch(backwardCommand.getType()) {
 				case ADD:
-					//delete using last added ID;
+					Task toDelete = file.getToDoTasks().get(file.getToDoTasks().size() - 1);
+					if (toDelete != null) {
+						file.deleteTask(toDelete.getId());
+					}
 					break;
 				case EDIT:
 					Task prevTask = editedTask.pop();
