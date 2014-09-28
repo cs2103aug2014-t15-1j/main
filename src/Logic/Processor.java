@@ -122,7 +122,7 @@ public class Processor {
 		return false;
 	}
 
-	public Task updateTaskParameters(Command cmd, Task existingTask) {
+	private Task updateTaskParameters(Command cmd, Task existingTask) {
 		Task task = new Task(existingTask.getName(), existingTask.getMore(), existingTask.getDue(), existingTask.getStart(), existingTask.getEnd(), existingTask.getPriority(), existingTask.getTags());
 		//Store updatedTask to storage	
 		if (cmd.get("name") != null) {
@@ -205,7 +205,7 @@ public class Processor {
 		return true;
 	}
 
-	public void restoreUsingId(Command cmd, ArrayList<Task> tasks)
+	private void restoreUsingId(Command cmd, ArrayList<Task> tasks)
 			throws IOException {
 		for (Task t: file.getDeletedTasks()) {
 			if (t.getId() == Integer.parseInt(cmd.get("id"))) {
@@ -217,7 +217,7 @@ public class Processor {
 		}
 	}
 
-	public void restoreAll(ArrayList<Task> tasks) throws IOException {
+	private void restoreAll(ArrayList<Task> tasks) throws IOException {
 		for (Task t: file.getDeletedTasks()) {
 			tasks.add(t);
 			file.getDeletedTasks().remove(t);
@@ -358,7 +358,7 @@ public class Processor {
 		return true;
 	}
 
-	public void copyTaskParameters(Task prevTask, Task existingTask) {
+	private void copyTaskParameters(Task prevTask, Task existingTask) {
 		existingTask.setName(prevTask.getName());
 		existingTask.setMore(prevTask.getMore());
 		existingTask.setDue(prevTask.getDue());
