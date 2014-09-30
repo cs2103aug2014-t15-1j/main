@@ -2,7 +2,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
@@ -39,18 +39,16 @@ public class MainScreen {
         GridData gridData = new GridData(GridData.FILL_BOTH);
         gridData.widthHint = MIN_WIDTH_SCREEN;
         gridData.heightHint = MIN_HEIGHT_SCREEN;
+        gridData.verticalSpan = 2;
         displayScreen.setLayoutData(gridData);
         displayScreen.setText(MESSAGE_WELCOME);
 
-        Group taskPaneGroup = new Group(shell, SWT.NULL);
-        taskPaneGroup.setText(TASK_PANE_LABEL);
-        layout = new GridLayout();
-        gridData = new GridData(GridData.FILL_BOTH);
-        gridData.widthHint = MIN_WIDTH_SCREEN;
-        gridData.heightHint = MIN_HEIGHT_SCREEN;
-        taskPaneGroup.setLayout(layout);
+        Label taskPaneLabel = new Label(shell, SWT.NULL);
+        taskPaneLabel.setText(TASK_PANE_LABEL);
+        gridData = new GridData(GridData.HORIZONTAL_ALIGN_CENTER);
+        taskPaneLabel.setLayoutData(gridData);
 
-        Text upcomingTasks = new Text(taskPaneGroup, SWT.MULTI | SWT.READ_ONLY
+        Text upcomingTasks = new Text(shell, SWT.MULTI | SWT.READ_ONLY
                 | SWT.BORDER);
         gridData = new GridData(GridData.FILL_BOTH);
         upcomingTasks.setLayoutData(gridData);
