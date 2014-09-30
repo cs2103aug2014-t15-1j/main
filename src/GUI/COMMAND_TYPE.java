@@ -1,4 +1,4 @@
-public enum CommandType {
+public enum COMMAND_TYPE {
     HELP("help"), ADD("add"), EDIT("edit"), DELETE("delete"), RESTORE("restore"), SEARCH(
             "search"), DISPLAY("display"), BLOCK("block"), UNBLOCK("unblock"), DONE(
             "done"), TODO("todo"), UNDO("undo"), REDO("redo"), CLEAR("clear"), JOKE(
@@ -6,7 +6,7 @@ public enum CommandType {
 
     private String command;
 
-    private CommandType(final String command) {
+    private COMMAND_TYPE(final String command) {
         this.command = command;
     }
 
