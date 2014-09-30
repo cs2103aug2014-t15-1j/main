@@ -330,6 +330,7 @@ public class Parser {
     private static Command parseHelp(String[] commandItems) {
         String helpField = null;
 
+        // TODO: change CommandHelp to process "invalid" as Command.ERROR?
         if (commandItems.length > 1) {
             if (isHelpParam(commandItems[1])) {
                 helpField = commandItems[1].toLowerCase();

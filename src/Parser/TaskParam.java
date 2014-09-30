@@ -16,24 +16,26 @@ public class TaskParam {
     public String getField() {
         return field;
     }
-    
+
     public void addToField(String str) {
-        if (field.length()>0) {
-            this.field = this.field.concat(" " + str.trim());
-        } else {
-            this.field = str.trim();
+        if (str.length() > 0) {
+            if (field.length() > 0) {
+                this.field = this.field.concat(" " + str.trim());
+            } else {
+                this.field = str.trim();
+            }
         }
     }
-    
+
     public String toString() {
         return "[ " + name + " // " + field + " ]";
     }
-    
+
     public boolean equals(Object obj) {
         if (obj == this) {
             return true;
         }
-        
+
         if (obj == null || (obj.getClass() != this.getClass())) {
             return false;
         }
@@ -41,5 +43,5 @@ public class TaskParam {
         TaskParam param = (TaskParam) obj;
         return name.equals(param.getName()) && field.equals(param.getField());
     }
-    
+
 }
