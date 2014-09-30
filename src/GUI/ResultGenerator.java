@@ -1,5 +1,7 @@
 import java.util.ArrayList;
 
+import org.eclipse.swt.internal.C;
+
 public class ResultGenerator {
 
     private static final String LINE_SEPARATOR = System
@@ -20,8 +22,8 @@ public class ResultGenerator {
 
     // to be implement later SUCESSFUL: Block, Unblock, Help
 
-    private static final String CODE_CLEAR = "clear";
-    private static final String CODE_EXIT = "exit";
+    private static final String CODE_CLEAR = " clear";
+    private static final String CODE_EXIT = " exit";
     private static final String UNSUCESSFUL_SEARCH_MESSAGE = "We could not find any results :( Try using different words?";
     private static final String ERROR_COMMAND_MESSAGE = "Opps! Looks like we could not process your command.";
 
@@ -33,8 +35,7 @@ public class ResultGenerator {
         return message;
     }
 
-    public static String getResultMessage(COMMAND_TYPE commandDone,
-            Result result) {
+    public static String getResultMessage(CommandType commandDone, Result result) {
         ArrayList<Task> tasks = result.getTasks();
         switch (commandDone) {
             case ADD :
@@ -43,6 +44,8 @@ public class ResultGenerator {
                 return SUCESSFUL_DELETE;
             case EDIT :
                 return singleLineSuccessMessage(SUCESSFUL_EDIT, tasks);
+            case DISPLAY :
+                return sucessfulDisplayMessage(tasks);
             case SEARCH :
                 return successfulSearchMessage(tasks);
             case RESTORE :
@@ -77,10 +80,16 @@ public class ResultGenerator {
         }
         String successMessage = String.format(SUCESSFUL_SEARCH,
                 numOfSearchResults) + LINE_SEPARATOR;
-        ArrayList<String> searchResultsList = changeTaskListToString(tasks,
-                numOfSearchResults);
-        successMessage = successMessage
-                + changeStringListToString(searchResultsList);
+        String stringOfSearchResults = sucessfulDisplayMessage(tasks);
+        successMessage = successMessage + stringOfSearchResults;
+        return successMessage;
+    }
+
+    public static String sucessfulDisplayMessage(ArrayList<Task> tasks) {
+        int itemsToDisplay = tasks.size();
+        ArrayList<String> displayList = changeTaskListToString(tasks,
+                itemsToDisplay);
+        String successMessage = changeStringListToString(displayList);
         return successMessage;
     }
 
