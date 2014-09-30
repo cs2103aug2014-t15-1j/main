@@ -491,6 +491,7 @@ public class Parser {
 
     // ========== TESTING (TO REMOVE) ==========//
 
+    /*
     public static void main(String[] args) {
         // TODO: Test "\n" when input from command line
 
@@ -583,6 +584,6 @@ public class Parser {
         System.out.println(Parser.parse("todo one"));
         System.out.println(Parser.parse("tODo"));
 
-    }
+    }*/
 
 }

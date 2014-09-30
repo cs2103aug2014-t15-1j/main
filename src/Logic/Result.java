@@ -1,6 +1,7 @@
 package Logic;
 
 import java.util.ArrayList;
+
 import Storage.Task;
 
 public class Result {

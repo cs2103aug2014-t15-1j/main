@@ -1,6 +1,12 @@
+package GUI;
+
+import java.io.IOException;
 import java.util.ArrayList;
 
-import org.eclipse.swt.internal.C;
+import Logic.CommandType;
+import Logic.Processor;
+import Logic.Result;
+import Storage.Task;
 
 public class ResultGenerator {
 
@@ -27,10 +33,10 @@ public class ResultGenerator {
     private static final String UNSUCESSFUL_SEARCH_MESSAGE = "We could not find any results :( Try using different words?";
     private static final String ERROR_COMMAND_MESSAGE = "Opps! Looks like we could not process your command.";
 
-    public static String sendInput(String userInput) {
+    public static String sendInput(String userInput) throws IOException {
         Processor processor = new Processor();
         Result result = processor.processInput(userInput);
-        COMMAND_TYPE commandDone = result.getCmdExecuted();
+        CommandType commandDone = result.cmdExecuted();
         String message = getResultMessage(commandDone, result);
         return message;
     }
