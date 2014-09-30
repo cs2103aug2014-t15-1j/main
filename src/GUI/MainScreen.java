@@ -13,7 +13,10 @@ public class MainScreen extends Composite {
 
     private static final int TASK_PANE_WIDTH = 10;
     private static final int TWO_COLUMNS = 2;
-    private static final String MESSAGE_WELCOME = "Welcome to Haystack!%nEnter “help” for more information.";
+    private static final String LINE_SEPERATOR = System
+            .getProperty("line.separator");
+    private static final String MESSAGE_WELCOME = "Welcome to Haystack!"
+            + LINE_SEPERATOR + "Enter “help” for more information.";
     private static final String MESSAGE_TYPE_HERE = "Type commands here. Press Enter when done.";
     private static final String MESSAGE_UPCOMING_TASKS = "Upcoming tasks:";
 
@@ -49,6 +52,7 @@ public class MainScreen extends Composite {
 
         taskPane.setLayoutData(taskPaneLayout);
         taskPane.setText(MESSAGE_UPCOMING_TASKS);
+        --taskPane.setBounds(10, 10, 100, 100);
 
         Text userInputBox = new Text(this, SWT.BORDER);
         GridData inputBoxLayout = new GridData();
@@ -64,6 +68,11 @@ public class MainScreen extends Composite {
                 if (event.detail == SWT.TRAVERSE_RETURN) {
                     // To get user input and call another class
                     // get output and print to screen
+                    System.out.println("Enter is pressed");
+                    String input = ((Text) event.widget).getText();
+                    System.out.println(input);
+
+                    String output = ResultGenerator.sendInput(input);
                 }
             }
         });
