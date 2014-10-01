@@ -40,8 +40,7 @@ public class DataFile {
         Scanner scanner = new Scanner(file);
         while (scanner.hasNextLine()) {
             String unparsedText = scanner.nextLine();
-            String parsedText = Parser.parseRawText(unparsedText);
-            Task newTask = magic(parsedText); //TODO
+            Task newTask = Parser.parseRawText(unparsedText);
             if (newTask.isDeleted()) {
                 deletedTasks.add(newTask);
             } else if (newTask.isDone()) {
@@ -50,6 +49,7 @@ public class DataFile {
                 toDoTasks.add(newTask);
             }
         }
+        scanner.close();
     }
     
     public Task read(int id) {
@@ -94,14 +94,14 @@ public class DataFile {
     }
     
     public String changeToString(Task task) {
-        String stringifiedTask = "Name: " + task.getName();
-        stringifiedTask += "More: " + task.getMore();
-        stringifiedTask += "Due: " + task.getDue();
-        stringifiedTask += "Start: " + task.getStart();
-        stringifiedTask += "End: " + task.getEnd();
-        stringifiedTask += "Priority: " + task.getPriority();
+        String stringifiedTask = "n: " + task.getName();
+        stringifiedTask += "m: " + task.getMore();
+        stringifiedTask += "d: " + task.getDue();
+        stringifiedTask += "s: " + task.getStart();
+        stringifiedTask += "e: " + task.getEnd();
+        stringifiedTask += "p: " + task.getPriority();
         stringifiedTask += task.getTags();
-        stringifiedTask += task.isDone() ? "#Done" : "#To Do";
+        stringifiedTask += task.isDone() ? "#done" : "#todo";
         
         return stringifiedTask;
     }
