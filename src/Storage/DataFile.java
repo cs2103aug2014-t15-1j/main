@@ -10,9 +10,9 @@ import java.util.Scanner;
 import Parser.Parser;
 
 public class DataFile {
-    private static ArrayList<Task> toDoTasks;
-    private static ArrayList<Task> doneTasks;
-    private static ArrayList<Task> deletedTasks;
+    private static ArrayList<Task> toDoTasks = new ArrayList<Task>();
+    private static ArrayList<Task> doneTasks = new ArrayList<Task>();
+    private static ArrayList<Task> deletedTasks = new ArrayList<Task>();
     
     public ArrayList<Task> getToDoTasks() {
         return toDoTasks;
@@ -94,14 +94,14 @@ public class DataFile {
     }
     
     public String changeToString(Task task) {
-        String stringifiedTask = "n: " + task.getName();
-        stringifiedTask += "m: " + task.getMore();
-        stringifiedTask += "d: " + task.getDue();
-        stringifiedTask += "s: " + task.getStart();
-        stringifiedTask += "e: " + task.getEnd();
-        stringifiedTask += "p: " + task.getPriority();
+        String stringifiedTask = "Name: " + task.getName();
+        stringifiedTask += "More: " + task.getMore();
+        stringifiedTask += "Due: " + task.getDue();
+        stringifiedTask += "Start: " + task.getStart();
+        stringifiedTask += "End: " + task.getEnd();
+        stringifiedTask += "Priority: " + task.getPriority();
         stringifiedTask += task.getTags();
-        stringifiedTask += task.isDone() ? "#done" : "#todo";
+        stringifiedTask += task.isDone() ? "#Done" : "#ToDo";
         
         return stringifiedTask;
     }
