@@ -1,12 +1,6 @@
 package GUI;
 
-import java.io.IOException;
 import java.util.ArrayList;
-
-import Logic.CommandType;
-import Logic.Processor;
-import Logic.Result;
-import Storage.Task;
 
 public class ResultGenerator {
 
@@ -23,8 +17,9 @@ public class ResultGenerator {
     private static final String SUCESSFUL_RESTORE = "Sucessfully restored!";
     private static final String SUCESSFUL_JOKE = "There are three kinds of people. Those who can count, and those who cannot."
             + LINE_SEPARATOR + "- Unknown";
-    private static final String SUCESSFUL_EXIT = "The journey of a thousand miles begins with a single step."
-            + LINE_SEPARATOR + "- Lao Tzu" + LINE_SEPARATOR + "GoodBye! :)";
+    // private static final String SUCESSFUL_EXIT =
+    // "The journey of a thousand miles begins with a single step."
+    // + LINE_SEPARATOR + "- Lao Tzu" + LINE_SEPARATOR + "GoodBye! :)";
 
     // to be implement later SUCESSFUL: Block, Unblock, Help
 
@@ -33,15 +28,16 @@ public class ResultGenerator {
     private static final String UNSUCESSFUL_SEARCH_MESSAGE = "We could not find any results :( Try using different words?";
     private static final String ERROR_COMMAND_MESSAGE = "Opps! Looks like we could not process your command.";
 
-    public static String sendInput(String userInput) throws IOException {
+    public static String sendInput(String userInput) {
         Processor processor = new Processor();
         Result result = processor.processInput(userInput);
-        CommandType commandDone = result.cmdExecuted();
+        COMMAND_TYPE commandDone = result.getCmdExecuted();
         String message = getResultMessage(commandDone, result);
         return message;
     }
 
-    public static String getResultMessage(CommandType commandDone, Result result) {
+    public static String getResultMessage(COMMAND_TYPE commandDone,
+            Result result) {
         ArrayList<Task> tasks = result.getTasks();
         switch (commandDone) {
             case ADD :
@@ -64,7 +60,7 @@ public class ResultGenerator {
                 return CODE_CLEAR;
             case EXIT :
                 // to be changed
-                return SUCESSFUL_EXIT + CODE_EXIT;
+                return CODE_EXIT;
             default :
                 return ERROR_COMMAND_MESSAGE;
         }

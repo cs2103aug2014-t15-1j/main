@@ -1,7 +1,5 @@
 package GUI;
 
-import java.io.IOException;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -13,24 +11,17 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 public class MainScreen {
-    /**
-     * private static final int TASK_PANE_WIDTH = 10; private static final int
-     * TWO_COLUMNS = 2; private static final String LINE_SEPERATOR = System
-     * .getProperty("line.separator"); private static final String
-     * MESSAGE_WELCOME = "Welcome to Haystack!" + LINE_SEPERATOR +
-     * "Enter “help” for more information."; private static final String
-     * MESSAGE_TYPE_HERE = "Type commands here. Press Enter when done."; private
-     * static final String MESSAGE_UPCOMING_TASKS = "Upcoming tasks:";
-     **/
+    // implement: task pane expansion, add upcoming tasks, add colour to screen,
+    // change font type, add scroll bar
+    // add haystack icon, ASCII picture
     protected static final String LINE_SEPARATOR = System
             .getProperty("line.separator");
-    private static final String MESSAGE_WELCOME = "Welcome to Haystack!" +
-                                                  LINE_SEPARATOR +
-                                                  "Enter “help” for more information.";
+    private static final String MESSAGE_WELCOME = "Welcome to Haystack!"
+            + LINE_SEPARATOR + "Enter “help” for more information.";
     private static final String PROGRAM_NAME = "HayStack";
     private static final String TASK_PANE_LABEL = "Upcoming Tasks";
-    private static final int MIN_WIDTH_SCREEN = 800;
-    private static final int MIN_HEIGHT_SCREEN = 700;
+    private static final int MIN_WIDTH_SCREEN = 600;
+    private static final int MIN_HEIGHT_SCREEN = 500;
 
     private static String CODE_CLEAR = " clear";
     private static String CODE_EXIT = " exit";
@@ -49,22 +40,14 @@ public class MainScreen {
         commandLine.addListener(SWT.DefaultSelection, new Listener() {
             public void handleEvent(Event e) {
                 String input = commandLine.getText();
-                String output;
-                try {
-                    output = ResultGenerator.sendInput(input);
+                String output = ResultGenerator.sendInput(input);
 
-                    if (output.endsWith(CODE_CLEAR)) {
-                        clearScreen(displayScreen);
-                    } else if (output.endsWith(CODE_EXIT)) {
-                        Exit(output, displayScreen);
-                    } else {
-                        displayScreen.append(LINE_SEPARATOR + output);
-                    }
-                } catch (IOException e1) {
-                    // TODO Auto-generated catch block
-                    e1.printStackTrace();
-                }
-
+                if (output.endsWith(CODE_CLEAR)) {
+                    clearScreen(displayScreen);
+                } else if (output.equals(CODE_EXIT)) {
+                    Exit(output, displayScreen);
+                } else
+                    displayScreen.append(LINE_SEPARATOR + output);
             }
         });
 
@@ -79,19 +62,11 @@ public class MainScreen {
     }
 
     private static void Exit(String output, Text displayScreen) {
-        String toWrite = removeLastWord(output);
-        displayScreen.append(toWrite);
         System.exit(0);
     }
 
     private static void clearScreen(Text displayScreen) {
         displayScreen.setText("");
-    }
-
-    private static String removeLastWord(String line) {
-        int lastWord = line.lastIndexOf(" ");
-        String lineWithoutLastWord = line.substring(0, lastWord);
-        return lineWithoutLastWord;
     }
 
     private static Text setUp(Shell shell) {
@@ -102,8 +77,8 @@ public class MainScreen {
         gridData = new GridData(GridData.HORIZONTAL_ALIGN_CENTER);
         taskPaneLabel.setLayoutData(gridData);
 
-        Text upcomingTasks = new Text(shell, SWT.MULTI | SWT.READ_ONLY |
-                                             SWT.BORDER);
+        Text upcomingTasks = new Text(shell, SWT.MULTI | SWT.READ_ONLY
+                | SWT.BORDER);
         gridData = new GridData(GridData.FILL_BOTH);
         upcomingTasks.setLayoutData(gridData);
         upcomingTasks.setBounds(10, 10, 100, 100);
@@ -116,8 +91,8 @@ public class MainScreen {
     }
 
     private static Text setUpDisplay(Shell shell) {
-        Text displayScreen = new Text(shell, SWT.MULTI | SWT.BORDER |
-                                             SWT.READ_ONLY);
+        Text displayScreen = new Text(shell, SWT.MULTI | SWT.BORDER
+                | SWT.READ_ONLY);
         GridData gridData = new GridData(GridData.FILL_BOTH);
         gridData.widthHint = MIN_WIDTH_SCREEN;
         gridData.heightHint = MIN_HEIGHT_SCREEN;
