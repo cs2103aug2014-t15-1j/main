@@ -60,26 +60,22 @@ public class DataFile {
         }
     }
     
-    // TODO refactor functions into one single function?
     public Task read(int id) {
-        for (int i = 0; i < toDoTasks.size(); i++) {
-            if (toDoTasks.get(i).getId() == id) {
-                return toDoTasks.get(i);
-            }
+        Task foundTask = searchForId(toDoTasks, id);
+        if (foundTask != null) {
+            return foundTask;
         }
-        for (int i = 0; i < doneTasks.size(); i++) {
-            if (doneTasks.get(i).getId() == id) {
-                return doneTasks.get(i);
-            }
+        foundTask = searchForId(doneTasks, id);
+        if (foundTask != null) {
+            return foundTask;
         }
-        for (int i = 0; i < deletedTasks.size(); i++) {
-            if (deletedTasks.get(i).getId() == id) {
-                return deletedTasks.get(i);
-            }
+        foundTask = searchForId(deletedTasks, id);
+        if (foundTask != null) {
+            return foundTask;
         }
         return null;    // If not found
     }
-    /*
+    
     private Task searchForId(ArrayList<Task> tasks, int id) {
         for (int i = 0; i < tasks.size(); i++) {
             if (tasks.get(i).getId() == id) {
@@ -88,7 +84,7 @@ public class DataFile {
         }
         return null;
     }
-    */
+    
     
     // Used when adding a new task
     public boolean write(Task task) {
