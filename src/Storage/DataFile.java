@@ -101,13 +101,13 @@ public class DataFile {
     }
     
     public String changeToString(Task task) {
-        String stringifiedTask = "Name: " + task.getName();
-        stringifiedTask += "More: " + task.getMore();
-        stringifiedTask += "Due: " + task.getDue();
-        stringifiedTask += "Start: " + task.getStart();
-        stringifiedTask += "End: " + task.getEnd();
-        stringifiedTask += "Priority: " + task.getPriority();
-        stringifiedTask += task.getTags();
+        String stringifiedTask = "Name: " + task.getName() + " ";
+        stringifiedTask += "More: " + task.getMore() + " ";
+        stringifiedTask += "Due: " + task.getDue() + " ";
+        stringifiedTask += "Start: " + task.getStart() + " ";
+        stringifiedTask += "End: " + task.getEnd() + " ";
+        stringifiedTask += "Priority: " + task.getPriority() + " ";
+        stringifiedTask += task.getTags() + " ";
         stringifiedTask += task.isDone() ? "#Done" : "#ToDo";
         
         return stringifiedTask;
