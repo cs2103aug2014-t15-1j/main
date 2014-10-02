@@ -93,15 +93,14 @@ public class DataFile {
         } else {
             doneTasks.add(task);
         }
-        updateFile();
-        return true;
+        return updateFile();
     }
 
-    private void updateFile() {
+    private boolean updateFile() {
         // To write to file
         // Deleted tasks are not written to file
         String newFileText = stringifyToDoAndDoneTasks();
-        writeToFile(newFileText);
+        return writeToFile(newFileText);
     }
 
     private String stringifyToDoAndDoneTasks() {
@@ -117,7 +116,7 @@ public class DataFile {
         return text;
     }
 
-    private void writeToFile(String newFileText) {
+    private boolean writeToFile(String newFileText) {
         try {
             File file = new File(FILENAME);
             if(!file.exists()) {
@@ -127,10 +126,17 @@ public class DataFile {
             FileWriter newFile = new FileWriter(file, false);
             newFile.write(newFileText);
             newFile.close();
+            return true;
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+            return false;
         }
+    }
+    
+    // TODO
+    public boolean edit(int id) {
+        return true;
     }
     
     public boolean deleteTask(int id) {
