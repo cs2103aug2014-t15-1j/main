@@ -10,6 +10,9 @@ import java.util.Scanner;
 import Parser.Parser;
 
 public class DataFile {
+    
+    final private static String FILENAME = "Data";
+    
     private static ArrayList<Task> toDoTasks = new ArrayList<Task>();
     private static ArrayList<Task> doneTasks = new ArrayList<Task>();
     private static ArrayList<Task> deletedTasks = new ArrayList<Task>();
@@ -27,8 +30,7 @@ public class DataFile {
     }
     
     public void initialize() throws FileNotFoundException, IOException {
-        final String filename = "Data";
-        File file = new File(filename);
+        File file = new File(FILENAME);
         if(file.exists()) {
             getTasksFromFile(file);
         } else {
@@ -69,35 +71,62 @@ public class DataFile {
         }
         return null;    // If not found
     }
+    /*
+    private Task searchForId(ArrayList<Task> tasks, int id) {
+        for (int i = 0; i < tasks.size(); i++) {
+            if (tasks.get(i).getId() == id) {
+                return tasks.get(i);
+            }
+        }
+        return null;
+    }
+    */
     
-    public boolean write(Task task) throws IOException {
+    // Used when adding a new task
+    public boolean write(Task task) {
         if (!task.isDone()) {
             toDoTasks.add(task);
         } else {
             doneTasks.add(task);
         }
-        String newFileText = ""; // To write to file
-        
+        updateFile();
+        return true;
+    }
+
+    private void updateFile() {
+        // To write to file
+        // Deleted tasks are not written to file
+        String newFileText = stringifyToDoAndDoneTasks();
+        writeToFile(newFileText);
+    }
+
+    private String stringifyToDoAndDoneTasks() {
+        String text = ""; 
         for (int i = 0; i < toDoTasks.size(); i++) {
             Task currentTask = toDoTasks.get(i);
-            newFileText += changeToString(currentTask) + "\n";
+            text += changeToString(currentTask) + "\n";
         }
-        
         for (int i = 0; i < doneTasks.size(); i++) {
             Task currentTask = doneTasks.get(i);
-            newFileText += changeToString(currentTask) + "\n";
+            text += changeToString(currentTask) + "\n";
         }
-        
-        final String FILENAME = "Data";
-        File file = new File(FILENAME);
-        if(!file.exists()) {
-            file.createNewFile();
+        return text;
+    }
+
+    private void writeToFile(String newFileText) {
+        try {
+            File file = new File(FILENAME);
+            if(!file.exists()) {
+                file.createNewFile();
+            }
+            
+            FileWriter newFile = new FileWriter(file, false);
+            newFile.write(newFileText);
+            newFile.close();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
-        
-        FileWriter newFile = new FileWriter(file, false);
-        newFile.write(newFileText);
-        newFile.close();
-        return true;
     }
     
     public String changeToString(Task task) {
