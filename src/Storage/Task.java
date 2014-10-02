@@ -31,6 +31,19 @@ public class Task {
         this.tags = tags;
     }
     
+    public String stringify() {
+        String stringifiedTask = "Name: " + name + " ";
+        stringifiedTask += "More: " + more + " ";
+        stringifiedTask += "Due: " + due + " ";
+        stringifiedTask += "Start: " + start + " ";
+        stringifiedTask += "End: " + end + " ";
+        stringifiedTask += "Priority: " + priority + " ";
+        stringifiedTask += tags + " "; // TODO ArrayList to string
+        stringifiedTask += done ? "#Done" : "#ToDo";
+        
+        return stringifiedTask;
+    }
+    
     //===== Getters and setters =====//
     
     // Getters
