@@ -20,39 +20,47 @@ public class DataFile {
     public ArrayList<Task> getToDoTasks() {
         return toDoTasks;
     }
-    
     public ArrayList<Task> getDoneTasks() {
         return doneTasks;
     }
-    
     public ArrayList<Task> getDeletedTasks() {
         return deletedTasks;
     }
     
-    public void initialize() throws FileNotFoundException, IOException {
+    public void initialize() {
         File file = new File(FILENAME);
         if(file.exists()) {
             getTasksFromFile(file);
         } else {
-            file.createNewFile();
-        }
-    }
-    
-    private void getTasksFromFile(File file) throws FileNotFoundException {
-        Scanner scanner = new Scanner(file);
-        while (scanner.hasNextLine()) {
-            String unparsedText = scanner.nextLine();
-            Task newTask = Parser.parseRawText(unparsedText);
-            if (!newTask.isDone()) { // Branch predictor at work here
-                toDoTasks.add(newTask);
-            } else {
-                doneTasks.add(newTask);
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
             }
         }
-        scanner.close();
     }
     
-    // TODO refactor functions into one single function
+    private void getTasksFromFile(File file) {
+        try {
+            Scanner scanner = new Scanner(file);
+            while (scanner.hasNextLine()) {
+                String unparsedText = scanner.nextLine();
+                Task newTask = Parser.parseRawText(unparsedText);
+                if (!newTask.isDone()) { // Branch predictor at work here
+                    toDoTasks.add(newTask);
+                } else {
+                    doneTasks.add(newTask);
+                }
+            }
+            scanner.close();
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+    
+    // TODO refactor functions into one single function?
     public Task read(int id) {
         for (int i = 0; i < toDoTasks.size(); i++) {
             if (toDoTasks.get(i).getId() == id) {
@@ -129,6 +137,7 @@ public class DataFile {
         }
     }
     
+    // TODO shift over to Task.java
     public String changeToString(Task task) {
         String stringifiedTask = "Name: " + task.getName() + " ";
         stringifiedTask += "More: " + task.getMore() + " ";
@@ -149,6 +158,7 @@ public class DataFile {
                 currentTask.setDeleted(true);
                 toDoTasks.remove(i);
                 deletedTasks.add(currentTask);
+                updateFile();
                 return true;
             }
         }
@@ -159,6 +169,7 @@ public class DataFile {
                 currentTask.setDeleted(true);
                 doneTasks.remove(i);
                 deletedTasks.add(currentTask);
+                updateFile();
                 return true;
             }
         }
