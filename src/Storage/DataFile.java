@@ -112,11 +112,11 @@ public class DataFile {
         String text = ""; 
         for (int i = 0; i < toDoTasks.size(); i++) {
             Task currentTask = toDoTasks.get(i);
-            text += changeToString(currentTask) + "\n";
+            text += currentTask.stringify() + "\n";
         }
         for (int i = 0; i < doneTasks.size(); i++) {
             Task currentTask = doneTasks.get(i);
-            text += changeToString(currentTask) + "\n";
+            text += currentTask.stringify() + "\n";
         }
         return text;
     }
@@ -135,20 +135,6 @@ public class DataFile {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-    }
-    
-    // TODO shift over to Task.java
-    public String changeToString(Task task) {
-        String stringifiedTask = "Name: " + task.getName() + " ";
-        stringifiedTask += "More: " + task.getMore() + " ";
-        stringifiedTask += "Due: " + task.getDue() + " ";
-        stringifiedTask += "Start: " + task.getStart() + " ";
-        stringifiedTask += "End: " + task.getEnd() + " ";
-        stringifiedTask += "Priority: " + task.getPriority() + " ";
-        stringifiedTask += task.getTags() + " ";
-        stringifiedTask += task.isDone() ? "#Done" : "#ToDo";
-        
-        return stringifiedTask;
     }
     
     public boolean deleteTask(int id) {
