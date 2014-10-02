@@ -7,6 +7,7 @@ import Storage.Task;
 
 public class Parser {
 
+    private static final String TYPE_ALL = "all";
     private static final String TYPE_HELP = "help";
     private static final String TYPE_ADD = "add";
     private static final String TYPE_EDIT = "edit";
@@ -32,7 +33,7 @@ public class Parser {
     private static final String[] EDIT_DEL_LIST = { "name", "n", "more", "m",
                                                    "due", "d", "start", "s",
                                                    "end", "e", "priority", "p" };
-    private static final String[] HELP_CMD_LIST = { "all", TYPE_ADD, TYPE_EDIT,
+    private static final String[] HELP_CMD_LIST = { TYPE_ALL, TYPE_ADD, TYPE_EDIT,
                                                    TYPE_DELETE, TYPE_RESTORE,
                                                    TYPE_SEARCH, TYPE_DISPLAY,
                                                    TYPE_BLOCK, TYPE_UNBLOCK,
