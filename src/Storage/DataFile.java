@@ -41,17 +41,16 @@ public class DataFile {
         while (scanner.hasNextLine()) {
             String unparsedText = scanner.nextLine();
             Task newTask = Parser.parseRawText(unparsedText);
-            if (newTask.isDeleted()) {
-                deletedTasks.add(newTask);
-            } else if (newTask.isDone()) {
-                doneTasks.add(newTask);
-            } else {
+            if (!newTask.isDone()) { // Branch predictor at work here
                 toDoTasks.add(newTask);
+            } else {
+                doneTasks.add(newTask);
             }
         }
         scanner.close();
     }
     
+    // TODO refactor functions into one single function
     public Task read(int id) {
         for (int i = 0; i < toDoTasks.size(); i++) {
             if (toDoTasks.get(i).getId() == id) {
@@ -68,21 +67,29 @@ public class DataFile {
                 return deletedTasks.get(i);
             }
         }
-        
         return null;    // If not found
     }
     
     public boolean write(Task task) throws IOException {
-        toDoTasks.add(task);
-        String newFileText = "";
+        if (!task.isDone()) {
+            toDoTasks.add(task);
+        } else {
+            doneTasks.add(task);
+        }
+        String newFileText = ""; // To write to file
         
         for (int i = 0; i < toDoTasks.size(); i++) {
             Task currentTask = toDoTasks.get(i);
             newFileText += changeToString(currentTask) + "\n";
         }
         
-        final String filename = "Data";
-        File file = new File(filename);
+        for (int i = 0; i < doneTasks.size(); i++) {
+            Task currentTask = doneTasks.get(i);
+            newFileText += changeToString(currentTask) + "\n";
+        }
+        
+        final String FILENAME = "Data";
+        File file = new File(FILENAME);
         if(!file.exists()) {
             file.createNewFile();
         }
@@ -111,6 +118,8 @@ public class DataFile {
             Task currentTask = toDoTasks.get(i); 
             if (currentTask.getId() == id) {
                 currentTask.setDeleted(true);
+                toDoTasks.remove(i);
+                deletedTasks.add(currentTask);
                 return true;
             }
         }
@@ -119,6 +128,8 @@ public class DataFile {
             Task currentTask = doneTasks.get(i); 
             if (currentTask.getId() == id) {
                 currentTask.setDeleted(true);
+                doneTasks.remove(i);
+                deletedTasks.add(currentTask);
                 return true;
             }
         }
