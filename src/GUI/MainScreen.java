@@ -42,7 +42,7 @@ public class MainScreen {
         commandLine.addListener(SWT.DefaultSelection, new Listener() {
             public void handleEvent(Event e) {
                 String input = commandLine.getText();
-                String output;
+                String output = "";
 				try {
 					output = ResultGenerator.sendInput(input);
 				} catch (IOException e1) {
