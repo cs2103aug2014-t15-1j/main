@@ -23,7 +23,7 @@ public class Result {
 		return success;
 	}
 	
-	public CommandType cmdExecuted() {
+	public CommandType getCmdExecuted() {
 		return cmdExecuted;
 	}
 	

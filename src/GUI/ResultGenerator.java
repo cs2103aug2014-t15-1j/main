@@ -1,6 +1,11 @@
 package GUI;
 
 import java.util.ArrayList;
+import Logic.Processor;
+import Logic.Result;
+import Logic.CommandType;
+import Storage.Task;
+
 
 public class ResultGenerator {
 
@@ -31,12 +36,12 @@ public class ResultGenerator {
     public static String sendInput(String userInput) {
         Processor processor = new Processor();
         Result result = processor.processInput(userInput);
-        COMMAND_TYPE commandDone = result.getCmdExecuted();
+        CommandType commandDone = result.getCmdExecuted();
         String message = getResultMessage(commandDone, result);
         return message;
     }
 
-    public static String getResultMessage(COMMAND_TYPE commandDone,
+    public static String getResultMessage(CommandType commandDone,
             Result result) {
         ArrayList<Task> tasks = result.getTasks();
         switch (commandDone) {
