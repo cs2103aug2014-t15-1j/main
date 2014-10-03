@@ -1,5 +1,7 @@
 package GUI;
 
+import java.io.IOException;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -40,7 +42,13 @@ public class MainScreen {
         commandLine.addListener(SWT.DefaultSelection, new Listener() {
             public void handleEvent(Event e) {
                 String input = commandLine.getText();
-                String output = ResultGenerator.sendInput(input);
+                String output;
+				try {
+					output = ResultGenerator.sendInput(input);
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 
                 if (output.endsWith(CODE_CLEAR)) {
                     clearScreen(displayScreen);
