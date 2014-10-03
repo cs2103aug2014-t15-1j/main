@@ -164,3 +164,6 @@ public class DataFile {
         return false;
     }
 }
+// TODO change read() to readTask(), write() to writeTask()
+// TODO fill in gaps and remove extraneous parts in Processor.java
+// TODO adding existing element back into arraylist = ? [Processor.java using write(existingFile)]
