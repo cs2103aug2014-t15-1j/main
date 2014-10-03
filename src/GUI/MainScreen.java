@@ -12,6 +12,8 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import Logic.Processor;
+
 public class MainScreen {
     // implement: task pane expansion, add upcoming tasks, add colour to screen,
     // change font type, add scroll bar
@@ -38,7 +40,8 @@ public class MainScreen {
 
         final Text displayScreen = setUpDisplay(shell);
         final Text commandLine = setUp(shell);
-
+        Processor.initialize();
+        
         commandLine.addListener(SWT.DefaultSelection, new Listener() {
             public void handleEvent(Event e) {
                 String input = commandLine.getText();
