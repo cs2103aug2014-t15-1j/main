@@ -112,7 +112,7 @@ public class Processor {
 	}
 	
 	private boolean editTask(Command cmd, ArrayList<Task> tasks, boolean userInput) throws IOException {
-		Task existingTask = file.read(Integer.parseInt(cmd.get("id")));
+		Task existingTask = file.getTask(Integer.parseInt(cmd.get("id")));
 		if (existingTask != null) {
 			editedTask.push(existingTask);
 			
@@ -159,7 +159,7 @@ public class Processor {
 	private boolean deleteTask(Command cmd, ArrayList<Task> tasks, boolean userInput) {
 		switch (cmd.get("rangeType")) {
 			case "id":
-				Task t = file.read(Integer.parseInt(cmd.get("id")));
+				Task t = file.getTask(Integer.parseInt(cmd.get("id")));
 				if (t != null) {
 					tasks.add(t);
 					file.deleteTask(t.getId());
@@ -267,7 +267,7 @@ public class Processor {
 	private boolean displayTask(Command cmd, ArrayList<Task> tasks, boolean userInput) {
 		switch (cmd.get("rangeType")) {
 			case "id":
-				tasks.add(file.read(Integer.parseInt(cmd.get("id"))));
+				tasks.add(file.getTask(Integer.parseInt(cmd.get("id"))));
 				break;
 			case "search":
 				tasks = searchList;
@@ -290,7 +290,7 @@ public class Processor {
 	}
 	
 	private boolean doneTasks(Command cmd, ArrayList<Task> tasks, boolean userInput) {
-		Task existingTask = file.read(Integer.parseInt(cmd.get("id")));
+		Task existingTask = file.getTask(Integer.parseInt(cmd.get("id")));
 		if (existingTask != null) {
 			existingTask.setDone(true);
 			tasks.add(existingTask);
@@ -303,7 +303,7 @@ public class Processor {
 	}
 
 	private boolean toDoTasks(Command cmd, ArrayList<Task> tasks, boolean userInput) {
-		Task existingTask = file.read(Integer.parseInt(cmd.get("id")));
+		Task existingTask = file.getTask(Integer.parseInt(cmd.get("id")));
 		if (existingTask != null) {
 			existingTask.setDone(false);
 			tasks.add(existingTask);
