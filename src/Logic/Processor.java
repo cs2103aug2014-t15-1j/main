@@ -103,7 +103,7 @@ public class Processor {
 			backwardHistory.push(cmd);
 		}
 		
-		return file.write(newTask);
+		return file.addTask(newTask);
 	}
 	
 	//Check if the date is blocked and allowed to be added
@@ -118,7 +118,7 @@ public class Processor {
 			
 			Task task = updateTaskParameters(cmd, existingTask);
 			
-			file.write(task);
+			file.addTask(task);
 			tasks.add(existingTask);
 			editedTask.push(existingTask);
 			backwardHistory.push(cmd);
@@ -215,7 +215,7 @@ public class Processor {
 			if (t.getId() == Integer.parseInt(cmd.get("id"))) {
 				tasks.add(t);
 				file.getDeletedTasks().remove(t);
-				file.write(t);
+				file.addTask(t);
 				break;
 			}
 		}
@@ -225,7 +225,7 @@ public class Processor {
 		for (Task t: file.getDeletedTasks()) {
 			tasks.add(t);
 			file.getDeletedTasks().remove(t);
-			file.write(t);
+			file.addTask(t);
 		}
 	}
 	
