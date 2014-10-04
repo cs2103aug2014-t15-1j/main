@@ -61,25 +61,25 @@ public class DataFile {
     }
     
     public Task read(int id) {
-        Task foundTask = searchForId(toDoTasks, id);
-        if (foundTask != null) {
-            return foundTask;
+        Task task = searchTaskById(toDoTasks, id);
+        if (task != null) {
+            return task;
         }
-        foundTask = searchForId(doneTasks, id);
-        if (foundTask != null) {
-            return foundTask;
+        task = searchTaskById(doneTasks, id);
+        if (task != null) {
+            return task;
         }
-        foundTask = searchForId(deletedTasks, id);
-        if (foundTask != null) {
-            return foundTask;
+        task = searchTaskById(deletedTasks, id);
+        if (task != null) {
+            return task;
         }
         return null;    // If not found
     }
     
-    private Task searchForId(ArrayList<Task> tasks, int id) {
-        for (int i = 0; i < tasks.size(); i++) {
-            if (tasks.get(i).getId() == id) {
-                return tasks.get(i);
+    private Task searchTaskById(ArrayList<Task> tasks, int id) {
+        for (Task tempTask : tasks) {
+            if (tempTask.getId() == id) {
+                return tempTask;
             }
         }
         return null;
@@ -164,6 +164,7 @@ public class DataFile {
         return false;
     }
 }
-// TODO change read() to readTask(), write() to writeTask()
+// TODO change read() to getTask(), write() to saveTask()
 // TODO fill in gaps and remove extraneous parts in Processor.java
 // TODO adding existing element back into arraylist = ? [Processor.java using write(existingFile)]
+// TODO use a hash table with id look up instead of arraylists
