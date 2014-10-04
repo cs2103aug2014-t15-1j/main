@@ -88,11 +88,7 @@ public class DataFile {
     
     // Used when adding a new task
     public boolean addTask(Task task) {
-        if (!task.isDone()) {
-            toDoTasks.add(task);
-        } else {
-            doneTasks.add(task);
-        }
+        toDoTasks.add(task);
         return updateFile();
     }
 
@@ -135,7 +131,9 @@ public class DataFile {
     }
     
     // TODO
-    public boolean edit(int id) {
+    public boolean editTask(Task task) {
+        
+        
         return true;
     }
     
@@ -164,7 +162,6 @@ public class DataFile {
         return false;
     }
 }
-// TODO change read() to getTask(), write() to saveTask()
 // TODO fill in gaps and remove extraneous parts in Processor.java
 // TODO adding existing element back into arraylist = ? [Processor.java using write(existingFile)]
 // TODO use a hash table with id look up instead of arraylists
