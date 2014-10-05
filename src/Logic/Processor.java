@@ -275,7 +275,6 @@ public class Processor {
 			case "all":
 				tasks.addAll(file.getToDoTasks());
 				tasks.addAll(file.getDoneTasks());
-				tasks.addAll(file.getDeletedTasks());
 				break;
 		}
 		return false;
@@ -317,49 +316,60 @@ public class Processor {
 	
 	//APPLICABLE FOR ADD, EDIT, DELETE, RESTORE, BLOCK, UNBLOCK, UNDONE, DONE
 	private boolean undoCommand(Command cmd, boolean userInput) {
-		Command backwardCommand = backwardHistory.pop();
-		//Do the complement of backwardCommand
-		try {
-			switch(backwardCommand.getType()) {
-				case ADD:
-					Task toDelete = file.getToDoTasks().get(file.getToDoTasks().size() - 1);
-					if (toDelete != null) {
-						file.deleteTask(toDelete.getId());
-					}
-					break;
-				case EDIT:
-					Task prevTask = editedTask.pop();
-					for (Task existingTask: file.getToDoTasks()) {
-						if (existingTask.getId() == prevTask.getId()) {
-							copyTaskParameters(prevTask, existingTask);
-						}
-					}
-					break;
-				case DELETE:
-					restoreTask(cmd, new ArrayList<Task>(), false);
-					break;
-				case RESTORE:
-					deleteTask(cmd, new ArrayList<Task>(), false);
-					break;
-				case BLOCK:
-					break;
-				case UNBLOCK:
-					break;
-				case TODO:
-					doneTasks(cmd, new ArrayList<Task>(), false);
-					break;
-				case DONE:
-					toDoTasks(cmd, new ArrayList<Task>(), false);
-					break;
-				default:
-					return false;
+		if (!backwardHistory.isEmpty()) {
+			Command backwardCommand = backwardHistory.pop();
+			//Do the complement of backwardCommand
+			try {
+				switch(backwardCommand.getType()) {
+					case ADD:
+						undoAdd();
+						break;
+					case EDIT:
+						undoEdit();
+						break;
+					case DELETE:
+						restoreTask(cmd, new ArrayList<Task>(), false);
+						break;
+					case RESTORE:
+						deleteTask(cmd, new ArrayList<Task>(), false);
+						break;
+					case BLOCK:
+						break;
+					case UNBLOCK:
+						break;
+					case TODO:
+						doneTasks(cmd, new ArrayList<Task>(), false);
+						break;
+					case DONE:
+						toDoTasks(cmd, new ArrayList<Task>(), false);
+						break;
+					default:
+						return false;
+				}
+			} catch (Exception e) {
+				backwardHistory.push(backwardCommand);
+				return false;
 			}
-		} catch (Exception e) {
 			forwardHistory.push(backwardCommand);
-			return false;
+			return true;
 		}
-		forwardHistory.push(backwardCommand);
-		return true;
+		return false;
+	}
+
+	private void undoAdd() {
+		Task toDelete = file.getToDoTasks().get(file.getToDoTasks().size() - 1);
+		if (toDelete != null) {
+			file.deleteTask(toDelete.getId());
+		}
+	}
+
+	private void undoEdit() {
+		Task prevTask = editedTask.pop();
+		for (Task existingTask: file.getToDoTasks()) {
+			if (existingTask.getId() == prevTask.getId()) {
+				copyTaskParameters(prevTask, existingTask);
+			}
+		}
 	}
 
 	private void copyTaskParameters(Task prevTask, Task existingTask) {
