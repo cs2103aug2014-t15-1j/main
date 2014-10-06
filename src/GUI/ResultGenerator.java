@@ -14,9 +14,10 @@ public class ResultGenerator {
     private static final String LINE_SEPARATOR = System
             .getProperty("line.separator");
     private static final int FIRST_ELEMENT = 0;
+    private static final int NUM_OF_PARAMETERS = 10;
     private static final String FORMAT_DOT_AND_SPACE = ". ";
-    private static final String SUCCESSFUL_ADD = "Added: %1$s";
-    private static final String SUCCESSFUL_EDIT = "Edited: %1$s";
+    private static final String SUCCESSFUL_ADD = "Added %1$s";
+    private static final String SUCCESSFUL_EDIT = "Edited %1$s";
     private static final String SUCCESSFUL_SEARCH = "Found %1$s result(s):";
 
     // to be changed at a later implementation
@@ -32,9 +33,18 @@ public class ResultGenerator {
     private static final String CODE_CLEAR = " clear";
     private static final String CODE_EXIT = " exit";
     private static final String UNSUCCESSFUL_SEARCH_MESSAGE = "We could not find any results :( Try using different words?";
-    private static final String UNSUCCESSFUL_COMMAND_MESSAGE = "Command could not be done. Operation unsucessful :(";
-    private static final String EMPTY_MESSAGE = "That was read as empty. If your stuck, type 'help'";
+    private static final String UNSUCCESSFUL_COMMAND_MESSAGE = "'%1$s'was not recognised.";
+    private static final String EMPTY_MESSAGE = "That was read as empty. Try again.";
     private static final String ERROR_COMMAND_MESSAGE = "Houston, we have a problem";
+    
+   private static final String PARA_STRING_ID = "Task Id: ";
+    private static final String PARA_STRING_NAME = "Name: ";
+    private static final String PARA_STRING_MORE = "More: ";
+    private static final String PARA_STRING_DUE = "Due: ";
+    private static final String PARA_STRING_START = "Start: ";
+    private static final String PARA_STRING_END = "End: ";
+    private static final String PARA_STRING_PRIORITY = "Priority: ";
+    private static final String PARA_STRING_TAG = "Tag: ";
 
     public static String sendInput(String userInput) throws IOException {
         if(isEmpty(userInput)){
@@ -48,7 +58,7 @@ public class ResultGenerator {
         	message = getResultMessage(commandDone, result);      	
         }
         else{      
-        	message = UNSUCCESSFUL_COMMAND_MESSAGE;
+        	message = String.format(UNSUCCESSFUL_COMMAND_MESSAGE, userInput);
         }
         return message;
     }
@@ -72,6 +82,8 @@ public class ResultGenerator {
             case EDIT :
                 return singleLineSuccessMessage(SUCCESSFUL_EDIT, tasks);
             case DISPLAY:
+            	// task cannot be empty
+            	assert(!tasks.isEmpty());
                 return successfulDisplayMessage(tasks);
             case SEARCH :
                 return successfulSearchMessage(tasks);
@@ -106,7 +118,7 @@ public class ResultGenerator {
     }
 
     public static String successfulSearchMessage(ArrayList<Task> tasks) {
-        int numOfSearchResults = tasks.size();
+    	int numOfSearchResults = tasks.size();
         if (numOfSearchResults == 0) {
             return UNSUCCESSFUL_SEARCH_MESSAGE;
         }
@@ -119,11 +131,31 @@ public class ResultGenerator {
 
     public static String successfulDisplayMessage(ArrayList<Task> tasks) {
         int itemsToDisplay = tasks.size();
+        if(itemsToDisplay == 1){
+        	return successfulDisplaySingleTask(tasks);
+        }
         ArrayList<String> displayList = changeTaskListToString(tasks,
                 itemsToDisplay);
         String successMessage = changeStringListToString(displayList);
         return successMessage;
     }
+    
+    public static String successfulDisplaySingleTask(ArrayList<Task> tasks){
+    	Task task = tasks.get(0);
+    	if(task == null){
+    		return ERROR_COMMAND_MESSAGE;
+    	}
+    	// assumes name cannot empty
+    	assert(!task.getName().isEmpty());
+    	String name = task.getName();
+    	int iD = task.getId();
+    	String message = PARA_STRING_ID + iD + LINE_SEPARATOR + PARA_STRING_NAME + name;
+    	message = addOtherParameters(task, message);
+		
+		return message;
+    }
+
+	
 
     // Format of each element in the arrayList is "(task id). (task name)"
     private static ArrayList<String> changeTaskListToString(
@@ -153,4 +185,40 @@ public class ResultGenerator {
         string = string + lastElement;
         return string;
     }
+    
+    private static String addOtherParameters(Task task, String message) {
+		String more =  task.getMore();
+    	message = addToMessage(message, PARA_STRING_MORE, more);
+    	String due = task.getDue();
+    	message = addToMessage(message, PARA_STRING_DUE, due);
+    	String start =  task.getStart();
+		message = addToMessage(message, PARA_STRING_START, start);
+		String end =  task.getEnd();
+		message = addToMessage(message, PARA_STRING_END, end);
+		String priority =  task.getPriority();
+		message = addToMessage(message, PARA_STRING_PRIORITY, priority);
+		ArrayList<String> tags = task.getTags();
+		message = addTags(message, tags);
+		return message;
+	}
+    
+    private static String addTags(String message, ArrayList<String> tags){
+    	int length = tags.size();
+    	message = message + LINE_SEPARATOR + PARA_STRING_TAG;
+    	for(int index = 0; index<length; index++){
+    		String currentTag = tags.get(index);
+    		message = message + " " + currentTag;
+    	}
+    	return message;
+    }
+    private static String addToMessage(String message, String parameters, String toAdd){
+    	if(toAdd==null){
+    		message = message + "";
+    	}else{
+    	message = message + LINE_SEPARATOR+ parameters + toAdd;
+    	}
+    	return message;
+    }
+    
+    
 }

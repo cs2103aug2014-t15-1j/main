@@ -3,20 +3,14 @@ package GUI;
 import java.io.IOException;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
-import Logic.Processor;
-
 public class MainScreen {
     // implement: task pane expansion, add upcoming tasks
-	// clear command Line once enter is pressed
 	// increase size of commandLine if line does not fit into space
     // change font type, add scroll bar
     // add hayStack icon, ASCII picture
@@ -65,6 +59,7 @@ public class MainScreen {
                     Exit(output, displayScreen);
                 } else
                     displayScreen.append(LINE_SEPARATOR + output);
+                	commandLine.setText("");
             }
         });
 	}
