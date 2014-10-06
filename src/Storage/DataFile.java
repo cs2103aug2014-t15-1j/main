@@ -13,10 +13,14 @@ public class DataFile {
     
     final private static String FILENAME = "Data";
     
+    private static ArrayList<Task> allTasks = new ArrayList<Task>();
     private static ArrayList<Task> toDoTasks = new ArrayList<Task>();
     private static ArrayList<Task> doneTasks = new ArrayList<Task>();
     private static ArrayList<Task> deletedTasks = new ArrayList<Task>();
     
+    public ArrayList<Task> getAllTasks() {
+        return allTasks;
+    }
     public ArrayList<Task> getToDoTasks() {
         return toDoTasks;
     }
@@ -47,6 +51,7 @@ public class DataFile {
             while (scanner.hasNextLine()) {
                 String unparsedText = scanner.nextLine();
                 Task newTask = Parser.parseRawText(unparsedText);
+                allTasks.add(newTask);
                 if (!newTask.isDone()) { // Branch predictor at work here
                     toDoTasks.add(newTask);
                 } else {
@@ -61,15 +66,7 @@ public class DataFile {
     }
     
     public Task getTask(int id) {
-        Task task = searchTaskById(toDoTasks, id);
-        if (task != null) {
-            return task;
-        }
-        task = searchTaskById(doneTasks, id);
-        if (task != null) {
-            return task;
-        }
-        task = searchTaskById(deletedTasks, id);
+        Task task = searchTaskById(allTasks, id);
         if (task != null) {
             return task;
         }
@@ -84,7 +81,6 @@ public class DataFile {
         }
         return null;
     }
-    
     
     // Used when adding a new task
     public boolean addTask(Task task) {
@@ -138,7 +134,23 @@ public class DataFile {
                 // check if done, edit?
                 // remove from appropriate arraylist
                 // add to deleted arraylist
+        Task tempTask = searchTaskById(allTasks, id);
+        if (tempTask == null) {
+            return false; // Invalid ID
+        } else if (tempTask.isDeleted()) {
+            return false; // Already deleted
+        }
         
+        tempTask.setDeleted(true);
+        if (tempTask.isDone()) {
+            doneTasks.remove(tempTask);
+        } else {
+            toDoTasks.remove(tempTask);
+        }
+        deletedTasks.add(tempTask);
+        updateFile();
+        return true;
+        /*
         for (int i = 0; i < toDoTasks.size(); i++) {
             Task currentTask = toDoTasks.get(i); 
             if (currentTask.getId() == id) {
@@ -160,7 +172,7 @@ public class DataFile {
                 return true;
             }
         }
-        return false;
+        return false;*/
     }
 }
 // TODO fill in gaps and remove extraneous parts in Processor.java
