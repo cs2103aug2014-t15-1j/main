@@ -15,31 +15,35 @@ public class ResultGenerator {
             .getProperty("line.separator");
     private static final int FIRST_ELEMENT = 0;
     private static final String FORMAT_DOT_AND_SPACE = ". ";
-    private static final String SUCESSFUL_ADD = "Sucessfully added \"%1$s\"";
-    private static final String SUCESSFUL_EDIT = "Sucessfully edited \"%1$s\"";
-    private static final String SUCESSFUL_SEARCH = "Found %1$s result(s):";
+    private static final String SUCCESSFUL_ADD = "Sucessfully added \"%1$s\"";
+    private static final String SUCCESSFUL_EDIT = "Sucessfully edited \"%1$s\"";
+    private static final String SUCCESSFUL_SEARCH = "Found %1$s result(s):";
 
     // to be changed at a later implementation
-    private static final String SUCESSFUL_DELETE = "Sucessfully deleted!";
-    private static final String SUCESSFUL_RESTORE = "Sucessfully restored!";
-    private static final String SUCESSFUL_JOKE = "There are three kinds of people. Those who can count, and those who cannot."
+    private static final String SUCCESSFUL_DELETE = "Sucessfully deleted!";
+    private static final String SUCCESSFUL_RESTORE = "Sucessfully restored!";
+    private static final String SUCCESSFUL_JOKE = "There are three kinds of people. Those who can count, and those who cannot."
             + LINE_SEPARATOR + "- Unknown";
-    // private static final String SUCESSFUL_EXIT =
-    // "The journey of a thousand miles begins with a single step."
-    // + LINE_SEPARATOR + "- Lao Tzu" + LINE_SEPARATOR + "GoodBye! :)";
 
     // to be implement later SUCESSFUL: Block, Unblock, Help
 
     private static final String CODE_CLEAR = " clear";
     private static final String CODE_EXIT = " exit";
-    private static final String UNSUCESSFUL_SEARCH_MESSAGE = "We could not find any results :( Try using different words?";
-    private static final String ERROR_COMMAND_MESSAGE = "Opps! Looks like we could not process your command.";
+    private static final String UNSUCCESSFUL_SEARCH_MESSAGE = "We could not find any results :( Try using different words?";
+    private static final String UNSUCCESSFUL_COMMAND_MESSAGE = "Opps, looks like we could not process your command";
+    private static final String ERROR_COMMAND_MESSAGE = "Houston, we have a problem";
 
     public static String sendInput(String userInput) throws IOException {
         Processor processor = new Processor();
         Result result = processor.processInput(userInput);
-        CommandType commandDone = result.getCmdExecuted();
-        String message = getResultMessage(commandDone, result);
+        String message;
+        if(result.isSuccess()){      
+        	CommandType commandDone = result.getCmdExecuted();   
+        	message = getResultMessage(commandDone, result);      	
+        }
+        else{      
+        	message = UNSUCCESSFUL_COMMAND_MESSAGE;
+        }
         return message;
     }
 
@@ -48,20 +52,20 @@ public class ResultGenerator {
         ArrayList<Task> tasks = result.getTasks();
         switch (commandDone) {
             case ADD :
-                return singleLineSuccessMessage(SUCESSFUL_ADD, tasks);
+                return singleLineSuccessMessage(SUCCESSFUL_ADD, tasks);
             case DELETE :
-                return SUCESSFUL_DELETE;
+                return SUCCESSFUL_DELETE;
             case EDIT :
-                return singleLineSuccessMessage(SUCESSFUL_EDIT, tasks);
+                return singleLineSuccessMessage(SUCCESSFUL_EDIT, tasks);
             case DISPLAY :
                 return sucessfulDisplayMessage(tasks);
             case SEARCH :
                 return successfulSearchMessage(tasks);
             case RESTORE :
-                return SUCESSFUL_RESTORE;
+                return SUCCESSFUL_RESTORE;
             case JOKE :
                 // to be changed
-                return SUCESSFUL_JOKE;
+                return SUCCESSFUL_JOKE;
             case CLEAR :
                 // lets Main Screen know that screen is to be cleared
                 return CODE_CLEAR;
@@ -77,6 +81,7 @@ public class ResultGenerator {
     // Pre-cond: tasks only has one element
     public static String singleLineSuccessMessage(String message,
             ArrayList<Task> tasks) {
+    	assert(tasks.size()==1);
         Task task = tasks.get(FIRST_ELEMENT);
         String taskName = task.getName();
         return String.format(message, taskName);
@@ -85,9 +90,9 @@ public class ResultGenerator {
     public static String successfulSearchMessage(ArrayList<Task> tasks) {
         int numOfSearchResults = tasks.size();
         if (numOfSearchResults == 0) {
-            return UNSUCESSFUL_SEARCH_MESSAGE;
+            return UNSUCCESSFUL_SEARCH_MESSAGE;
         }
-        String successMessage = String.format(SUCESSFUL_SEARCH,
+        String successMessage = String.format(SUCCESSFUL_SEARCH,
                 numOfSearchResults) + LINE_SEPARATOR;
         String stringOfSearchResults = sucessfulDisplayMessage(tasks);
         successMessage = successMessage + stringOfSearchResults;
