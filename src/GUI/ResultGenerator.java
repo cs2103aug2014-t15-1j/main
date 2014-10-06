@@ -35,6 +35,7 @@ public class ResultGenerator {
     private static final String UNSUCCESSFUL_SEARCH_MESSAGE = "We could not find any results :( Try using different words?";
     private static final String UNSUCCESSFUL_COMMAND_MESSAGE = "'%1$s'was not recognised.";
     private static final String EMPTY_MESSAGE = "That was read as empty. Try again.";
+    private static final String ERROR_DISPLAY = "Unable to display.";
     private static final String ERROR_COMMAND_MESSAGE = "Houston, we have a problem";
     
    private static final String PARA_STRING_ID = "Task Id: ";
@@ -143,7 +144,7 @@ public class ResultGenerator {
     public static String successfulDisplaySingleTask(ArrayList<Task> tasks){
     	Task task = tasks.get(0);
     	if(task == null){
-    		return ERROR_COMMAND_MESSAGE;
+    		return ERROR_DISPLAY;
     	}
     	// assumes name cannot empty
     	assert(!task.getName().isEmpty());
