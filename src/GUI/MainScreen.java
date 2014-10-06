@@ -30,8 +30,7 @@ public class MainScreen {
         Shell shell = new Shell(display);
         
         SetUp setUpScreen = new SetUp(display, shell);
-        Processor.initialize();
-        
+   
         readUserInput(setUpScreen);
    
         shell.pack();
