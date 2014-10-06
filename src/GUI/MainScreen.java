@@ -30,10 +30,23 @@ public class MainScreen {
         Shell shell = new Shell(display);
         
         SetUp setUpScreen = new SetUp(display, shell);
-
-        final Text displayScreen = setUpScreen.getDisplayScreen();
-        final Text commandLine = setUpScreen.getCommandLine();
         Processor.initialize();
+        
+        readUserInput(setUpScreen);
+   
+        shell.pack();
+        shell.open();
+        
+        while (!shell.isDisposed()) {
+            if (!display.readAndDispatch())
+                display.sleep();
+        }
+        display.dispose();
+    }
+
+	private static void readUserInput(SetUp setUpScreen) {
+		final Text displayScreen = setUpScreen.getDisplayScreen();
+        final Text commandLine = setUpScreen.getCommandLine();
         
         commandLine.addListener(SWT.DefaultSelection, new Listener() {
             public void handleEvent(Event e) {
@@ -54,17 +67,7 @@ public class MainScreen {
                     displayScreen.append(LINE_SEPARATOR + output);
             }
         });
-
-    
-        shell.pack();
-        shell.open();
-        
-        while (!shell.isDisposed()) {
-            if (!display.readAndDispatch())
-                display.sleep();
-        }
-        display.dispose();
-    }
+	}
 
     private static void Exit(String output, Text displayScreen) {
         System.exit(0);

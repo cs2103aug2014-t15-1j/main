@@ -58,7 +58,7 @@ public class ResultGenerator {
             case EDIT :
                 return singleLineSuccessMessage(SUCCESSFUL_EDIT, tasks);
             case DISPLAY:
-                return sucessfulDisplayMessage(tasks);
+                return successfulDisplayMessage(tasks);
             case SEARCH :
                 return successfulSearchMessage(tasks);
             case RESTORE :
@@ -78,7 +78,7 @@ public class ResultGenerator {
     }
 
     // Returns message of format "Successfully (task done) (task name)"
-    // Pre-cond: tasks only has one element
+    // Pre-condition: tasks only has one element
     public static String singleLineSuccessMessage(String message,
             ArrayList<Task> tasks) {
     	assert(tasks.size()==1);
@@ -94,12 +94,12 @@ public class ResultGenerator {
         }
         String successMessage = String.format(SUCCESSFUL_SEARCH,
                 numOfSearchResults) + LINE_SEPARATOR;
-        String stringOfSearchResults = sucessfulDisplayMessage(tasks);
+        String stringOfSearchResults = successfulDisplayMessage(tasks);
         successMessage = successMessage + stringOfSearchResults;
         return successMessage;
     }
 
-    public static String sucessfulDisplayMessage(ArrayList<Task> tasks) {
+    public static String successfulDisplayMessage(ArrayList<Task> tasks) {
         int itemsToDisplay = tasks.size();
         ArrayList<String> displayList = changeTaskListToString(tasks,
                 itemsToDisplay);
