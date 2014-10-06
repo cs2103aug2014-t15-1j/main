@@ -116,9 +116,9 @@ public class Processor {
 		if (existingTask != null) {
 			editedTask.push(existingTask);
 			
-			Task task = updateTaskParameters(cmd, existingTask);
+			updateTaskParameters(cmd, existingTask);
 			
-			file.addTask(task);
+			file.updateFile();
 			tasks.add(existingTask);
 			editedTask.push(existingTask);
 			backwardHistory.push(cmd);
@@ -126,7 +126,7 @@ public class Processor {
 		return false;
 	}
 
-	private Task updateTaskParameters(Command cmd, Task existingTask) {
+	private void updateTaskParameters(Command cmd, Task existingTask) {
 		Task task = new Task(existingTask.getName(), existingTask.getMore(), existingTask.getDue(), existingTask.getStart(), existingTask.getEnd(), existingTask.getPriority(), existingTask.getTags());
 		//Store updatedTask to storage	
 		if (cmd.get("name") != null) {
@@ -150,7 +150,6 @@ public class Processor {
 		if (cmd.getTags() != null) {
 			task.setTags(cmd.getTags());
 		}
-		return task;
 	}
 
 	//Returns true if delete is executable.
