@@ -92,7 +92,7 @@ public class DataFile {
         return updateFile();
     }
 
-    private boolean updateFile() {
+    public boolean updateFile() {
         // To write to file
         // Deleted tasks are not written to file
         String newFileText = stringifyToDoAndDoneTasks();
@@ -130,14 +130,15 @@ public class DataFile {
         }
     }
     
-    // TODO
-    public boolean editTask(Task task) {
-        
-        
-        return true;
-    }
-    
     public boolean deleteTask(int id) {
+        // search for task by id
+        // get task
+        // check if deleted
+            // set to deleted
+                // check if done, edit?
+                // remove from appropriate arraylist
+                // add to deleted arraylist
+        
         for (int i = 0; i < toDoTasks.size(); i++) {
             Task currentTask = toDoTasks.get(i); 
             if (currentTask.getId() == id) {
