@@ -15,8 +15,8 @@ public class ResultGenerator {
             .getProperty("line.separator");
     private static final int FIRST_ELEMENT = 0;
     private static final String FORMAT_DOT_AND_SPACE = ". ";
-    private static final String SUCCESSFUL_ADD = "Sucessfully added \"%1$s\"";
-    private static final String SUCCESSFUL_EDIT = "Sucessfully edited \"%1$s\"";
+    private static final String SUCCESSFUL_ADD = "Sucessfully added: %1$s";
+    private static final String SUCCESSFUL_EDIT = "Sucessfully edited: %1$s";
     private static final String SUCCESSFUL_SEARCH = "Found %1$s result(s):";
 
     // to be changed at a later implementation
@@ -57,7 +57,7 @@ public class ResultGenerator {
                 return SUCCESSFUL_DELETE;
             case EDIT :
                 return singleLineSuccessMessage(SUCCESSFUL_EDIT, tasks);
-            case DISPLAY :
+            case DISPLAY:
                 return sucessfulDisplayMessage(tasks);
             case SEARCH :
                 return successfulSearchMessage(tasks);
@@ -77,7 +77,7 @@ public class ResultGenerator {
         }
     }
 
-    // Returns message of format "Sucessfully (task done) (task name)"
+    // Returns message of format "Successfully (task done) (task name)"
     // Pre-cond: tasks only has one element
     public static String singleLineSuccessMessage(String message,
             ArrayList<Task> tasks) {
