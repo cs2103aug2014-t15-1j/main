@@ -85,14 +85,17 @@ public class DataFile {
         allTasks.add(task);
         return updateFile();
     }
-
+    
+    // Refreshes file with new data in arraylists
     public boolean updateFile() {
         // To write to file
         // Deleted tasks are not written to file
         String newFileText = stringifyToDoAndDoneTasks();
         return writeToFile(newFileText);
     }
-
+    
+    // Stringifies tasks which have not been deleted,
+    // in preparation for storage on file
     private String stringifyToDoAndDoneTasks() {
         String text = ""; 
         for (int i = 0; i < toDoTasks.size(); i++) {
@@ -105,7 +108,7 @@ public class DataFile {
         }
         return text;
     }
-
+    
     private boolean writeToFile(String newFileText) {
         try {
             File file = new File(FILENAME);
@@ -140,6 +143,21 @@ public class DataFile {
             toDoTasks.remove(tempTask);
         }
         updateFile();
+        return true;
+    }
+    
+    public boolean deleteAll() {
+        for (Task tempTask : allTasks) {
+            if (!tempTask.isDeleted()) {
+                tempTask.setDeleted(true);
+                deletedTasks.add(tempTask);
+                if (tempTask.isDone()) {
+                    doneTasks.remove(tempTask);
+                } else {
+                    toDoTasks.remove(tempTask);
+                }
+            }
+        }
         return true;
     }
 }
