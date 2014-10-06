@@ -86,6 +86,9 @@ public class Processor {
 				success = true;
 			default:
 		}
+		if (success) {
+			forwardHistory.clear();
+		}
 		return new Result(tasks, success, cmdType);
 	}
 
@@ -122,6 +125,7 @@ public class Processor {
 			tasks.add(existingTask);
 			editedTask.push(existingTask);
 			backwardHistory.push(cmd);
+			return true;
 		}
 		return false;
 	}
