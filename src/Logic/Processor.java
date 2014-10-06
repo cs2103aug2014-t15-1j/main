@@ -118,7 +118,7 @@ public class Processor {
 			
 			updateTaskParameters(cmd, existingTask);
 			
-			file.updateFile();
+			file.updateFile(); // Refreshes file on system with edited task information
 			tasks.add(existingTask);
 			editedTask.push(existingTask);
 			updateCommandHistory(cmd);
@@ -128,28 +128,31 @@ public class Processor {
 	}
 
 	private void updateTaskParameters(Command cmd, Task existingTask) {
-		Task task = new Task(existingTask.getName(), existingTask.getMore(), existingTask.getDue(), existingTask.getStart(), existingTask.getEnd(), existingTask.getPriority(), existingTask.getTags());
+	    // To update task parameters, there's no need to create a new task
+	    // You can just directly edit the existing task
+	    // Next line is not needed to update task parameters
+	    //Task task = new Task(existingTask.getName(), existingTask.getMore(), existingTask.getDue(), existingTask.getStart(), existingTask.getEnd(), existingTask.getPriority(), existingTask.getTags());
 		//Store updatedTask to storage	
 		if (cmd.get("name") != null) {
-			task.setName(cmd.get("name"));
+			existingTask.setName(cmd.get("name"));
 		}
 		if (cmd.get("more") != null) {
-			task.setMore(cmd.get("more"));
+			existingTask.setMore(cmd.get("more"));
 		}
 		if (cmd.get("due") != null) {
-			task.setDue(cmd.get("due"));				
+			existingTask.setDue(cmd.get("due"));				
 		}
 		if (cmd.get("start") != null) {
-			task.setStart(cmd.get("start"));
+			existingTask.setStart(cmd.get("start"));
 		}
 		if (cmd.get("end") != null) {
-			task.setEnd(cmd.get("end"));
+			existingTask.setEnd(cmd.get("end"));
 		}
 		if (cmd.get("priority") != null) {
-			task.setPriority(cmd.get("priority"));
+			existingTask.setPriority(cmd.get("priority"));
 		}
 		if (cmd.getTags() != null) {
-			task.setTags(cmd.getTags());
+			existingTask.setTags(cmd.getTags());
 		}
 	}
 
