@@ -15,13 +15,15 @@ public class ResultGenerator {
             .getProperty("line.separator");
     private static final int FIRST_ELEMENT = 0;
     private static final String FORMAT_DOT_AND_SPACE = ". ";
-    private static final String SUCCESSFUL_ADD = "Sucessfully added: %1$s";
-    private static final String SUCCESSFUL_EDIT = "Sucessfully edited: %1$s";
+    private static final String SUCCESSFUL_ADD = "Added: %1$s";
+    private static final String SUCCESSFUL_EDIT = "Edited: %1$s";
     private static final String SUCCESSFUL_SEARCH = "Found %1$s result(s):";
 
     // to be changed at a later implementation
-    private static final String SUCCESSFUL_DELETE = "Sucessfully deleted!";
-    private static final String SUCCESSFUL_RESTORE = "Sucessfully restored!";
+    private static final String SUCCESSFUL_DELETE = "Deleted!";
+    private static final String SUCCESSFUL_RESTORE = "Restored!";
+    private static final String SUCCESSFUL_UNDO = "Travelled back in time! Command has been undone";
+    private static final String SUCCESSFUL_REDO = "Travelled into the future! Command has been redone";
     private static final String SUCCESSFUL_JOKE = "There are three kinds of people. Those who can count, and those who cannot."
             + LINE_SEPARATOR + "- Unknown";
 
@@ -30,11 +32,15 @@ public class ResultGenerator {
     private static final String CODE_CLEAR = " clear";
     private static final String CODE_EXIT = " exit";
     private static final String UNSUCCESSFUL_SEARCH_MESSAGE = "We could not find any results :( Try using different words?";
-    private static final String UNSUCCESSFUL_COMMAND_MESSAGE = "Opps, looks like we could not process your command";
+    private static final String UNSUCCESSFUL_COMMAND_MESSAGE = "Command could not be done. Operation unsucessful :(";
+    private static final String EMPTY_MESSAGE = "That was read as empty. If your stuck, type 'help'";
     private static final String ERROR_COMMAND_MESSAGE = "Houston, we have a problem";
 
     public static String sendInput(String userInput) throws IOException {
-        Processor processor = new Processor();
+        if(isEmpty(userInput)){
+        	return EMPTY_MESSAGE;
+        }
+    	Processor processor = new Processor();
         Result result = processor.processInput(userInput);
         String message;
         if(result.isSuccess()){      
@@ -46,7 +52,15 @@ public class ResultGenerator {
         }
         return message;
     }
-
+    
+    public static boolean isEmpty(String line){
+    	String message = line.trim();
+    	if(message.isEmpty()){
+    		return true;
+    	}
+    	
+    	return false;
+    }
     public static String getResultMessage(CommandType commandDone,
             Result result) {
         ArrayList<Task> tasks = result.getTasks();
@@ -63,6 +77,10 @@ public class ResultGenerator {
                 return successfulSearchMessage(tasks);
             case RESTORE :
                 return SUCCESSFUL_RESTORE;
+            case UNDO:
+            	return SUCCESSFUL_UNDO;
+            case REDO:
+            	return SUCCESSFUL_REDO;
             case JOKE :
                 // to be changed
                 return SUCCESSFUL_JOKE;

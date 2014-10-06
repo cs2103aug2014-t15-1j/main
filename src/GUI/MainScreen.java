@@ -16,6 +16,8 @@ import Logic.Processor;
 
 public class MainScreen {
     // implement: task pane expansion, add upcoming tasks
+	// clear command Line once enter is pressed
+	// increase size of commandLine if line does not fit into space
     // change font type, add scroll bar
     // add hayStack icon, ASCII picture
 
