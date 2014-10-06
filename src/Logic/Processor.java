@@ -86,9 +86,6 @@ public class Processor {
 				success = true;
 			default:
 		}
-		if (success) {
-			forwardHistory.clear();
-		}
 		return new Result(tasks, success, cmdType);
 	}
 
@@ -100,10 +97,10 @@ public class Processor {
 			return false;
 		}
 		Task newTask = new Task(cmd.get("name"), cmd.get("more"), cmd.get("due"), cmd.get("start"), cmd.get("end"), cmd.get("priority"), cmd.getTags());
-		
 		tasks.add(newTask);
+		
 		if (userInput) {
-			backwardHistory.push(cmd);
+			updateCommandHistory(cmd);
 		}
 		
 		return file.addTask(newTask);
@@ -124,7 +121,7 @@ public class Processor {
 			file.updateFile();
 			tasks.add(existingTask);
 			editedTask.push(existingTask);
-			backwardHistory.push(cmd);
+			updateCommandHistory(cmd);
 			return true;
 		}
 		return false;
@@ -188,7 +185,7 @@ public class Processor {
 		}
 		
 		if (userInput) {
-			backwardHistory.push(cmd);
+			updateCommandHistory(cmd);
 		}
 		return true;
 	}
@@ -206,7 +203,7 @@ public class Processor {
 		}
 		
 		if (userInput) {
-			backwardHistory.push(cmd);
+			updateCommandHistory(cmd);
 		}
 		
 		return true;
@@ -297,7 +294,7 @@ public class Processor {
 			existingTask.setDone(true);
 			tasks.add(existingTask);
 			if (userInput) {
-				backwardHistory.push(cmd);
+				updateCommandHistory(cmd);
 			}
 			return true;
 		}
@@ -310,7 +307,7 @@ public class Processor {
 			existingTask.setDone(false);
 			tasks.add(existingTask);
 			if (userInput) {
-				backwardHistory.push(cmd);
+				updateCommandHistory(cmd);
 			}
 			return true;
 		}
@@ -403,5 +400,10 @@ public class Processor {
 	private boolean showJoke(Command cmd) {
 		//Show joke
 		return true;
+	}
+	
+	private void updateCommandHistory(Command cmd) {
+		forwardHistory.clear();
+		backwardHistory.push(cmd);
 	}
 }
