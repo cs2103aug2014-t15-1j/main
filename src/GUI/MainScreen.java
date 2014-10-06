@@ -50,14 +50,13 @@ public class MainScreen {
         final Text commandLine = setUpScreen.getCommandLine();
         
         commandLine.addListener(SWT.DefaultSelection, new Listener() {
-            public void handleEvent(Event e) {
+            public void handleEvent(Event event) {
                 String input = commandLine.getText();
                 String output = "";
 				try {
 					output = ResultGenerator.sendInput(input);
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+				} catch (IOException error) {
+					error.printStackTrace();
 				}
 
                 if (output.endsWith(CODE_CLEAR)) {
