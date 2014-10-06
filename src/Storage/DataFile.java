@@ -67,10 +67,7 @@ public class DataFile {
     
     public Task getTask(int id) {
         Task task = searchTaskById(allTasks, id);
-        if (task != null) {
-            return task;
-        }
-        return null;    // If not found
+        return task;
     }
     
     private Task searchTaskById(ArrayList<Task> tasks, int id) {
@@ -127,13 +124,6 @@ public class DataFile {
     }
     
     public boolean deleteTask(int id) {
-        // search for task by id
-        // get task
-        // check if deleted
-            // set to deleted
-                // check if done, edit?
-                // remove from appropriate arraylist
-                // add to deleted arraylist
         Task tempTask = searchTaskById(allTasks, id);
         if (tempTask == null) {
             return false; // Invalid ID
@@ -142,39 +132,14 @@ public class DataFile {
         }
         
         tempTask.setDeleted(true);
+        deletedTasks.add(tempTask);
         if (tempTask.isDone()) {
             doneTasks.remove(tempTask);
         } else {
             toDoTasks.remove(tempTask);
         }
-        deletedTasks.add(tempTask);
         updateFile();
         return true;
-        /*
-        for (int i = 0; i < toDoTasks.size(); i++) {
-            Task currentTask = toDoTasks.get(i); 
-            if (currentTask.getId() == id) {
-                currentTask.setDeleted(true);
-                toDoTasks.remove(i);
-                deletedTasks.add(currentTask);
-                updateFile();
-                return true;
-            }
-        }
-        
-        for (int i = 0; i < doneTasks.size(); i++) {
-            Task currentTask = doneTasks.get(i); 
-            if (currentTask.getId() == id) {
-                currentTask.setDeleted(true);
-                doneTasks.remove(i);
-                deletedTasks.add(currentTask);
-                updateFile();
-                return true;
-            }
-        }
-        return false;*/
     }
 }
 // TODO fill in gaps and remove extraneous parts in Processor.java
-// TODO adding existing element back into arraylist = ? [Processor.java using write(existingFile)]
-// TODO use a hash table with id look up instead of arraylists
