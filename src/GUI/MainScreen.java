@@ -15,9 +15,9 @@ import org.eclipse.swt.widgets.Text;
 import Logic.Processor;
 
 public class MainScreen {
-    // implement: task pane expansion, add upcoming tasks, add colour to screen,
+    // implement: task pane expansion, add upcoming tasks
     // change font type, add scroll bar
-    // add haystack icon, ASCII picture
+    // add hayStack icon, ASCII picture
     protected static final String LINE_SEPARATOR = System
             .getProperty("line.separator");
     private static final String MESSAGE_WELCOME = "Welcome to Haystack!"
@@ -91,12 +91,15 @@ public class MainScreen {
         Text upcomingTasks = new Text(shell, SWT.MULTI | SWT.READ_ONLY
                 | SWT.BORDER);
         gridData = new GridData(GridData.FILL_BOTH);
+        upcomingTasks.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_BLACK));
+        upcomingTasks.setForeground(shell.getDisplay().getSystemColor(SWT.COLOR_GREEN));
         upcomingTasks.setLayoutData(gridData);
         upcomingTasks.setBounds(10, 10, 100, 100);
 
         Text commandLine = new Text(shell, SWT.SINGLE | SWT.BORDER_SOLID);
         gridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
         gridData.horizontalSpan = 2;
+        commandLine.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_WHITE));
         commandLine.setLayoutData(gridData);
         return commandLine;
     }
@@ -110,6 +113,8 @@ public class MainScreen {
         gridData.verticalSpan = 2;
         displayScreen.setLayoutData(gridData);
         displayScreen.setText(MESSAGE_WELCOME);
+        displayScreen.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_BLACK));
+        displayScreen.setForeground(shell.getDisplay().getSystemColor(SWT.COLOR_GREEN));
         return displayScreen;
     }
 
