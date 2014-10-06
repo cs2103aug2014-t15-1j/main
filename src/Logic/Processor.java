@@ -233,7 +233,7 @@ public class Processor {
 	}
 	
 	public boolean deleteAllData() {
-		//file.deleteAll();
+		file.deleteAll();
 		return false;
 		//Clears all history
 	}
