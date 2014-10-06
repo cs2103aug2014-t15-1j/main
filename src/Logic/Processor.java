@@ -276,7 +276,7 @@ public class Processor {
 				tasks.addAll(file.getDoneTasks());
 				break;
 		}
-		return false;
+		return true;
 	}
 
 	private boolean blockDates(Command cmd) {
