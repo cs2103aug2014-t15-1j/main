@@ -257,7 +257,30 @@ public class Parser {
             String currWord = commandItems[i];
             String currWordLC = currWord.toLowerCase();
 
-            if (isAddParamName(currWord) || currWordLC.equals("delete:")) {
+            if (containsParamName(currWord) || containsDeleteParam(currWord)) {
+                String[] wordList = currWord.split(":");
+                int lastValidField = 0;
+                // Check only until the second last word
+                for (int j = 0; j < wordList.length - 1; j++) {
+                    String toCheck = wordList[j] + ":";
+                    if (isEditParamName(toCheck)) {
+                        currField = getParamName(toCheck);
+                        lastValidField = j;
+                    } else {
+                        break;
+                    }
+                }
+
+                // Add remainder to the current field
+                String toAddToField = "";
+                for (int k = lastValidField + 1; k < wordList.length; k++) {
+                    toAddToField = toAddToField.concat(wordList[k]);
+                    if (k != wordList.length - 1) {
+                        toAddToField = toAddToField.concat(":");
+                    }
+                }
+                getTaskParam(editFields, currField).addToField(toAddToField);
+            } else if (isAddParamName(currWord) || currWordLC.equals("delete:")) {
                 currField = getParamName(currWord);
             } else if (hasValidHashTag(currWord)) {
                 editFields.add(new TaskParam("tag", currWord));
@@ -309,6 +332,8 @@ public class Parser {
                     if (isAddParamName(wordList[j] + ":")) {
                         currField = getParamName(wordList[j] + ":");
                         lastValidField = j;
+                    } else {
+                        break;
                     }
                 }
 
@@ -316,6 +341,9 @@ public class Parser {
                 String toAddToField = "";
                 for (int k = lastValidField + 1; k < wordList.length; k++) {
                     toAddToField = toAddToField.concat(wordList[k]);
+                    if (k != wordList.length - 1) {
+                        toAddToField = toAddToField.concat(":");
+                    }
                 }
                 getTaskParam(addFields, currField).addToField(toAddToField);
             } else if (isAddParamName(currWord)) {
@@ -332,6 +360,11 @@ public class Parser {
         return new CommandAdd(addFields);
     }
 
+    
+    private static boolean isEditParamName(String toCheck) {
+        return isAddParamName(toCheck) || toCheck.equals("delete:");
+    }
+    
     private static boolean containsParamName(String str) {
         boolean result = false;
 
@@ -342,6 +375,15 @@ public class Parser {
         }
 
         return result;
+    }
+
+    private static boolean containsDeleteParam(String str) {
+        String delete = "delete";
+        if (str.startsWith(delete) && str.length() > delete.length()) {
+            return true;
+        }
+
+        return false;
     }
 
     private static boolean isInteger(String str) {
@@ -515,7 +557,7 @@ public class Parser {
         System.out
                 .println(tempTaskToString(Parser
                         .parseToTask("nAme: do Due: #cs2103 wed namE: homework M: late "
-                                      + "start: priority: due: 9am eNd: now name: quickly #done\n")));
+                                     + "start: priority: due: 9am eNd: now name: quickly #done\n")));
 
         // TEST ADD
         System.out
@@ -545,17 +587,25 @@ public class Parser {
          * System.out.println(Parser.parse("help add"));
          */
 
-        /*
-         * // TEST EDIT System.out .println(Parser .parse(
-         * "edit 1 ten twenty more: addmore start: #cs2103 #cs2103 #CS2103 end: due: tmr delete: name"
-         * )); System.out.println(Parser
-         * .parse("edit 2 delete: nil n: to: do: #cs2103 #cs2103")); System.out
-         * .println(Parser .parse(
-         * "edit 3 delete: name name nil name name n: todo homework delete: name name"
-         * )); System.out.println(Parser.parse("edit one two"));
-         * System.out.println(Parser.parse("edit"));
-         * System.out.println(Parser.parse("edit 1"));
-         */
+        // TEST EDIT
+        System.out
+                .println(Parser
+                        .parse("edit 1 ten twenty more: addmore start: #cs2103 #cs2103 #CS2103 end: due: tmr delete: name"));
+        System.out.println(Parser
+                .parse("edit 2 delete: nil n: to: do: #cs2103 #cs2103"));
+        System.out
+                .println(Parser
+                        .parse("edit 3 delete: name name nil name name n: todo homework delete: name name"));
+        System.out.println(Parser.parse("edit one two"));
+        System.out.println(Parser.parse("edit"));
+        System.out.println(Parser.parse("edit 1"));
+        System.out
+                .println(Parser
+                        .parse("edit 1 name:Start:e:tomorrow n:m:n:code it x:m:n:fail n:x:s:fail n:m:x:fails"));
+        System.out
+        .println(Parser
+                .parse("edit 1 delete:s:Start n:delete:tomorrow m:delete:end"));
+
         /*
          * // TEST GET() Command testEdit = Parser .parse(
          * "edit 3 delete: name name nil name name n: todo homework delete: name name"
