@@ -17,6 +17,10 @@ public class TaskParam {
         return field;
     }
 
+    public void setField(String str) {
+        this.field = str.trim();
+    }
+
     public void addToField(String str) {
         if (str.length() > 0) {
             if (field.length() > 0) {

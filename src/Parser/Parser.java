@@ -356,15 +356,57 @@ public class Parser {
         }
 
         removeDuplicates(addFields);
+        if (containsParam(addFields, "due")) {
+            convertToDate(addFields, "due");
+        }
+        if (containsParam(addFields, "start")) {
+
+        }
+        if (containsParam(addFields, "end")) {
+
+        }
 
         return new CommandAdd(addFields);
     }
 
-    
+    private static void convertToDate(ArrayList<TaskParam> addFields,
+                                      String string) {
+        // TODO: re-factor to getDate() and setDate();
+        String[] months = { "jan", "january", "feb", "february", "march",
+                            "mar", "april", "apr", "may", "june", "jun", "july",
+                            "jul", "august", "aug", "september", "sep",
+                            "october", "oct", "november", "nov", "december",
+                            "dec" };
+        // TODO: month max. days?
+        
+        TaskParam field = getTaskParam(addFields, string);
+        String text = field.getField();
+        
+        String dDay;
+        String dMonth;
+        String dYear;
+        
+        /* cases: (1) 20052014 (2) 20.05.2014 (3) 20-05-2014 (4) 20/05/2014 (5) 20/05 (6) 20 May (7) 20 May 2014
+         *
+         */
+
+    }
+
+    private static boolean containsParam(ArrayList<TaskParam> addFields,
+                                         String pName) {
+        boolean result = false;
+        for (TaskParam tp : addFields) {
+            if (tp.getName().equals(pName)) {
+                result = true;
+            }
+        }
+        return result;
+    }
+
     private static boolean isEditParamName(String toCheck) {
         return isAddParamName(toCheck) || toCheck.equals("delete:");
     }
-    
+
     private static boolean containsParamName(String str) {
         boolean result = false;
 
@@ -602,8 +644,7 @@ public class Parser {
         System.out
                 .println(Parser
                         .parse("edit 1 name:Start:e:tomorrow n:m:n:code it x:m:n:fail n:x:s:fail n:m:x:fails"));
-        System.out
-        .println(Parser
+        System.out.println(Parser
                 .parse("edit 1 delete:s:Start n:delete:tomorrow m:delete:end"));
 
         /*
