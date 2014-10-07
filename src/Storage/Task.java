@@ -38,11 +38,21 @@ public class Task {
         stringifiedTask += "Start: " + start + " ";
         stringifiedTask += "End: " + end + " ";
         stringifiedTask += "Priority: " + priority + " ";
-        stringifiedTask += tags + " "; // TODO ArrayList to string
-        stringifiedTask += done ? "#Done" : "#ToDo";
+        //stringifiedTask += stringifyTags();
+        //stringifiedTask += done ? "#done" : "#todo";
         
         return stringifiedTask;
     }
+    /* TODO Bug fixing yay
+    private String stringifyTags() {
+        String stringifiedTags = "";
+        if (!this.tags.isEmpty()) {
+            for (String tempTag : this.tags) {
+                stringifiedTags += tempTag + " ";
+            }
+        }
+        return stringifiedTags;
+    }*/
     
     //===== Getters and setters =====//
     
