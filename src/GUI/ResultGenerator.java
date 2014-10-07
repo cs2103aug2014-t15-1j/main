@@ -14,7 +14,6 @@ public class ResultGenerator {
     private static final String LINE_SEPARATOR = System
             .getProperty("line.separator");
     private static final int FIRST_ELEMENT = 0;
-    private static final int NUM_OF_PARAMETERS = 10;
     private static final String FORMAT_DOT_AND_SPACE = ". ";
     private static final String SUCCESSFUL_ADD = "Added %1$s";
     private static final String SUCCESSFUL_EDIT = "Edited %1$s";
@@ -204,6 +203,9 @@ public class ResultGenerator {
 	}
     
     private static String addTags(String message, ArrayList<String> tags){
+    	if(tags == null){
+    		return message;
+    	}
     	int length = tags.size();
     	message = message + LINE_SEPARATOR + PARA_STRING_TAG;
     	for(int index = 0; index<length; index++){
