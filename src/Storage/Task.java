@@ -127,11 +127,11 @@ public class Task {
     }
     
     public void addTags(ArrayList<String> tags) {
-        //this.tags.add(tags); TODO
+        this.tags.addAll(tags);
     }
     
     public void removeTags(ArrayList<String> tags) {
-        //this.tags.remove(tags); TODO
+        this.tags.removeAll(tags);
     }
     
     public void setDeleted(boolean deleted) {
