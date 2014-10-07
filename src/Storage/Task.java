@@ -126,6 +126,14 @@ public class Task {
         this.tags = tags;
     }
     
+    public void addTags(ArrayList<String> tags) {
+        //this.tags.add(tags); TODO
+    }
+    
+    public void removeTags(ArrayList<String> tags) {
+        //this.tags.remove(tags); TODO
+    }
+    
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;
     }
