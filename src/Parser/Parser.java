@@ -26,21 +26,24 @@ public class Parser {
     private static final String TYPE_EXIT = "exit";
 
     // TODO: CONSIDER USING PARAM_FIRST_WORD = 1
-    private static final String[] ADD_PARAM_LIST = { "name:", "n:", "more:",
-                                                    "m:", "due:", "d;",
-                                                    "start:", "s:", "end:",
-                                                    "e:", "priority:", "p:" };
-    private static final String[] EDIT_DEL_LIST = { "name", "n", "more", "m",
-                                                   "due", "d", "start", "s",
-                                                   "end", "e", "priority", "p" };
-    private static final String[] HELP_CMD_LIST = { TYPE_ALL, TYPE_ADD, TYPE_EDIT,
-                                                   TYPE_DELETE, TYPE_RESTORE,
-                                                   TYPE_SEARCH, TYPE_DISPLAY,
-                                                   TYPE_BLOCK, TYPE_UNBLOCK,
-                                                   TYPE_DONE, TYPE_TODO,
-                                                   TYPE_UNDO, TYPE_REDO,
-                                                   TYPE_CLEAR, TYPE_JOKE,
-                                                   TYPE_EXIT };
+    private static final String[] TASK_PARAM_LIST_COLON = { "name:", "n:",
+                                                           "more:", "m:",
+                                                           "due:", "d;",
+                                                           "start:", "s:",
+                                                           "end:", "e:",
+                                                           "priority:", "p:" };
+    private static final String[] TASK_PARAM_LIST = { "name", "n", "more", "m",
+                                                     "due", "d", "start", "s",
+                                                     "end", "e", "priority",
+                                                     "p" };
+    private static final String[] HELP_CMD_LIST = { TYPE_ALL, TYPE_ADD,
+                                                   TYPE_EDIT, TYPE_DELETE,
+                                                   TYPE_RESTORE, TYPE_SEARCH,
+                                                   TYPE_DISPLAY, TYPE_BLOCK,
+                                                   TYPE_UNBLOCK, TYPE_DONE,
+                                                   TYPE_TODO, TYPE_UNDO,
+                                                   TYPE_REDO, TYPE_CLEAR,
+                                                   TYPE_JOKE, TYPE_EXIT };
 
     // ========== MAIN PARSE METHOD ==========//
 
@@ -112,8 +115,7 @@ public class Parser {
                 todoFields.add(new TaskParam("rangeType", "id"));
                 todoFields.add(new TaskParam("id", firstWord));
             } else {
-                return new CommandOthers("error",
-                        "Invalid argument for todo");
+                return new CommandOthers("error", "Invalid argument for todo");
             }
         } catch (ArrayIndexOutOfBoundsException e) {
             return new CommandOthers("error", "No arguments for todo");
@@ -150,17 +152,15 @@ public class Parser {
 
         // TODO: Consider date format (length 1, 2, 3?)
         try {
-            /*String firstWord = commandItems[1];
-            String firstWordLC = firstWord.toLowerCase();
-            if (isDate(firstWord)) {
-                blockFields.add(new TaskParam("rangeType", firstWordLC));
-            } else if (isInteger(firstWord)) {
-                blockFields.add(new TaskParam("rangeType", "id"));
-                blockFields.add(new TaskParam("id", firstWord));
-            } else {
-                return new CommandOthers("error",
-                        "Invalid argument for block");
-            }*/
+            /*
+             * String firstWord = commandItems[1]; String firstWordLC =
+             * firstWord.toLowerCase(); if (isDate(firstWord)) {
+             * blockFields.add(new TaskParam("rangeType", firstWordLC)); } else
+             * if (isInteger(firstWord)) { blockFields.add(new
+             * TaskParam("rangeType", "id")); blockFields.add(new
+             * TaskParam("id", firstWord)); } else { return new
+             * CommandOthers("error", "Invalid argument for block"); }
+             */
         } catch (ArrayIndexOutOfBoundsException e) {
             return new CommandOthers("error", "No arguments for block");
         }
@@ -240,6 +240,110 @@ public class Parser {
         return new CommandDelete(deleteFields);
     }
 
+    private static Command parseEdit(String[] commandItems) {
+        String currField = "name";
+        String id;
+        ArrayList<TaskParam> editFields = new ArrayList<TaskParam>();
+
+        // Check Edit ID
+        if (commandItems.length > 1 && isInteger(commandItems[1])) {
+            id = commandItems[1];
+            editFields.add(new TaskParam("id", id));
+        } else {
+            return new CommandOthers("error", "Invalid id for edit");
+        }
+
+        for (int i = 2; i < commandItems.length; i++) {
+            String currWord = commandItems[i];
+            String currWordLC = currWord.toLowerCase();
+
+            if (isAddParamName(currWord) || currWordLC.equals("delete:")) {
+                currField = getParamName(currWord);
+            } else if (hasValidHashTag(currWord)) {
+                editFields.add(new TaskParam("tag", currWord));
+            } else if (currField.equals("delete")) {
+                // check if it's a valid delete keyword (ignore otherwise)
+                if (Arrays.asList(TASK_PARAM_LIST).contains(currWordLC)) {
+                    // check for duplicate words (TODO: unnecessary?)
+                    TaskParam deleteParam = getTaskParam(editFields, currField);
+                    if (!deleteParam.getField().contains(currWordLC)) {
+                        deleteParam.addToField(currWordLC);
+                    }
+                }
+            } else {
+                getTaskParam(editFields, currField).addToField(currWord);
+            }
+        }
+
+        removeDuplicates(editFields);
+
+        return new CommandEdit(editFields);
+    }
+
+    private static Command parseHelp(String[] commandItems) {
+        String helpField = null;
+
+        // TODO: change CommandHelp to process "invalid" as Command.ERROR?
+        if (commandItems.length > 1) {
+            if (isHelpParam(commandItems[1])) {
+                helpField = commandItems[1].toLowerCase();
+            } else {
+                helpField = "invalid";
+            }
+        }
+
+        return new CommandHelp(helpField);
+    }
+
+    private static Command parseAdd(String[] commandItems) {
+        String currField = "name";
+        ArrayList<TaskParam> addFields = new ArrayList<TaskParam>();
+
+        for (int i = 1; i < commandItems.length; i++) {
+            String currWord = commandItems[i];
+            if (containsParamName(currWord)) {
+                String[] wordList = currWord.split(":");
+                int lastValidField = 0;
+                // Check only until the second last word
+                for (int j = 0; j < wordList.length - 1; j++) {
+                    if (isAddParamName(wordList[j] + ":")) {
+                        currField = getParamName(wordList[j] + ":");
+                        lastValidField = j;
+                    }
+                }
+
+                // Add remainder to the current field
+                String toAddToField = "";
+                for (int k = lastValidField + 1; k < wordList.length; k++) {
+                    toAddToField = toAddToField.concat(wordList[k]);
+                }
+                getTaskParam(addFields, currField).addToField(toAddToField);
+            } else if (isAddParamName(currWord)) {
+                currField = getParamName(currWord);
+            } else if (hasValidHashTag(currWord)) {
+                addFields.add(new TaskParam("tag", currWord));
+            } else {
+                getTaskParam(addFields, currField).addToField(currWord);
+            }
+        }
+
+        removeDuplicates(addFields);
+
+        return new CommandAdd(addFields);
+    }
+
+    private static boolean containsParamName(String str) {
+        boolean result = false;
+
+        for (String name : TASK_PARAM_LIST_COLON) {
+            if (str.startsWith(name) && str.length() > name.length()) {
+                result = true;
+            }
+        }
+
+        return result;
+    }
+
     private static boolean isInteger(String str) {
         try {
             Integer.parseInt(str);
@@ -252,63 +356,6 @@ public class Parser {
     private static boolean isDeleteParamName(String firstWord) {
         return firstWord.equals("all") || firstWord.equals("search") ||
                firstWord.equals("done");
-    }
-
-    private static Command parseEdit(String[] commandItems) {
-        String currField = "name";
-        ArrayList<TaskParam> editFields = new ArrayList<TaskParam>();
-        ArrayList<String> parsed = new ArrayList<String>();
-
-        String id;
-
-        // TODO: Check "edit <id>" with no parameters
-        if (commandItems.length > 1 && isInteger(commandItems[1])) {
-            id = commandItems[1];
-            editFields.add(new TaskParam("id", id));
-        } else {
-            return new CommandOthers("error", "Invalid id for edit");
-        }
-
-        for (int i = 2; i < commandItems.length; i++) {
-            String currWord = commandItems[i];
-            String currWordLC = currWord.toLowerCase();
-            if (isAddParamName(currWordLC) || currWordLC.equals("delete:")) {
-                currField = getParamName(currWordLC);
-            } else if (hasValidHashTag(currWord)) {
-                // TODO: are tags case sensitive?
-                editFields.add(new TaskParam("tag", currWord));
-            } else if (currField.equals("delete")) {
-                // if it's a delete
-                // check if it's a valid delete keyword (ignore otherwise)
-                if (Arrays.asList(EDIT_DEL_LIST).contains(currWordLC)) {
-                    // if delete already has content
-                    if (paramAlreadyFilled(parsed, currField)) {
-                        // check for duplicate words (TODO: unnecessary?)
-                        TaskParam deleteParam = getTaskParam(editFields,
-                                                             currField);
-                        if (!deleteParam.getField().contains(currWordLC)) {
-                            getTaskParam(editFields, currField)
-                                    .addToField(currWordLC);
-                        }
-                    } else {
-                        // normal: just make a new param
-                        editFields.add(new TaskParam(currField, currWord));
-                        parsed.add(currField);
-                    }
-                }
-            } else {
-                if (paramAlreadyFilled(parsed, currField)) {
-                    getTaskParam(editFields, currField).addToField(currWord);
-                } else {
-                    editFields.add(new TaskParam(currField, currWord));
-                    parsed.add(currField);
-                }
-            }
-        }
-
-        removeDuplicates(editFields);
-
-        return new CommandEdit(editFields);
     }
 
     private static <E> void removeDuplicates(ArrayList<E> fields) {
@@ -328,50 +375,8 @@ public class Parser {
         }
     }
 
-    private static Command parseHelp(String[] commandItems) {
-        String helpField = null;
-
-        // TODO: change CommandHelp to process "invalid" as Command.ERROR?
-        if (commandItems.length > 1) {
-            if (isHelpParam(commandItems[1])) {
-                helpField = commandItems[1].toLowerCase();
-            } else {
-                helpField = "invalid";
-            }
-        }
-
-        return new CommandHelp(helpField);
-    }
-
     private static boolean isHelpParam(String string) {
         return Arrays.asList(HELP_CMD_LIST).contains(string.toLowerCase());
-    }
-
-    private static Command parseAdd(String[] commandItems) {
-        String currField = "name";
-        ArrayList<TaskParam> addFields = new ArrayList<TaskParam>();
-        ArrayList<String> parsed = new ArrayList<String>();
-
-        for (int i = 1; i < commandItems.length; i++) {
-            String currWord = commandItems[i];
-            String currWordLC = currWord.toLowerCase();
-            if (isAddParamName(currWordLC)) {
-                currField = getParamName(currWordLC);
-            } else if (hasValidHashTag(currWord)) {
-                addFields.add(new TaskParam("tag", currWord));
-            } else {
-                if (paramAlreadyFilled(parsed, currField)) {
-                    getTaskParam(addFields, currField).addToField(currWord);
-                } else {
-                    addFields.add(new TaskParam(currField, currWord));
-                    parsed.add(currField);
-                }
-            }
-        }
-
-        removeDuplicates(addFields);
-
-        return new CommandAdd(addFields);
     }
 
     private static String getParamName(String currWord) {
@@ -380,24 +385,20 @@ public class Parser {
         return longParamName;
     }
 
-    private static TaskParam getTaskParam(ArrayList<TaskParam> addFields,
+    private static TaskParam getTaskParam(ArrayList<TaskParam> fields,
                                           String currField) {
-        for (TaskParam tp : addFields) {
+        // Attempt to get TaskParam named currField from ArrayList
+        for (TaskParam tp : fields) {
             if (tp.getName().equals(currField)) {
                 return tp;
             }
         }
 
-        // Code should not reach this point
-        TaskParam failSafe = new TaskParam(currField, "");
-        addFields.add(failSafe);
-        return failSafe;
+        // If not found, create it
+        TaskParam newParam = new TaskParam(currField, "");
+        fields.add(newParam);
+        return newParam;
 
-    }
-
-    private static boolean paramAlreadyFilled(ArrayList<String> parsed,
-                                              String currField) {
-        return parsed.contains(currField);
     }
 
     private static String convertIfShorthand(String currField) {
@@ -419,7 +420,7 @@ public class Parser {
     }
 
     private static boolean isAddParamName(String str) {
-        return Arrays.asList(ADD_PARAM_LIST).contains(str.toLowerCase());
+        return Arrays.asList(TASK_PARAM_LIST_COLON).contains(str.toLowerCase());
     }
 
     private static String removeLastChar(String word) {
@@ -431,19 +432,27 @@ public class Parser {
     }
 
     // ========== TASK PARSING METHODS ==========//
-    public static Task parseRawText(String text) {
-        String currField = "name";
+    public static Task parseToTask(String text) {
         String[] textItems = text.trim().split(" ");
         String[] param = new String[] { "", "", "", "", "", "" };
         ArrayList<String> tags = new ArrayList<String>();
 
-        // Note: No support for shorthand
+        String currField = "name";
+        boolean isDone = false;
+
         for (int i = 0; i < textItems.length; i++) {
             String currWord = textItems[i];
+            String currWordLC = currWord.toLowerCase();
             if (isAddParamName(currWord)) {
                 currField = getParamName(currWord.toLowerCase());
             } else if (hasValidHashTag(currWord)) {
-                tags.add(currWord);
+                if (currWordLC.equals("#todo")) {
+                    isDone = false;
+                } else if (currWordLC.equals("#done")) {
+                    isDone = true;
+                } else {
+                    tags.add(currWord);
+                }
             } else {
                 int pIndex = getParamIndex(currField);
                 if (param[pIndex].isEmpty()) {
@@ -454,8 +463,10 @@ public class Parser {
             }
         }
 
-        return new Task(param[0], param[1], param[2], param[3], param[4],
-                param[5], tags);
+        Task newTask = new Task(param[0], param[1], param[2], param[3],
+                param[4], param[5], tags);
+        newTask.setDone(isDone);
+        return newTask;
     }
 
     private static int getParamIndex(String currField) {
@@ -487,17 +498,24 @@ public class Parser {
         result = result.concat("\nEnd: " + task.getEnd());
         result = result.concat("\nPriority: " + task.getPriority());
         result = result.concat("\nTags: " + task.getTags());
+        result = result.concat("\nDoneness: " +
+                               (task.isDone() ? "#Done" : "#ToDo"));
         return result;
     }
 
     // ========== TESTING (TO REMOVE) ==========//
 
-    /*
     public static void main(String[] args) {
         // TODO: Test "\n" when input from command line
-
-        // TEST INVALID COMMAND
-        System.out.println(Parser.parse("that homework m: it's #cs2103"));
+        /*
+         * // TEST INVALID COMMAND
+         * System.out.println(Parser.parse("that homework m: it's #cs2103"));
+         */
+        // TEST RAW PARSE
+        System.out
+                .println(tempTaskToString(Parser
+                        .parseToTask("nAme: do Due: #cs2103 wed namE: homework M: late "
+                                      + "start: priority: due: 9am eNd: now name: quickly #done\n")));
 
         // TEST ADD
         System.out
@@ -509,82 +527,71 @@ public class Parser {
                 .parse("add name: do due: #cs2103 wed name: homework m: late "
                        + "start: priority: due: 9am end: now name: quickly\n"));
         System.out.println(Parser.parse("add"));
-
-        // TEST DELETE
-        System.out.println(Parser.parse("delete all"));
-        System.out.println(Parser.parse("delete search"));
-        System.out.println(Parser.parse("delete done"));
-        System.out.println(Parser.parse("delete 11"));
-        System.out.println(Parser.parse("delete days"));
-        System.out.println(Parser.parse("delete"));
-
-        // TEST HELP
-        System.out.println(Parser.parse("help me"));
-        System.out.println(Parser.parse("help"));
-        System.out.println(Parser.parse("help all"));
-        System.out.println(Parser.parse("help add"));
-
-        // TEST EDIT
         System.out
                 .println(Parser
-                        .parse("edit 1 ten twenty more: addmore start: #cs2103 #cs2103 end: due: tmr delete: name"));
-        System.out.println(Parser
-                .parse("edit 2 delete: nil n: to: do: #cs2103 #cs2103"));
-        System.out
-                .println(Parser
-                        .parse("edit 3 delete: name name nil name name n: todo homework delete: name name"));
-        System.out.println(Parser.parse("edit one two"));
-        System.out.println(Parser.parse("edit"));
-        System.out.println(Parser.parse("edit 1"));
+                        .parse("add name:homework start:end:more:start:end:more:today"));
 
-        // TEST GET()
-        Command testEdit = Parser
-                .parse("edit 3 delete: name name nil name name n: todo homework delete: name name");
-        System.out.println("\n[[ Test get() ]]");
-        System.out.println("type: " + testEdit.getType());
-        System.out.println("error: " + testEdit.getError());
-        System.out.println("name: " + testEdit.get("name"));
-        System.out.println("tags: " + testEdit.getTags());
+        /*
+         * // TEST DELETE System.out.println(Parser.parse("delete all"));
+         * System.out.println(Parser.parse("delete search"));
+         * System.out.println(Parser.parse("delete done"));
+         * System.out.println(Parser.parse("delete 11"));
+         * System.out.println(Parser.parse("delete days"));
+         * System.out.println(Parser.parse("delete"));
+         * 
+         * // TEST HELP System.out.println(Parser.parse("help me"));
+         * System.out.println(Parser.parse("help"));
+         * System.out.println(Parser.parse("help all"));
+         * System.out.println(Parser.parse("help add"));
+         */
 
-        // TEST RAW PARSE
-        System.out
-                .println(tempTaskToString(Parser
-                        .parseRawText("nAme: do Due: #cs2103 wed namE: homework M: late "
-                                      + "start: priority: due: 9am eNd: now name: quickly\n")));
-        
-        // TEST RESTORE
-        System.out.println(Parser.parse("restore all"));
-        System.out.println(Parser.parse("restore 2"));
-        System.out.println(Parser.parse("restore"));
-        System.out.println(Parser.parse("restore b"));
-        
-        // TEST DISPLAY
-        System.out.println(Parser.parse("display all"));
-        System.out.println(Parser.parse("display 2"));
-        System.out.println(Parser.parse("display block"));
-        System.out.println(Parser.parse("display"));
-        System.out.println(Parser.parse("display b"));
-        
-        // TEST OTHERS
-        System.out.println(Parser.parse("clear"));
-        System.out.println(Parser.parse("joke"));
-        System.out.println(Parser.parse("undo"));
-        System.out.println(Parser.parse("redo"));
-        System.out.println(Parser.parse("exit"));
-        
-        // TEST UNBLOCK
-        System.out.println(Parser.parse("unblock 2"));
-        System.out.println(Parser.parse("unblock 2 3"));
-        System.out.println(Parser.parse("unblock one"));
-        System.out.println(Parser.parse("unblock"));
-        
-        // TEST TODO
-        System.out.println(Parser.parse("todo 1"));
-        System.out.println(Parser.parse("todo 1 3"));
-        System.out.println(Parser.parse("todo lAst"));
-        System.out.println(Parser.parse("todo one"));
-        System.out.println(Parser.parse("tODo"));
-
-    }*/
-
+        /*
+         * // TEST EDIT System.out .println(Parser .parse(
+         * "edit 1 ten twenty more: addmore start: #cs2103 #cs2103 #CS2103 end: due: tmr delete: name"
+         * )); System.out.println(Parser
+         * .parse("edit 2 delete: nil n: to: do: #cs2103 #cs2103")); System.out
+         * .println(Parser .parse(
+         * "edit 3 delete: name name nil name name n: todo homework delete: name name"
+         * )); System.out.println(Parser.parse("edit one two"));
+         * System.out.println(Parser.parse("edit"));
+         * System.out.println(Parser.parse("edit 1"));
+         */
+        /*
+         * // TEST GET() Command testEdit = Parser .parse(
+         * "edit 3 delete: name name nil name name n: todo homework delete: name name"
+         * ); System.out.println("\n[[ Test get() ]]");
+         * System.out.println("type: " + testEdit.getType());
+         * System.out.println("error: " + testEdit.getError());
+         * System.out.println("name: " + testEdit.get("name"));
+         * System.out.println("tags: " + testEdit.getTags());
+         * 
+         * // TEST RESTORE System.out.println(Parser.parse("restore all"));
+         * System.out.println(Parser.parse("restore 2"));
+         * System.out.println(Parser.parse("restore"));
+         * System.out.println(Parser.parse("restore b"));
+         * 
+         * // TEST DISPLAY System.out.println(Parser.parse("display all"));
+         * System.out.println(Parser.parse("display 2"));
+         * System.out.println(Parser.parse("display block"));
+         * System.out.println(Parser.parse("display"));
+         * System.out.println(Parser.parse("display b"));
+         * 
+         * // TEST OTHERS System.out.println(Parser.parse("clear"));
+         * System.out.println(Parser.parse("joke"));
+         * System.out.println(Parser.parse("undo"));
+         * System.out.println(Parser.parse("redo"));
+         * System.out.println(Parser.parse("exit"));
+         * 
+         * // TEST UNBLOCK System.out.println(Parser.parse("unblock 2"));
+         * System.out.println(Parser.parse("unblock 2 3"));
+         * System.out.println(Parser.parse("unblock one"));
+         * System.out.println(Parser.parse("unblock"));
+         * 
+         * // TEST TO-DO System.out.println(Parser.parse("todo 1"));
+         * System.out.println(Parser.parse("todo 1 3"));
+         * System.out.println(Parser.parse("todo lAst"));
+         * System.out.println(Parser.parse("todo one"));
+         * System.out.println(Parser.parse("tODo"));
+         */
+    }
 }

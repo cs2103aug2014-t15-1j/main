@@ -50,7 +50,7 @@ public class DataFile {
             Scanner scanner = new Scanner(file);
             while (scanner.hasNextLine()) {
                 String unparsedText = scanner.nextLine();
-                Task newTask = Parser.parseRawText(unparsedText);
+                Task newTask = Parser.parseToTask(unparsedText);
                 allTasks.add(newTask);
                 if (!newTask.isDone()) { // Branch predictor at work here
                     toDoTasks.add(newTask);

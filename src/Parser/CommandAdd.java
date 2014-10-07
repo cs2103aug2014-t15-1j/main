@@ -13,13 +13,14 @@ public class CommandAdd extends Command {
     private String end;
     private String priority;
     
+    private ArrayList<String> tags = new ArrayList<String>();
+    
     private static final String PARAM_NAME = "name";
     private static final String PARAM_MORE = "more";
     private static final String PARAM_DUE = "due";
     private static final String PARAM_START = "start";
     private static final String PARAM_END = "end";
     private static final String PARAM_PRIO = "priority";
-    private static final String PARAM_TAGS = "tags";
 
     public CommandAdd(ArrayList<TaskParam> content) {
         this.type = CommandType.ADD;
@@ -94,11 +95,7 @@ public class CommandAdd extends Command {
     }
     
     public ArrayList<String> getTags(){
-        if (tags.equals(PARAM_TAGS)) {
-            return this.tags;
-        } else {
-            return null;
-        }
+        return this.tags;
     }
     
     public String toString() {
