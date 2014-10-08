@@ -8,8 +8,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
-import Logic.Processor;
-
 public class SetUp {
 	
 	// Gets the new line character used by the user's system
@@ -38,7 +36,6 @@ public class SetUp {
 		shell = shellToSet;
 		
 		initialise();
-        Processor.initialize();
     }
 	
 	public Text getDisplayScreen(){

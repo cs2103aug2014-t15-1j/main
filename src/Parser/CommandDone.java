@@ -4,20 +4,25 @@ import java.util.ArrayList;
 
 import Logic.CommandType;
 
-public class CommandTodo extends Command {
+//TODO: ADD DATES
 
-    // Todo types [get("rangeType"); returns "last" | "id"]
+public class CommandDone extends Command {
+
+    // Done types [get("rangeType"); returns "all" | "id" | "dates"]
     private String rangeType;
 
-    // "id" data [get("id"); returns string]
+    // Done data [get("id"), get("start"), get("end"); returns string]
+    // If only 1 date, start = end;
     private String id;
+    private String start;
+    private String end;
 
-    public CommandTodo(ArrayList<TaskParam> content) {
+    public CommandDone(ArrayList<TaskParam> content) {
         if (content.isEmpty()) {
             this.type = CommandType.ERROR;
-            this.error = "No arguments for todo";
+            this.error = "No arguments for done";
         } else {
-            this.type = CommandType.TODO;
+            this.type = CommandType.DONE;
 
             for (TaskParam param : content) {
                 switch (param.getName()) {
@@ -51,9 +56,11 @@ public class CommandTodo extends Command {
     }
 
     public String toString() {
-        String result = "\n[[ CMD-TODO: ]]";
+        String result = "\n[[ CMD-DONE: ]]";
         result = result.concat("\nrangeType: " + rangeType);
         result = result.concat("\nid: " + id);
+        result = result.concat("\nstart: " + start);
+        result = result.concat("\nend: " + end);
 
         return result;
     }

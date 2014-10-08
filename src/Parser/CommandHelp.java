@@ -5,7 +5,7 @@ import Logic.CommandType;
 public class CommandHelp extends Command {
     
     // help fields: "all" or "<command>" or "invalid"
-    protected String field;
+    private String field;
 
     public CommandHelp(String content) {
         this.type = CommandType.HELP;

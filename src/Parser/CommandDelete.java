@@ -17,10 +17,10 @@ import Logic.CommandType;
 public class CommandDelete extends Command {
 
     // Delete types
-    protected String rangeType;
+    private String rangeType;
 
     // Delete type data [get("id")]
-    protected String id;
+    private String id;
 
     public CommandDelete(ArrayList<TaskParam> content) {
         if (content.isEmpty()) {

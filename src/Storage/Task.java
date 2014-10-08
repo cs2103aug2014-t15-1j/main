@@ -1,25 +1,26 @@
 package Storage;
 
+import java.util.List;
 import java.util.ArrayList;
 
 public class Task {
     private static int newId = 1;   // ID for each new task object
 	
 	// Task Object Attributes
-    private final int ID; // ID only changes once, at each program start
+    private final int ID; // ID only changes once, at each object construction
     private String name = "";
     private String more = "";
-    private String due = "";   //CHANGE TO DATE type?
-    private String start = ""; //CHANGE TO DATE type?
-    private String end = "";   //CHANGE TO DATE type?
+    private String due = "";   // TODO Change to Date type
+    private String start = ""; // TODO Change to Date type
+    private String end = "";   // TODO Change to Date type
     private String priority = "";
-    private ArrayList<String> tags = new ArrayList<String>();
-    private boolean deleted = false;  // useful?
+    private List<String> tags = new ArrayList<String>();
+    private boolean deleted = false;
     private boolean done = false;
     
     // Constructor
     public Task(String name, String more, String due, String start, 
-            String end, String priority, ArrayList<String> tags) {
+            String end, String priority, List<String> tags) {
         this.ID = newId;
         newId++;
         this.name = name;
@@ -31,6 +32,22 @@ public class Task {
         this.tags = tags;
     }
     
+    // Constructor that clones a task object
+    public Task(Task task) {
+        this.ID = task.getId();
+        this.name = task.getName();
+        this.more = task.getMore();
+        this.due = task.getDue();
+        this.start = task.getStart();
+        this.end = task.getEnd();
+        this.priority = task.getPriority();
+        this.tags.addAll(task.getTags());
+        this.deleted = task.isDeleted();
+        this.done = task.isDone();
+    }
+    
+    // Converts task into a single String
+    // Meant to be written to system file
     public String stringify() {
         String stringifiedTask = "Name: " + name + " ";
         stringifiedTask += "More: " + more + " ";
@@ -38,12 +55,13 @@ public class Task {
         stringifiedTask += "Start: " + start + " ";
         stringifiedTask += "End: " + end + " ";
         stringifiedTask += "Priority: " + priority + " ";
-        //stringifiedTask += stringifyTags();
-        //stringifiedTask += done ? "#done" : "#todo";
+        stringifiedTask += stringifyTags();
+        stringifiedTask += done ? "#done" : "#todo";
         
         return stringifiedTask;
     }
-    /* TODO Bug fixing yay
+    
+    // Converts list of tags into a single String
     private String stringifyTags() {
         String stringifiedTags = "";
         if (!this.tags.isEmpty()) {
@@ -52,7 +70,7 @@ public class Task {
             }
         }
         return stringifiedTags;
-    }*/
+    }
     
     //===== Getters and setters =====//
     
@@ -85,7 +103,7 @@ public class Task {
         return priority;
     }
     
-    public ArrayList<String> getTags() {
+    public List<String> getTags() {
         return tags;
     }
     
@@ -122,15 +140,15 @@ public class Task {
         this.priority = priority;
     }
     
-    public void setTags(ArrayList<String> tags) {
+    public void setTags(List<String> tags) {
         this.tags = tags;
     }
     
-    public void addTags(ArrayList<String> tags) {
+    public void addTags(List<String> tags) {
         this.tags.addAll(tags);
     }
     
-    public void removeTags(ArrayList<String> tags) {
+    public void removeTags(List<String> tags) {
         this.tags.removeAll(tags);
     }
     

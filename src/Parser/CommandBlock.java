@@ -8,8 +8,8 @@ public class CommandBlock extends Command {
 
     // Block dates range [get("start"), get("end"); returns date]
     // If it's only 1 day, start = end
-    protected String start;
-    protected String end;
+    private String start;
+    private String end;
 
     public CommandBlock(ArrayList<TaskParam> content) {
         if (content.isEmpty()) {

@@ -15,6 +15,8 @@ public class CommandEdit extends Command {
     private String priority;
     private String delete;
     
+    private ArrayList<String> tags = new ArrayList<String>();
+    
     private static final String PARAM_ID = "id";
     private static final String PARAM_NAME = "name";
     private static final String PARAM_MORE = "more";

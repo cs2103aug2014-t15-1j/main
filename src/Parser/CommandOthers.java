@@ -47,10 +47,9 @@ public class CommandOthers extends Command {
     }
 
     public CommandOthers(String type, String msg) {
-        this(type);
-        if (type.equals("error")) {
-            this.error = msg;
-        }
+        assert(type.equals("error"));
+        this.type = CommandType.ERROR;
+        this.error = msg;
     }
 
     public String toString() {

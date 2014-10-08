@@ -1,6 +1,7 @@
 package Logic;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.ArrayList;
 import java.util.Stack;
 
@@ -22,10 +23,6 @@ public class Processor {
 		return processCommand(cmd);
 	}
 	
-	public static void initialize() {
-		file.initialize();
-	}
-	
 	private Result processCommand(Command cmd) throws IOException {
 		return processCommand(cmd, true);
 	}
@@ -33,6 +30,7 @@ public class Processor {
 	private Result processCommand(Command cmd, boolean userInput) throws IOException {
 		ArrayList<Task> tasks = new ArrayList<Task>();
 		boolean success = false;
+		
 		if (cmd == null || cmd.getType() == CommandType.ERROR) {
 			return new Result(null, false, CommandType.ERROR);
 		}
@@ -86,6 +84,11 @@ public class Processor {
 				success = true;
 			default:
 		}
+		
+		if (success && userInput) {
+			updateCommandHistory(cmd);
+		}
+		
 		return new Result(tasks, success, cmdType);
 	}
 
@@ -96,12 +99,9 @@ public class Processor {
 		if (isBlocked(cmd)) {
 			return false;
 		}
+		
 		Task newTask = new Task(cmd.get("name"), cmd.get("more"), cmd.get("due"), cmd.get("start"), cmd.get("end"), cmd.get("priority"), cmd.getTags());
 		tasks.add(newTask);
-		
-		if (userInput) {
-			updateCommandHistory(cmd);
-		}
 		
 		return file.addTask(newTask);
 	}
@@ -112,28 +112,21 @@ public class Processor {
 	}
 	
 	private boolean editTask(Command cmd, ArrayList<Task> tasks, boolean userInput) throws IOException {
-		Task existingTask = file.getTask(Integer.parseInt(cmd.get("id")));
+		Task existingTask = getTaskById(cmd);
+		
 		if (existingTask != null) {
-			editedTask.push(existingTask);
-			
+			Task oldTask = new Task(existingTask);
+			editedTask.push(oldTask);
 			updateTaskParameters(cmd, existingTask);
-			
-			file.updateFile(); // Refreshes file on system with edited task information
 			tasks.add(existingTask);
-			editedTask.push(existingTask);
-			updateCommandHistory(cmd);
 			return true;
 		}
 		return false;
 	}
 
+	//Copies parameters from cmd to existingTask
 	private void updateTaskParameters(Command cmd, Task existingTask) {
-	    // To update task parameters, there's no need to create a new task
-	    // You can just directly edit the existing task
-	    // Next line is not needed to update task parameters
-	    //Task task = new Task(existingTask.getName(), existingTask.getMore(), existingTask.getDue(), existingTask.getStart(), existingTask.getEnd(), existingTask.getPriority(), existingTask.getTags());
-		//Store updatedTask to storage	
-		if (cmd.get("name") != null) {
+	    if (cmd.get("name") != null) {
 			existingTask.setName(cmd.get("name"));
 		}
 		if (cmd.get("more") != null) {
@@ -160,26 +153,13 @@ public class Processor {
 	//ArrayList<Task> tasks = empty if deleting all the file.
 	//else will contain at least 1 task.	
 	private boolean deleteTask(Command cmd, ArrayList<Task> tasks, boolean userInput) {
+		boolean success = false;
 		switch (cmd.get("rangeType")) {
 			case "id":
-				Task t = file.getTask(Integer.parseInt(cmd.get("id")));
-				if (t != null) {
-					tasks.add(t);
-					file.deleteTask(t.getId());
-				} else {
-					return false;
-				}
+				success = deleteTaskUsingID(cmd, tasks);
 				break;
 			case "search":
-				if (!searchList.isEmpty()) {
-					for (Task existingTask : searchList) {
-						if (existingTask != null) {
-							file.deleteTask(existingTask.getId());
-						}
-					}
-				} else {
-					return false; //Nothing in prev search
-				}
+				success = deleteSearchedTasks(cmd, tasks);
 				break;
 			case "all":
 				return true;
@@ -187,9 +167,31 @@ public class Processor {
 				return false;
 		}
 		
-		if (userInput) {
-			updateCommandHistory(cmd);
+		return success;
+	}
+	
+	private boolean deleteTaskUsingID(Command cmd, ArrayList<Task> tasks) {
+		Task t = file.getTask(Integer.parseInt(cmd.get("id")));
+		if (t != null) {
+			file.deleteTask(t.getId());
+		} else {
+			return false;
 		}
+		
+		return true;
+	}
+	
+	private boolean deleteSearchedTasks(Command cmd, ArrayList<Task> tasks) {
+		if (!searchList.isEmpty()) {
+			for (Task existingTask : searchList) {
+				if (existingTask != null) {
+					file.deleteTask(existingTask.getId());
+				}
+			}
+		} else {
+			return false; //Nothing in previous search
+		}
+		
 		return true;
 	}
 
@@ -205,31 +207,31 @@ public class Processor {
 				return false;
 		}
 		
-		if (userInput) {
-			updateCommandHistory(cmd);
-		}
-		
 		return true;
 	}
 
-	private void restoreUsingId(Command cmd, ArrayList<Task> tasks)
-			throws IOException {
+	private void restoreUsingId(Command cmd, ArrayList<Task> tasks)	throws IOException {
+		Task task = null;
 		for (Task t: file.getDeletedTasks()) {
 			if (t.getId() == Integer.parseInt(cmd.get("id"))) {
-				tasks.add(t);
-				file.getDeletedTasks().remove(t);
-				file.addTask(t);
+				task = t;
 				break;
 			}
 		}
+		
+		if (task != null) {
+			file.restore(task.getId());
+		}
+		
 	}
 
 	private void restoreAll(ArrayList<Task> tasks) throws IOException {
 		for (Task t: file.getDeletedTasks()) {
 			tasks.add(t);
-			file.getDeletedTasks().remove(t);
 			file.addTask(t);
 		}
+		
+		file.getDeletedTasks().clear();
 	}
 	
 	public boolean deleteAllData() {
@@ -239,9 +241,9 @@ public class Processor {
 	}
 	
 	private boolean searchTasks(Command cmd, ArrayList<Task> tasks, boolean userInput) {
-		ArrayList<Task> doneTasks = file.getDoneTasks();
-		ArrayList<Task> toDoTasks = file.getToDoTasks();
-		ArrayList<Task> deletedTask = file.getDeletedTasks();
+		List<Task> doneTasks = file.getDoneTasks();
+		List<Task> toDoTasks = file.getToDoTasks();
+		List<Task> deletedTask = file.getDeletedTasks();
 		
 		//ArrayList<String> keywords = cmd.get("rangeType");
 		
@@ -270,7 +272,7 @@ public class Processor {
 	private boolean displayTask(Command cmd, ArrayList<Task> tasks, boolean userInput) {
 		switch (cmd.get("rangeType")) {
 			case "id":
-				tasks.add(file.getTask(Integer.parseInt(cmd.get("id"))));
+				tasks.add(getTaskById(cmd));
 				break;
 			case "search":
 				tasks = searchList;
@@ -283,6 +285,10 @@ public class Processor {
 		return true;
 	}
 
+	private Task getTaskById(Command cmd) {
+		return file.getTask(Integer.parseInt(cmd.get("id")));
+	}
+
 	private boolean blockDates(Command cmd) {
 		return false;
 	}
@@ -292,28 +298,26 @@ public class Processor {
 	}
 	
 	private boolean doneTasks(Command cmd, ArrayList<Task> tasks, boolean userInput) {
-		Task existingTask = file.getTask(Integer.parseInt(cmd.get("id")));
+		Task existingTask = getTaskById(cmd);
+		
 		if (existingTask != null) {
 			existingTask.setDone(true);
 			tasks.add(existingTask);
-			if (userInput) {
-				updateCommandHistory(cmd);
-			}
 			return true;
 		}
+		
 		return false;
 	}
 
 	private boolean toDoTasks(Command cmd, ArrayList<Task> tasks, boolean userInput) {
-		Task existingTask = file.getTask(Integer.parseInt(cmd.get("id")));
+		Task existingTask = getTaskById(cmd);
+		
 		if (existingTask != null) {
 			existingTask.setDone(false);
 			tasks.add(existingTask);
-			if (userInput) {
-				updateCommandHistory(cmd);
-			}
 			return true;
 		}
+		
 		return false;
 	}
 	
@@ -331,20 +335,20 @@ public class Processor {
 						undoEdit();
 						break;
 					case DELETE:
-						restoreTask(cmd, new ArrayList<Task>(), false);
+						restoreTask(backwardCommand, new ArrayList<Task>(), false);
 						break;
 					case RESTORE:
-						deleteTask(cmd, new ArrayList<Task>(), false);
+						deleteTask(backwardCommand, new ArrayList<Task>(), false);
 						break;
 					case BLOCK:
 						break;
 					case UNBLOCK:
 						break;
 					case TODO:
-						doneTasks(cmd, new ArrayList<Task>(), false);
+						doneTasks(backwardCommand, new ArrayList<Task>(), false);
 						break;
 					case DONE:
-						toDoTasks(cmd, new ArrayList<Task>(), false);
+						toDoTasks(backwardCommand, new ArrayList<Task>(), false);
 						break;
 					default:
 						return false;
@@ -368,13 +372,16 @@ public class Processor {
 
 	private void undoEdit() {
 		Task prevTask = editedTask.pop();
+		
 		for (Task existingTask: file.getToDoTasks()) {
 			if (existingTask.getId() == prevTask.getId()) {
 				copyTaskParameters(prevTask, existingTask);
+				break;
 			}
 		}
 	}
 
+	//Copies parameters from prevTask to existingTask
 	private void copyTaskParameters(Task prevTask, Task existingTask) {
 		existingTask.setName(prevTask.getName());
 		existingTask.setMore(prevTask.getMore());
@@ -406,7 +413,20 @@ public class Processor {
 	}
 	
 	private void updateCommandHistory(Command cmd) {
-		forwardHistory.clear();
-		backwardHistory.push(cmd);
+		switch (cmd.getType()) {
+			case ADD:
+			case DELETE:
+			case EDIT:
+			case RESTORE:
+			case BLOCK:
+			case UNBLOCK:
+			case DONE:
+			case TODO:
+				forwardHistory.clear();
+				backwardHistory.push(cmd);
+				break;
+			default:
+				return;
+		}
 	}
 }
