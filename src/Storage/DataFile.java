@@ -13,11 +13,16 @@ public class DataFile {
     
     final private static String FILENAME = "Data";
     
+    // A task can only exist in one of the three (todo, done, deleted)
+    // arrayLists at any one time.
+    // allTasks contains references to all tasks, sorted by id
     private static ArrayList<Task> allTasks = new ArrayList<Task>();
     private static ArrayList<Task> toDoTasks = new ArrayList<Task>();
     private static ArrayList<Task> doneTasks = new ArrayList<Task>();
     private static ArrayList<Task> deletedTasks = new ArrayList<Task>();
     
+    // ArrayList getters
+    // Aids in searching and display commands
     public ArrayList<Task> getAllTasks() {
         return allTasks;
     }
@@ -31,7 +36,8 @@ public class DataFile {
         return deletedTasks;
     }
     
-    public void initialize() {
+    // Constructor
+    public DataFile() {
         File file = new File(FILENAME);
         if(file.exists()) {
             getTasksFromFile(file);
@@ -45,6 +51,7 @@ public class DataFile {
         }
     }
     
+    // Populate task arrayLists with data from system file
     private void getTasksFromFile(File file) {
         try {
             Scanner scanner = new Scanner(file);
@@ -65,11 +72,14 @@ public class DataFile {
         }
     }
     
+    // Given id, return task object
+    // Includes todo, done, and deleted tasks
     public Task getTask(int id) {
         Task task = searchTaskById(allTasks, id);
         return task;
     }
     
+    // Given id, return task object from given arrayList
     private Task searchTaskById(ArrayList<Task> tasks, int id) {
         for (Task tempTask : tasks) {
             if (tempTask.getId() == id) {
@@ -79,14 +89,14 @@ public class DataFile {
         return null;
     }
     
-    // Used when adding a new task
+    // Used to add a new task
     public boolean addTask(Task task) {
         toDoTasks.add(task);
         allTasks.add(task);
         return updateFile();
     }
     
-    // Refreshes file with new data in arraylists
+    // Refreshes system file with new data in arrayLists
     public boolean updateFile() {
         // To write to file
         // Deleted tasks are not written to file
@@ -109,6 +119,7 @@ public class DataFile {
         return text;
     }
     
+    // Writes todo and done arrayLists to system file
     private boolean writeToFile(String newFileText) {
         try {
             File file = new File(FILENAME);
@@ -127,6 +138,9 @@ public class DataFile {
         }
     }
     
+    // Given id, deletes task object
+    // Task object is removed from todo or done arrayList,
+    // and added to deleted arrayList
     public boolean deleteTask(int id) {
         Task tempTask = searchTaskById(allTasks, id);
         if (tempTask == null) {
@@ -146,6 +160,9 @@ public class DataFile {
         return true;
     }
     
+    // Deletes all task objects
+    // All tasks are removed from todo and done
+    // arrayLists, and added to deleted arrayList
     public boolean deleteAll() {
         for (Task tempTask : allTasks) {
             if (!tempTask.isDeleted()) {
