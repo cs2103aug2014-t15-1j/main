@@ -34,6 +34,7 @@ public class ResultGenerator {
     private static final String CODE_EXIT = " exit";
     private static final String UNSUCCESSFUL_SEARCH_MESSAGE = "We could not find any results :( Try using different words?";
     private static final String UNSUCCESSFUL_COMMAND_MESSAGE = "'%1$s'was not recognised.";
+    private static final String UNSUCCESSFUL_DISPLAY_NO_TASKS = "You are a free man! You do not have any tasks.";
     private static final String EMPTY_MESSAGE = "That was read as empty. Try again.";
     private static final String ERROR_DISPLAY = "Unable to display.";
     private static final String ERROR_COMMAND_MESSAGE = "Houston, we have a problem";
@@ -83,8 +84,6 @@ public class ResultGenerator {
             case EDIT :
                 return singleLineSuccessMessage(SUCCESSFUL_EDIT, tasks);
             case DISPLAY:
-            	// task cannot be empty
-            	assert(!tasks.isEmpty());
                 return successfulDisplayMessage(tasks);
             case SEARCH :
                 return successfulSearchMessage(tasks);
@@ -132,7 +131,10 @@ public class ResultGenerator {
 
     public static String successfulDisplayMessage(ArrayList<Task> tasks) {
         int itemsToDisplay = tasks.size();
-        if(itemsToDisplay == 1){
+        if(itemsToDisplay == 0){
+        	return UNSUCCESSFUL_DISPLAY_NO_TASKS;
+        }
+        else if(itemsToDisplay == 1){
         	return successfulDisplaySingleTask(tasks);
         }
         ArrayList<String> displayList = changeTaskListToString(tasks,
