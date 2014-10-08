@@ -178,5 +178,22 @@ public class DataFile {
         updateFile();
         return true;
     }
+    
+    // Restores a deleted task given its id
+    public boolean restore(int id) {
+        Task task = searchTaskById(deletedTasks, id);
+        
+        if (task == null) {
+            return false; // Invalid id
+        } else {
+            deletedTasks.remove(task);
+            if (task.isDone()) {
+                doneTasks.add(task);
+            } else {
+                toDoTasks.add(task);
+            }
+            return true;
+        }
+    }
 }
 // TODO fill in gaps and remove extraneous parts in Processor.java
