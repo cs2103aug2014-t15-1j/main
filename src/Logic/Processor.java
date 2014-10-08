@@ -1,6 +1,7 @@
 package Logic;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.ArrayList;
 import java.util.Stack;
 
@@ -210,10 +211,15 @@ public class Processor {
 
 	private void restoreUsingId(Command cmd, ArrayList<Task> tasks)
 			throws IOException {
-		for (Task t: file.getDeletedTasks()) {
+	    // File functions are being misused
+	    // Please use the restore(id) function
+	    // Please do not add or remove tasks from arrayLists
+	    // I need to create an API list for my functions
+	    
+	    for (Task t: file.getDeletedTasks()) {
 			if (t.getId() == Integer.parseInt(cmd.get("id"))) {
 				tasks.add(t);
-				file.getDeletedTasks().remove(t);
+				file.getDeletedTasks().remove(t); 
 				file.addTask(t);
 				break;
 			}
@@ -235,9 +241,9 @@ public class Processor {
 	}
 	
 	private boolean searchTasks(Command cmd, ArrayList<Task> tasks, boolean userInput) {
-		ArrayList<Task> doneTasks = file.getDoneTasks();
-		ArrayList<Task> toDoTasks = file.getToDoTasks();
-		ArrayList<Task> deletedTask = file.getDeletedTasks();
+		List<Task> doneTasks = file.getDoneTasks();
+		List<Task> toDoTasks = file.getToDoTasks();
+		List<Task> deletedTask = file.getDeletedTasks();
 		
 		//ArrayList<String> keywords = cmd.get("rangeType");
 		
