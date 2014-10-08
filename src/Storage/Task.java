@@ -1,5 +1,6 @@
 package Storage;
 
+import java.util.List;
 import java.util.ArrayList;
 
 public class Task {
@@ -13,13 +14,13 @@ public class Task {
     private String start = ""; // TODO Change to Date type
     private String end = "";   // TODO Change to Date type
     private String priority = "";
-    private ArrayList<String> tags = new ArrayList<String>();
+    private List<String> tags = new ArrayList<String>();
     private boolean deleted = false;
     private boolean done = false;
     
     // Constructor
     public Task(String name, String more, String due, String start, 
-            String end, String priority, ArrayList<String> tags) {
+            String end, String priority, List<String> tags) {
         this.ID = newId;
         newId++;
         this.name = name;
@@ -60,7 +61,7 @@ public class Task {
         return stringifiedTask;
     }
     
-    // Converts arrayList of tags into a single String
+    // Converts list of tags into a single String
     private String stringifyTags() {
         String stringifiedTags = "";
         if (!this.tags.isEmpty()) {
@@ -102,7 +103,7 @@ public class Task {
         return priority;
     }
     
-    public ArrayList<String> getTags() {
+    public List<String> getTags() {
         return tags;
     }
     
@@ -139,15 +140,15 @@ public class Task {
         this.priority = priority;
     }
     
-    public void setTags(ArrayList<String> tags) {
+    public void setTags(List<String> tags) {
         this.tags = tags;
     }
     
-    public void addTags(ArrayList<String> tags) {
+    public void addTags(List<String> tags) {
         this.tags.addAll(tags);
     }
     
-    public void removeTags(ArrayList<String> tags) {
+    public void removeTags(List<String> tags) {
         this.tags.removeAll(tags);
     }
     
