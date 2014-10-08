@@ -175,6 +175,7 @@ public class DataFile {
                 }
             }
         }
+        updateFile();
         return true;
     }
 }
