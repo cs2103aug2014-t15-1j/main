@@ -6,15 +6,15 @@ public class Task {
     private static int newId = 1;   // ID for each new task object
 	
 	// Task Object Attributes
-    private final int ID; // ID only changes once, at each program start
+    private final int ID; // ID only changes once, at each object construction
     private String name = "";
     private String more = "";
-    private String due = "";   //CHANGE TO DATE type?
-    private String start = ""; //CHANGE TO DATE type?
-    private String end = "";   //CHANGE TO DATE type?
+    private String due = "";   // TODO Change to Date type
+    private String start = ""; // TODO Change to Date type
+    private String end = "";   // TODO Change to Date type
     private String priority = "";
     private ArrayList<String> tags = new ArrayList<String>();
-    private boolean deleted = false;  // useful?
+    private boolean deleted = false;
     private boolean done = false;
     
     // Constructor
@@ -29,6 +29,20 @@ public class Task {
         this.end = end;
         this.priority = priority;
         this.tags = tags;
+    }
+    
+    // Constructor that clones a task object
+    public Task(Task task) {
+        this.ID = task.getId();
+        this.name = task.getName();
+        this.more = task.getMore();
+        this.due = task.getDue();
+        this.start = task.getStart();
+        this.end = task.getEnd();
+        this.priority = task.getPriority();
+        this.tags.addAll(task.getTags());
+        this.deleted = task.isDeleted();
+        this.done = task.isDone();
     }
     
     public String stringify() {
