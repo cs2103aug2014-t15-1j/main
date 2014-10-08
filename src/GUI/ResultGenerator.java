@@ -47,6 +47,14 @@ public class ResultGenerator {
     private static final String PARA_STRING_END = "End: ";
     private static final String PARA_STRING_PRIORITY = "Priority: ";
     private static final String PARA_STRING_TAG = "Tag: ";
+    private static final String PARA_STRING_STATUS = "Status: ";
+    private static final String PARA_STRING_VALUE_EMPTY = "<empty>";
+    
+    private static final String STATUS_DELETED = "Deleted";
+    private static final String STATUS_TODO = "To Do";
+    private static final String STATUS_DONE = "Done";
+    
+    private static final String HASHTAG = "#";
 
     public static String sendInput(String userInput) throws IOException {
         if(isEmpty(userInput)){
@@ -160,9 +168,9 @@ public class ResultGenerator {
 
     // Format of each element in the arrayList is "(task id). (task name)"
     private static ArrayList<String> changeTaskListToString(
-            ArrayList<Task> tasks, int numOfSearchResults) {
+            ArrayList<Task> tasks, int size) {
         ArrayList<String> tasksInString = new ArrayList<String>();
-        for (int index = 0; index < numOfSearchResults; index++) {
+        for (int index = 0; index < size; index++) {
             Task currentTask = tasks.get(index);
             String taskName = currentTask.getName();
             int taskId = currentTask.getId();
@@ -200,26 +208,57 @@ public class ResultGenerator {
 		message = addToMessage(message, PARA_STRING_PRIORITY, priority);
 		List<String> tags = task.getTags();
 		message = addTags(message, tags);
+		message = addStatus(message, task);
 		return message;
 	}
     
     private static String addTags(String message, List<String> tags){
-    	if(tags == null){
+    	if(tags.isEmpty() ){
+    		message = addToMessage(message, PARA_STRING_TAG, PARA_STRING_VALUE_EMPTY);
     		return message;
     	}
     	int length = tags.size();
     	message = message + LINE_SEPARATOR + PARA_STRING_TAG;
     	for(int index = 0; index<length; index++){
     		String currentTag = tags.get(index);
+    		if(isStatus(currentTag)){
+    			// moves on to the next tag if its a status
+    			currentTag = tags.get(index+1);
+    		}
     		message = message + " " + currentTag;
     	}
     	return message;
     }
+    
+    // delete status takes precedence over todo and done
+    private static String addStatus(String message, Task task){
+    	message = message + LINE_SEPARATOR + PARA_STRING_STATUS;
+    	if(task.isDeleted()){
+    		message = message + STATUS_DELETED;
+    	}else if(task.isDone()){
+    		message = message + STATUS_DONE;
+    	}
+    	else{
+    		message = message + STATUS_TODO;
+    	}
+    	
+    	return message;
+    }
+    
+    private static boolean isStatus(String tag){
+    	String tagToCheck = tag.toLowerCase();
+    	if(tagToCheck == HASHTAG + STATUS_DELETED || tagToCheck == HASHTAG + STATUS_TODO || tagToCheck == HASHTAG + STATUS_DONE){
+    		return true;
+    	}
+    	
+    	return false;
+    }
+    
     private static String addToMessage(String message, String parameters, String toAdd){
-    	if(toAdd==null){
-    		message = message + "";
+    	if(toAdd.isEmpty() || toAdd.equals("null")){
+    		message = message + LINE_SEPARATOR + parameters + PARA_STRING_VALUE_EMPTY;
     	}else{
-    	message = message + LINE_SEPARATOR+ parameters + toAdd;
+    	message = message + LINE_SEPARATOR + parameters + toAdd;
     	}
     	return message;
     }
