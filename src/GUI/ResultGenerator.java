@@ -155,8 +155,6 @@ public class ResultGenerator {
 		return message;
     }
 
-	
-
     // Format of each element in the arrayList is "(task id). (task name)"
     private static ArrayList<String> changeTaskListToString(
             ArrayList<Task> tasks, int numOfSearchResults) {
