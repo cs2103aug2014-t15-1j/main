@@ -39,7 +39,7 @@ public class ResultGenerator {
     private static final String ERROR_DISPLAY = "Unable to display.";
     private static final String ERROR_COMMAND_MESSAGE = "Houston, we have a problem";
     
-   private static final String PARA_STRING_ID = "Task Id: ";
+   private static final String PARA_STRING_ID = "Task ID: ";
     private static final String PARA_STRING_NAME = "Name: ";
     private static final String PARA_STRING_MORE = "More: ";
     private static final String PARA_STRING_DUE = "Due: ";
@@ -213,7 +213,7 @@ public class ResultGenerator {
 	}
     
     private static String addTags(String message, List<String> tags){
-    	if(tags.isEmpty() ){
+    	if(tags.isEmpty() || tags == null){
     		message = addToMessage(message, PARA_STRING_TAG, PARA_STRING_VALUE_EMPTY);
     		return message;
     	}
@@ -255,7 +255,7 @@ public class ResultGenerator {
     }
     
     private static String addToMessage(String message, String parameters, String toAdd){
-    	if(toAdd.isEmpty() || toAdd.equals("null")){
+    	if(toAdd == null || toAdd.isEmpty() || toAdd.equals("null")){
     		message = message + LINE_SEPARATOR + parameters + PARA_STRING_VALUE_EMPTY;
     	}else{
     	message = message + LINE_SEPARATOR + parameters + toAdd;

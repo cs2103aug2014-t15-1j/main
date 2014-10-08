@@ -76,6 +76,7 @@ public class SetUp {
         gridData.heightHint = MIN_HEIGHT_SCREEN;
         gridData.verticalSpan = NUM_COLS_PROGRAM;
         displayScreen.setLayoutData(gridData);
+        displayScreen.setEditable(false);
         displayScreen.setText(MESSAGE_WELCOME);
         displayScreen.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
         displayScreen.setForeground(display.getSystemColor(SWT.COLOR_GREEN));
@@ -96,6 +97,8 @@ public class SetUp {
         upcomingTasks.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
         upcomingTasks.setForeground(display.getSystemColor(SWT.COLOR_GREEN));
         upcomingTasks.setLayoutData(gridData);
+        upcomingTasks.setEditable(false);
+        
 	}
 	
 	private static void setUpCommandLine(){
