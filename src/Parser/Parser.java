@@ -131,7 +131,25 @@ public class Parser {
         try {
             String firstWord = commandItems[1];
             String firstWordLC = firstWord.toLowerCase();
-            if (firstWordLC.equals("all")) {
+            if (isDate(firstWord)) {
+                doneFields.add(new TaskParam("rangeType", "dates"));
+                if (commandItems.length == 4 && commandItems[2].equals("to") &&
+                    isDate(commandItems[3])) {
+                    if (firstDateEarlier(firstWord, commandItems[3])) {
+                        doneFields.add(new TaskParam("start", firstWord));
+                        doneFields.add(new TaskParam("end", commandItems[3]));
+                    } else {
+                        doneFields.add(new TaskParam("end", firstWord));
+                        doneFields.add(new TaskParam("start", commandItems[3]));
+                    }
+                } else if (commandItems.length == 2) {
+                    doneFields.add(new TaskParam("start", firstWord));
+                    doneFields.add(new TaskParam("end", firstWord));
+                } else {
+                    return new CommandOthers("error",
+                            "Invalid arguments for block");
+                }
+            } else if (firstWordLC.equals("all")) {
                 doneFields.add(new TaskParam("rangeType", firstWordLC));
             } else if (isInteger(firstWord)) {
                 doneFields.add(new TaskParam("rangeType", "id"));
@@ -168,21 +186,131 @@ public class Parser {
         ArrayList<TaskParam> blockFields = new ArrayList<TaskParam>();
 
         // TODO: Consider date format (length 1, 2, 3?)
+        // Currently: Date must be "DD/MM/YYYY" format
         try {
-            /*
-             * String firstWord = commandItems[1]; String firstWordLC =
-             * firstWord.toLowerCase(); if (isDate(firstWord)) {
-             * blockFields.add(new TaskParam("rangeType", firstWordLC)); } else
-             * if (isInteger(firstWord)) { blockFields.add(new
-             * TaskParam("rangeType", "id")); blockFields.add(new
-             * TaskParam("id", firstWord)); } else { return new
-             * CommandOthers("error", "Invalid argument for block"); }
-             */
+            String firstWord = commandItems[1];
+            if (isDate(firstWord)) {
+                // TODO: Very unforgiving formatting; doesn't allow any
+                // additional statements
+                if (commandItems.length == 4 && commandItems[2].equals("to") &&
+                    isDate(commandItems[3])) {
+                    if (firstDateEarlier(firstWord, commandItems[3])) {
+                        blockFields.add(new TaskParam("start", firstWord));
+                        blockFields.add(new TaskParam("end", commandItems[3]));
+                    } else {
+                        blockFields.add(new TaskParam("end", firstWord));
+                        blockFields
+                                .add(new TaskParam("start", commandItems[3]));
+                    }
+                } else if (commandItems.length == 2) {
+                    blockFields.add(new TaskParam("start", firstWord));
+                    blockFields.add(new TaskParam("end", firstWord));
+                } else {
+                    return new CommandOthers("error",
+                            "Invalid arguments for block");
+                }
+            } else {
+                return new CommandOthers("error", "Invalid arguments for block");
+            }
         } catch (ArrayIndexOutOfBoundsException e) {
             return new CommandOthers("error", "No arguments for block");
         }
 
         return new CommandBlock(blockFields);
+    }
+
+    private static boolean firstDateEarlier(String first, String second) {
+        int[] date1 = splitToDatesInt(first);
+        int[] date2 = splitToDatesInt(second);
+
+        int day1 = date1[0];
+        int mth1 = date1[1];
+        int yr1 = date1[2];
+        int day2 = date2[0];
+        int mth2 = date2[1];
+        int yr2 = date2[2];
+
+        if (yr1 < yr2) {
+            return true;
+        } else if (yr1 == yr2) {
+            if (mth1 < mth2) {
+                return true;
+            } else if (mth1 == mth2 && day1 < day2) {
+                return true;
+            }
+        }
+
+        System.out.println("second is earlier");
+        return false;
+    }
+
+    private static int[] splitToDatesInt(String str) {
+        assert (isDate(str));
+
+        String[] split = str.split("/");
+
+        int[] result = new int[3];
+        result[0] = Integer.parseInt(split[0]);
+        result[1] = Integer.parseInt(split[1]);
+        result[2] = Integer.parseInt(split[2]);
+
+        return result;
+    }
+
+    private static boolean isDate(String str) {
+        // Tentatively, dates = "DD/MM/YYYY"
+        boolean hasTwoSlashes;
+        boolean hasValidCompLengths;
+        boolean hasIntComponents;
+        boolean hasValidIntComp;
+        
+        try {
+            String[] components = str.split("/");
+            hasTwoSlashes = (components.length == 3);
+            hasValidCompLengths = (components[0].length() == 2) &&
+                                          (components[1].length() == 2) &&
+                                          (components[2].length() == 4);
+            hasIntComponents = isInteger(components[0]) &&
+                                       isInteger(components[1]) &&
+                                       isInteger(components[2]);
+            hasValidIntComp = isValidMonth(components[1]) &&
+                                      isValidDay(components[0], components[1]);
+        } catch (Exception e) {
+            return false;
+        }
+        return hasTwoSlashes && hasValidCompLengths && hasIntComponents &&
+               hasValidIntComp;
+    }
+
+    private static boolean isValidDay(String day, String month) {
+        int dayNum = Integer.parseInt(day);
+        int monthNum = Integer.parseInt(month);
+
+        switch (monthNum) {
+            case 1:
+            case 3:
+            case 5:
+            case 7:
+            case 8:
+            case 10:
+            case 12:
+                return dayNum > 0 && dayNum <= 31;
+
+            case 2:
+                return dayNum > 0 && dayNum <= 28;
+
+            case 4:
+            case 6:
+            case 9:
+            case 11:
+                return dayNum > 0 && dayNum <= 30;
+        }
+        return false;
+    }
+
+    private static boolean isValidMonth(String string) {
+        int monthNum = Integer.parseInt(string);
+        return monthNum > 0 && monthNum <= 12;
     }
 
     private static Command parseDisplay(String[] commandItems) {
@@ -212,47 +340,71 @@ public class Parser {
     private static Command parseSearch(String[] commandItems) {
         ArrayList<TaskParam> searchFields = new ArrayList<TaskParam>();
 
-        // TODO: Add dates
-        try {
-            if (commandItems.length < 2) {
-                throw new ArrayIndexOutOfBoundsException();
-            }
 
-            boolean donenessIndicated = false;
-            for (int i = 1; i < commandItems.length; i++) {
-                String currWord = commandItems[i];
-                String currWordLC = currWord.toLowerCase();
-                if (hasValidHashTag(currWord)) {
-                    // TODO: Error Handling for multiple doneness keywords
-                    if (currWordLC.equals("#done")) {
-                        if (!donenessIndicated) {
-                            searchFields.add(new TaskParam("tag", currWordLC));
-                            donenessIndicated = true;
+        // TODO: REFACTOR
+        try {
+            // CHECK FOR DATE INPUT
+            // CURRENTLY DOES NOT SUPPORT BOTH DATES + TAGS/KEYWORDS
+            String firstWord = commandItems[1];
+            if (isDate(firstWord)) {
+                searchFields.add(new TaskParam("rangeType", "dates"));
+                if (commandItems.length == 4 && commandItems[2].equals("to") &&
+                    isDate(commandItems[3])) {
+                    if (firstDateEarlier(firstWord, commandItems[3])) {
+                        searchFields.add(new TaskParam("start", firstWord));
+                        searchFields.add(new TaskParam("end", commandItems[3]));
+                    } else {
+                        searchFields.add(new TaskParam("end", firstWord));
+                        searchFields.add(new TaskParam("start", commandItems[3]));
+                    }
+                } else if (commandItems.length == 2) {
+                    searchFields.add(new TaskParam("start", firstWord));
+                    searchFields.add(new TaskParam("end", firstWord));
+                } else {
+                    return new CommandOthers("error",
+                            "Mixed Date-and-keyword/tag search detected (not allowed)");
+                }
+            } else {
+                searchFields.add(new TaskParam("rangeType", "keys"));
+                boolean donenessIndicated = false;
+                for (int i = 1; i < commandItems.length; i++) {
+                    String currWord = commandItems[i];
+                    String currWordLC = currWord.toLowerCase();
+                    if (hasValidHashTag(currWord)) {
+                        // TODO: Error Handling for multiple doneness keywords
+                        if (currWordLC.equals("#done")) {
+                            if (!donenessIndicated) {
+                                searchFields.add(new TaskParam("tag",
+                                        currWordLC));
+                                donenessIndicated = true;
+                            } else {
+                                System.out
+                                        .println("A done-ness keyword has already been indicated!");
+                            }
+                        } else if (currWordLC.equals("#todo")) {
+                            if (!donenessIndicated) {
+                                searchFields.add(new TaskParam("tag",
+                                        currWordLC));
+                                donenessIndicated = true;
+                            } else {
+                                System.out
+                                        .println("A done-ness keyword has already been indicated!");
+                            }
+                        } else if (currWordLC.equals("#deleted")) {
+                            if (!donenessIndicated) {
+                                searchFields.add(new TaskParam("tag",
+                                        currWordLC));
+                                donenessIndicated = true;
+                            } else {
+                                System.out
+                                        .println("A done-ness keyword has already been indicated!");
+                            }
                         } else {
-                            System.out
-                                    .println("A done-ness keyword has already been indicated!");
-                        }
-                    } else if (currWordLC.equals("#todo")) {
-                        if (!donenessIndicated) {
-                            searchFields.add(new TaskParam("tag", currWordLC));
-                            donenessIndicated = true;
-                        } else {
-                            System.out
-                                    .println("A done-ness keyword has already been indicated!");
-                        }
-                    } else if (currWordLC.equals("#deleted")) {
-                        if (!donenessIndicated) {
-                            searchFields.add(new TaskParam("tag", currWordLC));
-                            donenessIndicated = true;
-                        } else {
-                            System.out
-                                    .println("A done-ness keyword has already been indicated!");
+                            searchFields.add(new TaskParam("tag", currWord));
                         }
                     } else {
-                        searchFields.add(new TaskParam("tag", currWord));
+                        searchFields.add(new TaskParam("word", currWord));
                     }
-                } else {
-                    searchFields.add(new TaskParam("word", currWord));
                 }
             }
         } catch (ArrayIndexOutOfBoundsException e) {
@@ -289,7 +441,25 @@ public class Parser {
 
         try {
             String firstWord = commandItems[1];
-            if (isDeleteParamName(firstWord.toLowerCase())) {
+            if (isDate(firstWord)) {
+                deleteFields.add(new TaskParam("rangeType", "dates"));
+                if (commandItems.length == 4 && commandItems[2].equals("to") &&
+                    isDate(commandItems[3])) {
+                    if (firstDateEarlier(firstWord, commandItems[3])) {
+                        deleteFields.add(new TaskParam("start", firstWord));
+                        deleteFields.add(new TaskParam("end", commandItems[3]));
+                    } else {
+                        deleteFields.add(new TaskParam("end", firstWord));
+                        deleteFields.add(new TaskParam("start", commandItems[3]));
+                    }
+                } else if (commandItems.length == 2) {
+                    deleteFields.add(new TaskParam("start", firstWord));
+                    deleteFields.add(new TaskParam("end", firstWord));
+                } else {
+                    return new CommandOthers("error",
+                            "Too many arguments for delete (dates) detected");
+                }
+            } else if (isDeleteParamName(firstWord.toLowerCase())) {
                 deleteFields.add(new TaskParam("rangeType", firstWord
                         .toLowerCase()));
             } else if (isInteger(firstWord)) {
