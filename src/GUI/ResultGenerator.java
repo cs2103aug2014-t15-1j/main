@@ -2,6 +2,7 @@ package GUI;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import Logic.Processor;
 import Logic.Result;
@@ -197,12 +198,12 @@ public class ResultGenerator {
 		message = addToMessage(message, PARA_STRING_END, end);
 		String priority =  task.getPriority();
 		message = addToMessage(message, PARA_STRING_PRIORITY, priority);
-		ArrayList<String> tags = task.getTags();
+		List<String> tags = task.getTags();
 		message = addTags(message, tags);
 		return message;
 	}
     
-    private static String addTags(String message, ArrayList<String> tags){
+    private static String addTags(String message, List<String> tags){
     	if(tags == null){
     		return message;
     	}
