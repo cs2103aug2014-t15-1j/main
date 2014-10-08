@@ -45,6 +45,8 @@ public class Task {
         this.done = task.isDone();
     }
     
+    // Converts task into a single String
+    // Meant to be written to system file
     public String stringify() {
         String stringifiedTask = "Name: " + name + " ";
         stringifiedTask += "More: " + more + " ";
@@ -52,12 +54,12 @@ public class Task {
         stringifiedTask += "Start: " + start + " ";
         stringifiedTask += "End: " + end + " ";
         stringifiedTask += "Priority: " + priority + " ";
-        //stringifiedTask += stringifyTags();
-        //stringifiedTask += done ? "#done" : "#todo";
+        stringifiedTask += stringifyTags();
+        stringifiedTask += done ? "#done" : "#todo";
         
         return stringifiedTask;
     }
-    /* TODO Bug fixing yay
+    
     private String stringifyTags() {
         String stringifiedTags = "";
         if (!this.tags.isEmpty()) {
@@ -66,7 +68,7 @@ public class Task {
             }
         }
         return stringifiedTags;
-    }*/
+    }
     
     //===== Getters and setters =====//
     
