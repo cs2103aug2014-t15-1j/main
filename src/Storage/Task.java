@@ -60,6 +60,7 @@ public class Task {
         return stringifiedTask;
     }
     
+    // Converts arrayList of tags into a single String
     private String stringifyTags() {
         String stringifiedTags = "";
         if (!this.tags.isEmpty()) {
