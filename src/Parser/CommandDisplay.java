@@ -9,10 +9,10 @@ import Logic.CommandType;
 public class CommandDisplay extends Command {
 
     // Restore types [get("rangeType"); returns "all" | "id" | "done"]
-    protected String rangeType;
+    private String rangeType;
 
     // Restore type data [get("id"); returns string]
-    protected String id;
+    private String id;
 
     public CommandDisplay(ArrayList<TaskParam> content) {
         if (content.isEmpty()) {
