@@ -22,10 +22,6 @@ public class Processor {
 		return processCommand(cmd);
 	}
 	
-	public static void initialize() {
-		file.initialize();
-	}
-	
 	private Result processCommand(Command cmd) throws IOException {
 		return processCommand(cmd, true);
 	}
