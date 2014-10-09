@@ -72,72 +72,94 @@ public class Task {
         return stringifiedTags;
     }
     
-    //===== Getters and setters =====//
+    //===== Getters, setters, and resetters =====//
     
-    // Getters
+    // ID attribute functions
     public int getId() {
         return ID;
     }
     
+    // Name attribute functions
     public String getName() {
         return name;
     }
     
-    public String getMore() {
-        return more;
-    }
-    
-    public String getDue() {
-        return due;
-    }
-    
-    public String getStart() {
-        return start;
-    }
-    
-    public String getEnd() {
-        return end;
-    }
-    
-    public String getPriority() {
-        return priority;
-    }
-    
-    public List<String> getTags() {
-        return tags;
-    }
-    
-    public boolean isDeleted() {
-        return deleted;
-    }
-    
-    public boolean isDone() {
-        return done;
-    }
-    
-    // Setters
     public void setName(String name) {
         this.name = name;
+    }
+    
+    public void resetName() {
+        this.name = "";
+    }
+    
+    // More attribute functions
+    public String getMore() {
+        return more;
     }
     
     public void setMore(String more) {
         this.more = more;
     }
     
+    public void resetMore() {
+        this.more = "";
+    }
+    
+    // Due attribute functions
+    public String getDue() {
+        return due;
+    }
+    
     public void setDue(String due) {
         this.due = due;
+    }
+    
+    public void resetDue() {
+        this.more = "";
+    }
+    
+    // Start attribute functions
+    public String getStart() {
+        return start;
     }
     
     public void setStart(String start) {
         this.start = start;
     }
     
+    public void resetStart() {
+        this.start = "";
+    }
+    
+    // End attribute functions
+    public String getEnd() {
+        return end;
+    }
+    
     public void setEnd(String end) {
         this.end = end;
     }
     
+    public void resetEnd() {
+        this.end = "";
+    }
+    
+    // Priority attribute functions
+    public String getPriority() {
+        return priority;
+    }
+    
     public void setPriority(String priority) {
         this.priority = priority;
+    }
+    
+    public void resetPriority() {
+        this.priority = "";
+    }
+    
+    // Tags attribute functions
+    public List<String> getTags() {
+        return tags;
     }
     
     public void addTags(List<String> tags) {
@@ -148,41 +170,26 @@ public class Task {
         this.tags.removeAll(tags);
     }
     
+    public void resetTags() {
+        this.tags.clear();
+    }
+    
+    // Deleted attribute functions
+    public boolean isDeleted() {
+        return deleted;
+    }
+    
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;
     }
     
+    // Done attribute functions
+    public boolean isDone() {
+        return done;
+    }
+    
     public void setDone(boolean done) {
         this.done = done;
-    }
-    
-    // Resetters
-    public void resetName() {
-        this.name = "";
-    }
-    
-    public void resetMore() {
-        this.more = "";
-    }
-    
-    public void resetDue() {
-        this.more = "";
-    }
-    
-    public void resetStart() {
-        this.start = "";
-    }
-    
-    public void resetEnd() {
-        this.end = "";
-    }
-    
-    public void resetPriority() {
-        this.priority = "";
-    }
-    
-    public void resetTags() {
-        this.tags.clear();
     }
     
     
