@@ -19,7 +19,9 @@ public class ResultGenerator {
     private static final String SUCCESSFUL_ADD = "Added %1$s";
     private static final String SUCCESSFUL_EDIT = "Edited %1$s";
     private static final String SUCCESSFUL_SEARCH = "Found %1$s result(s):";
-
+    private static final String SUCCESSFUL_TODO = "Marked %1$s as to do";
+    private static final String SUCCESSFUL_DONE = "Marked %1$s as done";
+    
     // to be changed at a later implementation
     private static final String SUCCESSFUL_DELETE = "Deleted!";
     private static final String SUCCESSFUL_RESTORE = "Restored!";
@@ -95,6 +97,10 @@ public class ResultGenerator {
                 return successfulDisplayMessage(tasks);
             case SEARCH :
                 return successfulSearchMessage(tasks);
+            case TODO:
+            	return singleLineSuccessMessage(SUCCESSFUL_TODO, tasks);
+            case DONE:
+            	return singleLineSuccessMessage(SUCCESSFUL_DONE, tasks);
             case RESTORE :
                 return SUCCESSFUL_RESTORE;
             case UNDO:
