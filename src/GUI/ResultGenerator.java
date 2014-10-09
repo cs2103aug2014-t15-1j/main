@@ -212,6 +212,7 @@ public class ResultGenerator {
 		return message;
 	}
     
+    // add tags
     private static String addTags(String message, List<String> tags){
     	if(tags.isEmpty() || tags == null){
     		message = addToMessage(message, PARA_STRING_TAG, PARA_STRING_VALUE_EMPTY);
