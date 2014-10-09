@@ -14,6 +14,9 @@ public class MainScreen {
 	// increase size of commandLine if line does not fit into space
     // change font type, add scroll bar
     // add hayStack icon, ASCII picture
+	// use mono-space font
+	// one line display
+	// gaps between number
 
 	// Gets the new line character used by the user's system
 	private static final String LINE_SEPARATOR = System.getProperty("line.separator");

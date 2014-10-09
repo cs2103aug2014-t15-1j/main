@@ -11,6 +11,7 @@ import Storage.Task;
 
 
 public class ResultGenerator {
+	
 
     private static final String LINE_SEPARATOR = System
             .getProperty("line.separator");
@@ -166,7 +167,7 @@ public class ResultGenerator {
     	assert(!task.getName().isEmpty());
     	String name = task.getName();
     	int iD = task.getId();
-    	String message = PARA_STRING_ID + iD + LINE_SEPARATOR + PARA_STRING_NAME + name;
+    	String message = LINE_SEPARATOR + PARA_STRING_ID + iD + LINE_SEPARATOR + PARA_STRING_NAME + name;
     	message = addOtherParameters(task, message);
 		
 		return message;
