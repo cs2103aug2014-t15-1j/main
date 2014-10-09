@@ -156,7 +156,34 @@ public class Task {
         this.done = done;
     }
     
+    // Resetters
+    public void resetName() {
+        this.name = "";
+    }
     
+    public void resetMore() {
+        this.more = "";
+    }
+    
+    public void resetDue() {
+        this.more = "";
+    }
+    
+    public void resetStart() {
+        this.start = "";
+    }
+    
+    public void resetEnd() {
+        this.end = "";
+    }
+    
+    public void resetPriority() {
+        this.priority = "";
+    }
+    
+    public void resetTags() {
+        this.tags.clear();
+    }
     
     
     /* Legacy code from YX
