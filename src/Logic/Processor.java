@@ -169,25 +169,25 @@ public class Processor {
 			String parameterToRemove = cmd.get("delete");
 			switch (parameterToRemove) {
 				case "name":
-					existingTask.setName(null);
+					existingTask.resetName();
 					break;
 				case "more":
-					existingTask.setMore(null);
+					existingTask.resetMore();
 					break;
 				case "due":
-					existingTask.setDue(null);
+					existingTask.resetDue();
 					break;
 				case "start":
-					existingTask.setStart(null);
+					existingTask.resetStart();
 					break;
 				case "end":
-					existingTask.setEnd(null);
+					existingTask.resetEnd();
 					break;
 				case "priority":
-					existingTask.setPriority(null);
+					existingTask.resetPriority();
 					break;
 				case "tags":
-					existingTask.getTags().clear();
+					existingTask.resetTags();
 					break;
 				default:
 					return;
