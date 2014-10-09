@@ -140,10 +140,6 @@ public class Task {
         this.priority = priority;
     }
     
-    public void setTags(List<String> tags) {
-        this.tags = tags;
-    }
-    
     public void addTags(List<String> tags) {
         this.tags.addAll(tags);
     }
