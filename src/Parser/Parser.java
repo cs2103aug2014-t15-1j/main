@@ -263,18 +263,18 @@ public class Parser {
         boolean hasValidCompLengths;
         boolean hasIntComponents;
         boolean hasValidIntComp;
-        
+
         try {
             String[] components = str.split("/");
             hasTwoSlashes = (components.length == 3);
             hasValidCompLengths = (components[0].length() == 2) &&
-                                          (components[1].length() == 2) &&
-                                          (components[2].length() == 4);
+                                  (components[1].length() == 2) &&
+                                  (components[2].length() == 4);
             hasIntComponents = isInteger(components[0]) &&
-                                       isInteger(components[1]) &&
-                                       isInteger(components[2]);
+                               isInteger(components[1]) &&
+                               isInteger(components[2]);
             hasValidIntComp = isValidMonth(components[1]) &&
-                                      isValidDay(components[0], components[1]);
+                              isValidDay(components[0], components[1]);
         } catch (Exception e) {
             return false;
         }
@@ -340,7 +340,6 @@ public class Parser {
     private static Command parseSearch(String[] commandItems) {
         ArrayList<TaskParam> searchFields = new ArrayList<TaskParam>();
 
-
         // TODO: REFACTOR
         try {
             // CHECK FOR DATE INPUT
@@ -355,7 +354,8 @@ public class Parser {
                         searchFields.add(new TaskParam("end", commandItems[3]));
                     } else {
                         searchFields.add(new TaskParam("end", firstWord));
-                        searchFields.add(new TaskParam("start", commandItems[3]));
+                        searchFields
+                                .add(new TaskParam("start", commandItems[3]));
                     }
                 } else if (commandItems.length == 2) {
                     searchFields.add(new TaskParam("start", firstWord));
@@ -372,25 +372,9 @@ public class Parser {
                     String currWordLC = currWord.toLowerCase();
                     if (hasValidHashTag(currWord)) {
                         // TODO: Error Handling for multiple doneness keywords
-                        if (currWordLC.equals("#done")) {
-                            if (!donenessIndicated) {
-                                searchFields.add(new TaskParam("tag",
-                                        currWordLC));
-                                donenessIndicated = true;
-                            } else {
-                                System.out
-                                        .println("A done-ness keyword has already been indicated!");
-                            }
-                        } else if (currWordLC.equals("#todo")) {
-                            if (!donenessIndicated) {
-                                searchFields.add(new TaskParam("tag",
-                                        currWordLC));
-                                donenessIndicated = true;
-                            } else {
-                                System.out
-                                        .println("A done-ness keyword has already been indicated!");
-                            }
-                        } else if (currWordLC.equals("#deleted")) {
+                        if (currWordLC.equals("#done") ||
+                            currWordLC.equals("#deleted") ||
+                            currWordLC.equals("#todo")) {
                             if (!donenessIndicated) {
                                 searchFields.add(new TaskParam("tag",
                                         currWordLC));
@@ -450,7 +434,8 @@ public class Parser {
                         deleteFields.add(new TaskParam("end", commandItems[3]));
                     } else {
                         deleteFields.add(new TaskParam("end", firstWord));
-                        deleteFields.add(new TaskParam("start", commandItems[3]));
+                        deleteFields
+                                .add(new TaskParam("start", commandItems[3]));
                     }
                 } else if (commandItems.length == 2) {
                     deleteFields.add(new TaskParam("start", firstWord));
