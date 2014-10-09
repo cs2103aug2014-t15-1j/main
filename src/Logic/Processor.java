@@ -163,7 +163,7 @@ public class Processor {
 			existingTask.setPriority(cmd.get("priority"));
 		}
 		if (cmd.getTags() != null) {
-			existingTask.setTags(cmd.getTags());
+			existingTask.addTags(cmd.getTags());
 		}
 		if (cmd.get("delete") != null) {
 			String parameterToRemove = cmd.get("delete");
@@ -431,7 +431,7 @@ public class Processor {
 		existingTask.setPriority(prevTask.getPriority());
 		existingTask.setStart(prevTask.getStart());
 		existingTask.setEnd(prevTask.getEnd());
-		existingTask.setTags(prevTask.getTags());
+		existingTask.addTags(prevTask.getTags());
 	}
 	
 	//APPLICABLE FOR ADD, EDIT, DELETE, RESTORE, BLOCK, UNBLOCK, UNDONE, DONE
