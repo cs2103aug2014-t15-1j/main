@@ -92,6 +92,23 @@ public class Processor {
 		return new Result(tasks, success, cmdType);
 	}
 
+	private void updateCommandHistory(Command cmd) {
+		switch (cmd.getType()) {
+			case ADD:
+			case DELETE:
+			case EDIT:
+			case RESTORE:
+			case BLOCK:
+			case UNBLOCK:
+			case DONE:
+			case TODO:
+				forwardHistory.clear();
+				backwardHistory.push(cmd);
+				break;
+			default:
+				return;
+		}
+	}
 	/* All the methods below returns true/false depending on the success
 	 * Tasks to be display will be added to tasks.
 	 */
@@ -119,6 +136,7 @@ public class Processor {
 			editedTask.push(oldTask);
 			updateTaskParameters(cmd, existingTask);
 			tasks.add(existingTask);
+			file.updateFile();
 			return true;
 		}
 		return false;
@@ -147,6 +165,34 @@ public class Processor {
 		if (cmd.getTags() != null) {
 			existingTask.setTags(cmd.getTags());
 		}
+		if (cmd.get("delete") != null) {
+			String parameterToRemove = cmd.get("delete");
+			switch (parameterToRemove) {
+				case "name":
+					existingTask.setName(null);
+					break;
+				case "more":
+					existingTask.setMore(null);
+					break;
+				case "due":
+					existingTask.setDue(null);
+					break;
+				case "start":
+					existingTask.setStart(null);
+					break;
+				case "end":
+					existingTask.setEnd(null);
+					break;
+				case "priority":
+					existingTask.setPriority(null);
+					break;
+				case "tags":
+					existingTask.getTags().clear();
+					break;
+				default:
+					return;
+			}
+		}
 	}
 
 	//Returns true if delete is executable.
@@ -171,9 +217,10 @@ public class Processor {
 	}
 	
 	private boolean deleteTaskUsingID(Command cmd, ArrayList<Task> tasks) {
-		Task t = file.getTask(Integer.parseInt(cmd.get("id")));
+		Task t = getTaskById(cmd);
 		if (t != null) {
 			file.deleteTask(t.getId());
+			tasks.add(t);
 		} else {
 			return false;
 		}
@@ -186,6 +233,7 @@ public class Processor {
 			for (Task existingTask : searchList) {
 				if (existingTask != null) {
 					file.deleteTask(existingTask.getId());
+					tasks.add(existingTask);
 				}
 			}
 		} else {
@@ -198,8 +246,7 @@ public class Processor {
 	private boolean restoreTask(Command cmd, ArrayList<Task> tasks, boolean userInput) throws IOException {
 		switch (cmd.get("rangeType")) {
 			case "id":
-				restoreUsingId(cmd, tasks);
-				break;
+				return restoreUsingId(cmd, tasks);
 			case "all":
 				restoreAll(tasks);
 				break;
@@ -210,28 +257,22 @@ public class Processor {
 		return true;
 	}
 
-	private void restoreUsingId(Command cmd, ArrayList<Task> tasks)	throws IOException {
-		Task task = null;
-		for (Task t: file.getDeletedTasks()) {
-			if (t.getId() == Integer.parseInt(cmd.get("id"))) {
-				task = t;
-				break;
-			}
+	private boolean restoreUsingId(Command cmd, ArrayList<Task> tasks)	throws IOException {
+		boolean success = file.restore(Integer.parseInt(cmd.get("id")));
+		if (success) {
+			tasks.add(getTaskById(cmd));
 		}
-		
-		if (task != null) {
-			file.restore(task.getId());
-		}
-		
+		return success;
 	}
 
 	private void restoreAll(ArrayList<Task> tasks) throws IOException {
-		for (Task t: file.getDeletedTasks()) {
+		/*for (Task t: file.getDeletedTasks()) {
 			tasks.add(t);
-			file.addTask(t);
+			//y
+			file.restoreAll(t);
 		}
 		
-		file.getDeletedTasks().clear();
+		file.getDeletedTasks().clear();*/
 	}
 	
 	public boolean deleteAllData() {
@@ -368,6 +409,7 @@ public class Processor {
 		if (toDelete != null) {
 			file.deleteTask(toDelete.getId());
 		}
+		//Need to decrease counter by 1;
 	}
 
 	private void undoEdit() {
@@ -410,23 +452,9 @@ public class Processor {
 	private boolean showJoke(Command cmd) {
 		//Show joke
 		return true;
-	}
+	}	
 	
-	private void updateCommandHistory(Command cmd) {
-		switch (cmd.getType()) {
-			case ADD:
-			case DELETE:
-			case EDIT:
-			case RESTORE:
-			case BLOCK:
-			case UNBLOCK:
-			case DONE:
-			case TODO:
-				forwardHistory.clear();
-				backwardHistory.push(cmd);
-				break;
-			default:
-				return;
-		}
+	public DataFile getFile() {
+		return file;
 	}
 }
