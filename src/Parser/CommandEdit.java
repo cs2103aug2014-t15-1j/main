@@ -114,11 +114,7 @@ public class CommandEdit extends Command {
     }
     
     public ArrayList<String> getTags(){
-        if (tags.equals(PARAM_TAGS)) {
-            return this.tags;
-        } else {
-            return null;
-        }
+        return this.tags;
     }
     
     public String toString() {
