@@ -77,7 +77,7 @@ public class ResultGenerator {
 		if (isEmpty(userInput)) {
 			return EMPTY_MESSAGE;
 		}
-		Processor processor = new Processor();
+		Processor processor = Processor.getInstance();
 		
 		/** if(isResultValid(result)){
 		//String message = getResultMessa ge(result);

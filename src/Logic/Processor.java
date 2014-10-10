@@ -12,11 +12,27 @@ import Storage.Task;
 
 public class Processor {
 	
-	private static DataFile file = new DataFile();
-	private static Stack<Command> backwardHistory = new Stack<Command>();
-	private static Stack<Command> forwardHistory = new Stack<Command>();
-	private static Stack<Task> editedTask = new Stack<Task>();
-	private static List<Task> searchList = new ArrayList<Task>();
+    private static Processor processor;
+	private DataFile _file;
+	private Stack<Command> _backwardHistory;
+	private Stack<Command> _forwardHistory;
+	private Stack<Task> _editedTask;
+	private List<Task> _searchList;
+	
+	private Processor() {
+	    _file = new DataFile();
+	    _backwardHistory = new Stack<Command>();
+	    _forwardHistory = new Stack<Command>();
+	    _editedTask = new Stack<Task>();
+	    _searchList = new ArrayList<Task>();
+	}
+	
+	public static Processor getInstance() {
+	    if (processor == null) {
+	        processor = new Processor();
+	    }
+	    return processor;
+	}
 	
 	public Result processInput(String input) throws IOException {
 		Command cmd = Parser.parse(input);
@@ -102,8 +118,8 @@ public class Processor {
 			case UNBLOCK:
 			case DONE:
 			case TODO:
-				forwardHistory.clear();
-				backwardHistory.push(cmd);
+				_forwardHistory.clear();
+				_backwardHistory.push(cmd);
 				break;
 			default:
 				return;
@@ -120,7 +136,7 @@ public class Processor {
 		Task newTask = new Task(cmd.get("name"), cmd.get("more"), cmd.get("due"), cmd.get("start"), cmd.get("end"), cmd.get("priority"), cmd.getTags());
 		tasks.add(newTask);
 		
-		return file.addTask(newTask);
+		return _file.addTask(newTask);
 	}
 	
 	//Check if the date is blocked and allowed to be added
@@ -133,10 +149,10 @@ public class Processor {
 		
 		if (existingTask != null) {
 			Task oldTask = new Task(existingTask);
-			editedTask.push(oldTask);
+			_editedTask.push(oldTask);
 			updateTaskParameters(cmd, existingTask);
 			tasks.add(existingTask);
-			file.updateFile();
+			_file.updateFile();
 			return true;
 		}
 		return false;
@@ -219,7 +235,7 @@ public class Processor {
 	private boolean deleteTaskUsingID(Command cmd, List<Task> tasks) {
 		Task t = getTaskById(cmd);
 		if (t != null) {
-			file.deleteTask(t.getId());
+			_file.deleteTask(t.getId());
 			tasks.add(t);
 		} else {
 			return false;
@@ -229,10 +245,10 @@ public class Processor {
 	}
 	
 	private boolean deleteSearchedTasks(Command cmd, List<Task> tasks) {
-		if (!searchList.isEmpty()) {
-			for (Task existingTask : searchList) {
+		if (!_searchList.isEmpty()) {
+			for (Task existingTask : _searchList) {
 				if (existingTask != null) {
-					file.deleteTask(existingTask.getId());
+					_file.deleteTask(existingTask.getId());
 					tasks.add(existingTask);
 				}
 			}
@@ -258,7 +274,7 @@ public class Processor {
 	}
 
 	private boolean restoreUsingId(Command cmd, List<Task> tasks)	throws IOException {
-		boolean success = file.restore(Integer.parseInt(cmd.get("id")));
+		boolean success = _file.restore(Integer.parseInt(cmd.get("id")));
 		if (success) {
 			tasks.add(getTaskById(cmd));
 		}
@@ -276,32 +292,46 @@ public class Processor {
 	}
 	
 	public boolean deleteAllData() {
-		file.deleteAll();
+		_file.deleteAll();
 		return false;
 		//Clears all history
 	}
 	
 	private boolean searchTasks(Command cmd, List<Task> tasks, boolean userInput) {
-		List<Task> doneTasks = file.getDoneTasks();
-		List<Task> toDoTasks = file.getToDoTasks();
-		List<Task> deletedTask = file.getDeletedTasks();
+		List<Task> doneTasks = _file.getDoneTasks();
+		List<Task> toDoTasks = _file.getToDoTasks();
+		List<Task> deletedTask = _file.getDeletedTasks();
 		
 		//List<String> keywords = cmd.get("rangeType");
+		String rangeType = cmd.get("rangeType");
+		switch (rangeType) {
+		case "dates":
+			_file.getAllTasks();
+			for (Task t: doneTasks) {
+				cmd.get("start");
+				cmd.get("end");
+			}
+			break;
+		case "keys":
+			break;
+			default:
+				return false;
+		}
 		
 		for (Task t: doneTasks) {		
 			//If found:
 			tasks.add(t);
-			searchList.add(t);
+			_searchList.add(t);
 		}
 		for (Task t: toDoTasks) {		
 			//If found:
 			tasks.add(t);
-			searchList.add(t);
+			_searchList.add(t);
 		}
 		for (Task t: deletedTask) {		
 			//If found:
 			tasks.add(t);
-			searchList.add(t);
+			_searchList.add(t);
 		}
 		return false;
 	}
@@ -316,18 +346,18 @@ public class Processor {
 				tasks.add(getTaskById(cmd));
 				break;
 			case "search":
-				tasks = searchList;
+				tasks = _searchList;
 				break;
 			case "all":
-				tasks.addAll(file.getToDoTasks());
-				tasks.addAll(file.getDoneTasks());
+				tasks.addAll(_file.getToDoTasks());
+				tasks.addAll(_file.getDoneTasks());
 				break;
 		}
 		return true;
 	}
 
 	private Task getTaskById(Command cmd) {
-		return file.getTask(Integer.parseInt(cmd.get("id")));
+		return _file.getTask(Integer.parseInt(cmd.get("id")));
 	}
 
 	private boolean blockDates(Command cmd) {
@@ -364,8 +394,8 @@ public class Processor {
 	
 	//APPLICABLE FOR ADD, EDIT, DELETE, RESTORE, BLOCK, UNBLOCK, UNDONE, DONE
 	private boolean undoCommand(Command cmd, boolean userInput) {
-		if (!backwardHistory.isEmpty()) {
-			Command backwardCommand = backwardHistory.pop();
+		if (!_backwardHistory.isEmpty()) {
+			Command backwardCommand = _backwardHistory.pop();
 			//Do the complement of backwardCommand
 			try {
 				switch(backwardCommand.getType()) {
@@ -395,26 +425,26 @@ public class Processor {
 						return false;
 				}
 			} catch (Exception e) {
-				backwardHistory.push(backwardCommand);
+				_backwardHistory.push(backwardCommand);
 				return false;
 			}
-			forwardHistory.push(backwardCommand);
+			_forwardHistory.push(backwardCommand);
 			return true;
 		}
 		return false;
 	}
 
 	private void undoAdd() {
-		Task toDelete = file.getToDoTasks().get(file.getToDoTasks().size() - 1);
+		Task toDelete = _file.getToDoTasks().get(_file.getToDoTasks().size() - 1);
 		if (toDelete != null) {
-			file.wipeTask(toDelete.getId());
+			_file.wipeTask(toDelete.getId());
 		}
 	}
 
 	private void undoEdit() {
-		Task prevTask = editedTask.pop();
+		Task prevTask = _editedTask.pop();
 		
-		for (Task existingTask: file.getToDoTasks()) {
+		for (Task existingTask: _file.getToDoTasks()) {
 			if (existingTask.getId() == prevTask.getId()) {
 				copyTaskParameters(prevTask, existingTask);
 				break;
@@ -435,10 +465,10 @@ public class Processor {
 	
 	//APPLICABLE FOR ADD, EDIT, DELETE, RESTORE, BLOCK, UNBLOCK, UNDONE, DONE
 	private boolean redoCommand(Command cmd, boolean userInput) throws IOException {
-		if (!forwardHistory.isEmpty()) {
-			Command forwardCommand = forwardHistory.pop();
+		if (!_forwardHistory.isEmpty()) {
+			Command forwardCommand = _forwardHistory.pop();
 			Result result = processCommand(forwardCommand, false);
-			backwardHistory.push(forwardCommand);
+			_backwardHistory.push(forwardCommand);
 			return result.isSuccess();
 		}
 		return false;
@@ -454,6 +484,6 @@ public class Processor {
 	}	
 	
 	public DataFile getFile() {
-		return file;
+		return _file;
 	}
 }
