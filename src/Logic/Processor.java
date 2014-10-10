@@ -585,4 +585,8 @@ public class Processor {
 		//Show joke
 		return true;
 	}	
+	
+	public DataFile getFile() {
+	    return _file;
+	}
 }
