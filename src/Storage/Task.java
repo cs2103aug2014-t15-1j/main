@@ -80,6 +80,11 @@ public class Task {
         return concatanatedTags;
     }
     
+    public boolean wipeTask() {
+        newId--;
+        return true;
+    }
+    
     //===== Getters, setters, and resetters =====//
     
     // ID attribute functions

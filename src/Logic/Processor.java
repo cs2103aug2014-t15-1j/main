@@ -407,9 +407,8 @@ public class Processor {
 	private void undoAdd() {
 		Task toDelete = file.getToDoTasks().get(file.getToDoTasks().size() - 1);
 		if (toDelete != null) {
-			file.deleteTask(toDelete.getId());
+			file.wipeTask(toDelete.getId());
 		}
-		//Need to decrease counter by 1;
 	}
 
 	private void undoEdit() {

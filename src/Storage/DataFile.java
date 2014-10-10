@@ -192,5 +192,19 @@ public class DataFile {
             return true;
         }
     }
+    
+    public boolean wipeTask(int id) {
+        Task task = searchTaskById(allTasks, id);
+        allTasks.remove(task);
+        if (task.isDeleted()) {
+            deletedTasks.remove(task);
+        } else if (task.isDone()) {
+            doneTasks.remove(task);
+        } else {
+            toDoTasks.remove(task);
+        }
+        task.wipeTask();
+        return updateFile();
+    }
 }
 // TODO fill in gaps and remove extraneous parts in Processor.java
