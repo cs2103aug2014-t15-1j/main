@@ -1,6 +1,8 @@
 package GUI;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Display;
@@ -49,6 +51,12 @@ public class SetUp {
 	public Text getUpcomingTasks(){
 		return upcomingTasks;
 	}
+	/**
+	public Font getFont(){
+		return font;
+	}
+	**/
+	
 	private static void initialise(){
 		setUpShell();
 		setUpWidgets();
@@ -80,6 +88,7 @@ public class SetUp {
         displayScreen.setText(MESSAGE_WELCOME);
         displayScreen.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
         displayScreen.setForeground(display.getSystemColor(SWT.COLOR_GREEN));
+       // displayScreen.setFont(font);
 	}
 	
 	private static void setUpTaskPaneLabel(){
@@ -88,6 +97,7 @@ public class SetUp {
         taskPane.setText(TASK_PANE_LABEL);
         gridData = new GridData(GridData.HORIZONTAL_ALIGN_CENTER);
         taskPane.setLayoutData(gridData);
+        //taskPane.setFont(font);
 	}
 	
 	private static void setUpUpcomingTasks(){
@@ -98,7 +108,7 @@ public class SetUp {
         upcomingTasks.setForeground(display.getSystemColor(SWT.COLOR_GREEN));
         upcomingTasks.setLayoutData(gridData);
         upcomingTasks.setEditable(false);
-        
+       // upcomingTasks.setFont(font);
 	}
 	
 	private static void setUpCommandLine(){
@@ -107,6 +117,7 @@ public class SetUp {
         gridData.horizontalSpan = 2;
         commandLine.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
         commandLine.setLayoutData(gridData);
+        //commandLine.setFont(font);
 	}
 
 
