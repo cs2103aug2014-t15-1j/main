@@ -183,12 +183,14 @@ public class DataFile {
         if (task == null) {
             return false; // Invalid id
         } else {
+            task.setDeleted(false);
             deletedTasks.remove(task);
             if (task.isDone()) {
                 doneTasks.add(task);
             } else {
                 toDoTasks.add(task);
             }
+            updateFile();
             return true;
         }
     }
