@@ -12,72 +12,73 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 public class MainScreen {
-    // implement: task pane expansion, add upcoming tasks
+	// implement: task pane expansion, add upcoming tasks
 	// increase size of commandLine if line does not fit into space
-    // change font type, add scroll bar
-    // add hayStack icon, ASCII picture
+	// change font type, add scroll bar
+	// add hayStack icon, ASCII picture
 	// use mono-space font
 	// one line display
 
 	// Gets the new line character used by the user's system
-	private static final String LINE_SEPARATOR = System.getProperty("line.separator");
-	
-	private static String CODE_CLEAR = " clear";
-    private static String CODE_EXIT = " exit";
+	private static final String LINE_SEPARATOR = System
+			.getProperty("line.separator");
 
-    public static void main(String[] args) {
-        Display display = new Display();
-        Shell shell = new Shell(display);
-        
-        SetUp setUpScreen = new SetUp(display, shell);
-   
-        readUserInput(setUpScreen);
-   
-        shell.pack();
-        shell.open();
-        
-        while (!shell.isDisposed()) {
-            if (!display.readAndDispatch())
-                display.sleep();
-        }
-        //font.dispose();
-        display.dispose();
-    }
+	private static String CODE_CLEAR = " clear";
+	private static String CODE_EXIT = " exit";
+
+	public static void runProgram() {
+		Display display = new Display();
+		Shell shell = new Shell(display);
+
+		SetUp setUpScreen = new SetUp(display, shell);
+
+		readUserInput(setUpScreen);
+
+		shell.pack();
+		shell.open();
+
+		while (!shell.isDisposed()) {
+			if (!display.readAndDispatch())
+				display.sleep();
+		}
+		// font.dispose();
+		display.dispose();
+	}
 
 	private static void readUserInput(SetUp setUpScreen) {
-        
+
 		final Text commandLine = setUpScreen.getCommandLine();
-		
+
 		commandLine.addListener(SWT.DefaultSelection, new Listener() {
 			public void handleEvent(Event event) {
-				
+
 				final Text displayScreen;
 				String input = commandLine.getText();
 				String output = "";
 				try {
 					output = ResultGenerator.sendInput(input);
 					displayScreen = setUpScreen.getDisplayScreen();
-					 if (output.equals(CODE_EXIT)) {
+					if (output.equals(CODE_EXIT)) {
 						exitProgram(output);
-					} else if (output.endsWith(CODE_CLEAR)){
+					} else if (output.endsWith(CODE_CLEAR)) {
 						clearScreen(displayScreen);
-				}else{
+					} else {
 						displayScreen.append(LINE_SEPARATOR + output);
 						commandLine.setText("");
 					}
-				}catch(IOException error){
+				} catch (IOException error) {
 					error.getMessage();
 				}
 			}
 		});
 	}
 
-    private static void exitProgram(String output) {
-        System.exit(0);
-    }
+	private static void exitProgram(String output) {
+		System.exit(0);
+	}
 
-    private static void clearScreen(Text displayScreen) {
-        displayScreen.setText("");
-    }
+	private static void clearScreen(Text displayScreen) {
+		displayScreen.setText("");
+	}
 
 }

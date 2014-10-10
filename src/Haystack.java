@@ -1,4 +1,8 @@
+import GUI.MainScreen;
+
 public class Haystack {
-    // STUB: Just wanted to see something in the default package
-    // Maybe this is where the main() will run. Maybe.
+ 
+    public static void main(String args[]){
+        MainScreen.runProgram();
+    }
 }
