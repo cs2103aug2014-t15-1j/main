@@ -206,5 +206,14 @@ public class DataFile {
         task.wipeTask();
         return updateFile();
     }
+    
+    public boolean wipeFile() {
+        allTasks.clear();
+        toDoTasks.clear();
+        doneTasks.clear();
+        deletedTasks.clear();
+        
+        return updateFile();
+    }
 }
 // TODO fill in gaps and remove extraneous parts in Processor.java
