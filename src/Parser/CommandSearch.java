@@ -1,5 +1,6 @@
 package Parser;
 
+import java.util.List;
 import java.util.ArrayList;
 
 import Logic.CommandType;
@@ -9,8 +10,8 @@ public class CommandSearch extends Command {
     // Tags like #done, #deleted, #todo are stored in tags
     // But the parser ensures only 1 of the above is possible
     // TODO: ASSUME PARSER IS AN IDIOT
-    private ArrayList<String> tags = new ArrayList<String>();
-    private ArrayList<String> keywords = new ArrayList<String>();
+    private List<String> tags = new ArrayList<String>();
+    private List<String> keywords = new ArrayList<String>();
     
     private String rangeType;
 
@@ -18,7 +19,7 @@ public class CommandSearch extends Command {
     private String start;
     private String end;
 
-    public CommandSearch(ArrayList<TaskParam> content) {
+    public CommandSearch(List<TaskParam> content) {
         assert (!content.isEmpty());
         this.type = CommandType.SEARCH;
 
@@ -73,12 +74,12 @@ public class CommandSearch extends Command {
         }
     }
 
-    public ArrayList<String> getTags() {
+    public List<String> getTags() {
         return this.tags;
     }
 
     // TODO: Add to Command
-    public ArrayList<String> getKeywords() {
+    public List<String> getKeywords() {
         return this.keywords;
     }
 

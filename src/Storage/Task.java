@@ -46,102 +46,133 @@ public class Task {
         this.done = task.isDone();
     }
     
-    // Converts task into a single String
+    // Stores all attributes in a single String
     // Meant to be written to system file
-    public String stringify() {
-        String stringifiedTask = "Name: " + name + " ";
-        stringifiedTask += "More: " + more + " ";
-        stringifiedTask += "Due: " + due + " ";
-        stringifiedTask += "Start: " + start + " ";
-        stringifiedTask += "End: " + end + " ";
-        stringifiedTask += "Priority: " + priority + " ";
-        stringifiedTask += stringifyTags();
-        stringifiedTask += done ? "#done" : "#todo";
+    public String getFullInfo() {
+        String fullInfo = "Name: " + name + " ";
+        fullInfo += "More: " + more + " ";
+        fullInfo += "Due: " + due + " ";
+        fullInfo += "Start: " + start + " ";
+        fullInfo += "End: " + end + " ";
+        fullInfo += "Priority: " + priority + " ";
+        fullInfo += concatanateTags();
+        fullInfo += done ? "#done" : "#todo";
         
-        return stringifiedTask;
+        return fullInfo;
+    }
+    
+    // Stores attributes to be searched in a single String
+    public String getSummary() {
+        String summary = name + " ";
+        summary += more + " ";
+        summary += concatanateTags(); // TODO remove #'s?
+        return summary;
     }
     
     // Converts list of tags into a single String
-    private String stringifyTags() {
-        String stringifiedTags = "";
-        if (!this.tags.isEmpty()) {
-            for (String tempTag : this.tags) {
-                stringifiedTags += tempTag + " ";
+    private String concatanateTags() {
+        String concatanatedTags = "";
+        if (!tags.isEmpty()) { // TODO Necessary?
+            for (String tempTag : tags) {
+                concatanatedTags += tempTag + " ";
             }
         }
-        return stringifiedTags;
+        return concatanatedTags;
     }
     
-    //===== Getters and setters =====//
+    public boolean wipeTask() {
+        newId--;
+        return true;
+    }
     
-    // Getters
+    //===== Getters, setters, and resetters =====//
+    
+    // ID attribute functions
     public int getId() {
         return ID;
     }
     
+    // Name attribute functions
     public String getName() {
         return name;
     }
     
-    public String getMore() {
-        return more;
-    }
-    
-    public String getDue() {
-        return due;
-    }
-    
-    public String getStart() {
-        return start;
-    }
-    
-    public String getEnd() {
-        return end;
-    }
-    
-    public String getPriority() {
-        return priority;
-    }
-    
-    public List<String> getTags() {
-        return tags;
-    }
-    
-    public boolean isDeleted() {
-        return deleted;
-    }
-    
-    public boolean isDone() {
-        return done;
-    }
-    
-    // Setters
     public void setName(String name) {
         this.name = name;
+    }
+    
+    public void resetName() {
+        name = "";
+    }
+    
+    // More attribute functions
+    public String getMore() {
+        return more;
     }
     
     public void setMore(String more) {
         this.more = more;
     }
     
+    public void resetMore() {
+        more = "";
+    }
+    
+    // Due attribute functions
+    public String getDue() {
+        return due;
+    }
+    
     public void setDue(String due) {
         this.due = due;
+    }
+    
+    public void resetDue() {
+        more = "";
+    }
+    
+    // Start attribute functions
+    public String getStart() {
+        return start;
     }
     
     public void setStart(String start) {
         this.start = start;
     }
     
+    public void resetStart() {
+        start = "";
+    }
+    
+    // End attribute functions
+    public String getEnd() {
+        return end;
+    }
+    
     public void setEnd(String end) {
         this.end = end;
+    }
+    
+    public void resetEnd() {
+        end = "";
+    }
+    
+    // Priority attribute functions
+    public String getPriority() {
+        return priority;
     }
     
     public void setPriority(String priority) {
         this.priority = priority;
     }
     
-    public void setTags(List<String> tags) {
-        this.tags = tags;
+    public void resetPriority() {
+        priority = "";
+    }
+    
+    // Tags attribute functions
+    public List<String> getTags() {
+        return tags;
     }
     
     public void addTags(List<String> tags) {
@@ -152,15 +183,27 @@ public class Task {
         this.tags.removeAll(tags);
     }
     
+    public void resetTags() {
+        tags.clear();
+    }
+    
+    // Deleted attribute functions
+    public boolean isDeleted() {
+        return deleted;
+    }
+    
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;
+    }
+    
+    // Done attribute functions
+    public boolean isDone() {
+        return done;
     }
     
     public void setDone(boolean done) {
         this.done = done;
     }
-    
-    
     
     
     /* Legacy code from YX

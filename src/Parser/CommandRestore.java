@@ -1,6 +1,6 @@
 package Parser;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import Logic.CommandType;
 
@@ -12,7 +12,7 @@ public class CommandRestore extends Command {
     // Restore type data [get("id"); returns string]
     protected String id;
 
-    public CommandRestore(ArrayList<TaskParam> content) {
+    public CommandRestore(List<TaskParam> content) {
         if (content.isEmpty()) {
             this.type = CommandType.ERROR;
             this.error = "No arguments for restore";

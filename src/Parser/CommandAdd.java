@@ -1,5 +1,6 @@
 package Parser;
 
+import java.util.List;
 import java.util.ArrayList;
 
 import Logic.CommandType;
@@ -13,7 +14,7 @@ public class CommandAdd extends Command {
     private String end;
     private String priority;
     
-    private ArrayList<String> tags = new ArrayList<String>();
+    private List<String> tags = new ArrayList<String>();
     
     private static final String PARAM_NAME = "name";
     private static final String PARAM_MORE = "more";
@@ -22,7 +23,7 @@ public class CommandAdd extends Command {
     private static final String PARAM_END = "end";
     private static final String PARAM_PRIO = "priority";
 
-    public CommandAdd(ArrayList<TaskParam> content) {
+    public CommandAdd(List<TaskParam> content) {
         this.type = CommandType.ADD;
         
         for (TaskParam param : content) {
@@ -94,7 +95,7 @@ public class CommandAdd extends Command {
         }
     }
     
-    public ArrayList<String> getTags(){
+    public List<String> getTags(){
         return this.tags;
     }
     

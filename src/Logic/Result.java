@@ -1,21 +1,21 @@
 package Logic;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import Storage.Task;
 
 public class Result {
-	private ArrayList<Task> tasks;
+	private List<Task> tasks;
 	private boolean success;
 	private CommandType cmdExecuted;
 	
-	public Result(ArrayList<Task> tasks, boolean success, CommandType cmdExecuted) {
+	public Result(List<Task> tasks, boolean success, CommandType cmdExecuted) {
 		this.tasks = tasks;
 		this.success = success;
 		this.cmdExecuted = cmdExecuted;
 	}
 	
-	public ArrayList<Task> getTasks() {
+	public List<Task> getTasks() {
 		return tasks;
 	}
 

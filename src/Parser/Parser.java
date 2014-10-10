@@ -1,5 +1,6 @@
 package Parser;
 
+import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -105,7 +106,7 @@ public class Parser {
     // ========== INDIVIDUAL PARSE-COMMAND FUNCTIONS ==========//
 
     private static Command parseTodo(String[] commandItems) {
-        ArrayList<TaskParam> todoFields = new ArrayList<TaskParam>();
+        List<TaskParam> todoFields = new ArrayList<TaskParam>();
 
         try {
             String firstWord = commandItems[1];
@@ -126,7 +127,7 @@ public class Parser {
     }
 
     private static Command parseDone(String[] commandItems) {
-        ArrayList<TaskParam> doneFields = new ArrayList<TaskParam>();
+        List<TaskParam> doneFields = new ArrayList<TaskParam>();
 
         try {
             String firstWord = commandItems[1];
@@ -165,7 +166,7 @@ public class Parser {
     }
 
     private static Command parseUnblock(String[] commandItems) {
-        ArrayList<TaskParam> unblockFields = new ArrayList<TaskParam>();
+        List<TaskParam> unblockFields = new ArrayList<TaskParam>();
 
         try {
             String firstWord = commandItems[1];
@@ -183,7 +184,7 @@ public class Parser {
     }
 
     private static Command parseBlock(String[] commandItems) {
-        ArrayList<TaskParam> blockFields = new ArrayList<TaskParam>();
+        List<TaskParam> blockFields = new ArrayList<TaskParam>();
 
         // TODO: Consider date format (length 1, 2, 3?)
         // Currently: Date must be "DD/MM/YYYY" format
@@ -314,7 +315,7 @@ public class Parser {
     }
 
     private static Command parseDisplay(String[] commandItems) {
-        ArrayList<TaskParam> displayFields = new ArrayList<TaskParam>();
+        List<TaskParam> displayFields = new ArrayList<TaskParam>();
 
         // CONSIDER: No arguments "display"?
         // TODO: MERGE DISPLAY, DELETE, RESTORE?
@@ -338,7 +339,7 @@ public class Parser {
     }
 
     private static Command parseSearch(String[] commandItems) {
-        ArrayList<TaskParam> searchFields = new ArrayList<TaskParam>();
+        List<TaskParam> searchFields = new ArrayList<TaskParam>();
 
         // TODO: REFACTOR
         try {
@@ -399,7 +400,7 @@ public class Parser {
     }
 
     private static Command parseRestore(String[] commandItems) {
-        ArrayList<TaskParam> restoreFields = new ArrayList<TaskParam>();
+        List<TaskParam> restoreFields = new ArrayList<TaskParam>();
 
         try {
             String firstWord = commandItems[1];
@@ -421,7 +422,7 @@ public class Parser {
     }
 
     private static Command parseDelete(String[] commandItems) {
-        ArrayList<TaskParam> deleteFields = new ArrayList<TaskParam>();
+        List<TaskParam> deleteFields = new ArrayList<TaskParam>();
 
         try {
             String firstWord = commandItems[1];
@@ -463,7 +464,7 @@ public class Parser {
     private static Command parseEdit(String[] commandItems) {
         String currField = "name";
         String id;
-        ArrayList<TaskParam> editFields = new ArrayList<TaskParam>();
+        List<TaskParam> editFields = new ArrayList<TaskParam>();
 
         // Check Edit ID
         if (commandItems.length > 1 && isInteger(commandItems[1])) {
@@ -540,7 +541,7 @@ public class Parser {
 
     private static Command parseAdd(String[] commandItems) {
         String currField = "name";
-        ArrayList<TaskParam> addFields = new ArrayList<TaskParam>();
+        List<TaskParam> addFields = new ArrayList<TaskParam>();
 
         for (int i = 1; i < commandItems.length; i++) {
             String currWord = commandItems[i];
@@ -589,7 +590,7 @@ public class Parser {
         return new CommandAdd(addFields);
     }
 
-    private static void convertToDate(ArrayList<TaskParam> addFields,
+    private static void convertToDate(List<TaskParam> addFields,
                                       String string) {
         // TODO: re-factor to getDate() and setDate();
         String[] months = { "jan", "january", "feb", "february", "march",
@@ -613,7 +614,7 @@ public class Parser {
 
     }
 
-    private static boolean containsParam(ArrayList<TaskParam> addFields,
+    private static boolean containsParam(List<TaskParam> addFields,
                                          String pName) {
         boolean result = false;
         for (TaskParam tp : addFields) {
@@ -663,8 +664,8 @@ public class Parser {
                firstWord.equals("done");
     }
 
-    private static <E> void removeDuplicates(ArrayList<E> list) {
-        ArrayList<E> toDelete = new ArrayList<E>();
+    private static <E> void removeDuplicates(List<E> list) {
+        List<E> toDelete = new ArrayList<E>();
 
         for (int i = 0; i < list.size(); i++) {
             for (int j = i + 1; j < list.size(); j++) {
@@ -690,9 +691,9 @@ public class Parser {
         return longParamName;
     }
 
-    private static TaskParam getTaskParam(ArrayList<TaskParam> fields,
+    private static TaskParam getTaskParam(List<TaskParam> fields,
                                           String currField) {
-        // Attempt to get TaskParam named currField from ArrayList
+        // Attempt to get TaskParam named currField from List
         for (TaskParam tp : fields) {
             if (tp.getName().equals(currField)) {
                 return tp;
@@ -740,7 +741,7 @@ public class Parser {
     public static Task parseToTask(String text) {
         String[] textItems = text.trim().split(" ");
         String[] param = new String[] { "", "", "", "", "", "" };
-        ArrayList<String> tags = new ArrayList<String>();
+        List<String> tags = new ArrayList<String>();
 
         String currField = "name";
         boolean isDone = false;

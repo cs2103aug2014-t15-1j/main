@@ -1,6 +1,6 @@
 package Parser;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import Logic.CommandType;
 
@@ -11,7 +11,7 @@ public class CommandBlock extends Command {
     private String start;
     private String end;
 
-    public CommandBlock(ArrayList<TaskParam> content) {
+    public CommandBlock(List<TaskParam> content) {
         if (content.isEmpty()) {
             this.type = CommandType.ERROR;
             this.error = "No arguments for block";
