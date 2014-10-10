@@ -35,7 +35,7 @@ public class SetUp {
 	private static Shell shell;
 
 	public SetUp(Display displayToSet, Shell shellToSet) {
-
+	    // use Abstraction -- Occurrence
 		display = displayToSet;
 		shell = shellToSet;
 

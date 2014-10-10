@@ -25,7 +25,10 @@ public class ResultGenerator {
 	private static final String SUCCESSFUL_UNDO = "Travelled back in time! Command has been undone";
 	private static final String SUCCESSFUL_REDO = "Travelled into the future! Command has been redone";
 
-	// to be changed at a later implementation
+	// to be changed at a later implementation -- remove joke, priority, clear. display and show same implementation, display all --> display/show
+	// 
+	// Not implemented: search, block, unblock, help
+	
 	private static final String SUCCESSFUL_JOKE = "There are three kinds of people. Those who can count, and those who cannot."
 			+ LINE_SEPARATOR + "- Unknown";
 	private static final String SUCCESSFUL_BLOCK = "Successfully blocked"; // include:
@@ -75,8 +78,17 @@ public class ResultGenerator {
 			return EMPTY_MESSAGE;
 		}
 		Processor processor = new Processor();
+		
+		/** if(isResultValid(result)){
+		//String message = getResultMessa ge(result);
+		// find command Type
+		// then see if command is successful --> return sucess
+		// if command is unsuccessful --> return error message specific to commadn
+		 else{}
+		     **/
 		Result result = processor.processInput(userInput);
 		String message;
+	
 		if (result.isSuccess()) {
 			CommandType commandDone = result.getCmdExecuted();
 			message = getResultMessage(commandDone, result);
