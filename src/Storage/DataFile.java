@@ -16,7 +16,7 @@ public class DataFile {
     final private static String FILENAME = "Data";
     
     // A task can only exist in one of the three 
-    // (todo/done/deleted) lists at any one time.
+    // (to-do/done/deleted) lists at any one time.
     // allTasks contains references to all tasks, sorted by id
     private static List<Task> allTasks = new ArrayList<Task>();
     private static List<Task> toDoTasks = new ArrayList<Task>();
@@ -75,7 +75,7 @@ public class DataFile {
     }
     
     // Given id, return task object
-    // Includes todo, done, and deleted tasks
+    // Includes to-do, done, and deleted tasks
     public Task getTask(int id) {
         Task task = searchTaskById(allTasks, id);
         return task;
@@ -98,30 +98,25 @@ public class DataFile {
         return updateFile();
     }
     
-    // Refreshes system file with new data in todo and done lists
+    // Refreshes system file with current data in to-do and done lists
+    // Deleted tasks are not written to file
     public boolean updateFile() {
-        // To write to file
-        // Deleted tasks are not written to file
-        String newFileText = stringifyToDoAndDoneTasks();
-        return writeToFile(newFileText);
+        String updatedTaskInfo = getTaskInfo(toDoTasks);
+        updatedTaskInfo += getTaskInfo(doneTasks);
+        return writeToFile(updatedTaskInfo);
     }
     
-    // Stringifies tasks which have not been deleted,
-    // in preparation for storage on file
-    private String stringifyToDoAndDoneTasks() {
-        String text = ""; 
-        for (int i = 0; i < toDoTasks.size(); i++) {
-            Task currentTask = toDoTasks.get(i);
-            text += currentTask.stringify() + "\n";
+    // Stores all Task attributes, of all Tasks in list, in single String 
+    // For storage on file
+    private String getTaskInfo(List<Task> tasks) {
+        String taskInfo = ""; 
+        for (Task tempTask : tasks) {
+            taskInfo += tempTask.getFullInfo() + "\n";
         }
-        for (int i = 0; i < doneTasks.size(); i++) {
-            Task currentTask = doneTasks.get(i);
-            text += currentTask.stringify() + "\n";
-        }
-        return text;
+        return taskInfo;
     }
     
-    // Writes todo and done lists to system file
+    // Writes to-do and done lists to system file
     private boolean writeToFile(String newFileText) {
         try {
             File file = new File(FILENAME);
@@ -141,7 +136,7 @@ public class DataFile {
     }
     
     // Given id, deletes task object
-    // Task object is removed from todo or done list,
+    // Task object is removed from to-do or done list,
     // and added to deleted list
     public boolean deleteTask(int id) {
         Task tempTask = searchTaskById(allTasks, id);
@@ -163,7 +158,7 @@ public class DataFile {
     }
     
     // Deletes all task objects
-    // All tasks are removed from todo and done
+    // All tasks are removed from to-do and done
     // lists, and added to deleted list
     public boolean deleteAll() {
         for (Task tempTask : allTasks) {
