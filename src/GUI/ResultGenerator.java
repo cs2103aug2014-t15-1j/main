@@ -131,11 +131,7 @@ public class ResultGenerator {
 
     // Returns message of format "Successfully (task done) (task name)"
     // Pre-condition: tasks only has one element
-<<<<<<< HEAD
     private static String singleLineSuccessMessage(String message,
-=======
-    public static String singleLineSuccessMessage(String message,
->>>>>>> c9b255beec53cfbde2564928263abdaba1940b43
             List<Task> tasks) {
     	assert(tasks.size()==1);
         Task task = tasks.get(FIRST_ELEMENT);
@@ -143,11 +139,7 @@ public class ResultGenerator {
         return String.format(message, taskName);
     }
 
-<<<<<<< HEAD
     private static String successfulSearchMessage(List<Task> tasks) {
-=======
-    public static String successfulSearchMessage(List<Task> tasks) {
->>>>>>> c9b255beec53cfbde2564928263abdaba1940b43
     	int numOfSearchResults = tasks.size();
         if (numOfSearchResults == 0) {
             return UNSUCCESSFUL_SEARCH_MESSAGE;
@@ -159,11 +151,8 @@ public class ResultGenerator {
         return successMessage;
     }
 
-<<<<<<< HEAD
+
     private static String successfulDisplayMessage(List<Task> tasks) {
-=======
-    public static String successfulDisplayMessage(List<Task> tasks) {
->>>>>>> c9b255beec53cfbde2564928263abdaba1940b43
         int itemsToDisplay = tasks.size();
         if(itemsToDisplay == 0){
         	return UNSUCCESSFUL_DISPLAY_NO_TASKS;
@@ -171,21 +160,14 @@ public class ResultGenerator {
         else if(itemsToDisplay == 1){
         	return successfulDisplaySingleTask(tasks);
         }
-<<<<<<< HEAD
+
         List<String> displayList = changeTaskListToStringList(tasks,
-=======
-        List<String> displayList = changeTaskListToString(tasks,
->>>>>>> c9b255beec53cfbde2564928263abdaba1940b43
                 itemsToDisplay);
         String successMessage = changeStringListToString(displayList);
         return successMessage;
     }
     
-<<<<<<< HEAD
     private static String successfulDisplaySingleTask(List<Task> tasks){
-=======
-    public static String successfulDisplaySingleTask(List<Task> tasks){
->>>>>>> c9b255beec53cfbde2564928263abdaba1940b43
     	Task task = tasks.get(0);
     	if(task == null){
     		return ERROR_DISPLAY;
@@ -201,11 +183,8 @@ public class ResultGenerator {
     }
 
     // Format of each element in the List is "(task id). (task name)"
-<<<<<<< HEAD
+
     private static List<String> changeTaskListToStringList(
-=======
-    private static List<String> changeTaskListToString(
->>>>>>> c9b255beec53cfbde2564928263abdaba1940b43
             List<Task> tasks, int size) {
         List<String> tasksInString = new ArrayList<String>();
         for (int index = 0; index < size; index++) {
