@@ -1,6 +1,6 @@
 package Parser;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import Logic.CommandType;
 
@@ -10,7 +10,7 @@ public class CommandUnblock extends Command {
     // Use get("id"); returns string
     protected String id;
 
-    public CommandUnblock(ArrayList<TaskParam> content) {
+    public CommandUnblock(List<TaskParam> content) {
         if (content.isEmpty()) {
             this.type = CommandType.ERROR;
             this.error = "No arguments for unblock";

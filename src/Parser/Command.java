@@ -1,6 +1,6 @@
 package Parser;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import Logic.CommandType;
 
@@ -23,7 +23,7 @@ public abstract class Command {
         return null;
     }
     
-    public ArrayList<String> getTags() {
+    public List<String> getTags() {
         // Stub
         return null;
     }

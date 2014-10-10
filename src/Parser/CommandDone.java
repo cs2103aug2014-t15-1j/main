@@ -1,6 +1,6 @@
 package Parser;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import Logic.CommandType;
 
@@ -17,7 +17,7 @@ public class CommandDone extends Command {
     private String start;
     private String end;
 
-    public CommandDone(ArrayList<TaskParam> content) {
+    public CommandDone(List<TaskParam> content) {
         if (content.isEmpty()) {
             this.type = CommandType.ERROR;
             this.error = "No arguments for done";

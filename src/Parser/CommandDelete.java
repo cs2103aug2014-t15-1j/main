@@ -1,6 +1,6 @@
 package Parser;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import Logic.CommandType;
 
@@ -22,7 +22,7 @@ public class CommandDelete extends Command {
     // Delete type data [get("id")]
     private String id;
 
-    public CommandDelete(ArrayList<TaskParam> content) {
+    public CommandDelete(List<TaskParam> content) {
         if (content.isEmpty()) {
             this.type = CommandType.ERROR;
             this.error = "No arguments for delete";

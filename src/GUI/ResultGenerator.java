@@ -86,7 +86,7 @@ public class ResultGenerator {
     }
     public static String getResultMessage(CommandType commandDone,
             Result result) {
-        ArrayList<Task> tasks = result.getTasks();
+        List<Task> tasks = result.getTasks();
         switch (commandDone) {
             case ADD :
                 return singleLineSuccessMessage(SUCCESSFUL_ADD, tasks);
@@ -125,14 +125,14 @@ public class ResultGenerator {
     // Returns message of format "Successfully (task done) (task name)"
     // Pre-condition: tasks only has one element
     public static String singleLineSuccessMessage(String message,
-            ArrayList<Task> tasks) {
+            List<Task> tasks) {
     	assert(tasks.size()==1);
         Task task = tasks.get(FIRST_ELEMENT);
         String taskName = task.getName();
         return String.format(message, taskName);
     }
 
-    public static String successfulSearchMessage(ArrayList<Task> tasks) {
+    public static String successfulSearchMessage(List<Task> tasks) {
     	int numOfSearchResults = tasks.size();
         if (numOfSearchResults == 0) {
             return UNSUCCESSFUL_SEARCH_MESSAGE;
@@ -144,7 +144,7 @@ public class ResultGenerator {
         return successMessage;
     }
 
-    public static String successfulDisplayMessage(ArrayList<Task> tasks) {
+    public static String successfulDisplayMessage(List<Task> tasks) {
         int itemsToDisplay = tasks.size();
         if(itemsToDisplay == 0){
         	return UNSUCCESSFUL_DISPLAY_NO_TASKS;
@@ -152,13 +152,13 @@ public class ResultGenerator {
         else if(itemsToDisplay == 1){
         	return successfulDisplaySingleTask(tasks);
         }
-        ArrayList<String> displayList = changeTaskListToString(tasks,
+        List<String> displayList = changeTaskListToString(tasks,
                 itemsToDisplay);
         String successMessage = changeStringListToString(displayList);
         return successMessage;
     }
     
-    public static String successfulDisplaySingleTask(ArrayList<Task> tasks){
+    public static String successfulDisplaySingleTask(List<Task> tasks){
     	Task task = tasks.get(0);
     	if(task == null){
     		return ERROR_DISPLAY;
@@ -173,10 +173,10 @@ public class ResultGenerator {
 		return message;
     }
 
-    // Format of each element in the arrayList is "(task id). (task name)"
-    private static ArrayList<String> changeTaskListToString(
-            ArrayList<Task> tasks, int size) {
-        ArrayList<String> tasksInString = new ArrayList<String>();
+    // Format of each element in the List is "(task id). (task name)"
+    private static List<String> changeTaskListToString(
+            List<Task> tasks, int size) {
+        List<String> tasksInString = new ArrayList<String>();
         for (int index = 0; index < size; index++) {
             Task currentTask = tasks.get(index);
             String taskName = currentTask.getName();
@@ -186,7 +186,7 @@ public class ResultGenerator {
         return tasksInString;
     }
 
-    private static String changeStringListToString(ArrayList<String> list) {
+    private static String changeStringListToString(List<String> list) {
         int length = list.size();
         String string = "";
         for (int index = 0; index < length - 1; index++) {

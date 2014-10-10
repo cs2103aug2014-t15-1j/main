@@ -1,5 +1,6 @@
 package Parser;
 
+import java.util.List;
 import java.util.ArrayList;
 
 import Logic.CommandType;
@@ -15,7 +16,7 @@ public class CommandEdit extends Command {
     private String priority;
     private String delete;
     
-    private ArrayList<String> tags = new ArrayList<String>();
+    private List<String> tags = new ArrayList<String>();
     
     private static final String PARAM_ID = "id";
     private static final String PARAM_NAME = "name";
@@ -27,7 +28,7 @@ public class CommandEdit extends Command {
     private static final String PARAM_TAGS = "tags";
     private static final String PARAM_DEL = "delete";
 
-    public CommandEdit(ArrayList<TaskParam> content) {
+    public CommandEdit(List<TaskParam> content) {
         this.type = CommandType.EDIT;
         
         for (TaskParam param : content) {
@@ -113,7 +114,7 @@ public class CommandEdit extends Command {
         }
     }
     
-    public ArrayList<String> getTags(){
+    public List<String> getTags(){
         return this.tags;
     }
     

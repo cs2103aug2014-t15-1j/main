@@ -1,6 +1,6 @@
 package Parser;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import Logic.CommandType;
 
@@ -12,7 +12,7 @@ public class CommandTodo extends Command {
     // "id" data [get("id"); returns string]
     private String id;
 
-    public CommandTodo(ArrayList<TaskParam> content) {
+    public CommandTodo(List<TaskParam> content) {
         if (content.isEmpty()) {
             this.type = CommandType.ERROR;
             this.error = "No arguments for todo";

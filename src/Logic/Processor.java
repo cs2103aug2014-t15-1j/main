@@ -16,7 +16,7 @@ public class Processor {
 	private static Stack<Command> backwardHistory = new Stack<Command>();
 	private static Stack<Command> forwardHistory = new Stack<Command>();
 	private static Stack<Task> editedTask = new Stack<Task>();
-	private static ArrayList<Task> searchList = new ArrayList<Task>();
+	private static List<Task> searchList = new ArrayList<Task>();
 	
 	public Result processInput(String input) throws IOException {
 		Command cmd = Parser.parse(input);
@@ -28,7 +28,7 @@ public class Processor {
 	}
 	
 	private Result processCommand(Command cmd, boolean userInput) throws IOException {
-		ArrayList<Task> tasks = new ArrayList<Task>();
+		List<Task> tasks = new ArrayList<Task>();
 		boolean success = false;
 		
 		if (cmd == null || cmd.getType() == CommandType.ERROR) {
@@ -112,7 +112,7 @@ public class Processor {
 	/* All the methods below returns true/false depending on the success
 	 * Tasks to be display will be added to tasks.
 	 */
-	private boolean addTask(Command cmd, ArrayList<Task> tasks, boolean userInput) throws IOException {
+	private boolean addTask(Command cmd, List<Task> tasks, boolean userInput) throws IOException {
 		if (isBlocked(cmd)) {
 			return false;
 		}
@@ -128,7 +128,7 @@ public class Processor {
 		return false;
 	}
 	
-	private boolean editTask(Command cmd, ArrayList<Task> tasks, boolean userInput) throws IOException {
+	private boolean editTask(Command cmd, List<Task> tasks, boolean userInput) throws IOException {
 		Task existingTask = getTaskById(cmd);
 		
 		if (existingTask != null) {
@@ -196,9 +196,9 @@ public class Processor {
 	}
 
 	//Returns true if delete is executable.
-	//ArrayList<Task> tasks = empty if deleting all the file.
+	//List<Task> tasks = empty if deleting all the file.
 	//else will contain at least 1 task.	
-	private boolean deleteTask(Command cmd, ArrayList<Task> tasks, boolean userInput) {
+	private boolean deleteTask(Command cmd, List<Task> tasks, boolean userInput) {
 		boolean success = false;
 		switch (cmd.get("rangeType")) {
 			case "id":
@@ -216,7 +216,7 @@ public class Processor {
 		return success;
 	}
 	
-	private boolean deleteTaskUsingID(Command cmd, ArrayList<Task> tasks) {
+	private boolean deleteTaskUsingID(Command cmd, List<Task> tasks) {
 		Task t = getTaskById(cmd);
 		if (t != null) {
 			file.deleteTask(t.getId());
@@ -228,7 +228,7 @@ public class Processor {
 		return true;
 	}
 	
-	private boolean deleteSearchedTasks(Command cmd, ArrayList<Task> tasks) {
+	private boolean deleteSearchedTasks(Command cmd, List<Task> tasks) {
 		if (!searchList.isEmpty()) {
 			for (Task existingTask : searchList) {
 				if (existingTask != null) {
@@ -243,7 +243,7 @@ public class Processor {
 		return true;
 	}
 
-	private boolean restoreTask(Command cmd, ArrayList<Task> tasks, boolean userInput) throws IOException {
+	private boolean restoreTask(Command cmd, List<Task> tasks, boolean userInput) throws IOException {
 		switch (cmd.get("rangeType")) {
 			case "id":
 				return restoreUsingId(cmd, tasks);
@@ -257,7 +257,7 @@ public class Processor {
 		return true;
 	}
 
-	private boolean restoreUsingId(Command cmd, ArrayList<Task> tasks)	throws IOException {
+	private boolean restoreUsingId(Command cmd, List<Task> tasks)	throws IOException {
 		boolean success = file.restore(Integer.parseInt(cmd.get("id")));
 		if (success) {
 			tasks.add(getTaskById(cmd));
@@ -265,7 +265,7 @@ public class Processor {
 		return success;
 	}
 
-	private void restoreAll(ArrayList<Task> tasks) throws IOException {
+	private void restoreAll(List<Task> tasks) throws IOException {
 		/*for (Task t: file.getDeletedTasks()) {
 			tasks.add(t);
 			//y
@@ -281,12 +281,12 @@ public class Processor {
 		//Clears all history
 	}
 	
-	private boolean searchTasks(Command cmd, ArrayList<Task> tasks, boolean userInput) {
+	private boolean searchTasks(Command cmd, List<Task> tasks, boolean userInput) {
 		List<Task> doneTasks = file.getDoneTasks();
 		List<Task> toDoTasks = file.getToDoTasks();
 		List<Task> deletedTask = file.getDeletedTasks();
 		
-		//ArrayList<String> keywords = cmd.get("rangeType");
+		//List<String> keywords = cmd.get("rangeType");
 		
 		for (Task t: doneTasks) {		
 			//If found:
@@ -306,11 +306,11 @@ public class Processor {
 		return false;
 	}
 
-	private boolean displayTask(Command cmd, ArrayList<Task> tasks) {
+	private boolean displayTask(Command cmd, List<Task> tasks) {
 		return displayTask(cmd, tasks, true);
 	}
 	
-	private boolean displayTask(Command cmd, ArrayList<Task> tasks, boolean userInput) {
+	private boolean displayTask(Command cmd, List<Task> tasks, boolean userInput) {
 		switch (cmd.get("rangeType")) {
 			case "id":
 				tasks.add(getTaskById(cmd));
@@ -338,7 +338,7 @@ public class Processor {
 		return false;
 	}
 	
-	private boolean doneTasks(Command cmd, ArrayList<Task> tasks, boolean userInput) {
+	private boolean doneTasks(Command cmd, List<Task> tasks, boolean userInput) {
 		Task existingTask = getTaskById(cmd);
 		
 		if (existingTask != null) {
@@ -350,7 +350,7 @@ public class Processor {
 		return false;
 	}
 
-	private boolean toDoTasks(Command cmd, ArrayList<Task> tasks, boolean userInput) {
+	private boolean toDoTasks(Command cmd, List<Task> tasks, boolean userInput) {
 		Task existingTask = getTaskById(cmd);
 		
 		if (existingTask != null) {
