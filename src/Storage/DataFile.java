@@ -62,7 +62,7 @@ public class DataFile {
                 Task newTask = Parser.parseToTask(unparsedText);
                 allTasks.add(newTask);
                 if (!newTask.isDone()) { // Branch predictor at work here
-                    toDoTasks.add(newTask);
+                    toDoTasks.add(newTask); // to-do tasks are stored in file first
                 } else {
                     doneTasks.add(newTask);
                 }

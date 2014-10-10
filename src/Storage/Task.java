@@ -55,7 +55,7 @@ public class Task {
         fullInfo += "Start: " + start + " ";
         fullInfo += "End: " + end + " ";
         fullInfo += "Priority: " + priority + " ";
-        fullInfo += stringifyTags();
+        fullInfo += concatanateTags();
         fullInfo += done ? "#done" : "#todo";
         
         return fullInfo;
@@ -65,21 +65,19 @@ public class Task {
     public String getSummary() {
         String summary = name + " ";
         summary += more + " ";
-        for (String tag : tags) {
-            summary += tag.substring(1) + " ";
-        }
+        summary += concatanateTags(); // TODO remove #'s?
         return summary;
     }
     
     // Converts list of tags into a single String
-    private String stringifyTags() {
-        String stringifiedTags = "";
-        if (!tags.isEmpty()) {
+    private String concatanateTags() {
+        String concatanatedTags = "";
+        if (!tags.isEmpty()) { // TODO Necessary?
             for (String tempTag : tags) {
-                stringifiedTags += tempTag + " ";
+                concatanatedTags += tempTag + " ";
             }
         }
-        return stringifiedTags;
+        return concatanatedTags;
     }
     
     //===== Getters, setters, and resetters =====//
