@@ -31,6 +31,7 @@ public class CommandUnblock extends Command {
         }
     }
 
+    // TODO: Change to empty get()?
     public String get(String field) {
         switch (field) {
             case "id":

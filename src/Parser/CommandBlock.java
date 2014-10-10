@@ -23,7 +23,7 @@ public class CommandBlock extends Command {
                     case "start":
                         this.start = param.getField();
                         break;
-                        
+
                     case "end":
                         this.end = param.getField();
                         break;

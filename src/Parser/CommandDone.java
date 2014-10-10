@@ -33,6 +33,15 @@ public class CommandDone extends Command {
                     case "id":
                         this.id = param.getField();
                         break;
+                        
+                    case "start":
+                        this.start = param.getField();
+                        // Enforce start = end if one is blank
+                        break;
+                        
+                    case "end":
+                        this.end = param.getField();
+                        break;
 
                     default:
                         this.type = CommandType.ERROR;

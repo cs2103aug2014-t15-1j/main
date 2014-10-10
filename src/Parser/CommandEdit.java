@@ -25,7 +25,6 @@ public class CommandEdit extends Command {
     private static final String PARAM_START = "start";
     private static final String PARAM_END = "end";
     private static final String PARAM_PRIO = "priority";
-    private static final String PARAM_TAGS = "tags";
     private static final String PARAM_DEL = "delete";
 
     public CommandEdit(List<TaskParam> content) {

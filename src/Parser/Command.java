@@ -27,5 +27,10 @@ public abstract class Command {
         // Stub
         return null;
     }
+    
+    public ArrayList<String> getKeywords() {
+        // Stub
+        return null;
+    }
 
 }
