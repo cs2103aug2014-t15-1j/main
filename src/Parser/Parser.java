@@ -16,6 +16,7 @@ public class Parser {
     private static final String TYPE_RESTORE = "restore";
     private static final String TYPE_SEARCH = "search";
     private static final String TYPE_DISPLAY = "display";
+    private static final String TYPE_SHOW = "show";
     private static final String TYPE_BLOCK = "block";
     private static final String TYPE_UNBLOCK = "unblock";
     private static final String TYPE_DONE = "done";
@@ -76,6 +77,7 @@ public class Parser {
                 return parseSearch(commandItems);
 
             case TYPE_DISPLAY:
+            case TYPE_SHOW:
                 return parseDisplay(commandItems);
 
             case TYPE_BLOCK:
@@ -322,7 +324,7 @@ public class Parser {
         try {
             String firstWord = commandItems[1];
             String firstWordLC = firstWord.toLowerCase();
-            if (firstWordLC.equals("all") || firstWordLC.equals("block")) {
+            if (firstWordLC.equals("block")) {
                 displayFields.add(new TaskParam("rangeType", firstWordLC));
             } else if (isInteger(firstWord)) {
                 displayFields.add(new TaskParam("rangeType", "id"));
@@ -332,7 +334,7 @@ public class Parser {
                         "Invalid argument for display");
             }
         } catch (ArrayIndexOutOfBoundsException e) {
-            return new CommandOthers("error", "No arguments for display");
+            displayFields.add(new TaskParam("rangeType", "all"));
         }
 
         return new CommandDisplay(displayFields);
