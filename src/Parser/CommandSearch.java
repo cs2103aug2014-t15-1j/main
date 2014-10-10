@@ -12,12 +12,7 @@ public class CommandSearch extends Command {
     // TODO: ASSUME PARSER IS AN IDIOT
     private List<String> tags = new ArrayList<String>();
     private List<String> keywords = new ArrayList<String>();
-    
-    private String rangeType;
-
-    // TODO: Assign date stuff
-    private String start;
-    private String end;
+    private String date;
 
     public CommandSearch(List<TaskParam> content) {
         assert (!content.isEmpty());
@@ -25,8 +20,8 @@ public class CommandSearch extends Command {
 
         for (TaskParam param : content) {
             switch (param.getName()) {
-                case "rangeType":
-                    this.rangeType = param.getField();
+                case "date":
+                    this.date = param.getField();
                     break;
                     
                 case "tag":
@@ -35,20 +30,6 @@ public class CommandSearch extends Command {
 
                 case "word":
                     this.keywords.add(param.getField());
-                    break;
-
-                case "start":
-                    this.start = param.getField();
-                    if (this.end == null) {
-                        this.end = param.getField();
-                    }
-                    break;
-
-                case "end":
-                    this.end = param.getField();
-                    if (this.start == null) {
-                        this.start = param.getField();
-                    }
                     break;
 
                 default:
@@ -60,14 +41,8 @@ public class CommandSearch extends Command {
 
     public String get(String field) {
         switch (field) {
-            case "rangeType":
-                return rangeType;
-                
-            case "start":
-                return start;
-
-            case "end":
-                return end;
+            case "date":
+                return date;
 
             default:
                 return null;
@@ -86,11 +61,9 @@ public class CommandSearch extends Command {
     public String toString() {
         String result = "\n[[ CMD-SEARCH: ]]";
         result = result.concat("\nCmdType: " + this.type);
-        result = result.concat("\nrange: " + this.rangeType);
+        result = result.concat("\ndate: " + this.date);
         result = result.concat("\ntags: " + this.tags);
         result = result.concat("\nkeywords: " + this.keywords);
-        result = result.concat("\nstart: " + this.start);
-        result = result.concat("\nend: " + this.end);
 
         return result;
     }

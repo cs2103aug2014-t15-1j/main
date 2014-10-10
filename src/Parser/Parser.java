@@ -190,6 +190,7 @@ public class Parser {
 
         // TODO: Consider date format (length 1, 2, 3?)
         // Currently: Date must be "DD/MM/YYYY" format
+        // IMPLEMENT TIME
         try {
             String firstWord = commandItems[1];
             if (isDate(firstWord)) {
@@ -345,53 +346,40 @@ public class Parser {
 
         // TODO: REFACTOR
         try {
-            // CHECK FOR DATE INPUT
-            // CURRENTLY DOES NOT SUPPORT BOTH DATES + TAGS/KEYWORDS
-            String firstWord = commandItems[1];
-            if (isDate(firstWord)) {
-                searchFields.add(new TaskParam("rangeType", "dates"));
-                if (commandItems.length == 4 && commandItems[2].equals("to") &&
-                    isDate(commandItems[3])) {
-                    if (firstDateEarlier(firstWord, commandItems[3])) {
-                        searchFields.add(new TaskParam("start", firstWord));
-                        searchFields.add(new TaskParam("end", commandItems[3]));
+            if (commandItems.length<2) {
+                throw new ArrayIndexOutOfBoundsException();
+            }
+
+            boolean donenessIndicated = false;
+            boolean dateIndicated = false;
+            for (int i = 1; i < commandItems.length; i++) {
+                String currWord = commandItems[i];
+                String currWordLC = currWord.toLowerCase();
+                if (isDate(currWord)) {
+                    if (!dateIndicated) {
+                        searchFields.add(new TaskParam("date", currWord));
+                        dateIndicated = true;
                     } else {
-                        searchFields.add(new TaskParam("end", firstWord));
-                        searchFields
-                                .add(new TaskParam("start", commandItems[3]));
+                        System.out.println("A date has already been indicated");
+                        // TODO: Update GUI w/ error
                     }
-                } else if (commandItems.length == 2) {
-                    searchFields.add(new TaskParam("start", firstWord));
-                    searchFields.add(new TaskParam("end", firstWord));
-                } else {
-                    return new CommandOthers("error",
-                            "Mixed Date-and-keyword/tag search detected (not allowed)");
-                }
-            } else {
-                searchFields.add(new TaskParam("rangeType", "keys"));
-                boolean donenessIndicated = false;
-                for (int i = 1; i < commandItems.length; i++) {
-                    String currWord = commandItems[i];
-                    String currWordLC = currWord.toLowerCase();
-                    if (hasValidHashTag(currWord)) {
-                        // TODO: Error Handling for multiple doneness keywords
-                        if (currWordLC.equals("#done") ||
-                            currWordLC.equals("#deleted") ||
-                            currWordLC.equals("#todo")) {
-                            if (!donenessIndicated) {
-                                searchFields.add(new TaskParam("tag",
-                                        currWordLC));
-                                donenessIndicated = true;
-                            } else {
-                                System.out
-                                        .println("A done-ness keyword has already been indicated!");
-                            }
+                } else if (hasValidHashTag(currWord)) {
+                    // TODO: Error Handling for multiple doneness keywords
+                    if (currWordLC.equals("#done") ||
+                        currWordLC.equals("#deleted") ||
+                        currWordLC.equals("#todo")) {
+                        if (!donenessIndicated) {
+                            searchFields.add(new TaskParam("tag", currWordLC));
+                            donenessIndicated = true;
                         } else {
-                            searchFields.add(new TaskParam("tag", currWord));
+                            System.out
+                                    .println("A done-ness keyword has already been indicated!");
                         }
                     } else {
-                        searchFields.add(new TaskParam("word", currWord));
+                        searchFields.add(new TaskParam("tag", currWord));
                     }
+                } else {
+                    searchFields.add(new TaskParam("word", currWord));
                 }
             }
         } catch (ArrayIndexOutOfBoundsException e) {
@@ -592,8 +580,7 @@ public class Parser {
         return new CommandAdd(addFields);
     }
 
-    private static void convertToDate(List<TaskParam> addFields,
-                                      String string) {
+    private static void convertToDate(List<TaskParam> addFields, String string) {
         // TODO: re-factor to getDate() and setDate();
         String[] months = { "jan", "january", "feb", "february", "march",
                            "mar", "april", "apr", "may", "june", "jun", "july",
@@ -616,8 +603,7 @@ public class Parser {
 
     }
 
-    private static boolean containsParam(List<TaskParam> addFields,
-                                         String pName) {
+    private static boolean containsParam(List<TaskParam> addFields, String pName) {
         boolean result = false;
         for (TaskParam tp : addFields) {
             if (tp.getName().equals(pName)) {
