@@ -46,26 +46,36 @@ public class Task {
         this.done = task.isDone();
     }
     
-    // Converts task into a single String
+    // Stores all attributes in a single String
     // Meant to be written to system file
-    public String stringify() {
-        String stringifiedTask = "Name: " + name + " ";
-        stringifiedTask += "More: " + more + " ";
-        stringifiedTask += "Due: " + due + " ";
-        stringifiedTask += "Start: " + start + " ";
-        stringifiedTask += "End: " + end + " ";
-        stringifiedTask += "Priority: " + priority + " ";
-        stringifiedTask += stringifyTags();
-        stringifiedTask += done ? "#done" : "#todo";
+    public String getFullInfo() {
+        String fullInfo = "Name: " + name + " ";
+        fullInfo += "More: " + more + " ";
+        fullInfo += "Due: " + due + " ";
+        fullInfo += "Start: " + start + " ";
+        fullInfo += "End: " + end + " ";
+        fullInfo += "Priority: " + priority + " ";
+        fullInfo += stringifyTags();
+        fullInfo += done ? "#done" : "#todo";
         
-        return stringifiedTask;
+        return fullInfo;
+    }
+    
+    // Stores attributes to be searched in a single String
+    public String getSummary() {
+        String summary = name + " ";
+        summary += more + " ";
+        for (String tag : tags) {
+            summary += tag.substring(1) + " ";
+        }
+        return summary;
     }
     
     // Converts list of tags into a single String
     private String stringifyTags() {
         String stringifiedTags = "";
-        if (!this.tags.isEmpty()) {
-            for (String tempTag : this.tags) {
+        if (!tags.isEmpty()) {
+            for (String tempTag : tags) {
                 stringifiedTags += tempTag + " ";
             }
         }
@@ -89,7 +99,7 @@ public class Task {
     }
     
     public void resetName() {
-        this.name = "";
+        name = "";
     }
     
     // More attribute functions
@@ -102,7 +112,7 @@ public class Task {
     }
     
     public void resetMore() {
-        this.more = "";
+        more = "";
     }
     
     // Due attribute functions
@@ -115,7 +125,7 @@ public class Task {
     }
     
     public void resetDue() {
-        this.more = "";
+        more = "";
     }
     
     // Start attribute functions
@@ -128,7 +138,7 @@ public class Task {
     }
     
     public void resetStart() {
-        this.start = "";
+        start = "";
     }
     
     // End attribute functions
@@ -141,7 +151,7 @@ public class Task {
     }
     
     public void resetEnd() {
-        this.end = "";
+        end = "";
     }
     
     // Priority attribute functions
@@ -154,7 +164,7 @@ public class Task {
     }
     
     public void resetPriority() {
-        this.priority = "";
+        priority = "";
     }
     
     // Tags attribute functions
@@ -171,7 +181,7 @@ public class Task {
     }
     
     public void resetTags() {
-        this.tags.clear();
+        tags.clear();
     }
     
     // Deleted attribute functions
