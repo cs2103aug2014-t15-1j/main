@@ -8,7 +8,6 @@ public class ParseTester {
     private static String tempTaskToString(Task task) {
         String result = "\n[[ Task ]]";
         result = result.concat("\nName: " + task.getName());
-        result = result.concat("\nMore: " + task.getMore());
         result = result.concat("\nDue: " + task.getDue());
         result = result.concat("\nStart: " + task.getStart());
         result = result.concat("\nEnd: " + task.getEnd());
@@ -22,7 +21,7 @@ public class ParseTester {
         // TODO: Test "\n" when input from command line
         /*
          * // TEST INVALID COMMAND
-         * System.out.println(Parser.parse("that homework m: it's #cs2103"));
+         * System.out.println(Parser.parse("that homework it's #cs2103"));
          */
 
         // TEST RAW PARSE
@@ -34,16 +33,16 @@ public class ParseTester {
         // TEST ADD
         System.out
                 .println(Parser
-                        .parse("add do homework m: it's #cs2103 cs2103 due: tomorrow end:"));
+                        .parse("add do homework it's #cs2103 cs2103 due: tomorrow end:"));
         System.out.println(Parser
-                .parse("add name: do do due: wednesday m: dead task\n"));
+                .parse("add name: do do due: wednesday dead task\n"));
         System.out.println(Parser
-                .parse("add name: do due: #cs2103 wed name: homework m: late "
+                .parse("add name: do due: #cs2103 wed name: homework late "
                        + "start: priority: due: 9am end: now name: quickly\n"));
         System.out.println(Parser.parse("add"));
         System.out
                 .println(Parser
-                        .parse("add name:homework start:end:more:start:end:more:today"));
+                        .parse("add name:homework start:end:start:end:today"));
 
         /*
          * // TEST DELETE System.out.println(Parser.parse("delete all"));
@@ -62,7 +61,7 @@ public class ParseTester {
         // TEST EDIT
         System.out
                 .println(Parser
-                        .parse("edit 1 ten twenty more: addmore start: #cs2103 #cs2103 #CS2103 end: due: tmr delete: name"));
+                        .parse("edit 1 ten twenty start: #cs2103 #cs2103 #CS2103 end: due: tmr delete: name"));
         System.out.println(Parser
                 .parse("edit 2 delete: nil n: to: do: #cs2103 #cs2103"));
         System.out
@@ -73,9 +72,9 @@ public class ParseTester {
         System.out.println(Parser.parse("edit 1"));
         System.out
                 .println(Parser
-                        .parse("edit 1 name:Start:e:tomorrow n:m:n:code it x:m:n:fail n:x:s:fail n:m:x:fails"));
+                        .parse("edit 1 name:Start:e:tomorrow n:n:code it x:n:fail n:x:s:fail n:x:fails"));
         System.out.println(Parser
-                .parse("edit 1 delete:s:Start n:delete:tomorrow m:delete:end"));
+                .parse("edit 1 delete:s:Start n:delete:tomorrow delete:end"));
 
         /*
          * // TEST GET() Command testEdit = Parser .parse(
