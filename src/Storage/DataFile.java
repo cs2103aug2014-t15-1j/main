@@ -135,6 +135,42 @@ public class DataFile {
         }
     }
     
+    public boolean editTask(int id, String name, String due, String start, String end, List<String> tags) {
+        return editTaskById(id, name, due, start, end, tags);
+    }
+    
+    public boolean editTask(Task task, String name, String due, String start, String end, List<String> tags) {
+        return editTaskByObject(task, name, due, start, end, tags);
+    }
+    
+    private boolean editTaskById(int id, String name, String due, String start, String end, List<String> tags) {
+        Task task = searchTaskById(allTasks, id);
+        return editTaskByObject(task, name, due, start, end, tags);
+    }
+    
+    private boolean editTaskByObject(Task task, String name, String due, String start, String end, List<String> tags) {
+        if (task == null) {
+            return false; // Invalid ID
+        }
+        if (name != null) {
+            task.setName(name);
+        }
+        if (due != null) {
+            task.setDue(due);
+        }
+        if (start != null) {
+            task.setStart(start);
+        }
+        if (end != null) {
+            task.setEnd(end);
+        }
+        if (tags != null) {
+            task.addTags(tags);
+        }
+        
+        return updateFile();
+    }
+    
     // Given id or object, deletes task object
     // Task object is removed from to-do or done list,
     // and added to deleted list
@@ -147,15 +183,16 @@ public class DataFile {
     }
     
     private boolean deleteTaskById(int id) {
-        Task task = searchTaskById(allTasks, id);
+        Task task = searchTaskById(toDoTasks, id);
+        if (task == null) {
+            task = searchTaskById(doneTasks, id);
+        }
         return deleteTaskByObject(task);
     }
     
     private boolean deleteTaskByObject(Task task) {
-        if (task == null) {
-            return false; // Invalid ID
-        } else if (task.isDeleted()) {
-            return false; // Already deleted
+        if (task == null || task.isDeleted()) {
+            return false; // Invalid ID or already deleted
         }
         
         task.setDeleted(true);
@@ -182,20 +219,18 @@ public class DataFile {
     }
     
     private boolean restoreTaskByObject(Task task) {
-        if (task == null) {
-            return false; // Invalid id
-        } else if (!task.isDeleted()) {
-            return false; // Not a deleted task
-        } else {
-            task.setDeleted(false);
-            deletedTasks.remove(task);
-            if (task.isDone()) {
-                doneTasks.add(task);
-            } else {
-                toDoTasks.add(task);
-            }
-            return updateFile();
+        if (task == null || !task.isDeleted()) {
+            return false; // Invalid ID or is not deleted task
         }
+        
+        task.setDeleted(false);
+        deletedTasks.remove(task);
+        if (task.isDone()) {
+            doneTasks.add(task);
+        } else {
+            toDoTasks.add(task);
+        }
+        return updateFile();
     }
     
     
@@ -214,6 +249,10 @@ public class DataFile {
     }
     
     private boolean wipeTaskByObject(Task task) {
+        if (task == null) {
+            return false; // Invalid ID
+        }
+        
         allTasks.remove(task);
         if (task.isDeleted()) {
             deletedTasks.remove(task);
@@ -232,6 +271,60 @@ public class DataFile {
         doneTasks.clear();
         deletedTasks.clear();
         
+        return updateFile();
+    }
+    
+    public boolean toDoTask(int id) {
+        return toDoTaskById(id);
+    }
+    
+    public boolean toDoTask(Task task) {
+        return toDoTaskByObject(task);
+    }
+    
+    private boolean toDoTaskById(int id) {
+        Task task = searchTaskById(allTasks, id);
+        return toDoTaskByObject(task);
+    }
+    
+    private boolean toDoTaskByObject(Task task) {
+        if (task == null || (!task.isDeleted() && !task.isDone())) {
+            return false; // Invalid ID or is undeleted to-do task
+        }
+        
+        task.setDone(false);
+        if (task.isDeleted()) {
+            return restoreTask(task);
+        }
+        toDoTasks.add(task);
+        doneTasks.remove(task);
+        return updateFile();
+    }
+    
+    public boolean doneTask(int id) {
+        return doneTaskById(id);
+    }
+    
+    public boolean doneTask(Task task) {
+        return doneTaskByObject(task);
+    }
+    
+    private boolean doneTaskById(int id) {
+        Task task = searchTaskById(allTasks, id);
+        return doneTaskByObject(task);
+    }
+    
+    private boolean doneTaskByObject(Task task) {
+        if (task == null || (!task.isDeleted() && task.isDone())) {
+            return false; // Invalid ID or is undeleted done task
+        }
+        
+        task.setDone(true);
+        if (task.isDeleted()) {
+            return restoreTask(task);
+        }
+        doneTasks.add(task);
+        toDoTasks.remove(task);
         return updateFile();
     }
 }

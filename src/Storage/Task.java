@@ -3,6 +3,9 @@ package Storage;
 import java.util.List;
 import java.util.ArrayList;
 
+import jdk.nashorn.internal.objects.annotations.Getter;
+import jdk.nashorn.internal.objects.annotations.Setter;
+
 public class Task {
     private static int newId = 1;   // ID for each new task object
 	
@@ -82,15 +85,18 @@ public class Task {
     //===== Getters, setters, and resetters =====//
     
     // ID attribute functions
+    @Getter
     public int getId() {
         return ID;
     }
     
     // Name attribute functions
+    @Getter
     public String getName() {
         return name;
     }
     
+    @Setter
     public void setName(String name) {
         this.name = name;
     }
@@ -100,10 +106,12 @@ public class Task {
     }
     
     // Due attribute functions
+    @Getter
     public String getDue() {
         return due;
     }
     
+    @Setter
     public void setDue(String due) {
         this.due = due;
     }
@@ -113,10 +121,12 @@ public class Task {
     }
     
     // Start attribute functions
+    @Getter
     public String getStart() {
         return start;
     }
     
+    @Setter
     public void setStart(String start) {
         this.start = start;
     }
@@ -126,10 +136,12 @@ public class Task {
     }
     
     // End attribute functions
+    @Getter
     public String getEnd() {
         return end;
     }
     
+    @Setter
     public void setEnd(String end) {
         this.end = end;
     }
@@ -139,6 +151,7 @@ public class Task {
     }
     
     // Tags attribute functions
+    @Getter
     public List<String> getTags() {
         return tags;
     }
@@ -156,19 +169,23 @@ public class Task {
     }
     
     // Deleted attribute functions
+    @Getter
     public boolean isDeleted() {
         return deleted;
     }
     
+    @Setter
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;
     }
     
     // Done attribute functions
+    @Getter
     public boolean isDone() {
         return done;
     }
     
+    @Setter
     public void setDone(boolean done) {
         this.done = done;
     }
