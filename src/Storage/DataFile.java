@@ -41,7 +41,7 @@ public class DataFile {
     // Constructor
     public DataFile() {
         File file = new File(FILENAME);
-        if(file.exists()) {
+        if(file.exists() && allTasks.isEmpty()) {
             getTasksFromFile(file);
         } else {
             try {
