@@ -168,27 +168,6 @@ public class DataFile {
         return updateFile();
     }
     
-    
-    
-    // Deletes all task objects
-    // All tasks are removed from to-do and done
-    // lists, and added to deleted list
-    public boolean deleteAll() {
-        for (Task task : allTasks) {
-            if (!task.isDeleted()) {
-                task.setDeleted(true);
-                deletedTasks.add(task);
-                if (task.isDone()) {
-                    doneTasks.remove(task);
-                } else {
-                    toDoTasks.remove(task);
-                }
-            }
-        }
-        updateFile();
-        return true;
-    }
-    
     public boolean restoreTask(int id) {
         return restoreTaskById(id);
     }
