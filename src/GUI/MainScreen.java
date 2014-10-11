@@ -45,8 +45,9 @@ public class MainScreen {
 	}
 
 	private static void readUserInput(SetUp setUpScreen) {
-
-		final Text commandLine = setUpScreen.getCommandLine();
+	    
+	    final SetUp screen = setUpScreen;
+		final Text commandLine = screen.getCommandLine();
 
 		commandLine.addListener(SWT.DefaultSelection, new Listener() {
 			public void handleEvent(Event event) {
@@ -56,7 +57,7 @@ public class MainScreen {
 				String output = "";
 				try {
 					output = ResultGenerator.sendInput(input);
-					displayScreen = setUpScreen.getDisplayScreen();
+					displayScreen = screen.getDisplayScreen();
 					if (!output.equals(CODE_EXIT)) {
 	                       displayScreen.append(LINE_SEPARATOR + output);
 	                        commandLine.setText("");
