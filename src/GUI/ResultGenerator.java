@@ -220,8 +220,6 @@ public class ResultGenerator {
 	}
 
 	private static String addOtherParameters(Task task, String message) {
-		String more = task.getMore();
-		message = addToMessage(message, PARA_STRING_MORE, more);
 		String due = task.getDue();
 		message = addToMessage(message, PARA_STRING_DUE, due);
 		String start = task.getStart();
