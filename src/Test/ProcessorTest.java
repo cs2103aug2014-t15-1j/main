@@ -43,14 +43,14 @@ public class ProcessorTest {
 	}
 	
 	@Test
-	public void testAdd() throws IOException {
+	public void testAdd() throws Exception {
 		Task t = new Task("Task1", "Add Bubble", null, null, null, new ArrayList<String>());
 		Result r = TestProcessor.processInput("add n: Task1 m: Add Bubble");
 		assertTrue(equalsObj(t, r.getTasks().get(0)));
 	}
 
 	@Test
-	public void testEdit() throws IOException {
+	public void testEdit() throws Exception {
 	    Task t = new Task("Task2", "Add Pigs", null, null, null, new ArrayList<String>());
 	    Result r0 = TestProcessor.processInput("add n: Task1 m: Add Bubble");
 		Result r = TestProcessor.processInput("edit " +r0.getTasks().get(0).getId()+ " n: Task2 m: Add Pigs");
@@ -58,7 +58,7 @@ public class ProcessorTest {
 	}
 
 	@Test
-	public void testDelete() throws IOException {
+	public void testDelete() throws Exception {
 	    Task t1 = new Task("Task1", "Add Bubble", null, null, null, new ArrayList<String>());
         Task t2 = new Task("Task2", "Add Pigs", null, null, null, new ArrayList<String>());
 	    
@@ -77,7 +77,7 @@ public class ProcessorTest {
 	}
 
 	@Test
-	public void testRestore() throws IOException {
+	public void testRestore() throws Exception {
 	    Task t = new Task("Task1", "Add Bubble", null, null, null, new ArrayList<String>());
         
 		Result r0 = TestProcessor.processInput("add n: Task1 m: Add Bubble");
@@ -91,7 +91,7 @@ public class ProcessorTest {
 	}
 
 	@Test
-	public void testDisplay() throws IOException {
+	public void testDisplay() throws Exception {
 		Task t = new Task("Task1", "Add Bubble", null, null, null, new ArrayList<String>());
 		TestProcessor.processInput("add n: Task1 m: Add Bubble");
 		Result r1 = TestProcessor.processInput("display");
@@ -109,7 +109,7 @@ public class ProcessorTest {
 	}
 	
 	@Test 
-	public void testSearch() throws IOException {
+	public void testSearch() throws Exception {
 	    TestProcessor.processInput("add n: Task1 m: Add Bubble");
 	    TestProcessor.processInput("add n: Task1 m: Add Bubble");
 	    TestProcessor.processInput("add n: Task2 m: Add Bubble");

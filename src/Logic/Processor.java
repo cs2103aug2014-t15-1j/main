@@ -45,7 +45,7 @@ public class Processor extends Observable {
 	 * @param String input
      * @return Result
      */
-	public Result processInput(String input) throws IOException {
+	public Result processInput(String input) throws Exception {
 		Command cmd = Parser.parse(input);
 		return processCommand(cmd);
 	}
@@ -53,7 +53,7 @@ public class Processor extends Observable {
 	/* 
      * @param Command cmd
      */
-	private Result processCommand(Command cmd) throws IOException {
+	private Result processCommand(Command cmd) throws Exception {
 		return processCommand(cmd, true);
 	}
 	
@@ -65,7 +65,7 @@ public class Processor extends Observable {
      *     List<Task> tasks - Contains Tasks that are affected in the operation
      *     CommandType cmdExecuted
      */
-	private Result processCommand(Command cmd, boolean userInput) throws IOException {
+	private Result processCommand(Command cmd, boolean userInput) throws Exception {
 		List<Task> tasks = new ArrayList<Task>();
 		boolean success = false;
 		
@@ -76,6 +76,8 @@ public class Processor extends Observable {
 		CommandType cmdType = cmd.getType();
 		
 		switch (cmdType) {
+		    case HELP:
+		        success = displayHelp(cmd);
 			case ADD:
 				success = addTask(cmd, tasks, userInput);
 				break;
@@ -150,11 +152,18 @@ public class Processor extends Observable {
 		}
 	}
 	
+	/* Returns back to UI to display a 'HELP' picture?
+	 * @return true
+	 */
+	private boolean displayHelp(Command cmd) {
+	    return true;
+	}
+	
 	/* Executes 'add' operation of a task 
 	 * Add a Task to 'todo' List
 	 * @return true/false on whether operation is performed 
 	 */
-	private boolean addTask(Command cmd, List<Task> tasks, boolean userInput) throws IOException {
+	private boolean addTask(Command cmd, List<Task> tasks, boolean userInput) throws Exception {
 		if (isBlocked(cmd)) {
 			return false;
 		}
@@ -175,7 +184,7 @@ public class Processor extends Observable {
 	 * Allow edit/deletion of parameters of a Task
      * @return true/false on whether operation is performed
      */
-	private boolean editTask(Command cmd, List<Task> tasks, boolean userInput) throws IOException {
+	private boolean editTask(Command cmd, List<Task> tasks, boolean userInput) throws Exception {
 		Task existingTask = getTaskById(cmd);
 		
 		if (existingTask != null) {
@@ -295,7 +304,7 @@ public class Processor extends Observable {
 	 * Allows restore <id>, restore search
      * @return true/false on whether operation is performed
      */
-	private boolean restoreTask(Command cmd, List<Task> tasks, boolean userInput) throws IOException {
+	private boolean restoreTask(Command cmd, List<Task> tasks, boolean userInput) throws Exception {
 		switch (cmd.get("rangeType")) {
 			case "id":
 				return restoreUsingId(cmd, tasks);
@@ -307,7 +316,7 @@ public class Processor extends Observable {
 	}
 
 	/* Restores a deleted Task using Id */
-	private boolean restoreUsingId(Command cmd, List<Task> tasks) throws IOException {
+	private boolean restoreUsingId(Command cmd, List<Task> tasks) throws Exception {
 		boolean success = _file.restore(Integer.parseInt(cmd.get("id")));
 		if (success) {
 			tasks.add(getTaskById(cmd));
@@ -316,7 +325,7 @@ public class Processor extends Observable {
 	}
 	
 	/* Restores all deleted Tasks due to 'delete search' */
-	private boolean restoreUsingSearch(Command cmd, List<Task> tasks) throws IOException {
+	private boolean restoreUsingSearch(Command cmd, List<Task> tasks) throws Exception {
 	    int deletedTasksSize = _file.getDeletedTasks().size();
 	    int restoreAmt = _searchListSizeHistory.pop();
 	    for (int i = 0; i < restoreAmt; i++) {
@@ -558,7 +567,7 @@ public class Processor extends Observable {
      * Applicable for 'Add', 'Edit', 'Delete', 'Restore', 'Block', 'Unblock', 'Done', 'Todo'
      * @return true/false on whether operation is performed
      */
-	private boolean redoCommand(Command cmd, boolean userInput) throws IOException {
+	private boolean redoCommand(Command cmd, boolean userInput) throws Exception {
 		if (!_forwardHistory.isEmpty()) {
 			Command forwardCommand = _forwardHistory.pop();
 			Result result = processCommand(forwardCommand, false);

@@ -16,7 +16,6 @@ public enum CommandType {
 	UNDO,
 	REDO,
 	CLEAR,
-	JOKE,
 	EXIT,
 	ERROR;
 }
