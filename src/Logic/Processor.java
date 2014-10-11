@@ -277,7 +277,7 @@ public class Processor extends Observable {
 		    return false;
 		} else {
             tasks.add(t);
-			return _file.deleteTask(t.getId());
+			return _file.deleteTask(t);
 		}
 	}
 	
@@ -289,7 +289,7 @@ public class Processor extends Observable {
 			for (Task existingTask : _searchList) {
 				if (existingTask != null) {
 				    tasks.add(existingTask);
-					_file.deleteTask(existingTask.getId());
+					_file.deleteTask(existingTask);
 				}
 			}
 		}
@@ -327,7 +327,7 @@ public class Processor extends Observable {
 	    int restoreAmt = _searchListSizeHistory.pop();
 	    for (int i = 0; i < restoreAmt; i++) {
 	        int index = deletedTasksSize - restoreAmt;
-	        _file.restoreTask(_file.getDeletedTasks().get(index).getId());
+	        _file.restoreTask(_file.getDeletedTasks().get(index));
 	    }
 	    return true;
 	}
@@ -534,7 +534,7 @@ public class Processor extends Observable {
 	private void undoAdd(Command cmd) {
 		Task toDelete = _file.getToDoTasks().get(_file.getToDoTasks().size() - 1);
 		if (toDelete != null) {
-			_file.wipeTask(toDelete.getId());
+			_file.wipeTask(toDelete);
 		}
 	}
 
