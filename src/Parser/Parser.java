@@ -185,7 +185,6 @@ public class Parser {
 
         // TODO: Consider date format (length 1, 2, 3?)
         // Currently: Date must be "DD/MM/YYYY" format
-        // IMPLEMENT TIME
         try {
             String firstWord = commandItems[1];
             if (isDate(firstWord)) {
@@ -557,6 +556,7 @@ public class Parser {
             } else if (hasValidHashTag(currWord)) {
                 addFields.add(new TaskParam("tag", currWord));
             } else {
+                // IMPLEMENT TIME
                 getTaskParam(addFields, currField).addToField(currWord);
             }
         }
