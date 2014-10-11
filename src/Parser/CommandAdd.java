@@ -8,7 +8,6 @@ import Logic.CommandType;
 public class CommandAdd extends Command {
     
     private String name;
-    private String more;
     private String due;
     private String start;
     private String end;
@@ -16,7 +15,6 @@ public class CommandAdd extends Command {
     private List<String> tags = new ArrayList<String>();
     
     private static final String PARAM_NAME = "name";
-    private static final String PARAM_MORE = "more";
     private static final String PARAM_DUE = "due";
     private static final String PARAM_START = "start";
     private static final String PARAM_END = "end";
@@ -29,11 +27,6 @@ public class CommandAdd extends Command {
                 case "name":
                 case "n":
                     this.name = param.getField();
-                    break;
-                    
-                case "more":
-                case "m":
-                    this.more = param.getField();
                     break;
                     
                 case "due":
@@ -67,9 +60,6 @@ public class CommandAdd extends Command {
             case PARAM_NAME:
                 return this.name;
             
-            case PARAM_MORE:
-                return this.more;
-            
             case PARAM_DUE:
                 return this.due;
             
@@ -93,7 +83,6 @@ public class CommandAdd extends Command {
         
         String result = "\n[[ CMD-ADD: ]]";
         result = result.concat("\n" + "name: " + name);
-        result = result.concat("\n" + "more: " + more);
         result = result.concat("\n" + "due: " + due);
         result = result.concat("\n" + "start: " + start);
         result = result.concat("\n" + "end: " + end);

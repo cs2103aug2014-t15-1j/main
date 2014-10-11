@@ -27,13 +27,11 @@ public class Parser {
 
     // TODO: CONSIDER USING PARAM_FIRST_WORD = 1
     private static final String[] TASK_PARAM_LIST_COLON = { "name:", "n:",
-                                                           "more:", "m:",
                                                            "due:", "d:",
                                                            "start:", "s:",
                                                            "end:", "e:" };
-    private static final String[] TASK_PARAM_LIST = { "name", "n", "more", "m",
-                                                     "due", "d", "start", "s",
-                                                     "end", "e" };
+    private static final String[] TASK_PARAM_LIST = { "name", "n", "due", "d",
+                                                      "start", "s", "end", "e" };
     private static final String[] HELP_CMD_LIST = { TYPE_ALL, TYPE_ADD,
                                                    TYPE_EDIT, TYPE_DELETE,
                                                    TYPE_RESTORE, TYPE_SEARCH,
@@ -692,8 +690,6 @@ public class Parser {
         switch (currField) {
             case "n":
                 return "name";
-            case "m":
-                return "more";
             case "d":
                 return "due";
             case "s":
@@ -719,7 +715,7 @@ public class Parser {
     // ========== TASK PARSING METHODS ==========//
     public static Task parseToTask(String text) {
         String[] textItems = text.trim().split(" ");
-        String[] param = new String[] { "", "", "", "", "", "" };
+        String[] param = new String[] { "", "", "", "" };
         List<String> tags = new ArrayList<String>();
 
         String currField = "name";
@@ -749,7 +745,7 @@ public class Parser {
         }
 
         Task newTask = new Task(param[0], param[1], param[2], param[3],
-                param[4], tags);
+                tags);
         newTask.setDone(isDone);
         return newTask;
     }
@@ -758,14 +754,12 @@ public class Parser {
         switch (currField.toLowerCase()) {
             case "name":
                 return 0;
-            case "more":
-                return 1;
             case "due":
-                return 2;
+                return 1;
             case "start":
-                return 3;
+                return 2;
             case "end":
-                return 4;
+                return 3;
             default:
                 System.out.println("raw-parsing getParamIndex failure");
                 return -1;

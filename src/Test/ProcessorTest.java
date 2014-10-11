@@ -27,8 +27,6 @@ public class ProcessorTest {
 		try {
 			if (!task1.getName().equals(task2.getName()))
 				equal = false;
-			if (!task1.getMore().equals(task2.getMore()))
-				equal = false;
 			if (task1.getDue() != null && task2.getDue() != null && !task1.getDue().equals(task2.getDue()))
 				equal = false;
 			if (task1.getStart() != null && task2.getStart() != null && !task1.getStart().equals(task2.getStart()))
@@ -44,14 +42,14 @@ public class ProcessorTest {
 	
 	@Test
 	public void testAdd() throws Exception {
-		Task t = new Task("Task1", "Add Bubble", null, null, null, new ArrayList<String>());
+		Task t = new Task("Add Bubble", null, null, null, new ArrayList<String>());
 		Result r = TestProcessor.processInput("add n: Task1 m: Add Bubble");
 		assertTrue(equalsObj(t, r.getTasks().get(0)));
 	}
 
 	@Test
 	public void testEdit() throws Exception {
-	    Task t = new Task("Task2", "Add Pigs", null, null, null, new ArrayList<String>());
+	    Task t = new Task("Add Pigs", null, null, null, new ArrayList<String>());
 	    Result r0 = TestProcessor.processInput("add n: Task1 m: Add Bubble");
 		Result r = TestProcessor.processInput("edit " +r0.getTasks().get(0).getId()+ " n: Task2 m: Add Pigs");
 		assertTrue(equalsObj(r.getTasks().get(0), t));
@@ -59,8 +57,8 @@ public class ProcessorTest {
 
 	@Test
 	public void testDelete() throws Exception {
-	    Task t1 = new Task("Task1", "Add Bubble", null, null, null, new ArrayList<String>());
-        Task t2 = new Task("Task2", "Add Pigs", null, null, null, new ArrayList<String>());
+	    Task t1 = new Task("Add Bubble", null, null, null, new ArrayList<String>());
+        Task t2 = new Task("Add Pigs", null, null, null, new ArrayList<String>());
 	    
 	    Result r0 = TestProcessor.processInput("add n: Task1 m: Add Bubble");
 		TestProcessor.processInput("add n: Task2 m: Add Pigs");
@@ -78,7 +76,7 @@ public class ProcessorTest {
 
 	@Test
 	public void testRestore() throws Exception {
-	    Task t = new Task("Task1", "Add Bubble", null, null, null, new ArrayList<String>());
+	    Task t = new Task("Add Bubble", null, null, null, new ArrayList<String>());
         
 		Result r0 = TestProcessor.processInput("add n: Task1 m: Add Bubble");
 		TestProcessor.processInput("delete " + r0.getTasks().get(0).getId());
@@ -92,13 +90,13 @@ public class ProcessorTest {
 
 	@Test
 	public void testDisplay() throws Exception {
-		Task t = new Task("Task1", "Add Bubble", null, null, null, new ArrayList<String>());
+		Task t = new Task("Add Bubble", null, null, null, new ArrayList<String>());
 		TestProcessor.processInput("add n: Task1 m: Add Bubble");
 		Result r1 = TestProcessor.processInput("display");
 		assertTrue(equalsObj(r1.getTasks().get(0), t));
         assertEquals(r1.getTasks().size(), 1);
         
-        Task t2 = new Task("Task2", "Add Bubble", null, null, null, new ArrayList<String>());
+        Task t2 = new Task("Add Bubble", null, null, null, new ArrayList<String>());
 		TestProcessor.processInput("add n: Task2 m: Add Bubble");
 		Result r3 = TestProcessor.processInput("display 2");
 		assertTrue(equalsObj(r3.getTasks().get(0), t2));

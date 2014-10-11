@@ -9,7 +9,6 @@ public class CommandEdit extends Command {
     
     private String id;
     private String name;
-    private String more;
     private String due;
     private String start;
     private String end;
@@ -19,7 +18,6 @@ public class CommandEdit extends Command {
     
     private static final String PARAM_ID = "id";
     private static final String PARAM_NAME = "name";
-    private static final String PARAM_MORE = "more";
     private static final String PARAM_DUE = "due";
     private static final String PARAM_START = "start";
     private static final String PARAM_END = "end";
@@ -37,11 +35,6 @@ public class CommandEdit extends Command {
                 case "name":
                 case "n":
                     this.name = param.getField();
-                    break;
-                    
-                case "more":
-                case "m":
-                    this.more = param.getField();
                     break;
                     
                 case "due":
@@ -82,9 +75,6 @@ public class CommandEdit extends Command {
             case PARAM_NAME:
                 return this.name;
             
-            case PARAM_MORE:
-                return this.more;
-            
             case PARAM_DUE:
                 return this.due;
             
@@ -112,7 +102,6 @@ public class CommandEdit extends Command {
         String result = "\n[[ CMD-EDIT: ]]";
         result = result.concat("\n" + "id: " + id);
         result = result.concat("\n" + "name: " + name);
-        result = result.concat("\n" + "more: " + more);
         result = result.concat("\n" + "due: " + due);
         result = result.concat("\n" + "start: " + start);
         result = result.concat("\n" + "end: " + end);

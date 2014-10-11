@@ -164,7 +164,7 @@ public class Processor extends Observable {
 		if (isBlocked(cmd)) {
 			return false;
 		}
-		Task newTask = new Task(cmd.get("name"), cmd.get("more"), cmd.get("due"), cmd.get("start"), cmd.get("end"), cmd.getTags());
+		Task newTask = new Task(cmd.get("name"), cmd.get("due"), cmd.get("start"), cmd.get("end"), cmd.getTags());
 		tasks.add(newTask);
 		return _file.addNewTask(newTask);
 	}
@@ -201,9 +201,6 @@ public class Processor extends Observable {
 	    if (cmd.get("name") != null) {
 			existingTask.setName(cmd.get("name"));
 		}
-		if (cmd.get("more") != null) {
-			existingTask.setMore(cmd.get("more"));
-		}
 		if (cmd.get("due") != null) {
 			existingTask.setDue(cmd.get("due"));				
 		}
@@ -226,9 +223,6 @@ public class Processor extends Observable {
         switch (parameterToRemove) {
             case "name":
                 existingTask.resetName();
-                break;
-            case "more":
-                existingTask.resetMore();
                 break;
             case "due":
                 existingTask.resetDue();
@@ -553,7 +547,6 @@ public class Processor extends Observable {
 	//Copies parameters from prevTask to existingTask
 	private void copyTaskParameters(Task prevTask, Task existingTask) {
 		existingTask.setName(prevTask.getName());
-		existingTask.setMore(prevTask.getMore());
 		existingTask.setDue(prevTask.getDue());
 		existingTask.setStart(prevTask.getStart());
 		existingTask.setEnd(prevTask.getEnd());

@@ -9,7 +9,6 @@ public class Task {
 	// Task Object Attributes
     private final int ID; // ID only changes once, at each object construction
     private String name = "";
-    private String more = "";
     private String due = "";   // TODO Change to Date type
     private String start = ""; // TODO Change to Date type
     private String end = "";   // TODO Change to Date type
@@ -18,12 +17,11 @@ public class Task {
     private boolean done = false;
     
     // Constructor
-    public Task(String name, String more, String due, String start, 
+    public Task(String name, String due, String start, 
             String end, List<String> tags) {
         this.ID = newId;
         newId++;
         this.name = name;
-        this.more = more;
         this.due = due;
         this.start = start;
         this.end = end;
@@ -34,7 +32,6 @@ public class Task {
     public Task(Task task) {
         this.ID = task.getId();
         this.name = task.getName();
-        this.more = task.getMore();
         this.due = task.getDue();
         this.start = task.getStart();
         this.end = task.getEnd();
@@ -47,7 +44,6 @@ public class Task {
     // Meant to be written to system file
     public String getFullInfo() {
         String fullInfo = "Name: " + name + " ";
-        fullInfo += "More: " + more + " ";
         fullInfo += "Due: " + due + " ";
         fullInfo += "Start: " + start + " ";
         fullInfo += "End: " + end + " ";
@@ -60,7 +56,9 @@ public class Task {
     // Stores attributes to be searched in a single String
     public String getSummary() {
         String summary = name + " ";
-        summary += more + " ";
+        summary += due + " ";
+        summary += start + " ";
+        summary += end + " ";
         summary += concatanateTags(); // TODO remove #'s?
         return summary;
     }
@@ -101,19 +99,6 @@ public class Task {
         name = "";
     }
     
-    // More attribute functions
-    public String getMore() {
-        return more;
-    }
-    
-    public void setMore(String more) {
-        this.more = more;
-    }
-    
-    public void resetMore() {
-        more = "";
-    }
-    
     // Due attribute functions
     public String getDue() {
         return due;
@@ -124,7 +109,7 @@ public class Task {
     }
     
     public void resetDue() {
-        more = "";
+        due = "";
     }
     
     // Start attribute functions
