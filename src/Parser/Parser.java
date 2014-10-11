@@ -30,12 +30,10 @@ public class Parser {
                                                            "more:", "m:",
                                                            "due:", "d:",
                                                            "start:", "s:",
-                                                           "end:", "e:",
-                                                           "priority:", "p:" };
+                                                           "end:", "e:" };
     private static final String[] TASK_PARAM_LIST = { "name", "n", "more", "m",
                                                      "due", "d", "start", "s",
-                                                     "end", "e", "priority",
-                                                     "p" };
+                                                     "end", "e" };
     private static final String[] HELP_CMD_LIST = { TYPE_ALL, TYPE_ADD,
                                                    TYPE_EDIT, TYPE_DELETE,
                                                    TYPE_RESTORE, TYPE_SEARCH,
@@ -340,7 +338,7 @@ public class Parser {
 
         // TODO: REFACTOR
         try {
-            if (commandItems.length<2) {
+            if (commandItems.length < 2) {
                 throw new ArrayIndexOutOfBoundsException();
             }
 
@@ -702,8 +700,6 @@ public class Parser {
                 return "start";
             case "e":
                 return "end";
-            case "p":
-                return "priority";
         }
         return currField;
     }
@@ -753,7 +749,7 @@ public class Parser {
         }
 
         Task newTask = new Task(param[0], param[1], param[2], param[3],
-                param[4], param[5], tags);
+                param[4], tags);
         newTask.setDone(isDone);
         return newTask;
     }
@@ -770,8 +766,6 @@ public class Parser {
                 return 3;
             case "end":
                 return 4;
-            case "priority":
-                return 5;
             default:
                 System.out.println("raw-parsing getParamIndex failure");
                 return -1;

@@ -12,7 +12,6 @@ public class CommandAdd extends Command {
     private String due;
     private String start;
     private String end;
-    private String priority;
     
     private List<String> tags = new ArrayList<String>();
     
@@ -21,7 +20,6 @@ public class CommandAdd extends Command {
     private static final String PARAM_DUE = "due";
     private static final String PARAM_START = "start";
     private static final String PARAM_END = "end";
-    private static final String PARAM_PRIO = "priority";
 
     public CommandAdd(List<TaskParam> content) {
         this.type = CommandType.ADD;
@@ -53,18 +51,13 @@ public class CommandAdd extends Command {
                     this.end = param.getField();
                     break;
                     
-                case "priority":
-                case "p":
-                    this.priority = param.getField();
-                    break;
-                    
                 case "tag":
                     // NOTE: possible change to string (tags = tags.concat())
                     this.tags.add(param.getField());
                     break;
                     
                 default:
-                    System.out.println("Houston, we have a problem.");    
+                    System.out.println("Error in adding Add parameters");    
             }
         }
     }
@@ -86,11 +79,8 @@ public class CommandAdd extends Command {
             case PARAM_END:
                 return this.end;
                 
-            case PARAM_PRIO:
-                return this.priority;
-                
             default:
-                System.out.println("Get's got a problem!");
+                System.out.println("Add: Get's got a problem!");
                 return null;
         }
     }
@@ -107,7 +97,6 @@ public class CommandAdd extends Command {
         result = result.concat("\n" + "due: " + due);
         result = result.concat("\n" + "start: " + start);
         result = result.concat("\n" + "end: " + end);
-        result = result.concat("\n" + "priority: " + priority);
         result = result.concat("\n" + "tags: " + tags);
         
         return result;

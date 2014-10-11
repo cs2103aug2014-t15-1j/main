@@ -13,7 +13,6 @@ public class CommandEdit extends Command {
     private String due;
     private String start;
     private String end;
-    private String priority;
     private String delete;
     
     private List<String> tags = new ArrayList<String>();
@@ -24,7 +23,6 @@ public class CommandEdit extends Command {
     private static final String PARAM_DUE = "due";
     private static final String PARAM_START = "start";
     private static final String PARAM_END = "end";
-    private static final String PARAM_PRIO = "priority";
     private static final String PARAM_DEL = "delete";
 
     public CommandEdit(List<TaskParam> content) {
@@ -59,11 +57,6 @@ public class CommandEdit extends Command {
                 case "end":
                 case "e":
                     this.end = param.getField();
-                    break;
-                    
-                case "priority":
-                case "p":
-                    this.priority = param.getField();
                     break;
                     
                 case "tag":
@@ -101,9 +94,6 @@ public class CommandEdit extends Command {
             case PARAM_END:
                 return this.end;
                 
-            case PARAM_PRIO:
-                return this.priority;
-                
             case PARAM_DEL:
                 return this.delete;
                 
@@ -126,7 +116,6 @@ public class CommandEdit extends Command {
         result = result.concat("\n" + "due: " + due);
         result = result.concat("\n" + "start: " + start);
         result = result.concat("\n" + "end: " + end);
-        result = result.concat("\n" + "priority: " + priority);
         result = result.concat("\n" + "tags: " + tags);
         result = result.concat("\n" + "delete: " + delete);
         
