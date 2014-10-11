@@ -28,9 +28,6 @@ public class ResultGenerator {
 	// to be changed at a later implementation -- remove joke, priority, clear. display and show same implementation, display all --> display/show
 	// 
 	// Not implemented: search, block, unblock, help
-	
-	private static final String SUCCESSFUL_JOKE = "There are three kinds of people. Those who can count, and those who cannot."
-			+ LINE_SEPARATOR + "- Unknown";
 	private static final String SUCCESSFUL_BLOCK = "Successfully blocked"; // include:
 																			// range
 																			// blocked?
@@ -39,8 +36,6 @@ public class ResultGenerator {
 																				// unblocked?
 
 	// to be implement: Help
-
-	private static final String CODE_CLEAR = " clear";
 	private static final String CODE_EXIT = " exit";
 	private static final String UNSUCCESSFUL_SEARCH_MESSAGE = "We could not find any results :( Try using different words?";
 	private static final String UNSUCCESSFUL_COMMAND_MESSAGE = "'%1$s'was not recognised.";
@@ -55,7 +50,6 @@ public class ResultGenerator {
 	private static final String PARA_STRING_DUE = "Due: ";
 	private static final String PARA_STRING_START = "Start: ";
 	private static final String PARA_STRING_END = "End: ";
-	private static final String PARA_STRING_PRIORITY = "Priority: ";
 	private static final String PARA_STRING_TAG = "Tag: ";
 	private static final String PARA_STRING_STATUS = "Status: ";
 	private static final String PARA_STRING_VALUE_EMPTY = "<empty>";
@@ -135,12 +129,6 @@ public class ResultGenerator {
 			return SUCCESSFUL_UNDO;
 		case REDO:
 			return SUCCESSFUL_REDO;
-		case JOKE:
-			// to be changed
-			return SUCCESSFUL_JOKE;
-		case CLEAR:
-			// lets Main Screen know that screen is to be cleared
-			return CODE_CLEAR;
 		case EXIT:
 			// to be changed
 			return CODE_EXIT;
@@ -240,8 +228,6 @@ public class ResultGenerator {
 		message = addToMessage(message, PARA_STRING_START, start);
 		String end = task.getEnd();
 		message = addToMessage(message, PARA_STRING_END, end);
-		String priority = task.getPriority();
-		message = addToMessage(message, PARA_STRING_PRIORITY, priority);
 		List<String> tags = task.getTags();
 		message = addTags(message, tags);
 		message = addStatus(message, task);

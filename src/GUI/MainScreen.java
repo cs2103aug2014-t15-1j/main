@@ -23,7 +23,6 @@ public class MainScreen {
 	private static final String LINE_SEPARATOR = System
 			.getProperty("line.separator");
 
-	private static String CODE_CLEAR = " clear";
 	private static String CODE_EXIT = " exit";
 
 	public static void main(String[] args) {
@@ -58,13 +57,11 @@ public class MainScreen {
 				try {
 					output = ResultGenerator.sendInput(input);
 					displayScreen = setUpScreen.getDisplayScreen();
-					if (output.equals(CODE_EXIT)) {
-						exitProgram(output);
-					} else if (output.endsWith(CODE_CLEAR)) {
-						clearScreen(displayScreen);
+					if (!output.equals(CODE_EXIT)) {
+	                       displayScreen.append(LINE_SEPARATOR + output);
+	                        commandLine.setText("");
 					} else {
-						displayScreen.append(LINE_SEPARATOR + output);
-						commandLine.setText("");
+					    exitProgram();
 					}
 				} catch (IOException error) {
 					error.getMessage();
@@ -73,12 +70,7 @@ public class MainScreen {
 		});
 	}
 
-	private static void exitProgram(String output) {
+	private static void exitProgram() {
 		System.exit(0);
 	}
-
-	private static void clearScreen(Text displayScreen) {
-		displayScreen.setText("");
-	}
-
 }
