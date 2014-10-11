@@ -166,7 +166,7 @@ public class Processor extends Observable {
 		}
 		Task newTask = new Task(cmd.get("name"), cmd.get("more"), cmd.get("due"), cmd.get("start"), cmd.get("end"), cmd.getTags());
 		tasks.add(newTask);
-		return _file.addTask(newTask);
+		return _file.addNewTask(newTask);
 	}
 	
 	/* Check if the date is blocked

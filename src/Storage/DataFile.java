@@ -92,7 +92,7 @@ public class DataFile {
     }
     
     // Used to add a new task
-    public boolean addTask(Task task) {
+    public boolean addNewTask(Task task) {
         toDoTasks.add(task);
         allTasks.add(task);
         return updateFile();
