@@ -83,9 +83,9 @@ public class DataFile {
     
     // Given id, return task object from given list
     private Task searchTaskById(List<Task> tasks, int id) {
-        for (Task tempTask : tasks) {
-            if (tempTask.getId() == id) {
-                return tempTask;
+        for (Task task : tasks) {
+            if (task.getId() == id) {
+                return task;
             }
         }
         return null;
@@ -110,8 +110,8 @@ public class DataFile {
     // For storage on file
     private String getTaskInfo(List<Task> tasks) {
         String taskInfo = ""; 
-        for (Task tempTask : tasks) {
-            taskInfo += tempTask.getFullInfo() + "\n";
+        for (Task task : tasks) {
+            taskInfo += task.getFullInfo() + "\n";
         }
         return taskInfo;
     }
@@ -135,40 +135,53 @@ public class DataFile {
         }
     }
     
-    // Given id, deletes task object
+    // Given id or object, deletes task object
     // Task object is removed from to-do or done list,
     // and added to deleted list
     public boolean deleteTask(int id) {
-        Task tempTask = searchTaskById(allTasks, id);
-        if (tempTask == null) {
+        return deleteTaskById(id);
+    }
+    
+    public boolean deleteTask(Task task) {
+        return deleteTaskByObject(task);
+    }
+    
+    private boolean deleteTaskById(int id) {
+        Task task = searchTaskById(allTasks, id);
+        return deleteTaskByObject(task);
+    }
+    
+    private boolean deleteTaskByObject(Task task) {
+        if (task == null) {
             return false; // Invalid ID
-        } else if (tempTask.isDeleted()) {
+        } else if (task.isDeleted()) {
             return false; // Already deleted
         }
         
-        tempTask.setDeleted(true);
-        deletedTasks.add(tempTask);
-        if (tempTask.isDone()) {
-            doneTasks.remove(tempTask);
+        task.setDeleted(true);
+        deletedTasks.add(task);
+        if (task.isDone()) {
+            doneTasks.remove(task);
         } else {
-            toDoTasks.remove(tempTask);
+            toDoTasks.remove(task);
         }
-        updateFile();
-        return true;
+        return updateFile();
     }
+    
+    
     
     // Deletes all task objects
     // All tasks are removed from to-do and done
     // lists, and added to deleted list
     public boolean deleteAll() {
-        for (Task tempTask : allTasks) {
-            if (!tempTask.isDeleted()) {
-                tempTask.setDeleted(true);
-                deletedTasks.add(tempTask);
-                if (tempTask.isDone()) {
-                    doneTasks.remove(tempTask);
+        for (Task task : allTasks) {
+            if (!task.isDeleted()) {
+                task.setDeleted(true);
+                deletedTasks.add(task);
+                if (task.isDone()) {
+                    doneTasks.remove(task);
                 } else {
-                    toDoTasks.remove(tempTask);
+                    toDoTasks.remove(task);
                 }
             }
         }
@@ -176,12 +189,24 @@ public class DataFile {
         return true;
     }
     
+    public boolean restoreTask(int id) {
+        return restoreTaskById(id);
+    }
+    
     // Restores a deleted task given its id
-    public boolean restore(int id) {
+    public boolean restoreTask(Task task) {
+        return restoreTaskByObject(task);
+    }
+    private boolean restoreTaskById(int id) {
         Task task = searchTaskById(deletedTasks, id);
-        
+        return restoreTaskByObject(task);
+    }
+    
+    private boolean restoreTaskByObject(Task task) {
         if (task == null) {
             return false; // Invalid id
+        } else if (!task.isDeleted()) {
+            return false; // Not a deleted task
         } else {
             task.setDeleted(false);
             deletedTasks.remove(task);
@@ -190,13 +215,26 @@ public class DataFile {
             } else {
                 toDoTasks.add(task);
             }
-            updateFile();
-            return true;
+            return updateFile();
         }
     }
     
+    
+    
     public boolean wipeTask(int id) {
+        return wipeTaskById(id);
+    }
+    
+    public boolean wipeTask(Task task) {
+        return wipeTaskByObject(task);
+    }
+    
+    private boolean wipeTaskById(int id) {
         Task task = searchTaskById(allTasks, id);
+        return wipeTaskByObject(task); 
+    }
+    
+    private boolean wipeTaskByObject(Task task) {
         allTasks.remove(task);
         if (task.isDeleted()) {
             deletedTasks.remove(task);

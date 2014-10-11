@@ -314,7 +314,7 @@ public class Processor extends Observable {
 
 	/* Restores a deleted Task using Id */
 	private boolean restoreUsingId(Command cmd, List<Task> tasks) throws Exception {
-		boolean success = _file.restore(Integer.parseInt(cmd.get("id")));
+		boolean success = _file.restoreTask(Integer.parseInt(cmd.get("id")));
 		if (success) {
 			tasks.add(getTaskById(cmd));
 		}
@@ -327,7 +327,7 @@ public class Processor extends Observable {
 	    int restoreAmt = _searchListSizeHistory.pop();
 	    for (int i = 0; i < restoreAmt; i++) {
 	        int index = deletedTasksSize - restoreAmt;
-	        _file.restore(_file.getDeletedTasks().get(index).getId());
+	        _file.restoreTask(_file.getDeletedTasks().get(index).getId());
 	    }
 	    return true;
 	}
