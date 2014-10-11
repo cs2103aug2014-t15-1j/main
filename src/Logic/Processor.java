@@ -3,6 +3,7 @@ package Logic;
 import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Observable;
 import java.util.Stack;
 
 import Parser.Command;
@@ -10,7 +11,7 @@ import Parser.Parser;
 import Storage.DataFile;
 import Storage.Task;
 
-public class Processor {
+public class Processor extends Observable {
 	
     private static Processor processor;
 	private DataFile _file;
@@ -43,9 +44,6 @@ public class Processor {
 	/* 
 	 * @param String input
      * @return Result
-     *     boolean success
-     *     List<Task> tasks - Contains Tasks that are affected in the operation
-     *     CommandType cmdExecuted
      */
 	public Result processInput(String input) throws IOException {
 		Command cmd = Parser.parse(input);
@@ -62,6 +60,10 @@ public class Processor {
 	/* Executes the appropriate actions for each command
      * @param Command cmd
      * @param boolean userInput
+     * @return Result
+     *     boolean success
+     *     List<Task> tasks - Contains Tasks that are affected in the operation
+     *     CommandType cmdExecuted
      */
 	private Result processCommand(Command cmd, boolean userInput) throws IOException {
 		List<Task> tasks = new ArrayList<Task>();
@@ -113,9 +115,6 @@ public class Processor {
 			case CLEAR:
 				success = clearScreen(cmd);
 				break;
-			case JOKE:
-				success = showJoke(cmd);
-				break;
 			case EXIT:
 				success = true;
 			default:
@@ -123,6 +122,8 @@ public class Processor {
 		
 		if (success && userInput) {
 			updateCommandHistory(cmd);
+			setChanged();
+			notifyObservers(); //Calls update of the side panel class
 		}
 		
 		return new Result(tasks, success, cmdType);
@@ -157,10 +158,8 @@ public class Processor {
 		if (isBlocked(cmd)) {
 			return false;
 		}
-		
-		Task newTask = new Task(cmd.get("name"), cmd.get("more"), cmd.get("due"), cmd.get("start"), cmd.get("end"), cmd.get("priority"), cmd.getTags());
+		Task newTask = new Task(cmd.get("name"), cmd.get("more"), cmd.get("due"), cmd.get("start"), cmd.get("end"), cmd.getTags());
 		tasks.add(newTask);
-		
 		return _file.addTask(newTask);
 	}
 	
@@ -181,9 +180,10 @@ public class Processor {
 		
 		if (existingTask != null) {
 			Task oldTask = new Task(existingTask);
-			_editedTask.push(oldTask);
 			updateTaskParameters(cmd, existingTask);
+			
 			tasks.add(existingTask);
+			_editedTask.push(oldTask);
 			_file.updateFile();
 			return true;
 		}
@@ -206,9 +206,6 @@ public class Processor {
 		}
 		if (cmd.get("end") != null) {
 			existingTask.setEnd(cmd.get("end"));
-		}
-		if (cmd.get("priority") != null) {
-			existingTask.setPriority(cmd.get("priority"));
 		}
 		if (cmd.getTags() != null) {
 			existingTask.addTags(cmd.getTags());
@@ -235,9 +232,6 @@ public class Processor {
                 break;
             case "end":
                 existingTask.resetEnd();
-                break;
-            case "priority":
-                existingTask.resetPriority();
                 break;
             case "tags":
                 existingTask.resetTags();
@@ -273,27 +267,25 @@ public class Processor {
 	/* Deletes Task using Id */
 	private boolean deleteTaskUsingID(Command cmd, List<Task> tasks) {
 		Task t = getTaskById(cmd);
-		if (t != null) {
-			_file.deleteTask(t.getId());
-			tasks.add(t);
+		if (t == null) {
+		    return false;
 		} else {
-			return false;
+            tasks.add(t);
+			return _file.deleteTask(t.getId());
 		}
-		
-		return true;
 	}
 	
 	/* Deletes all Tasks in _searchList */
 	private boolean deleteSearchedTasks(Command cmd, List<Task> tasks) {
-		if (!_searchList.isEmpty()) {
+		if (_searchList.isEmpty()) {
+		    return false;
+		} else {
 			for (Task existingTask : _searchList) {
 				if (existingTask != null) {
+				    tasks.add(existingTask);
 					_file.deleteTask(existingTask.getId());
-					tasks.add(existingTask);
 				}
 			}
-		} else {
-			return false; //Nothing in previous search
 		}
 		return true;
 	}
@@ -345,7 +337,7 @@ public class Processor {
      * @return true/false on whether operation is performed
      */
 	private boolean searchTasks(Command cmd, List<Task> tasks, boolean userInput) {
-	    _searchList.clear();
+	    clearPreviousSearch();
 		String date = cmd.get("date");
 		List<String> keywords = cmd.getKeywords();
 		List<String> tags = cmd.getTags();
@@ -355,8 +347,13 @@ public class Processor {
 		} else if (keywords != null || tags != null) {
 		    searchUsingKeyOrTags(keywords, tags, tasks);
 		}
-		_searchListSizeHistory.push(_searchList.size());
+		
+		updateSearchList(tasks);
 		return true;
+	}
+	
+	private void clearPreviousSearch() {
+	    _searchList.clear();
 	}
 	
 	/* Performs search using date */
@@ -365,12 +362,13 @@ public class Processor {
         for (Task t: toDoTasks) {
             if (t.getDue().equals(date)) {
                 tasks.add(t);
-                _searchList.add(t);
             }
         }
 	}
 	
-	/* Performs search using Keywords or Tags */
+	/* Performs search using Keywords or Tags 
+	 * Tries to find if tags is present first before searching for keywords
+	 * */
 	private void searchUsingKeyOrTags(List<String> keywords, List<String> tags, List<Task> tasks) {
 	    List<Task> toDoTasks = _file.getToDoTasks();
         for (Task task: toDoTasks) {       
@@ -386,7 +384,6 @@ public class Processor {
 	    for (String tag: tags) {
             if (task.getTags().contains(tag)) {
                 tasks.add(task);
-                _searchList.add(task);
                 return true;
             }
         }
@@ -403,6 +400,14 @@ public class Processor {
             }
         }
         return false;
+	}
+	
+	/* Updates the Search result */
+	private void updateSearchList(List<Task> tasks) {
+	    for (Task task : tasks) {
+	        _searchList.add(task);
+	    }
+        _searchListSizeHistory.push(_searchList.size());
 	}
 	
 	/* Executes "display" operation
@@ -451,13 +456,11 @@ public class Processor {
      */
 	private boolean doneTasks(Command cmd, List<Task> tasks, boolean userInput) {
 		Task existingTask = getTaskById(cmd);
-		
 		if (existingTask != null) {
 			existingTask.setDone(true);
 			tasks.add(existingTask);
 			return true;
 		}
-		
 		return false;
 	}
 
@@ -467,13 +470,11 @@ public class Processor {
      */
 	private boolean toDoTasks(Command cmd, List<Task> tasks, boolean userInput) {
 		Task existingTask = getTaskById(cmd);
-		
 		if (existingTask != null) {
 			existingTask.setDone(false);
 			tasks.add(existingTask);
 			return true;
 		}
-		
 		return false;
 	}
 	
@@ -484,7 +485,6 @@ public class Processor {
 	private boolean undoCommand(Command cmd, boolean userInput) {
 		if (!_backwardHistory.isEmpty()) {
 			Command backwardCommand = _backwardHistory.pop();
-			//Do the complement of backwardCommand
 			try {
 				switch(backwardCommand.getType()) {
 					case ADD:
@@ -549,7 +549,6 @@ public class Processor {
 		existingTask.setName(prevTask.getName());
 		existingTask.setMore(prevTask.getMore());
 		existingTask.setDue(prevTask.getDue());
-		existingTask.setPriority(prevTask.getPriority());
 		existingTask.setStart(prevTask.getStart());
 		existingTask.setEnd(prevTask.getEnd());
 		existingTask.addTags(prevTask.getTags());
@@ -576,15 +575,6 @@ public class Processor {
 	private boolean clearScreen(Command cmd) {
 		return true;
 	}
-
-	/* Executes "joke" operation
-     * Shows a random joke
-     * @return true/false on whether operation is performed
-     */
-	private boolean showJoke(Command cmd) {
-		//Show joke
-		return true;
-	}	
 	
 	public DataFile getFile() {
 	    return _file;
