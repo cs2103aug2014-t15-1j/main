@@ -13,14 +13,13 @@ public class Task {
     private String due = "";   // TODO Change to Date type
     private String start = ""; // TODO Change to Date type
     private String end = "";   // TODO Change to Date type
-    private String priority = "";
     private List<String> tags = new ArrayList<String>();
     private boolean deleted = false;
     private boolean done = false;
     
     // Constructor
     public Task(String name, String more, String due, String start, 
-            String end, String priority, List<String> tags) {
+            String end, List<String> tags) {
         this.ID = newId;
         newId++;
         this.name = name;
@@ -28,7 +27,6 @@ public class Task {
         this.due = due;
         this.start = start;
         this.end = end;
-        this.priority = priority;
         this.tags = tags;
     }
     
@@ -40,7 +38,6 @@ public class Task {
         this.due = task.getDue();
         this.start = task.getStart();
         this.end = task.getEnd();
-        this.priority = task.getPriority();
         this.tags.addAll(task.getTags());
         this.deleted = task.isDeleted();
         this.done = task.isDone();
@@ -54,7 +51,6 @@ public class Task {
         fullInfo += "Due: " + due + " ";
         fullInfo += "Start: " + start + " ";
         fullInfo += "End: " + end + " ";
-        fullInfo += "Priority: " + priority + " ";
         fullInfo += concatanateTags();
         fullInfo += done ? "#done" : "#todo";
         
@@ -155,19 +151,6 @@ public class Task {
     
     public void resetEnd() {
         end = "";
-    }
-    
-    // Priority attribute functions
-    public String getPriority() {
-        return priority;
-    }
-    
-    public void setPriority(String priority) {
-        this.priority = priority;
-    }
-    
-    public void resetPriority() {
-        priority = "";
     }
     
     // Tags attribute functions
