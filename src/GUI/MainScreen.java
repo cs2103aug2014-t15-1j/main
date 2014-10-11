@@ -26,7 +26,7 @@ public class MainScreen {
 	private static String CODE_CLEAR = " clear";
 	private static String CODE_EXIT = " exit";
 
-	public static void runProgram() {
+	public static void main(String[] args) {
 		Display display = new Display();
 		Shell shell = new Shell(display);
 
