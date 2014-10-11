@@ -110,12 +110,6 @@ public class Processor {
 			case REDO:
 				success = redoCommand(cmd, userInput);
 				break;
-			case CLEAR:
-				success = clearScreen(cmd);
-				break;
-			case JOKE:
-				success = showJoke(cmd);
-				break;
 			case EXIT:
 				success = true;
 			default:
@@ -567,23 +561,6 @@ public class Processor {
 			return result.isSuccess();
 		}
 		return false;
-	}
-
-	/* Executes "clear" operation
-	 * Clears the screen
-     * @return true/false on whether operation is performed
-     */
-	private boolean clearScreen(Command cmd) {
-		return true;
-	}
-
-	/* Executes "joke" operation
-     * Shows a random joke
-     * @return true/false on whether operation is performed
-     */
-	private boolean showJoke(Command cmd) {
-		//Show joke
-		return true;
 	}	
 	
 	public DataFile getFile() {

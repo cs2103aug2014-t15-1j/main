@@ -23,8 +23,6 @@ public class Parser {
     private static final String TYPE_TODO = "todo";
     private static final String TYPE_UNDO = "undo";
     private static final String TYPE_REDO = "redo";
-    private static final String TYPE_CLEAR = "clear";
-    private static final String TYPE_JOKE = "joke";
     private static final String TYPE_EXIT = "exit";
 
     // TODO: CONSIDER USING PARAM_FIRST_WORD = 1
@@ -44,8 +42,7 @@ public class Parser {
                                                    TYPE_DISPLAY, TYPE_BLOCK,
                                                    TYPE_UNBLOCK, TYPE_DONE,
                                                    TYPE_TODO, TYPE_UNDO,
-                                                   TYPE_REDO, TYPE_CLEAR,
-                                                   TYPE_JOKE, TYPE_EXIT };
+                                                   TYPE_REDO, TYPE_EXIT };
 
     // ========== MAIN PARSE METHOD ==========//
 
@@ -94,8 +91,6 @@ public class Parser {
 
             case TYPE_UNDO:
             case TYPE_REDO:
-            case TYPE_CLEAR:
-            case TYPE_JOKE:
             case TYPE_EXIT:
                 return new CommandOthers(commandType);
 

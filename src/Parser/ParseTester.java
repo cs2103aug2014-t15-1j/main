@@ -88,9 +88,7 @@ public class ParseTester {
          * System.out.println(Parser.parse("display"));
          * System.out.println(Parser.parse("display b"));
          * 
-         * // TEST OTHERS System.out.println(Parser.parse("clear"));
-         * System.out.println(Parser.parse("joke"));
-         * System.out.println(Parser.parse("undo"));
+         * // TEST OTHERS System.out.println(Parser.parse("undo"));
          * System.out.println(Parser.parse("redo"));
          * System.out.println(Parser.parse("exit"));
          * 

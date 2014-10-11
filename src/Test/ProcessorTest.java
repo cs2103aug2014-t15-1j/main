@@ -154,18 +154,6 @@ public class ProcessorTest {
 	}
 
 	@Test
-	public void testClear() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Test
-	public void testJoke() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Test
 	public void testExit() {
 		// TODO Auto-generated method stub
 		

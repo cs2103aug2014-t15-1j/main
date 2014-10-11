@@ -6,7 +6,7 @@ import Logic.CommandType;
  * This Command object encompasses the commands that need no other parameter
  * inputs.
  * 
- * The follow commands are included: "clear", "undo", "redo", "joke", "exit" and
+ * The follow commands are included: "undo", "redo", "exit" and
  * "error".
  * 
  * The "error" Command can be constructed in two ways: an incorrect input, or
@@ -20,16 +20,8 @@ import Logic.CommandType;
 public class CommandOthers extends Command {
     public CommandOthers(String type) {
         switch (type.toLowerCase()) {
-            case "clear":
-                this.type = CommandType.CLEAR;
-                break;
-
             case "exit":
                 this.type = CommandType.EXIT;
-                break;
-
-            case "joke":
-                this.type = CommandType.JOKE;
                 break;
 
             case "redo":
