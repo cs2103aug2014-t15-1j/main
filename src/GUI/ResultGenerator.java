@@ -64,9 +64,9 @@ public class ResultGenerator {
 	 * 
 	 * @param userInput - a string that the user entered
 	 * @return success messages if the command was carried out or error messages if the command failed
-	 * @throws IOException
+	 * @throws Exception 
 	 */
-	public static String sendInput(String userInput) throws IOException {
+	public static String sendInput(String userInput) throws Exception {
 
 		if (isEmpty(userInput)) {
 			return EMPTY_MESSAGE;

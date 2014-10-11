@@ -64,7 +64,7 @@ public class MainScreen {
 					} else {
 					    exitProgram();
 					}
-				} catch (IOException error) {
+				} catch ( Exception error) {
 					error.getMessage();
 				}
 			}
