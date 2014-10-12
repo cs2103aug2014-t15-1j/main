@@ -7,7 +7,7 @@ import org.junit.Test;
 /**
  * Unit tests for the DateTime class.
  * 
- * @author PierceAndy
+ * @author Pierce Anderson Fu
  * 
  */
 

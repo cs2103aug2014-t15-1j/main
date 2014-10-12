@@ -4,7 +4,7 @@ package Storage;
  * The BlockDate class keeps track of the start/end dates and times of a blocked
  * time period.
  * 
- * @author PierceAndy
+ * @author Pierce Anderson Fu
  * 
  */
 

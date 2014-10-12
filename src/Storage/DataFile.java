@@ -20,7 +20,7 @@ import Parser.Parser;
  * For more details, view GitHub issue #64
  * (https://github.com/cs2103aug2014-t15-1j/main/issues/64).
  * 
- * @author PierceAndy
+ * @author Pierce Anderson Fu
  * 
  */
 
@@ -527,6 +527,7 @@ public class DataFile {
      * @return True, if successfully cleared file of data.
      */
     public boolean wipeFile() {
+        Task.wipeAllTasks();
         allTasks.clear();
         toDoTasks.clear();
         doneTasks.clear();

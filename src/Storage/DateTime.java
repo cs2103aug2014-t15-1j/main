@@ -6,7 +6,7 @@ package Storage;
  * 
  * Date and time formats, respectively: DD/MM/YYYY HHMM.
  * 
- * @author PierceAndy
+ * @author Pierce Anderson Fu
  * 
  */
 

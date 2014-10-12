@@ -9,7 +9,7 @@ import java.util.ArrayList;
  * and time, relevant tags to ease searching and categorizing, completion state,
  * and deletion state.
  * 
- * @author PierceAndy
+ * @author Pierce Anderson Fu
  * 
  */
 
@@ -145,6 +145,11 @@ public class Task {
     /** Reduces ID counter when Task object is to be wiped. */
     public void wipeTask() {
         newId--;
+    }
+    
+    /** Resets ID counter when all Tasks objects are wiped. */
+    public static void wipeAllTasks() {
+        newId = 1;
     }
 
     public int getId() {
