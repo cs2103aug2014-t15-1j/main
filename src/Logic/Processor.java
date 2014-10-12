@@ -32,7 +32,7 @@ public class Processor extends Observable {
 	    lastSearch = new ArrayList<Task>();
 	}
 	
-	/* 
+	/* Singleton Processor
      * @return Instance of Processor
      */
 	public static Processor getInstance() {
@@ -51,7 +51,8 @@ public class Processor extends Observable {
 		return processCommand(cmd);
 	}
 	
-	/* 
+	/* Overloaded by method processCommand(Command, boolean)
+	 * 
      * @param Command cmd
      */
 	private Result processCommand(Command cmd) throws Exception {
@@ -59,8 +60,13 @@ public class Processor extends Observable {
 	}
 	
 	/* Executes the appropriate actions for each command
+     * 
      * @param Command cmd
+     *      Command Object returned from Parser
+     *      
      * @param boolean userInput
+     *      userInput determines if the command was given by the user or internally
+     *      
      * @return Result
      *     boolean success
      *     List<Task> tasks - Contains Tasks that are affected in the operation
@@ -243,19 +249,16 @@ public class Processor extends Observable {
 				success = deleteTaskUsingID(cmd, tasks);
 				break;
 			case "search":
-			    if (!lastSearch.isEmpty()) {
-			        if (userInput) {
-			            forwardSearchListHistory.push(lastSearch);
-			        }
-				    success = deleteSearchedTasks(cmd, tasks);
-		        }
-			    break;
+			    if (userInput) {
+			        forwardSearchListHistory.push(lastSearch);
+			    }
+				success = deleteSearchedTasks(cmd, tasks);
+		        break;
 			case "all":
 				return true;
 			default:
 				return false;
 		}
-		
 		return success;
 	}
 	
@@ -291,28 +294,25 @@ public class Processor extends Observable {
      * @return true/false on whether operation is performed
      */
 	private boolean restoreTask(Command cmd, List<Task> tasks, boolean userInput) {
-	    try {
-    		switch (cmd.get("rangeType")) {
-    			case "id":
-    				return restoreUsingId(cmd, tasks);
-    			case "search":
-    			    if (!lastSearch.isEmpty()) {
-        			    if (userInput) {
-        			        backwardSearchListHistory.push(lastSearch);
-        			    }
-        			    return restoreUsingSearch(cmd, tasks);
-    			    }
-    			    return false;
-    			default:
-    				return false;
-    		}
-	    } catch (Exception e) {
-	        return false;
-	    }
+	    boolean success = false;
+	    switch (cmd.get("rangeType")) {
+    		case "id":
+    			success = restoreUsingId(cmd, tasks);
+    			break;
+    		case "search":
+    		    if (userInput) {
+    		        backwardSearchListHistory.push(lastSearch);
+        		}
+        		success = restoreUsingSearch(cmd, tasks);
+        		break;
+    		default:
+    			return false;
+    	}
+	    return success;
 	}
 
 	/* Restores a deleted Task using Id */
-	private boolean restoreUsingId(Command cmd, List<Task> tasks) throws Exception {
+	private boolean restoreUsingId(Command cmd, List<Task> tasks) {
 	    int taskId = Integer.parseInt(cmd.get("id"));
 		boolean success = file.restoreTask(taskId);
 		if (success) {
@@ -323,7 +323,7 @@ public class Processor extends Observable {
 	}
 	
 	/* Restores all deleted Tasks due to 'delete search' */
-	private boolean restoreUsingSearch(Command cmd, List<Task> tasks) throws Exception {
+	private boolean restoreUsingSearch(Command cmd, List<Task> tasks) {
 	    try {
 	        List<Task> restoreList = backwardSearchListHistory.pop();
 	        for (Task t : restoreList) {
@@ -348,7 +348,7 @@ public class Processor extends Observable {
      * @return true/false on whether operation is performed
      */
 	private boolean searchTasks(Command cmd, List<Task> tasks, boolean userInput) {
-	    newSearch();
+	    initialiseNewSearchList();
 		String date = cmd.get("date");
 		List<String> keywords = cmd.getKeywords();
 		List<String> tags = cmd.getTags();
@@ -364,7 +364,7 @@ public class Processor extends Observable {
 	}
 	
 	/* Initiates new search list */
-	private void newSearch() {
+	private void initialiseNewSearchList() {
 	    lastSearch = new ArrayList<Task>();
 	}
 	
@@ -559,6 +559,12 @@ public class Processor extends Observable {
 		}
 	}
 	
+	/*This method pushes command to the respective stack after undo/redo
+	 *If undo/redo operation is unsuccessful, command is pushed back to the stack it was popped from
+	 *@param cmd
+	 *@param success
+	 *@param redo - true for redo operations, false for undo operations
+	 */
 	private void modifyHistory(Command cmd, boolean success, boolean redo) {
 	    if (success && redo || !success && !redo) {
 	        backwardHistory.push(cmd);
