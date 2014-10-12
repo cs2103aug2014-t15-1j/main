@@ -5,29 +5,29 @@ import java.util.List;
 import Storage.Task;
 
 public class Result {
-	private List<Task> _tasks;
-	private boolean _success;
-	private CommandType _cmdExecuted;
+	private List<Task> tasks;
+	private boolean success;
+	private CommandType cmdExecuted;
 	
 	public Result(List<Task> tasks, boolean success, CommandType cmdExecuted) {
-		this._tasks = tasks;
-		this._success = success;
-		this._cmdExecuted = cmdExecuted;
+		this.tasks = tasks;
+		this.success = success;
+		this.cmdExecuted = cmdExecuted;
 	}
 	
 	public List<Task> getTasks() {
-		return _tasks;
+		return tasks;
 	}
 
 	public boolean isSuccess() {
-		return _success;
+		return success;
 	}
 	
 	public CommandType getCmdExecuted() {
-		return _cmdExecuted;
+		return cmdExecuted;
 	}
 	
 	public void setCommandType(CommandType cmdType) {
-		this._cmdExecuted = cmdType;
+		this.cmdExecuted = cmdType;
 	}
 }

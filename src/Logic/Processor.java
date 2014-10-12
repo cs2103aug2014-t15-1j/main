@@ -1,7 +1,7 @@
 package Logic;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Observable;
 import java.util.Stack;
 
@@ -13,21 +13,23 @@ import Storage.Task;
 public class Processor extends Observable {
 	
     private static Processor processor;
-	private DataFile _file;
-	private Stack<Command> _backwardHistory;
-	private Stack<Command> _forwardHistory;
-	private Stack<Task> _editedTask;
-	private List<Task> _searchList;
-	private Stack<Integer> _searchListSizeHistory;
+	private DataFile file;
+	private Stack<Command> backwardHistory;
+	private Stack<Command> forwardHistory;
+	private Stack<List<Task>> backwardSearchListHistory;
+	private Stack<List<Task>> forwardSearchListHistory;
+	private Stack<Task> editedTaskHistory;
+	private List<Task> lastSearch;
 	
 	/* Constructor */
 	private Processor() {
-	    _file = new DataFile();
-	    _backwardHistory = new Stack<Command>();
-	    _forwardHistory = new Stack<Command>();
-	    _editedTask = new Stack<Task>();
-	    _searchList = new ArrayList<Task>();
-	    _searchListSizeHistory = new Stack<Integer>();
+	    file = new DataFile();
+	    backwardHistory = new Stack<Command>();
+	    forwardHistory = new Stack<Command>();
+	    backwardSearchListHistory = new Stack<List<Task>>();
+	    forwardSearchListHistory = new Stack<List<Task>>();
+	    editedTaskHistory = new Stack<Task>();
+	    lastSearch = new ArrayList<Task>();
 	}
 	
 	/* 
@@ -96,10 +98,10 @@ public class Processor extends Observable {
 				success = displayTask(cmd, tasks, userInput);
 				break;
 			case BLOCK:
-				success = blockDates(cmd);
+				success = blockDate(cmd, userInput);
 				break;
 			case UNBLOCK:
-				success = unblockDates(cmd);
+				success = unblockDate(cmd, userInput);
 				break;
 			case DONE:
 				success = doneTasks(cmd, tasks, userInput);
@@ -108,10 +110,10 @@ public class Processor extends Observable {
 				success = toDoTasks(cmd, tasks, userInput);
 				break;
 			case UNDO:
-				success = undoCommand(cmd, userInput);
+				success = undoCommand(cmd, tasks, userInput);
 				break;
 			case REDO:
-				success = redoCommand(cmd, userInput);
+				success = redoCommand(cmd, tasks, userInput);
 				break;
 			case EXIT:
 				success = true;
@@ -140,8 +142,8 @@ public class Processor extends Observable {
 			case UNBLOCK:
 			case DONE:
 			case TODO:
-				_forwardHistory.clear();
-				_backwardHistory.push(cmd);
+				forwardHistory.clear();
+				backwardHistory.push(cmd);
 				break;
 			default:
 				return;
@@ -165,7 +167,7 @@ public class Processor extends Observable {
 		}
 		Task newTask = new Task(cmd.get("name"), cmd.get("due"), cmd.get("start"), cmd.get("end"), cmd.getTags());
 		tasks.add(newTask);
-		return _file.addNewTask(newTask);
+		return file.addNewTask(newTask);
 	}
 	
 	/* Check if the date is blocked
@@ -181,20 +183,29 @@ public class Processor extends Observable {
      * @return true/false on whether operation is performed
      */
 	private boolean editTask(Command cmd, List<Task> tasks, boolean userInput) throws Exception {
-	    int taskId = Integer.parseInt(cmd.get("id"));
-	    String taskName = cmd.get("name");
-	    String taskDue = cmd.get("due");
-	    String taskStart = cmd.get("start");
-	    String taskEnd = cmd.get("end");
-	    List<String> taskTags = cmd.getTags();
+	    int taskId = 0;
+	    try {
+	        taskId = Integer.parseInt(cmd.get("id"));
+	    } catch (Exception e) {
+	        return false;
+	    }
 	    
-	    Task existingTask = _file.getTask(taskId);
-	    Task oldTask = new Task(existingTask);
-	    
-	    _editedTask.push(oldTask);
-	    tasks.add(existingTask);
-	    return _file.editTask(existingTask, taskName, taskDue, taskStart, taskEnd, taskTags);
-		//Does it allows delete of parameters?
+	    if (taskId > 0) {
+	        String taskName = cmd.get("name");
+	        String taskDue = cmd.get("due");
+	        String taskStart = cmd.get("start");
+	        String taskEnd = cmd.get("end");
+	        List<String> taskTags = cmd.getTags();
+	        
+    	    Task existingTask = file.getTask(taskId);
+    	    Task oldTask = new Task(existingTask);
+    	    
+    	    editedTaskHistory.push(oldTask);
+    	    tasks.add(existingTask);
+    	    return file.editTask(existingTask, taskName, taskDue, taskStart, taskEnd, taskTags);
+	    }
+	    return false;
+	    //Does it allows delete of parameters?
 	}
 
 	/* KIV: Removes a parameter in the Task */
@@ -232,8 +243,13 @@ public class Processor extends Observable {
 				success = deleteTaskUsingID(cmd, tasks);
 				break;
 			case "search":
-				success = deleteSearchedTasks(cmd, tasks);
-				break;
+			    if (!lastSearch.isEmpty()) {
+			        if (userInput) {
+			            forwardSearchListHistory.push(lastSearch);
+			        }
+				    success = deleteSearchedTasks(cmd, tasks);
+		        }
+			    break;
 			case "all":
 				return true;
 			default:
@@ -245,28 +261,28 @@ public class Processor extends Observable {
 	
 	/* Deletes Task using Id */
 	private boolean deleteTaskUsingID(Command cmd, List<Task> tasks) {
-		Task t = _file.getTask(Integer.parseInt(cmd.get("id")));
+		Task t = file.getTask(Integer.parseInt(cmd.get("id")));
 		if (t == null) {
 		    return false;
 		} else {
             tasks.add(t);
-			return _file.deleteTask(t);
+			return file.deleteTask(t);
 		}
 	}
 	
-	/* Deletes all Tasks in _searchList */
+	/* Deletes all Tasks in searchList */
 	private boolean deleteSearchedTasks(Command cmd, List<Task> tasks) {
-		if (_searchList.isEmpty()) {
-		    return false;
-		} else {
-			for (Task existingTask : _searchList) {
-				if (existingTask != null) {
-				    tasks.add(existingTask);
-					_file.deleteTask(existingTask);
-				}
-			}
-		}
-		return true;
+	    try {
+            List<Task> deleteList = forwardSearchListHistory.pop();
+            for (Task t : deleteList) {
+                file.deleteTask(t);
+                tasks.add(t);
+            }
+            backwardSearchListHistory.push(deleteList);
+        } catch (NullPointerException e) {
+            return false;
+        }
+        return true;
 	}
 
 	/* Executes "Restore" operation
@@ -274,41 +290,56 @@ public class Processor extends Observable {
 	 * Allows restore <id>, restore search
      * @return true/false on whether operation is performed
      */
-	private boolean restoreTask(Command cmd, List<Task> tasks, boolean userInput) throws Exception {
-		switch (cmd.get("rangeType")) {
-			case "id":
-				return restoreUsingId(cmd, tasks);
-			case "search":
-			    return restoreUsingSearch(cmd, tasks);
-			default:
-				return false;
-		}
+	private boolean restoreTask(Command cmd, List<Task> tasks, boolean userInput) {
+	    try {
+    		switch (cmd.get("rangeType")) {
+    			case "id":
+    				return restoreUsingId(cmd, tasks);
+    			case "search":
+    			    if (!lastSearch.isEmpty()) {
+        			    if (userInput) {
+        			        backwardSearchListHistory.push(lastSearch);
+        			    }
+        			    return restoreUsingSearch(cmd, tasks);
+    			    }
+    			    return false;
+    			default:
+    				return false;
+    		}
+	    } catch (Exception e) {
+	        return false;
+	    }
 	}
 
 	/* Restores a deleted Task using Id */
 	private boolean restoreUsingId(Command cmd, List<Task> tasks) throws Exception {
 	    int taskId = Integer.parseInt(cmd.get("id"));
-		boolean success = _file.restoreTask(taskId);
+		boolean success = file.restoreTask(taskId);
 		if (success) {
-			tasks.add(_file.getTask(taskId));
+			tasks.add(file.getTask(taskId));
 		}
+		
 		return success;
 	}
 	
 	/* Restores all deleted Tasks due to 'delete search' */
 	private boolean restoreUsingSearch(Command cmd, List<Task> tasks) throws Exception {
-	    int deletedTasksSize = _file.getDeletedTasks().size();
-	    int restoreAmt = _searchListSizeHistory.pop();
-	    for (int i = 0; i < restoreAmt; i++) {
-	        int index = deletedTasksSize - restoreAmt;
-	        _file.restoreTask(_file.getDeletedTasks().get(index));
+	    try {
+	        List<Task> restoreList = backwardSearchListHistory.pop();
+	        for (Task t : restoreList) {
+	            file.restoreTask(t);
+	            tasks.add(t);
+	        }
+	        forwardSearchListHistory.push(restoreList);
+	    } catch (NullPointerException e) {
+	        return false;
 	    }
 	    return true;
 	}
 
 	//Use with *CAUTION* - Wipes entire DataFile
 	public boolean deleteAllData() {
-		_file.wipeFile();
+		file.wipeFile();
 		return true;
 	}
 
@@ -317,7 +348,7 @@ public class Processor extends Observable {
      * @return true/false on whether operation is performed
      */
 	private boolean searchTasks(Command cmd, List<Task> tasks, boolean userInput) {
-	    clearPreviousSearch();
+	    newSearch();
 		String date = cmd.get("date");
 		List<String> keywords = cmd.getKeywords();
 		List<String> tags = cmd.getTags();
@@ -332,13 +363,14 @@ public class Processor extends Observable {
 		return true;
 	}
 	
-	private void clearPreviousSearch() {
-	    _searchList.clear();
+	/* Initiates new search list */
+	private void newSearch() {
+	    lastSearch = new ArrayList<Task>();
 	}
 	
 	/* Performs search using date */
 	private void searchUsingDate(String date, List<Task> tasks) {
-	    List<Task> toDoTasks = _file.getToDoTasks();
+	    List<Task> toDoTasks = file.getToDoTasks();
         for (Task t: toDoTasks) {
             if (t.getDue().equals(date)) {
                 tasks.add(t);
@@ -350,7 +382,7 @@ public class Processor extends Observable {
 	 * Tries to find if tags is present first before searching for keywords
 	 * */
 	private void searchUsingKeyOrTags(List<String> keywords, List<String> tags, List<Task> tasks) {
-	    List<Task> toDoTasks = _file.getToDoTasks();
+	    List<Task> toDoTasks = file.getToDoTasks();
         for (Task task: toDoTasks) {       
             boolean found = isTagged(task, tags, tasks);
             if (!found) {
@@ -375,7 +407,6 @@ public class Processor extends Observable {
         for (String key: keywords) {
             if (task.getName().toLowerCase().contains(key.toLowerCase())) {
                 tasks.add(task);
-                _searchList.add(task);
                 return true;
             }
         }
@@ -385,9 +416,8 @@ public class Processor extends Observable {
 	/* Updates the Search result */
 	private void updateSearchList(List<Task> tasks) {
 	    for (Task task : tasks) {
-	        _searchList.add(task);
+	        lastSearch.add(task);
 	    }
-        _searchListSizeHistory.push(_searchList.size());
 	}
 	
 	/* Executes "display" operation
@@ -399,14 +429,14 @@ public class Processor extends Observable {
 		switch (cmd.get("rangeType")) {
 			case "id":
 			    int taskId = Integer.parseInt(cmd.get("id"));
-				tasks.add(_file.getTask(taskId));
+				tasks.add(file.getTask(taskId));
 				break;
 			case "search":
-				tasks = _searchList;
+				tasks = lastSearch;
 				break;
 			case "all":
-				tasks.addAll(_file.getToDoTasks());
-				tasks.addAll(_file.getDoneTasks());
+				tasks.addAll(file.getToDoTasks());
+				tasks.addAll(file.getDoneTasks());
 				break;
 		}
 		return true;
@@ -415,14 +445,14 @@ public class Processor extends Observable {
 	/* Executes "block" operation
      * @return true/false on whether operation is performed
      */
-	private boolean blockDates(Command cmd) {
+	private boolean blockDate(Command cmd, boolean userInput) {
 		return false;
 	}
 
 	/* Executes "unblock" operation
      * @return true/false on whether operation is performed
      */
-	private boolean unblockDates(Command cmd) {
+	private boolean unblockDate(Command cmd, boolean userInput) {
 		return false;
 	}
 	
@@ -432,13 +462,9 @@ public class Processor extends Observable {
      */
 	private boolean doneTasks(Command cmd, List<Task> tasks, boolean userInput) {
 		int taskId = Integer.parseInt(cmd.get("id"));
-	    Task existingTask = _file.getTask(taskId);
-		if (existingTask != null) {
-			existingTask.setDone(true);
-			tasks.add(existingTask);
-			return true;
-		}
-		return false;
+	    Task existingTask = file.getTask(taskId);
+	    tasks.add(existingTask);
+        return file.toDoTask(existingTask);
 	}
 
 	/* Executes "todo" operation
@@ -447,72 +473,65 @@ public class Processor extends Observable {
      */
 	private boolean toDoTasks(Command cmd, List<Task> tasks, boolean userInput) {
 	    int taskId = Integer.parseInt(cmd.get("id"));
-        Task existingTask = _file.getTask(taskId);
-		if (existingTask != null) {
-			existingTask.setDone(false);
-			tasks.add(existingTask);
-			return true;
-		}
-		return false;
+        Task existingTask = file.getTask(taskId);
+		tasks.add(existingTask);
+		return file.toDoTask(existingTask);
 	}
 	
 	/* Executes "undo" operation
 	 * Applicable for 'Add', 'Edit', 'Delete', 'Restore', 'Block', 'Unblock', 'Done', 'Todo'
      * @return true/false on whether operation is performed
      */
-	private boolean undoCommand(Command cmd, boolean userInput) {
-		if (!_backwardHistory.isEmpty()) {
-			Command backwardCommand = _backwardHistory.pop();
-			try {
-				switch(backwardCommand.getType()) {
-					case ADD:
-						undoAdd(cmd);
-						break;
-					case EDIT:
-						undoEdit();
-						break;
-					case DELETE:
-						restoreTask(backwardCommand, new ArrayList<Task>(), false);
-						break;
-					case RESTORE:
-						deleteTask(backwardCommand, new ArrayList<Task>(), false);
-						break;
-					case BLOCK:
-					    //unblock
-						break;
-					case UNBLOCK:
-					    //block
-						break;
-					case TODO:
-						doneTasks(backwardCommand, new ArrayList<Task>(), false);
-						break;
-					case DONE:
-						toDoTasks(backwardCommand, new ArrayList<Task>(), false);
-						break;
-					default:
-						return false;
-				}
-			} catch (Exception e) {
-				_backwardHistory.push(backwardCommand);
-				return false;
+	private boolean undoCommand(Command cmd, List<Task> tasks, boolean userInput) {
+	    boolean success = false;
+		if (!backwardHistory.isEmpty()) {
+			Command backwardCommand = backwardHistory.pop();
+			switch(backwardCommand.getType()) {
+				case ADD:
+					success = undoAdd(backwardCommand, tasks);
+					break;
+				case EDIT:
+					success = undoEdit(backwardCommand, tasks);
+					break;
+				case DELETE:
+					success = restoreTask(backwardCommand, tasks, false);
+					break;
+				case RESTORE:
+					success = deleteTask(backwardCommand, tasks, false);
+					break;
+				case BLOCK:
+				    //unblock
+				    success = unblockDate(backwardCommand, false);
+                    break;
+				case UNBLOCK:
+				    //block
+				    success = blockDate(backwardCommand, false);
+                    break;
+				case TODO:
+					success = doneTasks(backwardCommand, tasks, false);
+					break;
+				case DONE:
+					success = toDoTasks(backwardCommand, tasks, false);
+					break;
+				default:
+				    return false;
 			}
-			_forwardHistory.push(backwardCommand);
-			return true;
+            modifyHistory(backwardCommand, success, false);
 		}
-		return false;
+		return success;
 	}
 
 	/* Undo the add command */
-	private void undoAdd(Command cmd) {
-		Task toDelete = _file.getToDoTasks().get(_file.getToDoTasks().size() - 1);
-		if (toDelete != null) {
-			_file.wipeTask(toDelete);
-		}
+	private boolean undoAdd(Command cmd, List<Task> tasks) {
+	    int taskId = file.getToDoTasks().size() - 1;
+		Task toDelete = file.getToDoTasks().get(taskId);
+		tasks.add(toDelete);
+		return file.wipeTask(toDelete);
 	}
 
 	/* Reverts the previous edit of a Task */
-	private void undoEdit() {
-		Task prevTask = _editedTask.pop();
+	private boolean undoEdit(Command cmd, List<Task> tasks) {
+		Task prevTask = editedTaskHistory.pop();
 		
 		String taskName = prevTask.getName();
 		String taskDue = prevTask.getDue();
@@ -520,24 +539,35 @@ public class Processor extends Observable {
 		String taskEnd = prevTask.getEnd();
 		List<String> taskTags = prevTask.getTags();
 		
-		_file.editTask(prevTask.getId(), taskName, taskDue, taskStart, taskEnd, taskTags);
+		tasks.add(prevTask);
+		return file.editTask(prevTask.getId(), taskName, taskDue, taskStart, taskEnd, taskTags);
 	}
 	
 	/* Executes "redo" operation
      * Applicable for 'Add', 'Edit', 'Delete', 'Restore', 'Block', 'Unblock', 'Done', 'Todo'
      * @return true/false on whether operation is performed
      */
-	private boolean redoCommand(Command cmd, boolean userInput) throws Exception {
-		if (!_forwardHistory.isEmpty()) {
-			Command forwardCommand = _forwardHistory.pop();
+	private boolean redoCommand(Command cmd, List<Task> tasks, boolean userInput) throws Exception {
+		if (forwardHistory.isEmpty()) {
+		    return false;
+		} else {
+			Command forwardCommand = forwardHistory.pop();
 			Result result = processCommand(forwardCommand, false);
-			_backwardHistory.push(forwardCommand);
+			tasks.addAll(result.getTasks());
+			modifyHistory(forwardCommand, result.isSuccess(), true);
 			return result.isSuccess();
 		}
-		return false;
+	}
+	
+	private void modifyHistory(Command cmd, boolean success, boolean redo) {
+	    if (success && redo || !success && !redo) {
+	        backwardHistory.push(cmd);
+	    } else {
+	        forwardHistory.push(cmd);
+	    }
 	}
 	
 	public DataFile getFile() {
-	    return _file;
+	    return file;
 	}
 }
