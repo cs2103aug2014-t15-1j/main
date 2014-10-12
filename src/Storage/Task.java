@@ -39,7 +39,7 @@ public class Task {
     private String end = ""; // TODO Change to DateTime type
     // private DateTime end = new DateTime();
 
-    /** Each stored tag contains a hashtag before the word. */
+    /** Each stored tag contains a # before the word. */
     private List<String> tags = new ArrayList<String>();
 
     /** Tasks are created as to-do by default. */
@@ -146,7 +146,7 @@ public class Task {
     public void wipeTask() {
         newId--;
     }
-    
+
     /** Resets ID counter when all Tasks objects are wiped. */
     public static void wipeAllTasks() {
         newId = 1;
@@ -266,7 +266,6 @@ public class Task {
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;
     }
-
     /*
      * Legacy code from YX public Task(Command cmd) { this.cmdType =
      * cmd.getType(); this.details = ; this.numTasks++; }

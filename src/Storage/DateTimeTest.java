@@ -84,5 +84,4 @@ public class DateTimeTest {
         assertEquals("Empty date String", dT.getDate(), "");
         assertEquals("Empty time String", dT.getTime(), "");
     }
-
 }

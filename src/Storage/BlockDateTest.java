@@ -135,5 +135,4 @@ public class BlockDateTest {
         assertEquals("Empty end date", bD.getEndDate(), "2/2/2014");
         assertEquals("Empty end time", bD.getEndTime(), "");
     }
-
 }
