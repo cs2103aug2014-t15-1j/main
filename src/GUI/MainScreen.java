@@ -1,16 +1,18 @@
 package GUI;
 
-import java.io.IOException;
-
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+/**
+ * Represents the main window of HayStack. Any user interaction with the program will be processed here.
+ * Note: All methods in this class are static
+ * @author Sharon
+ *
+ */
 public class MainScreen {
 	// implement: task pane expansion, add upcoming tasks
 	// increase size of commandLine if line does not fit into space
@@ -25,6 +27,11 @@ public class MainScreen {
 
 	private static String CODE_EXIT = " exit";
 
+	/**
+	 * The entire HayStack program runs from this function. 
+	 * It sets up the graphical user interface that the user interacts with any reads any input that the user enters.
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		Display display = new Display();
 		Shell shell = new Shell(display);

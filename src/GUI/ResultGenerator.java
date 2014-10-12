@@ -1,14 +1,19 @@
 package GUI;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import Logic.CommandType;
 import Logic.Processor;
 import Logic.Result;
-import Logic.CommandType;
 import Storage.Task;
-
+/**
+ * It creates a success or error message for any user input entered by the end user.
+ * The class calls Processor to process the input and then converts the result object returned by processor into error or success messages
+ * Note: All methods in this class are static
+ * @author Sharon
+ *
+ */
 public class ResultGenerator {
 
 	private static final String LINE_SEPARATOR = System
@@ -25,7 +30,7 @@ public class ResultGenerator {
 	private static final String SUCCESSFUL_UNDO = "Travelled back in time! Command has been undone";
 	private static final String SUCCESSFUL_REDO = "Travelled into the future! Command has been redone";
 
-	// to be changed at a later implementation -- remove joke, priority, clear. display and show same implementation, display all --> display/show
+	// to be changed at a later implementation -- display and show same implementation.
 	// 
 	// Not implemented: search, block, unblock, help
 	private static final String SUCCESSFUL_BLOCK = "Successfully blocked"; // include:
@@ -46,7 +51,6 @@ public class ResultGenerator {
 
 	private static final String PARA_STRING_ID = "Task ID: ";
 	private static final String PARA_STRING_NAME = "Name: ";
-	private static final String PARA_STRING_MORE = "More: ";
 	private static final String PARA_STRING_DUE = "Due: ";
 	private static final String PARA_STRING_START = "Start: ";
 	private static final String PARA_STRING_END = "End: ";
@@ -61,9 +65,9 @@ public class ResultGenerator {
 	private static final String HASHTAG = "#";
 
 	/**
-	 * 
-	 * @param userInput - a string that the user entered
-	 * @return success messages if the command was carried out or error messages if the command failed
+	 * This method passes a string object containing user commands to the Processor class to process.
+	 * @param userInput a string containing commands that the user entered
+	 * @return a String object containing success messages if the command was carried out or error messages if the command failed
 	 * @throws Exception 
 	 */
 	public static String sendInput(String userInput) throws Exception {

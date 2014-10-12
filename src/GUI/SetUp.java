@@ -1,15 +1,16 @@
 package GUI;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-
+/**
+ * Represents the layout of the HayStack window. It creates a window and sets up the window of the Program when called.
+ * @author Sharon
+ */
 public class SetUp {
 
 	// Gets the new line character used by the user's system
@@ -34,6 +35,11 @@ public class SetUp {
 	private static Display display;
 	private static Shell shell;
 
+	/**
+	 * Constructs a setUp object that creates the main shell for HayStack.
+	 * @param displayToSet The Display object that the shell uses to create the window
+	 * @param shellToSet The Shell object that the program needs to set.
+	 */
 	public SetUp(Display displayToSet, Shell shellToSet) {
 	    // use Abstraction -- Occurrence
 		display = displayToSet;
@@ -43,24 +49,29 @@ public class SetUp {
 	}
 
 	/**
-	 * Get the text object
+	 * Returns the text object of HayStack window where user feedback is displayed
 	 * @return Text 
 	 */
 	public Text getDisplayScreen() {
 		return displayScreen;
 	}
-
+	
+	/**
+	 * Returns the text object of the HayStack window where the user enters commands
+	 * @return Text
+	 */
 	public Text getCommandLine() {
 		return commandLine;
 	}
-
+	    
+	/**
+	 * Returns the text object of the HayStack window where the user's upcoming tasks are displayed
+	 * @return Text
+	 */
 	public Text getUpcomingTasks() {
 		return upcomingTasks;
 	}
 
-	/**
-	 * public Font getFont(){ return font; }
-	 **/
 
 	private static void initialise() {
 		setUpShell();
