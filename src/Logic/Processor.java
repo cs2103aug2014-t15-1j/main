@@ -1,6 +1,5 @@
 package Logic;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Observable;
@@ -182,43 +181,23 @@ public class Processor extends Observable {
      * @return true/false on whether operation is performed
      */
 	private boolean editTask(Command cmd, List<Task> tasks, boolean userInput) throws Exception {
-		Task existingTask = getTaskById(cmd);
-		
-		if (existingTask != null) {
-			Task oldTask = new Task(existingTask);
-			updateTaskParameters(cmd, existingTask);
-			
-			tasks.add(existingTask);
-			_editedTask.push(oldTask);
-			_file.updateFile();
-			return true;
-		}
-		return false;
+	    int taskId = Integer.parseInt(cmd.get("id"));
+	    String taskName = cmd.get("name");
+	    String taskDue = cmd.get("due");
+	    String taskStart = cmd.get("start");
+	    String taskEnd = cmd.get("end");
+	    List<String> taskTags = cmd.getTags();
+	    
+	    Task existingTask = _file.getTask(taskId);
+	    Task oldTask = new Task(existingTask);
+	    
+	    _editedTask.push(oldTask);
+	    tasks.add(existingTask);
+	    return _file.editTask(existingTask, taskName, taskDue, taskStart, taskEnd, taskTags);
+		//Does it allows delete of parameters?
 	}
 
-	/* Copies parameters from cmd to existingTask */
-	private void updateTaskParameters(Command cmd, Task existingTask) {
-	    if (cmd.get("name") != null) {
-			existingTask.setName(cmd.get("name"));
-		}
-		if (cmd.get("due") != null) {
-			existingTask.setDue(cmd.get("due"));				
-		}
-		if (cmd.get("start") != null) {
-			existingTask.setStart(cmd.get("start"));
-		}
-		if (cmd.get("end") != null) {
-			existingTask.setEnd(cmd.get("end"));
-		}
-		if (cmd.getTags() != null) {
-			existingTask.addTags(cmd.getTags());
-		}
-		if (cmd.get("delete") != null) {
-			deleteParameter(existingTask, cmd.get("delete"));
-		}
-	}
-
-	/* Removes a parameter in the Task */
+	/* KIV: Removes a parameter in the Task */
 	private void deleteParameter(Task existingTask, String parameterToRemove) {
         switch (parameterToRemove) {
             case "name":
@@ -266,7 +245,7 @@ public class Processor extends Observable {
 	
 	/* Deletes Task using Id */
 	private boolean deleteTaskUsingID(Command cmd, List<Task> tasks) {
-		Task t = getTaskById(cmd);
+		Task t = _file.getTask(Integer.parseInt(cmd.get("id")));
 		if (t == null) {
 		    return false;
 		} else {
@@ -308,9 +287,10 @@ public class Processor extends Observable {
 
 	/* Restores a deleted Task using Id */
 	private boolean restoreUsingId(Command cmd, List<Task> tasks) throws Exception {
-		boolean success = _file.restoreTask(Integer.parseInt(cmd.get("id")));
+	    int taskId = Integer.parseInt(cmd.get("id"));
+		boolean success = _file.restoreTask(taskId);
 		if (success) {
-			tasks.add(getTaskById(cmd));
+			tasks.add(_file.getTask(taskId));
 		}
 		return success;
 	}
@@ -418,7 +398,8 @@ public class Processor extends Observable {
 	private boolean displayTask(Command cmd, List<Task> tasks, boolean userInput) {
 		switch (cmd.get("rangeType")) {
 			case "id":
-				tasks.add(getTaskById(cmd));
+			    int taskId = Integer.parseInt(cmd.get("id"));
+				tasks.add(_file.getTask(taskId));
 				break;
 			case "search":
 				tasks = _searchList;
@@ -429,11 +410,6 @@ public class Processor extends Observable {
 				break;
 		}
 		return true;
-	}
-
-	/* Gets a Task by its Id */
-	private Task getTaskById(Command cmd) {
-		return _file.getTask(Integer.parseInt(cmd.get("id")));
 	}
 
 	/* Executes "block" operation
@@ -455,7 +431,8 @@ public class Processor extends Observable {
      * @return true/false on whether operation is performed
      */
 	private boolean doneTasks(Command cmd, List<Task> tasks, boolean userInput) {
-		Task existingTask = getTaskById(cmd);
+		int taskId = Integer.parseInt(cmd.get("id"));
+	    Task existingTask = _file.getTask(taskId);
 		if (existingTask != null) {
 			existingTask.setDone(true);
 			tasks.add(existingTask);
@@ -469,7 +446,8 @@ public class Processor extends Observable {
      * @return true/false on whether operation is performed
      */
 	private boolean toDoTasks(Command cmd, List<Task> tasks, boolean userInput) {
-		Task existingTask = getTaskById(cmd);
+	    int taskId = Integer.parseInt(cmd.get("id"));
+        Task existingTask = _file.getTask(taskId);
 		if (existingTask != null) {
 			existingTask.setDone(false);
 			tasks.add(existingTask);
@@ -536,21 +514,13 @@ public class Processor extends Observable {
 	private void undoEdit() {
 		Task prevTask = _editedTask.pop();
 		
-		for (Task existingTask: _file.getToDoTasks()) {
-			if (existingTask.getId() == prevTask.getId()) {
-				copyTaskParameters(prevTask, existingTask);
-				break;
-			}
-		}
-	}
-
-	//Copies parameters from prevTask to existingTask
-	private void copyTaskParameters(Task prevTask, Task existingTask) {
-		existingTask.setName(prevTask.getName());
-		existingTask.setDue(prevTask.getDue());
-		existingTask.setStart(prevTask.getStart());
-		existingTask.setEnd(prevTask.getEnd());
-		existingTask.addTags(prevTask.getTags());
+		String taskName = prevTask.getName();
+		String taskDue = prevTask.getDue();
+		String taskStart = prevTask.getStart();
+		String taskEnd = prevTask.getEnd();
+		List<String> taskTags = prevTask.getTags();
+		
+		_file.editTask(prevTask.getId(), taskName, taskDue, taskStart, taskEnd, taskTags);
 	}
 	
 	/* Executes "redo" operation
