@@ -464,7 +464,7 @@ public class Processor extends Observable {
 		int taskId = Integer.parseInt(cmd.get("id"));
 	    Task existingTask = file.getTask(taskId);
 	    tasks.add(existingTask);
-        return file.toDoTask(existingTask);
+        return file.doneTask(existingTask);
 	}
 
 	/* Executes "todo" operation
