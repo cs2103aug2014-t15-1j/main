@@ -11,37 +11,93 @@ import java.util.Scanner;
 
 import Parser.Parser;
 
+/**
+ * This class handles the logic involved in reading and writing of tasks to the
+ * system file, and managing tasks.
+ * 
+ * Do not apply the singleton pattern to this class. Even if multiple instances
+ * are created, all task data in lists and on file will still be synchronized.
+ * For more details, @see GitHub issue #64.
+ * 
+ * @author PierceAndy
+ * 
+ */
+
 public class DataFile {
-    
+
+    /** Name of file to write tasks to. */
     final private static String FILENAME = "Data";
-    
-    // A task can only exist in one of the three 
-    // (to-do/done/deleted) lists at any one time.
-    // allTasks contains references to all tasks, sorted by id
-    private static List<Task> allTasks = new ArrayList<Task>();
+
+    /** Exclusively contains undeleted to-do tasks. */
     private static List<Task> toDoTasks = new ArrayList<Task>();
+
+    /** Exclusively contains undeleted done tasks. */
     private static List<Task> doneTasks = new ArrayList<Task>();
+
+    /** Exclusively contains deleted to-do and deleted done tasks. */
     private static List<Task> deletedTasks = new ArrayList<Task>();
-    
-    // Task list getters
-    // Aids in searching and display commands
+
+    /**
+     * Contains references to all Task objects in toDoTasks, doneTasks, and
+     * deletedTasks. Does not contain duplicate tasks.
+     */
+    private static List<Task> allTasks = new ArrayList<Task>();
+
+    /**
+     * Returns an unmodifiable view of the list of all tasks. Attempts to modify
+     * the returned list, whether direct or via its iterator, result in an
+     * UnsupportedOperationException.
+     * 
+     * @return Unmodifiable view of the specified list.
+     */
     public List<Task> getAllTasks() {
         return Collections.unmodifiableList(allTasks);
     }
+
+    /**
+     * Returns an unmodifiable view of the list of to-do tasks. Attempts to
+     * modify the returned list, whether direct or via its iterator, result in
+     * an UnsupportedOperationException.
+     * 
+     * @return Unmodifiable view of the specified list.
+     */
     public List<Task> getToDoTasks() {
         return Collections.unmodifiableList(toDoTasks);
     }
+
+    /**
+     * Returns an unmodifiable view of the list of done tasks. Attempts to
+     * modify the returned list, whether direct or via its iterator, result in
+     * an UnsupportedOperationException.
+     * 
+     * @return Unmodifiable view of the specified list.
+     */
     public List<Task> getDoneTasks() {
         return Collections.unmodifiableList(doneTasks);
     }
+
+    /**
+     * Returns an unmodifiable view of the list of deleted tasks. Attempts to
+     * modify the returned list, whether direct or via its iterator, result in
+     * an UnsupportedOperationException.
+     * 
+     * @return Unmodifiable view of the specified list.
+     */
     public List<Task> getDeletedTasks() {
         return Collections.unmodifiableList(deletedTasks);
     }
-    
-    // Constructor
+
+    /**
+     * Default constructor.
+     * 
+     * Checks if file exists and task lists are not populated before reading
+     * from file, and populating lists with Task objects. If lists are already
+     * populated, it signals that other DataFile instances exist, and avoids
+     * populating the task lists with duplicate Task objects from file.
+     */
     public DataFile() {
         File file = new File(FILENAME);
-        if(file.exists() && allTasks.isEmpty()) {
+        if (file.exists() && allTasks.isEmpty()) {
             getTasksFromFile(file);
         } else {
             try {
@@ -52,17 +108,27 @@ public class DataFile {
             }
         }
     }
-    
-    // Populate task lists with data from system file
+
+    /**
+     * Populates to-do and done task lists with data from system file. Deleted
+     * tasks are not written to file, hence deleted task list is not populated.
+     * 
+     * Benefits from branch prediction because of the order in which tasks are
+     * written to the file. @see updateFile()
+     * 
+     * @param file
+     *            The file to read from.
+     */
     private void getTasksFromFile(File file) {
         try {
             Scanner scanner = new Scanner(file);
             while (scanner.hasNextLine()) {
                 String unparsedText = scanner.nextLine();
                 Task newTask = Parser.parseToTask(unparsedText);
+
                 allTasks.add(newTask);
-                if (!newTask.isDone()) { // Branch predictor at work here
-                    toDoTasks.add(newTask); // to-do tasks are stored in file first
+                if (!newTask.isDone()) {
+                    toDoTasks.add(newTask);
                 } else {
                     doneTasks.add(newTask);
                 }
@@ -73,15 +139,28 @@ public class DataFile {
             e.printStackTrace();
         }
     }
-    
-    // Given id, return task object
-    // Includes to-do, done, and deleted tasks
+
+    /**
+     * Given id, returns Task object. Includes to-do, done, and deleted tasks.
+     * 
+     * @param id
+     *            The task's unique ID.
+     * @return Task object of matching ID, or null if task is not in the list.
+     */
     public Task getTask(int id) {
         Task task = searchTaskById(allTasks, id);
         return task;
     }
-    
-    // Given id, return task object from given list
+
+    /**
+     * Given id, returns Task object from specified task list.
+     * 
+     * @param tasks
+     *            The task list to search from.
+     * @param id
+     *            The task's unique ID.
+     * @return Task object of matching ID, or null if task is not in the list.
+     */
     private Task searchTaskById(List<Task> tasks, int id) {
         for (Task task : tasks) {
             if (task.getId() == id) {
@@ -90,40 +169,67 @@ public class DataFile {
         }
         return null;
     }
-    
-    // Used to add a new task
+
+    /**
+     * Used to add a new to-do task. Populates relevant lists, and updates file
+     * with new information.
+     * 
+     * @param task
+     *            New Task object to be written to file.
+     * @return True, if successfully written to file.
+     */
     public boolean addNewTask(Task task) {
         toDoTasks.add(task);
         allTasks.add(task);
         return updateFile();
     }
-    
-    // Refreshes system file with current data in to-do and done lists
-    // Deleted tasks are not written to file
-    public boolean updateFile() {
+
+    /**
+     * Writes to system file with current data in to-do and done lists. Deleted
+     * tasks are not written to file.
+     * 
+     * To-do tasks are written first, followed by done tasks, instead of
+     * haphazardly in random order, to aid in branch prediction when reading
+     * from file. @see getTasksFromFile(File)
+     * 
+     * @return True, if successfully written to file.
+     */
+    private boolean updateFile() {
         String updatedTaskInfo = getTaskInfo(toDoTasks);
         updatedTaskInfo += getTaskInfo(doneTasks);
         return writeToFile(updatedTaskInfo);
     }
-    
-    // Stores all Task attributes, of all Tasks in list, in single String 
-    // For storage on file
+
+    /**
+     * Converts Task objects, from specified list, to a single String to write
+     * to system file.
+     * 
+     * @param tasks
+     *            The specified list to get Task objects from.
+     * @return A single String containing all Task data to write to file.
+     */
     private String getTaskInfo(List<Task> tasks) {
-        String taskInfo = ""; 
+        String taskInfo = "";
         for (Task task : tasks) {
             taskInfo += task.getFullInfo() + "\n";
         }
         return taskInfo;
     }
-    
-    // Writes to-do and done lists to system file
+
+    /**
+     * Writes String, containing all to-do and done task data, to system file.
+     * 
+     * @param newFileText
+     *            Data of all to-do and done tasks to write to file.
+     * @return True, if successfully written to file.
+     */
     private boolean writeToFile(String newFileText) {
         try {
             File file = new File(FILENAME);
-            if(!file.exists()) {
+            if (!file.exists()) {
                 file.createNewFile();
             }
-            
+
             FileWriter newFile = new FileWriter(file, false);
             newFile.write(newFileText);
             newFile.close();
@@ -134,25 +240,92 @@ public class DataFile {
             return false;
         }
     }
-    
-    public boolean editTask(int id, String name, String due, String start, String end, List<String> tags) {
-    //public boolean editTask(int id, String name, DateTime due, DateTime start, DateTime end, List<String> tags) {
-        return editTaskById(id, name, due, start, end, tags);
-    }
-    
-    public boolean editTask(Task task, String name, String due, String start, String end, List<String> tags) {
-    //public boolean editTask(Task task, String name, DateTime due, DateTime start, DateTime end, List<String> tags) {
+
+    /**
+     * Updates Task object's attributes with provided arguments. Null arguments
+     * are provided for attributes that are not meant to be changed. Task to
+     * edit is specified by Task object provided in argument.
+     * 
+     * Overloaded function. @see editTask(int, String, String, String, String,
+     * List<String>)
+     * 
+     * @param task
+     *            Task object to modify.
+     * @param name
+     *            New description, if any.
+     * @param due
+     *            New due date and time, if any.
+     * @param start
+     *            New scheduled start date and time, if any.
+     * @param end
+     *            New scheduled end date and time, if any.
+     * @param tags
+     *            New tags to append with, if any.
+     * @return True, if file has been successfully updated with edit.
+     */
+    public boolean editTask(Task task, String name, String due, String start,
+                            String end, List<String> tags) {
+        // TODO Change to DateTime type
+        // public boolean editTask(Task task, String name, DateTime due,
+        // DateTime start, DateTime end, List<String> tags) {
         return editTaskByObject(task, name, due, start, end, tags);
     }
-    
-    private boolean editTaskById(int id, String name, String due, String start, String end, List<String> tags) {
-    //private boolean editTaskById(int id, String name, DateTime due, DateTime start, DateTime end, List<String> tags) {
+
+    /**
+     * Updates Task object's attributes with provided arguments. Null arguments
+     * are provided for attributes that are not meant to be changed. Task to
+     * edit is specified by ID.
+     * 
+     * Overloaded function. @see editTask(Task, String, String, String, String,
+     * List<String>)
+     * 
+     * @param id
+     *            ID of Task object to modify.
+     * @param name
+     *            New description, if any.
+     * @param due
+     *            New due date and time, if any.
+     * @param start
+     *            New scheduled start date and time, if any.
+     * @param end
+     *            New scheduled end date and time, if any.
+     * @param tags
+     *            New tags to append with, if any.
+     * @return True, if file has been successfully updated with edit.
+     */
+    public boolean editTask(int id, String name, String due, String start,
+                            String end, List<String> tags) {
+        // TODO Change to DateTime type
+        // public boolean editTask(int id, String name, DateTime due, DateTime
+        // start, DateTime end, List<String> tags) {
         Task task = searchTaskById(allTasks, id);
         return editTaskByObject(task, name, due, start, end, tags);
     }
-    
-    private boolean editTaskByObject(Task task, String name, String due, String start, String end, List<String> tags) {
-    //private boolean editTaskByObject(Task task, String name, DateTime due, DateTime start, DateTime end, List<String> tags) {
+
+    /**
+     * Updates Task object's attributes with provided arguments. Null arguments
+     * are provided for attributes that are not meant to be changed. Task to
+     * edit is specified by Task object provided in argument.
+     * 
+     * @param task
+     *            Task object to modify.
+     * @param name
+     *            New description, if any.
+     * @param due
+     *            New due date and time, if any.
+     * @param start
+     *            New scheduled start date and time, if any.
+     * @param end
+     *            New scheduled end date and time, if any.
+     * @param tags
+     *            New tags to append with, if any.
+     * @return True, if file has been successfully updated with edit.
+     */
+    private boolean editTaskByObject(Task task, String name, String due,
+                                     String start, String end, List<String> tags) {
+        // TODO Change to DateTime type
+        // private boolean editTaskByObject(Task task, String name, DateTime
+        // due, DateTime start, DateTime end, List<String> tags) {
         if (task == null) {
             return false; // Invalid ID
         }
@@ -171,34 +344,54 @@ public class DataFile {
         if (tags != null) {
             task.addTags(tags);
         }
-        
+
         return updateFile();
     }
-    
-    // Given id or object, deletes task object
-    // Task object is removed from to-do or done list,
-    // and added to deleted list
-    public boolean deleteTask(int id) {
-        return deleteTaskById(id);
-    }
-    
+
+    /**
+     * Deletes Task object provided in argument. Updates task lists and file.
+     * 
+     * Overloaded function. @see deleteTask(int)
+     * 
+     * @param task
+     *            The Task object to delete.
+     * @return True, if file has been successfully updated with delete.
+     */
     public boolean deleteTask(Task task) {
         return deleteTaskByObject(task);
     }
-    
-    private boolean deleteTaskById(int id) {
+
+    /**
+     * Deletes Task object based on the ID provided in argument. Updates task
+     * lists and file.
+     * 
+     * Overloaded function. @see deleteTask(Task)
+     * 
+     * @param id
+     *            The ID of the Task object to delete.
+     * @return True, if file has been successfully updated with delete.
+     */
+    public boolean deleteTask(int id) {
         Task task = searchTaskById(toDoTasks, id);
         if (task == null) {
             task = searchTaskById(doneTasks, id);
         }
         return deleteTaskByObject(task);
     }
-    
+
+    /**
+     * Deletes Task object provided in argument. Removes object from to-do or
+     * done task list, adds to deleted task list, and updates file.
+     * 
+     * @param task
+     *            The Task object to delete.
+     * @return True, if file has been successfully updated with delete.
+     */
     private boolean deleteTaskByObject(Task task) {
         if (task == null || task.isDeleted()) {
             return false; // Invalid ID or already deleted
         }
-        
+
         task.setDeleted(true);
         deletedTasks.add(task);
         if (task.isDone()) {
@@ -208,25 +401,49 @@ public class DataFile {
         }
         return updateFile();
     }
-    
-    public boolean restoreTask(int id) {
-        return restoreTaskById(id);
-    }
-    
-    // Restores a deleted task given its id
+
+    /**
+     * Restores deleted Task object provided in argument. Updates task lists and
+     * file.
+     * 
+     * Overloaded function. @see restoreTask(int)
+     * 
+     * @param task
+     *            The Task object to restore.
+     * @return True, if file has been successfully updated with restore.
+     */
     public boolean restoreTask(Task task) {
         return restoreTaskByObject(task);
     }
-    private boolean restoreTaskById(int id) {
+
+    /**
+     * Restores deleted Task object based on the ID provided in argument.
+     * Updates task lists and file.
+     * 
+     * Overloaded function. @see restoreTask(Task)
+     * 
+     * @param id
+     *            The ID of the Task object to restore.
+     * @return True, if file has been successfully updated with restore.
+     */
+    public boolean restoreTask(int id) {
         Task task = searchTaskById(deletedTasks, id);
         return restoreTaskByObject(task);
     }
-    
+
+    /**
+     * Restores deleted Task object provided in argument. Removes object from
+     * deleted task list, adds to to-do or done task list, and updates file.
+     * 
+     * @param task
+     *            The Task object to restore.
+     * @return True, if file has been successfully updated with restore.
+     */
     private boolean restoreTaskByObject(Task task) {
         if (task == null || !task.isDeleted()) {
             return false; // Invalid ID or is not deleted task
         }
-        
+
         task.setDeleted(false);
         deletedTasks.remove(task);
         if (task.isDone()) {
@@ -236,27 +453,52 @@ public class DataFile {
         }
         return updateFile();
     }
-    
-    
-    
-    public boolean wipeTask(int id) {
-        return wipeTaskById(id);
-    }
-    
+
+    /**
+     * Permanently deletes Task object provided in argument. Cannot be undone.
+     * Used when undoing add commands. Decrements Task ID counter. Updates task
+     * lists and file.
+     * 
+     * Overloaded function. @see wipeTask(int)
+     * 
+     * @param task
+     *            The Task object to permanently delete.
+     * @return True, if file has been successfully updated with wipe.
+     */
     public boolean wipeTask(Task task) {
         return wipeTaskByObject(task);
     }
-    
-    private boolean wipeTaskById(int id) {
+
+    /**
+     * Permanently deletes Task object based on the ID provided in argument.
+     * Cannot be undone. Used when undoing add commands. Decrements Task ID
+     * counter. Updates task lists and file.
+     * 
+     * Overloaded function. @see wipeTask(Task)
+     * 
+     * @param id
+     *            The ID of the Task object to permanently delete.
+     * @return True, if file has been successfully updated with wipe.
+     */
+    public boolean wipeTask(int id) {
         Task task = searchTaskById(allTasks, id);
-        return wipeTaskByObject(task); 
+        return wipeTaskByObject(task);
     }
-    
+
+    /**
+     * Permanently deletes Task object provided in argument. Cannot be undone.
+     * Used when undoing add commands. Decrements Task ID counter. Removes
+     * object from all lists, and updates file.
+     * 
+     * @param task
+     *            The Task object to permanently delete.
+     * @return True, if file has been successfully updated with wipe.
+     */
     private boolean wipeTaskByObject(Task task) {
         if (task == null) {
             return false; // Invalid ID
         }
-        
+
         allTasks.remove(task);
         if (task.isDeleted()) {
             deletedTasks.remove(task);
@@ -268,34 +510,66 @@ public class DataFile {
         task.wipeTask();
         return updateFile();
     }
-    
+
+    /**
+     * Permanently deletes all tasks in all lists, and clears file of data.
+     * Cannot be undone. User should be prompted for confirmation before
+     * executing this function.
+     * 
+     * @return True, if successfully cleared file of data.
+     */
     public boolean wipeFile() {
         allTasks.clear();
         toDoTasks.clear();
         doneTasks.clear();
         deletedTasks.clear();
-        
+
         return updateFile();
     }
-    
-    public boolean toDoTask(int id) {
-        return toDoTaskById(id);
-    }
-    
+
+    /**
+     * Marks Task object provided in argument as to-do. If Task was deleted,
+     * restore it, and mark as to-do. Updates task lists and file.
+     * 
+     * Overloaded function. @see toDoTask(int)
+     * 
+     * @param task
+     *            The Task object to be marked as to-do.
+     * @return True, if file has been successfully updated with change.
+     */
     public boolean toDoTask(Task task) {
         return toDoTaskByObject(task);
     }
-    
-    private boolean toDoTaskById(int id) {
+
+    /**
+     * Marks Task object based on ID provided in argument as to-do. If Task was
+     * deleted, restore it, and mark as to-do. Updates task lists and file.
+     * 
+     * Overloaded function. @see toDoTask(Task)
+     * 
+     * @param id
+     *            The ID of the Task object to be marked as to-do.
+     * @return True, if file has been successfully updated with change.
+     */
+    public boolean toDoTask(int id) {
         Task task = searchTaskById(allTasks, id);
         return toDoTaskByObject(task);
     }
-    
+
+    /**
+     * Marks Task object provided in argument as to-do. If Task was deleted,
+     * restore it, and mark as to-do. Removes object from done or deleted list,
+     * adds to to-do list, and updates file.
+     * 
+     * @param task
+     *            The Task object to mark as to-do.
+     * @return True, if file has been successfully updated with change.
+     */
     private boolean toDoTaskByObject(Task task) {
         if (task == null || (!task.isDeleted() && !task.isDone())) {
             return false; // Invalid ID or is undeleted to-do task
         }
-        
+
         task.setDone(false);
         if (task.isDeleted()) {
             return restoreTask(task);
@@ -304,25 +578,50 @@ public class DataFile {
         doneTasks.remove(task);
         return updateFile();
     }
-    
-    public boolean doneTask(int id) {
-        return doneTaskById(id);
-    }
-    
+
+    /**
+     * Marks Task object provided in argument as done. If Task was
+     * deleted, restore it, and mark as done. Updates task lists and file.
+     * 
+     * Overloaded function. @see doneTask(id)
+     * 
+     * @param id
+     *            The Task object to be marked as done.
+     * @return True, if file has been successfully updated with change.
+     */
     public boolean doneTask(Task task) {
         return doneTaskByObject(task);
     }
-    
-    private boolean doneTaskById(int id) {
+
+    /**
+     * Marks Task object based on ID provided in argument as done. If Task was
+     * deleted, restore it, and mark as done. Updates task lists and file.
+     * 
+     * Overloaded function. @see doneTask(Task)
+     * 
+     * @param id
+     *            The ID of the Task object to be marked as done.
+     * @return True, if file has been successfully updated with change.
+     */
+    public boolean doneTask(int id) {
         Task task = searchTaskById(allTasks, id);
         return doneTaskByObject(task);
     }
-    
+
+    /**
+     * Marks Task object provided in argument as done. If Task was deleted,
+     * restore it, and mark as done. Removes object from to-do or deleted list,
+     * adds to done list, and updates file.
+     * 
+     * @param task
+     *            The Task object to mark as done.
+     * @return True, if file has been successfully updated with change.
+     */
     private boolean doneTaskByObject(Task task) {
         if (task == null || (!task.isDeleted() && task.isDone())) {
             return false; // Invalid ID or is undeleted done task
         }
-        
+
         task.setDone(true);
         if (task.isDeleted()) {
             return restoreTask(task);
@@ -332,4 +631,3 @@ public class DataFile {
         return updateFile();
     }
 }
-// TODO fill in gaps and remove extraneous parts in Processor.java

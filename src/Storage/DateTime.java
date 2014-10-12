@@ -1,17 +1,17 @@
 package Storage;
 
-import jdk.nashorn.internal.objects.annotations.Getter;
-import jdk.nashorn.internal.objects.annotations.Setter;
-
 /**
  * The DateTime class encapsulates date and time attributes in one neat little
  * package. Date and time attributes are managed as Strings.
+ * 
+ * Date and time formats, respectively: DD/MM/YYYY HHMM.
  * 
  * @author PierceAndy
  * 
  */
 
 public class DateTime {
+
     /** Date format: DD/MM/YYYY */
     private String date = "";
 
@@ -26,9 +26,9 @@ public class DateTime {
      * Constructor.
      * 
      * @param date
-     *            value to initialize object's date attribute to.
+     *            Format: DD/MM/YYYY.
      * @param time
-     *            value to initialize object's time attribute to.
+     *            Format: HHMM.
      */
     public DateTime(String date, String time) {
         this.date = date;
@@ -42,7 +42,7 @@ public class DateTime {
      * and creates a new DateTime object with the cloned values.
      * 
      * @param dateTime
-     *            the existing DateTime object to clone date and time attributes
+     *            The existing DateTime object to clone date and time attributes
      *            by value from.
      */
     public DateTime(DateTime dateTime) {
@@ -50,43 +50,43 @@ public class DateTime {
         this.time = dateTime.time;
     }
 
-    @Getter
+    /** @return Date, format: DD/MM/YYYY. */
     public String getDate() {
         return date;
     }
 
-    @Setter
+    /**
+     * @param date
+     *            Format: DD/MM/YYYY.
+     */
     public void setDate(String date) {
         this.date = date;
     }
 
-    /**
-     * Resets date attribute to empty String.
-     */
+    /** Resets date attribute to empty String. */
     public void resetDate() {
         date = "";
     }
 
-    @Getter
+    /** @return Time, format: HHMM. */
     public String getTime() {
         return time;
     }
 
-    @Setter
+    /**
+     * @param time
+     *            Format: HHMM.
+     */
     public void setTime(String time) {
         this.time = time;
     }
 
-    /**
-     * Resets time attribute to empty String.
-     */
+    /** Resets time attribute to empty String. */
     public void resetTime() {
         time = "";
     }
 
-    /**
-     * Resets date and time attributes to empty Strings.
-     */
+    /** Resets date and time attributes to empty Strings. */
     public void resetDateTime() {
         resetDate();
         resetTime();
