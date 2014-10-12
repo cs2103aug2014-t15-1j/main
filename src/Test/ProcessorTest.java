@@ -138,13 +138,13 @@ public class ProcessorTest {
         assertEquals(r1.getTasks().size(), 1);
         
         Task t2 = new Task("Task2 Add Bubble", null, null, null, new ArrayList<String>());
-		TestProcessor.processInput("add n: Task2 Add Bubble");
-		Result r3 = TestProcessor.processInput("display 2");
-		assertTrue(equalsObj(r3.getTasks().get(0), t2));
-        assertEquals(r3.getTasks().size(), 1);
+        Result r3 =TestProcessor.processInput("add n: Task2 Add Bubble");
+		Result r4 = TestProcessor.processInput("display "+ r3.getTasks().get(0).getId());
+		assertTrue(equalsObj(r4.getTasks().get(0), t2));
+        assertEquals(r4.getTasks().size(), 1);
         
-        Result r4 = TestProcessor.processInput("show");
-        assertEquals(r4.getTasks().size(), 2);
+        Result r5 = TestProcessor.processInput("show");
+        assertEquals(r5.getTasks().size(), 2);
 	}
 	
 	@Test 
@@ -206,9 +206,9 @@ public class ProcessorTest {
 	    Result r1 = TestProcessor.processInput("add n: Task1 Add Bubble");
 	    Result r2 = TestProcessor.processInput("add n: Task2 Add Bubble");
 	    Result r3 = TestProcessor.processInput("add n: Task3 Add Bubble");
-        TestProcessor.processInput("done "+r1.getTasks().get(0).getId());
+        TestProcessor.processInput("done 1");
         assertTrue(TestProcessor.getFile().getToDoTasks().size() == 2);
-        TestProcessor.processInput("done "+r3.getTasks().get(0).getId());
+        TestProcessor.processInput("done 3");
         assertTrue(TestProcessor.getFile().getToDoTasks().size() == 1);
         TestProcessor.processInput("undo");
         assertTrue(TestProcessor.getFile().getToDoTasks().size() == 2);

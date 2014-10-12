@@ -22,17 +22,37 @@ import Storage.Task;
  */
 
 public class Processor extends Observable {
-	
+    /** Instance of Processor */
     private static Processor processor;
-	private DataFile file;
+    
+    /** Instance of DataFile */
+    private DataFile file;
+    
+    /** Stores Command History for Undo */
 	private Stack<Command> backwardHistory;
+	
+	/** Stores Command History for Redo */
 	private Stack<Command> forwardHistory;
+	
+	/** Store Search History for Undo Operations*/
 	private Stack<List<Task>> backwardSearchListHistory;
+	
+	/** Store Search History for Redo Operations */
 	private Stack<List<Task>> forwardSearchListHistory;
+	
+	/** Stores Task objects that are being edited */
 	private Stack<Task> editedTaskHistory;
+	
+	/** Last search performed*/
 	private List<Task> lastSearch;
 	
-	/* Constructor */
+	/** List of Tasks without Due date/time */
+	private List<Task> floatingTasks;
+	
+	/** List of Tasks with Due date/time */
+	private List<Task> timedTasks;
+	
+	/** Constructor */
 	private Processor() {
 	    file = new DataFile();
 	    backwardHistory = new Stack<Command>();
@@ -41,9 +61,12 @@ public class Processor extends Observable {
 	    forwardSearchListHistory = new Stack<List<Task>>();
 	    editedTaskHistory = new Stack<Task>();
 	    lastSearch = new ArrayList<Task>();
+	    floatingTasks = new ArrayList<Task>();
+	    timedTasks = new ArrayList<Task>();
 	}
 	
-	/* 
+	/** 
+	 * Get instance of Processor
      * @return Instance of Processor
      */
 	public static Processor getInstance() {
@@ -53,8 +76,8 @@ public class Processor extends Observable {
 	    return processor;
 	}
 	
-	/* 
-	 * @param String input
+	/** 
+	 * @param String
      * @return Result
      */
 	public Result processInput(String input) throws Exception {
@@ -62,7 +85,8 @@ public class Processor extends Observable {
 		return processCommand(cmd);
 	}
 	
-	/* Overloaded by method processCommand(Command, boolean)
+	/**
+	 * Overloaded by method processCommand(Command, boolean)
 	 * 
      * @param Command cmd
      */
@@ -70,18 +94,20 @@ public class Processor extends Observable {
 		return processCommand(cmd, true);
 	}
 	
-	/* Executes the appropriate actions for each command
+	/**
+	 * Executes the appropriate actions for each command
      * 
-     * @param Command cmd
+     * @param cmd
      *      Command Object returned from Parser
      *      
-     * @param boolean userInput
+     * @param userInput
      *      userInput determines if the command was given by the user or internally
      *      
      * @return Result
-     *     boolean success
-     *     List<Task> tasks - Contains Tasks that are affected in the operation
-     *     CommandType cmdExecuted
+     *      boolean success
+     *      List<Task> tasks - This reference is passed into the methods to return
+     *          Tasks that are affected in the operation
+     *      CommandType cmdExecuted
      */
 	private Result processCommand(Command cmd, boolean userInput) throws Exception {
 		List<Task> tasks = new ArrayList<Task>();
@@ -139,6 +165,7 @@ public class Processor extends Observable {
 		
 		if (success && userInput) {
 			updateCommandHistory(cmd);
+            updateFloatingAndTimedTasks();
 			setChanged();
 			notifyObservers(); //Calls update of the side panel class
 		}
@@ -146,8 +173,9 @@ public class Processor extends Observable {
 		return new Result(tasks, success, cmdType);
 	}
 
-	/* Adds command to the history list
-     * @param Command cmd
+	/** 
+	 * Adds command to the history list
+     * @param cmd
      */
 	private void updateCommandHistory(Command cmd) {
 		switch (cmd.getType()) {
@@ -166,15 +194,26 @@ public class Processor extends Observable {
 				return;
 		}
 	}
-	
-	/* Returns back to UI to display a 'HELP' picture?
+
+	private void updateFloatingAndTimedTasks() {
+	    for (Task task : file.getToDoTasks()) {
+	        if (task.getDue() == null && task.getEnd() == null) {
+	            floatingTasks.add(task);
+	        } else {
+	            timedTasks.add(task);
+	        }
+	    }
+	}
+	/**
+	 * Returns back to UI to display a 'HELP' picture
 	 * @return true
 	 */
 	private boolean displayHelp(Command cmd) {
 	    return true;
 	}
 	
-	/* Executes 'add' operation of a task 
+	/** 
+	 * Executes 'add' operation of a task 
 	 * Add a Task to 'todo' List
 	 * @return true/false on whether operation is performed 
 	 */
@@ -187,15 +226,17 @@ public class Processor extends Observable {
 		return file.addNewTask(newTask);
 	}
 	
-	/* Check if the date is blocked
-	 * @param Command cmd
+	/**
+	 * Check if the date is blocked
+	 * @param cmd
 	 * @return false/true depending on the validity of blocked dates
 	 */
 	private boolean isBlocked(Command cmd) {
 		return false;
 	}
 	
-	/* Executes "edit" operation
+	/**
+	 * Executes "edit" operation
 	 * Allow edit/deletion of parameters of a Task
      * @return true/false on whether operation is performed
      */
@@ -248,7 +289,8 @@ public class Processor extends Observable {
         }
 	}
 	
-	/* Executes "delete" operation
+	/**
+	 * Executes "delete" operation
 	 * Deletes a task
 	 * Allows delete <id>, delete search, delete all
      * @return true/false on whether operation is performed
@@ -273,7 +315,7 @@ public class Processor extends Observable {
 		return success;
 	}
 	
-	/* Deletes Task using Id */
+	/** Deletes Task using Id */
 	private boolean deleteTaskUsingID(Command cmd, List<Task> tasks) {
 		Task t = file.getTask(Integer.parseInt(cmd.get("id")));
 		if (t == null) {
@@ -284,7 +326,7 @@ public class Processor extends Observable {
 		}
 	}
 	
-	/* Deletes all Tasks in searchList */
+	/** Deletes all Tasks in searchList */
 	private boolean deleteSearchedTasks(Command cmd, List<Task> tasks) {
 	    try {
             List<Task> deleteList = forwardSearchListHistory.pop();
@@ -299,7 +341,8 @@ public class Processor extends Observable {
         return true;
 	}
 
-	/* Executes "Restore" operation
+	/**
+	 * Executes "Restore" operation
 	 * Restores a deleted Task
 	 * Allows restore <id>, restore search
      * @return true/false on whether operation is performed
@@ -322,7 +365,7 @@ public class Processor extends Observable {
 	    return success;
 	}
 
-	/* Restores a deleted Task using Id */
+	/** Restores a deleted Task using Id */
 	private boolean restoreUsingId(Command cmd, List<Task> tasks) {
 	    int taskId = Integer.parseInt(cmd.get("id"));
 		boolean success = file.restoreTask(taskId);
@@ -333,7 +376,7 @@ public class Processor extends Observable {
 		return success;
 	}
 	
-	/* Restores all deleted Tasks due to 'delete search' */
+	/** Restores all deleted Tasks due to 'delete search' */
 	private boolean restoreUsingSearch(Command cmd, List<Task> tasks) {
 	    try {
 	        List<Task> restoreList = backwardSearchListHistory.pop();
@@ -354,7 +397,8 @@ public class Processor extends Observable {
 		return true;
 	}
 
-	/* Executes "search" operation
+	/**
+	 * Executes "search" operation
 	 * Allows search <date>, search <key1> <key2> #tag1 #tag2
      * @return true/false on whether operation is performed
      */
@@ -374,7 +418,7 @@ public class Processor extends Observable {
 		return true;
 	}
 	
-	/* Initiates new search list */
+	/** Initiates new search list */
 	private void initialiseNewSearchList() {
 	    lastSearch = new ArrayList<Task>();
 	}
@@ -389,9 +433,11 @@ public class Processor extends Observable {
         }
 	}
 	
-	/* Performs search using Keywords or Tags 
+	/**
+	 * Performs search using Keywords or Tags 
 	 * Tries to find if tags is present first before searching for keywords
-	 * */
+	 * 
+	 */
 	private void searchUsingKeyOrTags(List<String> keywords, List<String> tags, List<Task> tasks) {
 	    List<Task> toDoTasks = file.getToDoTasks();
         for (Task task: toDoTasks) {       
@@ -402,7 +448,7 @@ public class Processor extends Observable {
         }
 	}
 	
-	/* Checks if a Task is tagged under a tag in a List of tags*/
+	/** Checks if a Task is tagged under a tag in a List of tags*/
 	private boolean isTagged(Task task, List<String> tags, List<Task> tasks) {
 	    for (String tag: tags) {
             if (task.getTags().contains(tag)) {
@@ -413,7 +459,7 @@ public class Processor extends Observable {
 	    return false;
 	}
 	
-	/* Checks if a Task contains a certain keyword in the List of keywords */
+	/** Checks if a Task contains a certain keyword in the List of keywords */
 	private boolean containsKeyword(Task task, List<String> keywords, List<Task> tasks) {
         for (String key: keywords) {
             if (task.getName().toLowerCase().contains(key.toLowerCase())) {
@@ -424,14 +470,15 @@ public class Processor extends Observable {
         return false;
 	}
 	
-	/* Updates the Search result */
+	/** Updates the Search result */
 	private void updateSearchList(List<Task> tasks) {
 	    for (Task task : tasks) {
 	        lastSearch.add(task);
 	    }
 	}
 	
-	/* Executes "display" operation
+	/**
+	 * Executes "display" operation
 	 * Allows display, display <id>, display search
 	 * Allows show, show <id>, show search
      * @return true
@@ -452,21 +499,24 @@ public class Processor extends Observable {
 		return true;
 	}
 
-	/* Executes "block" operation
+	/**
+	 * Executes "block" operation
      * @return true/false on whether operation is performed
      */
 	private boolean blockDate(Command cmd, boolean userInput) {
 		return false;
 	}
 
-	/* Executes "unblock" operation
+	/**
+	 * Executes "unblock" operation
      * @return true/false on whether operation is performed
      */
 	private boolean unblockDate(Command cmd, boolean userInput) {
 		return false;
 	}
 	
-	/* Executes "done" operation
+	/**
+	 * Executes "done" operation
 	 * Marks a task as 'done'
      * @return true/false on whether operation is performed
      */
@@ -477,7 +527,8 @@ public class Processor extends Observable {
         return file.doneTask(existingTask);
 	}
 
-	/* Executes "todo" operation
+	/**
+	 * Executes "todo" operation
 	 * Marks a 'done' task as 'todo'
      * @return true/false on whether operation is performed
      */
@@ -488,7 +539,8 @@ public class Processor extends Observable {
 		return file.toDoTask(existingTask);
 	}
 	
-	/* Executes "undo" operation
+	/**
+	 * Executes "undo" operation
 	 * Applicable for 'Add', 'Edit', 'Delete', 'Restore', 'Block', 'Unblock', 'Done', 'Todo'
      * @return true/false on whether operation is performed
      */
@@ -531,7 +583,7 @@ public class Processor extends Observable {
 		return success;
 	}
 
-	/* Undo the add command */
+	/** Undo the 'Add' Command */
 	private boolean undoAdd(Command cmd, List<Task> tasks) {
 	    int taskId = file.getToDoTasks().size() - 1;
 		Task toDelete = file.getToDoTasks().get(taskId);
@@ -539,7 +591,7 @@ public class Processor extends Observable {
 		return file.wipeTask(toDelete);
 	}
 
-	/* Reverts the previous edit of a Task */
+	/** Undo the 'Edit' Command */
 	private boolean undoEdit(Command cmd, List<Task> tasks) {
 		Task prevTask = editedTaskHistory.pop();
 		
@@ -553,7 +605,8 @@ public class Processor extends Observable {
 		return file.editTask(prevTask.getId(), taskName, taskDue, taskStart, taskEnd, taskTags);
 	}
 	
-	/* Executes "redo" operation
+	/**
+	 * Executes "redo" operation
      * Applicable for 'Add', 'Edit', 'Delete', 'Restore', 'Block', 'Unblock', 'Done', 'Todo'
      * @return true/false on whether operation is performed
      */
@@ -569,11 +622,12 @@ public class Processor extends Observable {
 		}
 	}
 	
-	/*This method pushes command to the respective stack after undo/redo
-	 *If undo/redo operation is unsuccessful, command is pushed back to the stack it was popped from
-	 *@param cmd
-	 *@param success
-	 *@param redo - true for redo operations, false for undo operations
+	/**
+	 * This method pushes command to the respective stack after undo/redo
+	 * If undo/redo operation is unsuccessful, command is pushed back to the stack it was popped from
+	 * @param cmd
+	 * @param success
+	 * @param redo - true for redo operations, false for undo operations
 	 */
 	private void modifyHistory(Command cmd, boolean success, boolean redo) {
 	    if (success && redo || !success && !redo) {
@@ -581,6 +635,14 @@ public class Processor extends Observable {
 	    } else {
 	        forwardHistory.push(cmd);
 	    }
+	}
+	
+	public List<Task> fetchTimedTasks() {
+	    return timedTasks;
+	}
+	
+	public List<Task> fetchFloatingTasks() {
+	    return floatingTasks;
 	}
 	
 	public DataFile getFile() {
