@@ -10,6 +10,17 @@ import Parser.Parser;
 import Storage.DataFile;
 import Storage.Task;
 
+/* This class handles inputs from UI and interacts with other components for the
+ * necessary operations. It is dependent on DataFile for operations related to 
+ * the management of storage of Task. It is also dependent on Parser to decipher
+ * user input.
+ * 
+ * Singleton pattern is applied and only one instance of Processor is available.
+ * Result object is being returned to UI for display purposes.
+ * 
+ * @author Ter Yao Xiang
+ */
+
 public class Processor extends Observable {
 	
     private static Processor processor;
@@ -32,7 +43,7 @@ public class Processor extends Observable {
 	    lastSearch = new ArrayList<Task>();
 	}
 	
-	/* Singleton Processor
+	/* 
      * @return Instance of Processor
      */
 	public static Processor getInstance() {
@@ -436,7 +447,6 @@ public class Processor extends Observable {
 				break;
 			case "all":
 				tasks.addAll(file.getToDoTasks());
-				tasks.addAll(file.getDoneTasks());
 				break;
 		}
 		return true;

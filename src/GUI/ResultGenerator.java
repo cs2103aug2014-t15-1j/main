@@ -88,7 +88,7 @@ public class ResultGenerator {
 		String message;
 	
 		if (result.isSuccess()) {
-			CommandType commandDone = result.getCmdExecuted();
+			CommandType commandDone = result.getCommandType();
 			message = getResultMessage(commandDone, result);
 		} else {
 			message = String.format(UNSUCCESSFUL_COMMAND_MESSAGE, userInput);

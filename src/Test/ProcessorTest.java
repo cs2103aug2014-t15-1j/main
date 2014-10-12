@@ -22,6 +22,7 @@ public class ProcessorTest {
         TestProcessor.getFile().wipeFile();	    
 	}
 	
+	//This method check if between task1 and task2 is identical (in terms of parameters)
 	public boolean equalsObj(Task task1, Task task2) {
 		boolean equal = true;
 		try {
@@ -41,31 +42,34 @@ public class ProcessorTest {
 	}
 	
 	@Test
+	//Basic Test for 'Add' Command
 	public void testAdd() throws Exception {
 		Task t = new Task("Task1 Add Bubble", null, null, null, new ArrayList<String>());
 		Result r = TestProcessor.processInput("add n: Task1 Add Bubble");
 		assertTrue(equalsObj(t, r.getTasks().get(0)));
 		
-		//Begins undo & redo Test of Add
+		//Test undo & redo of Add
         Result r1 = TestProcessor.processInput("undo");
 		Result r2 = TestProcessor.processInput("redo");
 		assertTrue(equalsObj(t, r2.getTasks().get(0)));
 	}
 
 	@Test
+    //Basic Test for 'Edit' Command
 	public void testEdit() throws Exception {
 	    Task t = new Task("Task2 Add Pigs", null, null, null, new ArrayList<String>());
 	    Result r0 = TestProcessor.processInput("add n: Task1 Add Bubble");
 		Result r = TestProcessor.processInput("edit " +r0.getTasks().get(0).getId()+ " n: Task2 Add Pigs");
 		assertTrue(equalsObj(r.getTasks().get(0), t));
 
-		//Begins undo & redo Test of Edit
+		//Test undo & redo of Edit
 		Result r1 = TestProcessor.processInput("undo");
         Result r2 = TestProcessor.processInput("redo");
         assertTrue(equalsObj(r2.getTasks().get(0), t));
 	}
 
 	@Test
+    //Basic Test for 'Delete' Command
 	public void testDelete() throws Exception {
 	    Task t1 = new Task("Task1 Add Bubble", null, null, null, new ArrayList<String>());
         Task t2 = new Task("Task2 Add Pigs", null, null, null, new ArrayList<String>());
@@ -76,28 +80,31 @@ public class ProcessorTest {
 		assertTrue(equalsObj(r.getTasks().get(0), t1));
 		assertTrue(equalsObj(TestProcessor.getFile().getToDoTasks().get(0), t2));
 		
-		//Begins Undo & Redo Test of Delete <id>
-		Result r1 = TestProcessor.processInput("undo");
-        Result r2 = TestProcessor.processInput("redo");
-        assertTrue(equalsObj(r.getTasks().get(0), t1));
+		//Test Undo & Redo of Delete <id>
+		TestProcessor.processInput("undo");
+		assertTrue(TestProcessor.getFile().getDeletedTasks().size() == 0);
+        
+		TestProcessor.processInput("redo");
         assertTrue(equalsObj(TestProcessor.getFile().getToDoTasks().get(0), t2));
         
-		TestProcessor.processInput("add n: Task2 Add Bubble");
+        //Test Undo & Redo of Delete Search
+        TestProcessor.processInput("add n: Task2 Add Bubble");
         TestProcessor.processInput("add n: Task2 Add Bubble");
         TestProcessor.processInput("add n: Task3 Add Bubble");
         TestProcessor.processInput("search task2");
         TestProcessor.processInput("delete search");
         assertTrue(TestProcessor.getFile().getToDoTasks().size() == 1);
         
-        //Begins Undo & Redo Test of Delete Search
-        Result r3 = TestProcessor.processInput("undo");
+        TestProcessor.processInput("undo");
         assertTrue(TestProcessor.getFile().getToDoTasks().size() == 4);
-        Result r4 = TestProcessor.processInput("redo");
+        
+        TestProcessor.processInput("redo");
         assertTrue(TestProcessor.getFile().getToDoTasks().size() == 1);
 
 	}
 
 	@Test
+    //Basic Test for 'Restore' Command
 	public void testRestore() throws Exception {
 	    Task t = new Task("Task1 Add Bubble", null, null, null, new ArrayList<String>());
         
@@ -110,20 +117,19 @@ public class ProcessorTest {
 		assertTrue(TestProcessor.getFile().getToDoTasks().size() == 1);
 		 
         //Begins Undo & Redo Test of Restore <id>
-        Result r3 = TestProcessor.processInput("undo");
-        assertTrue(equalsObj(r2.getTasks().get(0), t));
+        TestProcessor.processInput("undo");
         assertTrue(equalsObj(TestProcessor.getFile().getDeletedTasks().get(0), t));
         assertTrue(TestProcessor.getFile().getDeletedTasks().size() == 1);
         assertTrue(TestProcessor.getFile().getToDoTasks().size() == 0);
         
-        Result r4 = TestProcessor.processInput("redo");
-        assertTrue(equalsObj(r2.getTasks().get(0), t));
+        TestProcessor.processInput("redo");
         assertTrue(equalsObj(TestProcessor.getFile().getToDoTasks().get(0), t));
         assertTrue(TestProcessor.getFile().getDeletedTasks().size() == 0);
         assertTrue(TestProcessor.getFile().getToDoTasks().size() == 1);
 	}
 
 	@Test
+    //Basic Test for 'Display'/'Show' Command
 	public void testDisplay() throws Exception {
 		Task t = new Task("Task1 Add Bubble", null, null, null, new ArrayList<String>());
 		TestProcessor.processInput("add n: Task1 Add Bubble");
@@ -142,6 +148,7 @@ public class ProcessorTest {
 	}
 	
 	@Test 
+    //Basic Test for 'Search' Command
 	public void testSearch() throws Exception {
 	    TestProcessor.processInput("add n: Task1 Add Bubble");
 	    TestProcessor.processInput("add n: Task1 Add Bubble");
@@ -157,6 +164,7 @@ public class ProcessorTest {
 	}
 	
 	@Test
+	//Boundary Test Case: Consecutive undo/redo for delete search
 	public void testDeleteSearchUndoRedo() throws Exception {
 	    TestProcessor.processInput("add n: Task1 Add Bubble");
         TestProcessor.processInput("add n: Task1 Add Bubble");
@@ -168,7 +176,8 @@ public class ProcessorTest {
         Result r6 = TestProcessor.processInput("search task2");
         assertTrue(r6.getTasks().size() == 3);
         TestProcessor.processInput("delete search");
-        Result r7 = TestProcessor.processInput("search task1");
+        
+        TestProcessor.processInput("search task1");
         TestProcessor.processInput("delete search");
         TestProcessor.processInput("undo");
         assertTrue(TestProcessor.getFile().getToDoTasks().size() == 3);
@@ -194,12 +203,12 @@ public class ProcessorTest {
 
 	@Test
 	public void testDone() throws Exception {
-	    TestProcessor.processInput("add n: Task1 Add Bubble");
-        TestProcessor.processInput("add n: Task2 Add Bubble");
-        TestProcessor.processInput("add n: Task3 Add Bubble");
-        TestProcessor.processInput("done 1");
+	    Result r1 = TestProcessor.processInput("add n: Task1 Add Bubble");
+	    Result r2 = TestProcessor.processInput("add n: Task2 Add Bubble");
+	    Result r3 = TestProcessor.processInput("add n: Task3 Add Bubble");
+        TestProcessor.processInput("done "+r1.getTasks().get(0).getId());
         assertTrue(TestProcessor.getFile().getToDoTasks().size() == 2);
-        TestProcessor.processInput("done 3");
+        TestProcessor.processInput("done "+r3.getTasks().get(0).getId());
         assertTrue(TestProcessor.getFile().getToDoTasks().size() == 1);
         TestProcessor.processInput("undo");
         assertTrue(TestProcessor.getFile().getToDoTasks().size() == 2);
@@ -212,15 +221,15 @@ public class ProcessorTest {
 
 	@Test
 	public void testTodo() throws Exception {
-        TestProcessor.processInput("add n: Task1 Add Bubble");
-        TestProcessor.processInput("add n: Task2 Add Bubble");
-        TestProcessor.processInput("add n: Task3 Add Bubble");
-        TestProcessor.processInput("done 1");
-        TestProcessor.processInput("done 2");
-        TestProcessor.processInput("done 3");
+	    Result r1 = TestProcessor.processInput("add n: Task1 Add Bubble");
+	    Result r2 = TestProcessor.processInput("add n: Task2 Add Bubble");
+	    Result r3 = TestProcessor.processInput("add n: Task3 Add Bubble");
+        TestProcessor.processInput("done "+r1.getTasks().get(0).getId());
+        TestProcessor.processInput("done "+r2.getTasks().get(0).getId());
+        TestProcessor.processInput("done "+r3.getTasks().get(0).getId());
         assertTrue(TestProcessor.getFile().getToDoTasks().size() == 0);
-        TestProcessor.processInput("todo 1");
-        TestProcessor.processInput("todo 2");
+        TestProcessor.processInput("todo "+r1.getTasks().get(0).getId());
+        TestProcessor.processInput("todo "+r2.getTasks().get(0).getId());
         TestProcessor.processInput("undo");
         assertTrue(TestProcessor.getFile().getToDoTasks().size() == 1);
         TestProcessor.processInput("redo");
