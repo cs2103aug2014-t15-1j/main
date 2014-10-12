@@ -225,12 +225,18 @@ public class Task {
         return tags;
     }
 
-    /** Appends list of tags to existing list of tags. */
+    /**
+     * @param tags
+     *            List of tags to append to existing list of tags.
+     */
     public void addTags(List<String> tags) {
         this.tags.addAll(tags);
     }
 
-    /** Removes list of tags from existing list of tags. */
+    /**
+     * @param tags
+     *            List of tags to remove from existing list of tags.
+     */
     public void removeTags(List<String> tags) {
         this.tags.removeAll(tags);
     }

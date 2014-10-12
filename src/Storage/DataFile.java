@@ -17,7 +17,8 @@ import Parser.Parser;
  * 
  * Do not apply the singleton pattern to this class. Even if multiple instances
  * are created, all task data in lists and on file will still be synchronized.
- * For more details, @see GitHub issue #64.
+ * For more details, view GitHub issue #64
+ * (https://github.com/cs2103aug2014-t15-1j/main/issues/64).
  * 
  * @author PierceAndy
  * 
@@ -42,50 +43,6 @@ public class DataFile {
      * deletedTasks. Does not contain duplicate tasks.
      */
     private static List<Task> allTasks = new ArrayList<Task>();
-
-    /**
-     * Returns an unmodifiable view of the list of all tasks. Attempts to modify
-     * the returned list, whether direct or via its iterator, result in an
-     * UnsupportedOperationException.
-     * 
-     * @return Unmodifiable view of the specified list.
-     */
-    public List<Task> getAllTasks() {
-        return Collections.unmodifiableList(allTasks);
-    }
-
-    /**
-     * Returns an unmodifiable view of the list of to-do tasks. Attempts to
-     * modify the returned list, whether direct or via its iterator, result in
-     * an UnsupportedOperationException.
-     * 
-     * @return Unmodifiable view of the specified list.
-     */
-    public List<Task> getToDoTasks() {
-        return Collections.unmodifiableList(toDoTasks);
-    }
-
-    /**
-     * Returns an unmodifiable view of the list of done tasks. Attempts to
-     * modify the returned list, whether direct or via its iterator, result in
-     * an UnsupportedOperationException.
-     * 
-     * @return Unmodifiable view of the specified list.
-     */
-    public List<Task> getDoneTasks() {
-        return Collections.unmodifiableList(doneTasks);
-    }
-
-    /**
-     * Returns an unmodifiable view of the list of deleted tasks. Attempts to
-     * modify the returned list, whether direct or via its iterator, result in
-     * an UnsupportedOperationException.
-     * 
-     * @return Unmodifiable view of the specified list.
-     */
-    public List<Task> getDeletedTasks() {
-        return Collections.unmodifiableList(deletedTasks);
-    }
 
     /**
      * Default constructor.
@@ -114,7 +71,7 @@ public class DataFile {
      * tasks are not written to file, hence deleted task list is not populated.
      * 
      * Benefits from branch prediction because of the order in which tasks are
-     * written to the file. @see updateFile()
+     * written to the file. See {@link updateFile()}.
      * 
      * @param file
      *            The file to read from.
@@ -138,6 +95,59 @@ public class DataFile {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Returns an unmodifiable view of the list of to-do tasks. Attempts to
+     * modify the returned list, whether direct or via its iterator, result in
+     * an UnsupportedOperationException.
+     * 
+     * Exclusively contains undeleted to-do tasks.
+     * 
+     * @return Unmodifiable view of the specified list.
+     */
+    public List<Task> getToDoTasks() {
+        return Collections.unmodifiableList(toDoTasks);
+    }
+
+    /**
+     * Returns an unmodifiable view of the list of done tasks. Attempts to
+     * modify the returned list, whether direct or via its iterator, result in
+     * an UnsupportedOperationException.
+     * 
+     * Exclusively contains undeleted done tasks.
+     * 
+     * @return Unmodifiable view of the specified list.
+     */
+    public List<Task> getDoneTasks() {
+        return Collections.unmodifiableList(doneTasks);
+    }
+
+    /**
+     * Returns an unmodifiable view of the list of deleted tasks. Attempts to
+     * modify the returned list, whether direct or via its iterator, result in
+     * an UnsupportedOperationException.
+     * 
+     * Exclusively contains deleted to-do and deleted done tasks.
+     * 
+     * @return Unmodifiable view of the specified list.
+     */
+    public List<Task> getDeletedTasks() {
+        return Collections.unmodifiableList(deletedTasks);
+    }
+
+    /**
+     * Returns an unmodifiable view of the list of all tasks. Attempts to modify
+     * the returned list, whether direct or via its iterator, result in an
+     * UnsupportedOperationException.
+     * 
+     * Contains references to all Task objects in toDoTasks, doneTasks, and
+     * deletedTasks. Does not contain duplicate tasks.
+     * 
+     * @return Unmodifiable view of the specified list.
+     */
+    public List<Task> getAllTasks() {
+        return Collections.unmodifiableList(allTasks);
     }
 
     /**
@@ -171,8 +181,8 @@ public class DataFile {
     }
 
     /**
-     * Used to add a new to-do task. Populates relevant lists, and updates file
-     * with new information.
+     * Adds a new to-do task to lists and file. Populates relevant lists, and
+     * updates file with new information.
      * 
      * @param task
      *            New Task object to be written to file.
@@ -190,7 +200,7 @@ public class DataFile {
      * 
      * To-do tasks are written first, followed by done tasks, instead of
      * haphazardly in random order, to aid in branch prediction when reading
-     * from file. @see getTasksFromFile(File)
+     * from file. See {@link getTasksFromFile(File)}.
      * 
      * @return True, if successfully written to file.
      */
@@ -246,8 +256,7 @@ public class DataFile {
      * are provided for attributes that are not meant to be changed. Task to
      * edit is specified by Task object provided in argument.
      * 
-     * Overloaded function. @see editTask(int, String, String, String, String,
-     * List<String>)
+     * Overloaded function.
      * 
      * @param task
      *            Task object to modify.
@@ -272,12 +281,11 @@ public class DataFile {
     }
 
     /**
-     * Updates Task object's attributes with provided arguments. Null arguments
-     * are provided for attributes that are not meant to be changed. Task to
-     * edit is specified by ID.
+     * Updates Task object's attributes with provided arguments, based on ID
+     * provided. Null arguments are provided for attributes that are not meant
+     * to be changed.
      * 
-     * Overloaded function. @see editTask(Task, String, String, String, String,
-     * List<String>)
+     * Overloaded function.
      * 
      * @param id
      *            ID of Task object to modify.
@@ -351,7 +359,7 @@ public class DataFile {
     /**
      * Deletes Task object provided in argument. Updates task lists and file.
      * 
-     * Overloaded function. @see deleteTask(int)
+     * Overloaded function.
      * 
      * @param task
      *            The Task object to delete.
@@ -365,7 +373,7 @@ public class DataFile {
      * Deletes Task object based on the ID provided in argument. Updates task
      * lists and file.
      * 
-     * Overloaded function. @see deleteTask(Task)
+     * Overloaded function.
      * 
      * @param id
      *            The ID of the Task object to delete.
@@ -406,7 +414,7 @@ public class DataFile {
      * Restores deleted Task object provided in argument. Updates task lists and
      * file.
      * 
-     * Overloaded function. @see restoreTask(int)
+     * Overloaded function.
      * 
      * @param task
      *            The Task object to restore.
@@ -420,7 +428,7 @@ public class DataFile {
      * Restores deleted Task object based on the ID provided in argument.
      * Updates task lists and file.
      * 
-     * Overloaded function. @see restoreTask(Task)
+     * Overloaded function.
      * 
      * @param id
      *            The ID of the Task object to restore.
@@ -459,7 +467,7 @@ public class DataFile {
      * Used when undoing add commands. Decrements Task ID counter. Updates task
      * lists and file.
      * 
-     * Overloaded function. @see wipeTask(int)
+     * Overloaded function.
      * 
      * @param task
      *            The Task object to permanently delete.
@@ -474,7 +482,7 @@ public class DataFile {
      * Cannot be undone. Used when undoing add commands. Decrements Task ID
      * counter. Updates task lists and file.
      * 
-     * Overloaded function. @see wipeTask(Task)
+     * Overloaded function.
      * 
      * @param id
      *            The ID of the Task object to permanently delete.
@@ -531,7 +539,7 @@ public class DataFile {
      * Marks Task object provided in argument as to-do. If Task was deleted,
      * restore it, and mark as to-do. Updates task lists and file.
      * 
-     * Overloaded function. @see toDoTask(int)
+     * Overloaded function.
      * 
      * @param task
      *            The Task object to be marked as to-do.
@@ -545,7 +553,7 @@ public class DataFile {
      * Marks Task object based on ID provided in argument as to-do. If Task was
      * deleted, restore it, and mark as to-do. Updates task lists and file.
      * 
-     * Overloaded function. @see toDoTask(Task)
+     * Overloaded function.
      * 
      * @param id
      *            The ID of the Task object to be marked as to-do.
@@ -580,12 +588,12 @@ public class DataFile {
     }
 
     /**
-     * Marks Task object provided in argument as done. If Task was
-     * deleted, restore it, and mark as done. Updates task lists and file.
+     * Marks Task object provided in argument as done. If Task was deleted,
+     * restore it, and mark as done. Updates task lists and file.
      * 
-     * Overloaded function. @see doneTask(id)
+     * Overloaded function.
      * 
-     * @param id
+     * @param task
      *            The Task object to be marked as done.
      * @return True, if file has been successfully updated with change.
      */
@@ -597,7 +605,7 @@ public class DataFile {
      * Marks Task object based on ID provided in argument as done. If Task was
      * deleted, restore it, and mark as done. Updates task lists and file.
      * 
-     * Overloaded function. @see doneTask(Task)
+     * Overloaded function.
      * 
      * @param id
      *            The ID of the Task object to be marked as done.
