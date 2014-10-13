@@ -1,8 +1,10 @@
-package Parser;
+package Logic;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import Logic.CommandType;
+import Parser.TaskParam;
+import Storage.Task;
 
 // TODO: MERGE with delete? VERY similar.
 
@@ -60,4 +62,33 @@ public class CommandDisplay extends Command {
         return result;
     }
 
+    /**
+     * Executes "display" operation
+     * Allows display, display <id>, display search
+     * Allows show, show <id>, show search
+     * @return Result
+     */
+    protected Result execute(boolean userInput) {
+        Processor.getLogger().info("Executing 'Display' Command...");
+        Processor processor = Processor.getInstance();
+        List<Task> list = new ArrayList<Task>();
+        boolean success = true;
+        switch (rangeType) {
+            case "id":
+                int taskId = Integer.parseInt(id);
+                list.add(processor.getFile().getTask(taskId));
+                break;
+            case "search":
+                list = processor.getLastSearch();
+                break;
+            case "all":
+                for (Task t: processor.getFile().getToDoTasks()) {
+                    list.add(t);
+                }
+                break;
+            default:
+                success = false;
+        }
+        return new Result(list, success, getType());
+    }
 }

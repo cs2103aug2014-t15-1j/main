@@ -4,7 +4,8 @@ import java.util.List;
 
 import Storage.Task;
 
-/* A Result object contains the necessary information of an operation.
+/**
+ * A Result object contains the necessary information of an operation.
  * It is being returned from Processor via processInput(String) 
  *
  * @author Ter Yao Xiang
@@ -19,14 +20,17 @@ public class Result {
 	
     //The type of command being executed in the operation
     //cmdType == CommandType.ERROR if unable to parse command
+    //TODO: Include error encountered in Result?
     private CommandType cmdType;
 	
+    /** Constructor for Result Object */
 	public Result(List<Task> tasks, boolean success, CommandType cmdType) {
 		this.tasks = tasks;
 		this.success = success;
 		this.cmdType = cmdType;
 	}
 	
+	/** Accessors */
 	public List<Task> getTasks() {
 		return tasks;
 	}
@@ -37,6 +41,11 @@ public class Result {
 	
 	public CommandType getCommandType() {
 		return cmdType;
+	}
+	
+	/** Mutators*/
+	public void setSuccess(boolean success) {
+	    this.success = success;
 	}
 	
 	public void setCommandType(CommandType cmdType) {

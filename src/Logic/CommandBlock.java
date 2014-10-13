@@ -1,8 +1,8 @@
-package Parser;
+package Logic;
 
 import java.util.List;
 
-import Logic.CommandType;
+import Parser.TaskParam;
 
 public class CommandBlock extends Command {
 
@@ -55,6 +55,17 @@ public class CommandBlock extends Command {
         result = result.concat("\nend: " + end);
 
         return result;
+    }
+    
+
+    /**
+     * Check if the date is blocked
+     * @param cmd
+     * @return Result
+     */
+    protected Result execute(boolean userInput) {
+        Processor.getLogger().info("Executing 'Block' Command...");
+        return new Result(null, false, CommandType.ERROR);
     }
 
 }

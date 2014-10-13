@@ -1,9 +1,10 @@
-package Parser;
+package Logic;
 
 import java.util.List;
 import java.util.ArrayList;
 
-import Logic.CommandType;
+import Parser.TaskParam;
+import Storage.Task;
 
 public class CommandEdit extends Command {
     
@@ -109,6 +110,36 @@ public class CommandEdit extends Command {
         result = result.concat("\n" + "delete: " + delete);
         
         return result;
+    }
+    
+    /**
+     * Executes "edit" operation
+     * Allow edit/deletion of parameters of a Task
+     * @return Result
+     */
+    protected Result execute(boolean userInput) {
+        Processor processor = Processor.getInstance();
+        Processor.getLogger().info("Executing 'Edit' Command...");
+        List<Task> list = new ArrayList<Task>();
+        boolean success = false;
+        
+        int taskId = 0;
+        try {
+            taskId = Integer.parseInt(id);
+        } catch (Exception e) {
+            Processor.getLogger().warning("Invalid Task Id!");
+        }
+        
+        if (taskId > 0) {
+            Task existingTask = processor.getFile().getTask(taskId);
+            Task oldTask = new Task(existingTask);
+            success = processor.getFile().editTask(existingTask, name, due, start, end, tags);
+            if (success) {
+                processor.getEditedTaskHistory().push(oldTask);
+                list.add(existingTask);
+            }
+        }
+        return new Result(list, success, getType());
     }
 
 }

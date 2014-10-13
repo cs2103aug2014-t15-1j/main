@@ -1,4 +1,4 @@
-package Test;
+package Logic;
 
 import static org.junit.Assert.*;
 
@@ -7,8 +7,6 @@ import java.io.IOException;
 import org.junit.Before;
 import org.junit.Test;
 
-import Logic.Processor;
-import Logic.Result;
 import Storage.Task;
 
 import java.util.ArrayList;
@@ -176,7 +174,7 @@ public class ProcessorTest {
         Result r6 = TestProcessor.processInput("search task2");
         assertTrue(r6.getTasks().size() == 3);
         TestProcessor.processInput("delete search");
-        
+
         TestProcessor.processInput("search task1");
         TestProcessor.processInput("delete search");
         TestProcessor.processInput("undo");

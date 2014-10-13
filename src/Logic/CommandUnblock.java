@@ -1,47 +1,39 @@
-package Parser;
+package Logic;
 
 import java.util.List;
 
-import Logic.CommandType;
+import Parser.TaskParam;
 
-public class CommandRestore extends Command {
+public class CommandUnblock extends Command {
 
-    // Restore types [get("rangeType"); returns "all" | "id"]
-    protected String rangeType;
-
-    // Restore type data [get("id"); returns string]
+    // Only one type of unblock search: "id"
+    // Use get("id"); returns string
     protected String id;
 
-    public CommandRestore(List<TaskParam> content) {
+    public CommandUnblock(List<TaskParam> content) {
         if (content.isEmpty()) {
             this.type = CommandType.ERROR;
-            this.error = "No arguments for restore";
+            this.error = "No arguments for unblock";
         } else {
-            this.type = CommandType.RESTORE;
+            this.type = CommandType.UNBLOCK;
 
             for (TaskParam param : content) {
                 switch (param.getName()) {
-                    case "rangeType":
-                        this.rangeType = param.getField();
-                        break;
-
                     case "id":
                         this.id = param.getField();
                         break;
 
                     default:
                         this.type = CommandType.ERROR;
-                        this.error = "Restore constructor parameter error";
+                        this.error = "Unblock constructor parameter error";
                 }
             }
         }
     }
 
+    // TODO: Change to empty get()?
     public String get(String field) {
         switch (field) {
-            case "rangeType":
-                return this.rangeType;
-
             case "id":
                 return this.id;
 
@@ -51,11 +43,14 @@ public class CommandRestore extends Command {
     }
 
     public String toString() {
-        String result = "\n[[ CMD-RESTORE: ]]";
-        result = result.concat("\nrangeType: " + rangeType);
+        String result = "\n[[ CMD-Unblock: ]]";
         result = result.concat("\nid: " + id);
 
         return result;
     }
 
+    protected Result execute(boolean userInput) {
+        Processor.getLogger().info("Executing 'Unblock' Command...");
+        return new Result(null, false, CommandType.ERROR);
+    }
 }

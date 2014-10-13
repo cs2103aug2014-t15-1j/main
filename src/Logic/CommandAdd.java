@@ -1,9 +1,10 @@
-package Parser;
+package Logic;
 
 import java.util.List;
 import java.util.ArrayList;
 
-import Logic.CommandType;
+import Parser.TaskParam;
+import Storage.Task;
 
 public class CommandAdd extends Command {
     
@@ -91,4 +92,31 @@ public class CommandAdd extends Command {
         return result;
     }
 
+
+    
+    /** 
+     * Executes 'add' operation of a task 
+     * Add a Task to 'todo' List
+     * @return Result
+     */
+    protected Result execute(boolean userInput) {
+        boolean success = false;
+        List<Task> list = new ArrayList<Task>();
+        Processor.getLogger().info("Executing 'Add' Command...");
+        if (!isBlocked()) {
+            Task newTask = new Task(name, due, start, end, tags);
+            success = Processor.getInstance().getFile().addNewTask(newTask);
+            list.add(newTask);
+        }
+        return new Result(list, success, getType());
+    }
+    
+    /**
+     * Check if the date is blocked
+     * @param cmd
+     * @return false/true depending on the validity of blocked dates
+     */
+    private boolean isBlocked() {
+        return false;
+    }
 }

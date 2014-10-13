@@ -1,8 +1,10 @@
-package Parser;
+package Logic;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import Logic.CommandType;
+import Parser.TaskParam;
+import Storage.Task;
 
 public class CommandTodo extends Command {
 
@@ -57,5 +59,39 @@ public class CommandTodo extends Command {
 
         return result;
     }
-
+    
+    /**
+     * Executes "todo" operation
+     * Marks a 'done' task as 'todo'
+     * @return Result
+     */
+    protected Result execute(boolean userInput) {
+        Processor.getLogger().info("Executing 'Todo' Command...");
+        Processor processor = Processor.getInstance();
+        List<Task> list = new ArrayList<Task>();
+        boolean success = false;
+        
+        int taskId = Integer.parseInt(id);
+        Task existingTask = processor.getFile().getTask(taskId);
+        success = processor.getFile().toDoTask(existingTask);
+        if (success) {
+            list.add(existingTask);
+        }
+        return new Result(list, success, getType());
+    }
+    
+    protected Result executeComplement() {
+        Processor.getLogger().info("Executing 'Done' Command...");
+        Processor processor = Processor.getInstance();
+        List<Task> list = new ArrayList<Task>();
+        boolean success = false;
+        
+        int taskId = Integer.parseInt(id);
+        Task existingTask = processor.getFile().getTask(taskId);
+        success = processor.getFile().doneTask(existingTask);
+        if (success) {
+            list.add(existingTask);
+        }
+        return new Result(list, success, getType());
+    }
 }

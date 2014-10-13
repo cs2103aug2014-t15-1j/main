@@ -1,6 +1,5 @@
-package Parser;
+package Logic;
 
-import Logic.CommandType;
 
 public class CommandHelp extends Command {
     
@@ -23,4 +22,7 @@ public class CommandHelp extends Command {
         return result;
     }
 
+    protected Result execute(boolean userInput) {
+        return new Result(null, true, getType());
+    }
 }

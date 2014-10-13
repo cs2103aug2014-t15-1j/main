@@ -1,8 +1,6 @@
-package Parser;
+package Logic;
 
 import java.util.List;
-
-import Logic.CommandType;
 
 public abstract class Command {
 
@@ -31,6 +29,18 @@ public abstract class Command {
     public List<String> getKeywords() {
         // Stub
         return null;
+    }
+    
+    protected Result execute(boolean userInput) {
+        return new Result(null, false, CommandType.ERROR);
+    }
+    
+    protected Result executeComplement() {
+        return new Result(null, false, CommandType.ERROR);
+    }
+    
+    protected void setType(CommandType type) {
+        this.type = type;
     }
 
 }
