@@ -1,5 +1,6 @@
 package Parser;
 
+import Logic.Command;
 import Storage.Task;
 
 public class ParseTester {
@@ -19,44 +20,18 @@ public class ParseTester {
 
     public static void main(String[] args) {
         // TODO: Test "\n" when input from command line
-        /*
-         * // TEST INVALID COMMAND
-         * System.out.println(Parser.parse("that homework it's #cs2103"));
-         */
 
-        // TEST RAW PARSE
-        System.out
-                .println(tempTaskToString(Parser
-                        .parseToTask("nAme: do Due: #cs2103 wed namE: homework M: late "
-                                     + "start: priority: due: 9am eNd: now name: quickly #done\n")));
+        // TEST DELETE System.out.println(Parser.parse("delete all"));
+        System.out.println(Parser.parse("delete search"));
+        System.out.println(Parser.parse("delete done"));
+        System.out.println(Parser.parse("delete 11"));
+        System.out.println(Parser.parse("delete days"));
+        System.out.println(Parser.parse("delete"));
 
-        // TEST ADD
-        System.out
-                .println(Parser
-                        .parse("add do homework it's #cs2103 cs2103 due: tomorrow end:"));
-        System.out.println(Parser
-                .parse("add name: do do due: wednesday dead task\n"));
-        System.out.println(Parser
-                .parse("add name: do due: #cs2103 wed name: homework late "
-                       + "start: priority: due: 9am end: now name: quickly\n"));
-        System.out.println(Parser.parse("add"));
-        System.out
-                .println(Parser
-                        .parse("add name:homework start:end:start:end:today"));
-
-        /*
-         * // TEST DELETE System.out.println(Parser.parse("delete all"));
-         * System.out.println(Parser.parse("delete search"));
-         * System.out.println(Parser.parse("delete done"));
-         * System.out.println(Parser.parse("delete 11"));
-         * System.out.println(Parser.parse("delete days"));
-         * System.out.println(Parser.parse("delete"));
-         * 
-         * // TEST HELP System.out.println(Parser.parse("help me"));
-         * System.out.println(Parser.parse("help"));
-         * System.out.println(Parser.parse("help all"));
-         * System.out.println(Parser.parse("help add"));
-         */
+        // TEST HELP System.out.println(Parser.parse("help me"));
+        System.out.println(Parser.parse("help"));
+        System.out.println(Parser.parse("help all"));
+        System.out.println(Parser.parse("help add"));
 
         // TEST EDIT
         System.out
@@ -76,81 +51,75 @@ public class ParseTester {
         System.out.println(Parser
                 .parse("edit 1 delete:s:Start n:delete:tomorrow delete:end"));
 
-        /*
-         * // TEST GET() Command testEdit = Parser .parse(
-         * "edit 3 delete: name name nil name name n: todo homework delete: name name"
-         * ); System.out.println("\n[[ Test get() ]]");
-         * System.out.println("type: " + testEdit.getType());
-         * System.out.println("error: " + testEdit.getError());
-         * System.out.println("name: " + testEdit.get("name"));
-         * System.out.println("tags: " + testEdit.getTags());
-         * 
-         * // TEST RESTORE System.out.println(Parser.parse("restore all"));
-         * System.out.println(Parser.parse("restore 2"));
-         * System.out.println(Parser.parse("restore"));
-         * System.out.println(Parser.parse("restore b"));
-         * 
-         * // TEST DISPLAY System.out.println(Parser.parse("display all"));
-         * System.out.println(Parser.parse("display 2"));
-         * System.out.println(Parser.parse("display block"));
-         * System.out.println(Parser.parse("display"));
-         * System.out.println(Parser.parse("display b"));
-         * 
-         * // TEST OTHERS System.out.println(Parser.parse("undo"));
-         * System.out.println(Parser.parse("redo"));
-         * System.out.println(Parser.parse("exit"));
-         * 
-         * // TEST UNBLOCK System.out.println(Parser.parse("unblock 2"));
-         * System.out.println(Parser.parse("unblock 2 3"));
-         * System.out.println(Parser.parse("unblock one"));
-         * System.out.println(Parser.parse("unblock"));
-         */
-        /*
-         * // TEST TO-DO System.out.println(Parser.parse("todo 1"));
-         * System.out.println(Parser.parse("todo 1 3"));
-         * System.out.println(Parser.parse("todo lAst"));
-         * System.out.println(Parser.parse("todo one"));
-         * System.out.println(Parser.parse("tODo"));
-         * 
-         * // TEST DONE System.out.println(Parser.parse("done all"));
-         * System.out.println(Parser.parse("done 2"));
-         * System.out.println(Parser.parse("done 23/04/2014"));
-         * System.out.println(Parser.parse("done 23/04/2014 to 23/05/2014"));
-         */
-        /*
-         * // TEST SEARCH System.out.println(Parser.parse("search"));
-         * System.out.println(Parser.parse("search "));
-         * System.out.println(Parser.parse("search one two three"));
-         * System.out.println(Parser.parse("search #one #two #three"));
-         * System.out.println(Parser.parse("search #done #tag keyword"));
-         * System.
-         * out.println(Parser.parse("search #done #deleted #todo after"));
-         * System.out.println(Parser.parse("search 23/04/2014 to 23/05/2014"));
-         * System.out.println(Parser.parse("search 23/04/2014"));
-         * System.out.println
-         * (Parser.parse("search 23/04/2014 to 23/05/2014 #done"));
-         */
-        /*
-         * // TEST BLOCK // TODO: today? tomorrow? Required?
-         * System.out.println(Parser.parse("block"));
-         * System.out.println(Parser.parse("block "));
-         * System.out.println(Parser.parse("block one two three"));
-         * System.out.println(Parser.parse("block today"));
-         * System.out.println(Parser.parse("block today to tomorrow"));
-         * 
-         * System.out.println(Parser.parse("block 23/04/2014"));
-         * System.out.println(Parser.parse("block 23/04/2014 to 23/05/2014"));
-         * System.out.println(Parser.parse("block 23/04/201"));
-         * System.out.println(Parser.parse("block 23/4/2014"));
-         * System.out.println(Parser.parse("block 2/04/2014"));
-         * System.out.println(Parser.parse("block 23/13/2014"));
-         * System.out.println(Parser.parse("block 33/04/2014"));
-         * System.out.println(Parser.parse("block -3/04/2014"));
-         * System.out.println(Parser.parse("block 03/04/-014"));
-         * System.out.println(Parser.parse("block 23/04/2014 23/05/2014"));
-         * System.out.println(Parser.parse("block 23/04/2014 to 23/05/2012"));
-         * System.out.println(Parser.parse("block 23/04/2012 to 23/05/2014"));
-         * System.out.println(Parser.parse("block 23/04/1*14"));
-         */
+        // TEST RESTORE
+        System.out.println(Parser.parse("restore all"));
+        System.out.println(Parser.parse("restore 2"));
+        System.out.println(Parser.parse("restore"));
+        System.out.println(Parser.parse("restore b"));
+
+        // TEST DISPLAY
+        System.out.println(Parser.parse("display all"));
+        System.out.println(Parser.parse("display 2"));
+        System.out.println(Parser.parse("display block"));
+        System.out.println(Parser.parse("display"));
+        System.out.println(Parser.parse("display b"));
+
+        // TEST OTHERS
+        System.out.println(Parser.parse("undo"));
+        System.out.println(Parser.parse("redo"));
+        System.out.println(Parser.parse("exit"));
+
+        // TEST UNBLOCK
+        System.out.println(Parser.parse("unblock 2"));
+        System.out.println(Parser.parse("unblock 2 3"));
+        System.out.println(Parser.parse("unblock one"));
+        System.out.println(Parser.parse("unblock"));
+
+        // TEST TO-DO
+        System.out.println(Parser.parse("todo 1"));
+        System.out.println(Parser.parse("todo 1 3"));
+        System.out.println(Parser.parse("todo lAst"));
+        System.out.println(Parser.parse("todo one"));
+        System.out.println(Parser.parse("tODo"));
+
+        // TEST DONE
+        System.out.println(Parser.parse("done all"));
+        System.out.println(Parser.parse("done 2"));
+        System.out.println(Parser.parse("done 23/04/2014"));
+        System.out.println(Parser.parse("done 23/04/2014 to 23/05/2014"));
+
+        // TEST SEARCH
+        System.out.println(Parser.parse("search"));
+        System.out.println(Parser.parse("search "));
+        System.out.println(Parser.parse("search one two three"));
+        System.out.println(Parser.parse("search #one #two #three"));
+        System.out.println(Parser.parse("search #done #tag keyword"));
+        System.out.println(Parser.parse("search #done #deleted #todo after"));
+        System.out.println(Parser.parse("search 23/04/2014 to 23/05/2014"));
+        System.out.println(Parser.parse("search 23/04/2014"));
+        System.out.println(Parser
+                .parse("search 23/04/2014 to 23/05/2014 #done"));
+
+        // TEST BLOCK // TODO: today? tomorrow? Required?
+        System.out.println(Parser.parse("block"));
+        System.out.println(Parser.parse("block "));
+        System.out.println(Parser.parse("block one two three"));
+        System.out.println(Parser.parse("block today"));
+        System.out.println(Parser.parse("block today to tomorrow"));
+
+        System.out.println(Parser.parse("block 23/04/2014"));
+        System.out.println(Parser.parse("block 23/04/2014 to 23/05/2014"));
+        System.out.println(Parser.parse("block 23/04/201"));
+        System.out.println(Parser.parse("block 23/4/2014"));
+        System.out.println(Parser.parse("block 2/04/2014"));
+        System.out.println(Parser.parse("block 23/13/2014"));
+        System.out.println(Parser.parse("block 33/04/2014"));
+        System.out.println(Parser.parse("block -3/04/2014"));
+        System.out.println(Parser.parse("block 03/04/-014"));
+        System.out.println(Parser.parse("block 23/04/2014 23/05/2014"));
+        System.out.println(Parser.parse("block 23/04/2014 to 23/05/2012"));
+        System.out.println(Parser.parse("block 23/04/2012 to 23/05/2014"));
+        System.out.println(Parser.parse("block 23/04/1*14"));
+
     }
 }
