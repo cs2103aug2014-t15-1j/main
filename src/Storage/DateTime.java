@@ -25,6 +25,20 @@ public class DateTime {
     /**
      * Constructor.
      * 
+     * TODO remove magic numbers
+     * 
+     * @param dateTime
+     *            Format: DD/MM/YYYY HHMM.
+     */
+    public DateTime(String dateTime) {
+        String tempString[] = dateTime.split(" ");
+        date = tempString[0];
+        time = tempString[1];
+    }
+
+    /**
+     * Constructor.
+     * 
      * @param date
      *            Format: DD/MM/YYYY.
      * @param time
@@ -48,6 +62,13 @@ public class DateTime {
     public DateTime(DateTime dateTime) {
         this.date = dateTime.date;
         this.time = dateTime.time;
+    }
+    
+    /**
+     * TODO comment
+     */
+    public String toString() {
+        return date + time; 
     }
 
     /** @return Date, format: DD/MM/YYYY. */
