@@ -6,57 +6,7 @@ import Storage.Task;
 public class ParseTester {
     // ========== TESTING (TO REMOVE) ==========//
 
-    private static String tempTaskToString(Task task) {
-        String result = "\n[[ Task ]]";
-        result = result.concat("\nName: " + task.getName());
-        result = result.concat("\nDue: " + task.getDue());
-        result = result.concat("\nStart: " + task.getStart());
-        result = result.concat("\nEnd: " + task.getEnd());
-        result = result.concat("\nTags: " + task.getTags());
-        result = result.concat("\nDoneness: " +
-                               (task.isDone() ? "#Done" : "#ToDo"));
-        return result;
-    }
-
     public static void main(String[] args) {
-        // TODO: Test "\n" when input from command line
-
-        // TEST DELETE System.out.println(Parser.parse("delete all"));
-        System.out.println(Parser.parse("delete search"));
-        System.out.println(Parser.parse("delete done"));
-        System.out.println(Parser.parse("delete 11"));
-        System.out.println(Parser.parse("delete days"));
-        System.out.println(Parser.parse("delete"));
-
-        // TEST HELP System.out.println(Parser.parse("help me"));
-        System.out.println(Parser.parse("help"));
-        System.out.println(Parser.parse("help all"));
-        System.out.println(Parser.parse("help add"));
-
-        // TEST EDIT
-        System.out
-                .println(Parser
-                        .parse("edit 1 ten twenty start: #cs2103 #cs2103 #CS2103 end: due: tmr delete: name"));
-        System.out.println(Parser
-                .parse("edit 2 delete: nil n: to: do: #cs2103 #cs2103"));
-        System.out
-                .println(Parser
-                        .parse("edit 3 delete: name name nil name name n: todo homework delete: name name"));
-        System.out.println(Parser.parse("edit one two"));
-        System.out.println(Parser.parse("edit"));
-        System.out.println(Parser.parse("edit 1"));
-        System.out
-                .println(Parser
-                        .parse("edit 1 name:Start:e:tomorrow n:n:code it x:n:fail n:x:s:fail n:x:fails"));
-        System.out.println(Parser
-                .parse("edit 1 delete:s:Start n:delete:tomorrow delete:end"));
-
-        // TEST RESTORE
-        System.out.println(Parser.parse("restore all"));
-        System.out.println(Parser.parse("restore 2"));
-        System.out.println(Parser.parse("restore"));
-        System.out.println(Parser.parse("restore b"));
-
         // TEST DISPLAY
         System.out.println(Parser.parse("display all"));
         System.out.println(Parser.parse("display 2"));

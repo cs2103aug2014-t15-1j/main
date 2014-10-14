@@ -44,7 +44,7 @@ public class Parser {
                                                            "start:", "s:",
                                                            "end:", "e:" };
     private static final String[] TASK_PARAM_LIST = { "name", "n", "due", "d",
-                                                      "start", "s", "end", "e" };
+                                                     "start", "s", "end", "e" };
     private static final String[] HELP_CMD_LIST = { TYPE_ALL, TYPE_ADD,
                                                    TYPE_EDIT, TYPE_DELETE,
                                                    TYPE_RESTORE, TYPE_SEARCH,
@@ -456,10 +456,14 @@ public class Parser {
 
     private static Command parseEdit(String[] commandItems) {
         String currField = "name";
+        String prevField = "name";
         String id;
         List<TaskParam> editFields = new ArrayList<TaskParam>();
 
         // Check Edit ID
+        // TODO: Note that currently all non-delete parameters will be thrown to
+        // "name:" if "delete" is the current field. Also, delete has no
+        // shorthand.
         if (commandItems.length > 1 && isInteger(commandItems[1])) {
             id = commandItems[1];
             editFields.add(new TaskParam("id", id));
@@ -471,13 +475,27 @@ public class Parser {
             String currWord = commandItems[i];
             String currWordLC = currWord.toLowerCase();
 
-            if (containsParamName(currWord) || containsDeleteParam(currWord)) {
+            if (isAddParamName(currWord) || currWordLC.equals("delete:")) {
+                prevField = currField;
+                currField = getParamName(currWord);
+            } else if (containsParamName(currWord) ||
+                       containsDeleteParam(currWord)) {
                 String[] wordList = currWord.split(":");
+                int endIndex;
+                if (currWord.endsWith(":")) {
+                    endIndex = wordList.length;
+                } else {
+                    endIndex = wordList.length - 1;
+                }
+
                 int lastValidField = 0;
                 // Check only until the second last word
-                for (int j = 0; j < wordList.length - 1; j++) {
-                    String toCheck = wordList[j] + ":";
+                // TODO: Check below functionality for Add. (lowercase,
+                // wordlist.length)
+                for (int j = 0; j < endIndex; j++) {
+                    String toCheck = wordList[j].toLowerCase() + ":";
                     if (isEditParamName(toCheck)) {
+                        prevField = currField;
                         currField = getParamName(toCheck);
                         lastValidField = j;
                     } else {
@@ -494,8 +512,6 @@ public class Parser {
                     }
                 }
                 getTaskParam(editFields, currField).addToField(toAddToField);
-            } else if (isAddParamName(currWord) || currWordLC.equals("delete:")) {
-                currField = getParamName(currWord);
             } else if (hasValidHashTag(currWord)) {
                 editFields.add(new TaskParam("tag", currWord));
             } else if (currField.equals("delete")) {
@@ -506,6 +522,8 @@ public class Parser {
                     if (!deleteParam.getField().contains(currWordLC)) {
                         deleteParam.addToField(currWordLC);
                     }
+                } else {
+                    getTaskParam(editFields, prevField).addToField(currWord);
                 }
             } else {
                 getTaskParam(editFields, currField).addToField(currWord);
@@ -540,9 +558,16 @@ public class Parser {
             String currWord = commandItems[i];
             if (containsParamName(currWord)) {
                 String[] wordList = currWord.split(":");
+                int endIndex;
+                if (currWord.endsWith(":")) {
+                    endIndex = wordList.length;
+                } else {
+                    endIndex = wordList.length - 1;
+                }
+
                 int lastValidField = 0;
-                // Check only until the second last word
-                for (int j = 0; j < wordList.length - 1; j++) {
+                // Check until endIndex
+                for (int j = 0; j < endIndex; j++) {
                     if (isAddParamName(wordList[j] + ":")) {
                         currField = getParamName(wordList[j] + ":");
                         lastValidField = j;
@@ -618,14 +643,16 @@ public class Parser {
     }
 
     private static boolean isEditParamName(String toCheck) {
-        return isAddParamName(toCheck) || toCheck.equals("delete:");
+        return isAddParamName(toCheck) ||
+               toCheck.toLowerCase().equals("delete:");
     }
 
     private static boolean containsParamName(String str) {
         boolean result = false;
 
         for (String name : TASK_PARAM_LIST_COLON) {
-            if (str.startsWith(name) && str.length() > name.length()) {
+            if (str.toLowerCase().startsWith(name) &&
+                str.length() > name.length()) {
                 result = true;
             }
         }
@@ -634,8 +661,9 @@ public class Parser {
     }
 
     private static boolean containsDeleteParam(String str) {
-        String delete = "delete";
-        if (str.startsWith(delete) && str.length() > delete.length()) {
+        String delete = "delete:";
+        if (str.toLowerCase().startsWith(delete) &&
+            str.length() > delete.length()) {
             return true;
         }
 
@@ -757,8 +785,7 @@ public class Parser {
             }
         }
 
-        Task newTask = new Task(param[0], param[1], param[2], param[3],
-                tags);
+        Task newTask = new Task(param[0], param[1], param[2], param[3], tags);
         newTask.setDone(isDone);
         return newTask;
     }
