@@ -63,7 +63,7 @@ public class ResultGenerator {
 	private static final String STATUS_DONE = "Done";
 
 	private static final String HASHTAG = "#";
-
+	
 	/**
 	 * This method passes a string object containing user commands to the Processor class to process.
 	 * @param userInput a string containing commands that the user entered
