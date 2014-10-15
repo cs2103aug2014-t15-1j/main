@@ -72,6 +72,7 @@ public class DateTime {
      * @return A String representation of the date and time value of this
      *         object. Format: "DD/MM/YYYY HHMM"
      */
+    @Override
     public String toString() {
         return date + time;
     }
