@@ -4,7 +4,7 @@ package Storage;
  * The DateTime class encapsulates date and time attributes in one neat little
  * package. Date and time attributes are managed as Strings.
  * 
- * Date and time formats, respectively: DD/MM/YYYY HHMM.
+ * Date and time formats, respectively: "DD/MM/YYYY" and "HHMM".
  * 
  * @author Pierce Anderson Fu
  * 
@@ -12,10 +12,10 @@ package Storage;
 
 public class DateTime {
 
-    /** Date format: DD/MM/YYYY */
+    /** Date format: "DD/MM/YYYY" */
     private String date = "";
 
-    /** Time format: HHMM */
+    /** Time format: "HHMM" */
     private String time = "";
 
     /** Default constructor. Attributes are initialized as empty Strings. */
@@ -25,24 +25,26 @@ public class DateTime {
     /**
      * Constructor.
      * 
-     * TODO remove magic numbers
+     * Passes argument to parser to verify and parse, then create a new DateTime
+     * object based on argument.
      * 
      * @param dateTime
-     *            Format: DD/MM/YYYY HHMM.
+     *            Format: "DD/MM/YYYY HHMM".
      */
     public DateTime(String dateTime) {
         String tempString[] = dateTime.split(" ");
         date = tempString[0];
         time = tempString[1];
+        // this(parser.parseDateTime(dateTime));
     }
 
     /**
      * Constructor.
      * 
      * @param date
-     *            Format: DD/MM/YYYY.
+     *            Format: "DD/MM/YYYY".
      * @param time
-     *            Format: HHMM.
+     *            Format: "HHMM".
      */
     public DateTime(String date, String time) {
         this.date = date;
@@ -65,20 +67,23 @@ public class DateTime {
     }
     
     /**
-     * TODO comment
+     * Returns a String object representing this DateTime's value.
+     * 
+     * @return A String representation of the date and time value of this
+     *         object. Format: "DD/MM/YYYY HHMM"
      */
     public String toString() {
-        return date + time; 
+        return date + time;
     }
 
-    /** @return Date, format: DD/MM/YYYY. */
+    /** @return Date, format: "DD/MM/YYYY". */
     public String getDate() {
         return date;
     }
 
     /**
      * @param date
-     *            Format: DD/MM/YYYY.
+     *            Format: "DD/MM/YYYY".
      */
     public void setDate(String date) {
         this.date = date;
@@ -89,14 +94,14 @@ public class DateTime {
         date = "";
     }
 
-    /** @return Time, format: HHMM. */
+    /** @return Time, format: "HHMM". */
     public String getTime() {
         return time;
     }
 
     /**
      * @param time
-     *            Format: HHMM.
+     *            Format: "HHMM".
      */
     public void setTime(String time) {
         this.time = time;
