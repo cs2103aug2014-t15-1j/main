@@ -16,8 +16,8 @@ public class DateTimeTest {
     @Test
     public void testDefaultConstructorHasEmptyAttributes() throws Exception {
         DateTime dT = new DateTime();
-        assertEquals("Empty date String", dT.getDate(), "");
-        assertEquals("Empty time String", dT.getTime(), "");
+        assertEquals("Empty date String", "", dT.getDate());
+        assertEquals("Empty time String", "", dT.getTime());
     }
 
     @Test
@@ -27,8 +27,8 @@ public class DateTimeTest {
         DateTime dT = new DateTime(date, time);
         date = "";
         time = "";
-        assertEquals("Stored date by value", dT.getDate(), "10/10/2014");
-        assertEquals("Stored time by value", dT.getTime(), "2359");
+        assertEquals("Stored date by value", "10/10/2014", dT.getDate());
+        assertEquals("Stored time by value", "2359", dT.getTime());
     }
 
     @Test
@@ -43,10 +43,10 @@ public class DateTimeTest {
         assertEquals("Cloned time", dT1.getTime(), dT2.getTime());
         dT1.setDate(date);
         dT1.setTime(time);
-        assertEquals("Empty date String", dT1.getDate(), "");
-        assertEquals("Empty time String", dT1.getTime(), "");
-        assertNotEquals("Cloned date by value", dT1.getDate(), dT2.getDate());
-        assertNotEquals("Cloned time by value", dT1.getTime(), dT2.getTime());
+        assertEquals("Empty date String", "", dT1.getDate());
+        assertEquals("Empty time String", "", dT1.getTime());
+        assertEquals("Cloned date by value", "10/10/2014", dT2.getDate());
+        assertEquals("Cloned time by value", "2359", dT2.getTime());
     }
 
     @Test
@@ -57,8 +57,8 @@ public class DateTimeTest {
         dT.resetDate();
         date = "";
         time = "";
-        assertEquals("Emoty date String", dT.getDate(), "");
-        assertEquals("Stored time by value", dT.getTime(), "2359");
+        assertEquals("Emoty date String", "", dT.getDate());
+        assertEquals("Stored time by value", "2359", dT.getTime());
     }
 
     @Test
@@ -69,8 +69,8 @@ public class DateTimeTest {
         dT.resetTime();
         date = "";
         time = "";
-        assertEquals("Stored date by value", dT.getDate(), "10/10/2014");
-        assertEquals("Empty time String", dT.getTime(), "");
+        assertEquals("Stored date by value", "10/10/2014", dT.getDate());
+        assertEquals("Empty time String", "", dT.getTime());
     }
 
     @Test
@@ -81,7 +81,7 @@ public class DateTimeTest {
         dT.resetDateTime();
         date = "";
         time = "";
-        assertEquals("Empty date String", dT.getDate(), "");
-        assertEquals("Empty time String", dT.getTime(), "");
+        assertEquals("Empty date String", "", dT.getDate());
+        assertEquals("Empty time String", "", dT.getTime());
     }
 }
