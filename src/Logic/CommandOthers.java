@@ -125,7 +125,7 @@ public class CommandOthers extends Command {
         List<String> taskTags = prevTask.getTags();
         
         tasks.add(prevTask);
-        return processor.getFile().editTask(prevTask.getId(), taskName, taskDue, taskStart, taskEnd, taskTags);
+        return processor.getFile().updateTaskInfo(prevTask.getId(), taskName, taskDue, taskStart, taskEnd, taskTags);
     }
 
     /**

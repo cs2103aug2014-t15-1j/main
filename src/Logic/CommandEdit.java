@@ -133,7 +133,7 @@ public class CommandEdit extends Command {
         if (taskId > 0) {
             Task existingTask = processor.getFile().getTask(taskId);
             Task oldTask = new Task(existingTask);
-            success = processor.getFile().editTask(existingTask, name, due, start, end, tags);
+            success = processor.getFile().updateTaskInfo(existingTask, name, due, start, end, tags);
             if (success) {
                 processor.getEditedTaskHistory().push(oldTask);
                 list.add(existingTask);
