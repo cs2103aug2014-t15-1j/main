@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Stack;
 import java.util.logging.FileHandler;
+import java.util.logging.Formatter;
+import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 import Parser.Parser;
@@ -86,11 +88,14 @@ public class Processor extends Observable {
 	private static void initialiseLogger() {
 	    try {
 	        FileHandler fh = new FileHandler("Processor.log");  
+	        Formatter format = new LogFormatter();
+	        fh.setFormatter(format);
 	        log.addHandler(fh);
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	    }
 	}
+	
 	/**
 	 * This methods processes the input by the user 
 	 * @param String
