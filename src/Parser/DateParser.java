@@ -37,7 +37,7 @@ public class DateParser {
         return dateFields[1];
     }
 
-    public static DateTime parseToDate(String str) {
+    public static DateTime parseToDateTime(String str) {
         if (!isValidDateTime(str)){
             throw new IllegalArgumentException("Invalid input for parseToDate");
         }
@@ -119,6 +119,7 @@ public class DateParser {
         return isValidDate(dateFields[0]);
     }
 
+    // TODO: shift over to DateTime?
     private static boolean firstDateEarlier(String first, String second) {
         int[] date1 = splitToDatesInt(first);
         int[] date2 = splitToDatesInt(second);
@@ -306,10 +307,10 @@ public class DateParser {
                            isValidDateTime("aaaaaaaaaa aaaa"));
         
         System.out.println("//parseToDate:");
-        System.out.println("23/04/2014: " + parseToDate("23/04/2014"));
-        System.out.println("2200: " + parseToDate("2200"));
-        System.out.println("23/04/2014 2200: " + parseToDate("23/04/2014 2200"));
-        System.out.println("2200 23/04/2014: " + parseToDate("2200 23/04/2014"));
+        System.out.println("23/04/2014: " + parseToDateTime("23/04/2014"));
+        System.out.println("2200: " + parseToDateTime("2200"));
+        System.out.println("23/04/2014 2200: " + parseToDateTime("23/04/2014 2200"));
+        System.out.println("2200 23/04/2014: " + parseToDateTime("2200 23/04/2014"));
         // TODO: test exception
         // System.out.println("exception: " + parseToDate("aaa"));
         
