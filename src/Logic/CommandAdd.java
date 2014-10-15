@@ -119,4 +119,23 @@ public class CommandAdd extends Command {
     private boolean isBlocked() {
         return false;
     }
+    
+    /** Undo the 'Add' Command */
+    protected Result executeComplement() {
+        Processor processor = Processor.getInstance();
+        List<Task> tasks = new ArrayList<Task>();
+        boolean success = false;
+        
+        int taskId = processor.getFile().getToDoTasks().size() - 1;
+        Task toDelete = processor.getFile().getToDoTasks().get(taskId);
+        
+        success = processor.getFile().wipeTask(toDelete);
+        
+        if (success) {
+            tasks.add(toDelete);
+        }
+        
+        return new Result(tasks, success, getType());
+    }
+    
 }

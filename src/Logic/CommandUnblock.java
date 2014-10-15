@@ -10,7 +10,13 @@ public class CommandUnblock extends Command {
     // Use get("id"); returns string
     protected String id;
 
+    private CommandBlock cmdBlock;
+    
     public CommandUnblock(List<TaskParam> content) {
+        this(content, false);
+    }
+    
+    protected CommandUnblock(List<TaskParam> content, boolean isComplement) {
         if (content.isEmpty()) {
             this.type = CommandType.ERROR;
             this.error = "No arguments for unblock";
@@ -28,9 +34,17 @@ public class CommandUnblock extends Command {
                         this.error = "Unblock constructor parameter error";
                 }
             }
+            if (!isComplement) {
+                initialiseComplementCommand(content);
+            }
         }
     }
 
+    
+    private void initialiseComplementCommand(List<TaskParam> content) {
+        this.cmdBlock = new CommandBlock(content, true);
+    }
+    
     // TODO: Change to empty get()?
     public String get(String field) {
         switch (field) {
@@ -40,6 +54,20 @@ public class CommandUnblock extends Command {
             default:
                 return null;
         }
+    }
+
+    /**
+     * @return the cmdBlock
+     */
+    public CommandBlock getCmdBlock() {
+        return cmdBlock;
+    }
+
+    /**
+     * @param cmdBlock the cmdBlock to set
+     */
+    public void setCmdBlock(CommandBlock cmdBlock) {
+        this.cmdBlock = cmdBlock;
     }
 
     public String toString() {
@@ -52,5 +80,9 @@ public class CommandUnblock extends Command {
     protected Result execute(boolean userInput) {
         Processor.getLogger().info("Executing 'Unblock' Command...");
         return new Result(null, false, CommandType.ERROR);
+    }
+    
+    protected Result executeComplement() {
+        return this.cmdBlock.execute(false);
     }
 }

@@ -6,8 +6,6 @@ import java.util.List;
 import Parser.TaskParam;
 import Storage.Task;
 
-//TODO: ADD DATES
-
 public class CommandDone extends Command {
 
     // Done types [get("rangeType"); returns "all" | "id" | "dates"]
@@ -16,10 +14,14 @@ public class CommandDone extends Command {
     // Done data [get("id"), get("start"), get("end"); returns string]
     // If only 1 date, start = end;
     private String id;
-    private String start;
-    private String end;
 
+    private CommandTodo cmdTodo;
+    
     public CommandDone(List<TaskParam> content) {
+        this(content, false);
+    }
+    
+    protected CommandDone(List<TaskParam> content, boolean isComplement) {
         if (content.isEmpty()) {
             this.type = CommandType.ERROR;
             this.error = "No arguments for done";
@@ -35,24 +37,20 @@ public class CommandDone extends Command {
                     case "id":
                         this.id = param.getField();
                         break;
-                        
-                    case "start":
-                        this.start = param.getField();
-                        // Enforce start = end if one is blank
-                        break;
-                        
-                    case "end":
-                        this.end = param.getField();
-                        break;
 
                     default:
                         this.type = CommandType.ERROR;
                         this.error = "Todo constructor parameter error";
                 }
             }
+            initialiseComplementCommand(content);
         }
     }
 
+    private void initialiseComplementCommand(List<TaskParam> content) {
+        this.cmdTodo = new CommandTodo(content, true);
+    }
+    
     public String get(String field) {
         switch (field) {
             case "rangeType":
@@ -70,8 +68,6 @@ public class CommandDone extends Command {
         String result = "\n[[ CMD-DONE: ]]";
         result = result.concat("\nrangeType: " + rangeType);
         result = result.concat("\nid: " + id);
-        result = result.concat("\nstart: " + start);
-        result = result.concat("\nend: " + end);
 
         return result;
     }
@@ -96,18 +92,12 @@ public class CommandDone extends Command {
         return new Result(list, success, getType());
     }
     
+    /**
+     * Executes "todo" operation
+     * Marks a 'done' task as 'todo'
+     * @return Result
+     */
     protected Result executeComplement() {
-        Processor.getLogger().info("Executing 'Todo' Command...");
-        Processor processor = Processor.getInstance();
-        List<Task> list = new ArrayList<Task>();
-        boolean success = false;
-        
-        int taskId = Integer.parseInt(id);
-        Task existingTask = processor.getFile().getTask(taskId);
-        success = processor.getFile().toDoTask(existingTask);
-        if (success) {
-            list.add(existingTask);
-        }
-        return new Result(list, success, getType());
+        return this.cmdTodo.execute(false);
     }
 }

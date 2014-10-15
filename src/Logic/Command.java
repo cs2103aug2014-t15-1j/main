@@ -17,17 +17,14 @@ public abstract class Command {
     }
     
     public String get(String str) {
-        // Stub
         return null;
     }
     
     public List<String> getTags() {
-        // Stub
         return null;
     }
     
     public List<String> getKeywords() {
-        // Stub
         return null;
     }
     

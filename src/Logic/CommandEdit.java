@@ -118,28 +118,56 @@ public class CommandEdit extends Command {
      * @return Result
      */
     protected Result execute(boolean userInput) {
-        Processor processor = Processor.getInstance();
         Processor.getLogger().info("Executing 'Edit' Command...");
+        Processor processor = Processor.getInstance();
         List<Task> list = new ArrayList<Task>();
         boolean success = false;
         
-        int taskId = 0;
-        try {
-            taskId = Integer.parseInt(id);
-        } catch (Exception e) {
-            Processor.getLogger().warning("Invalid Task Id!");
-        }
+        int taskId = getTaskId();
         
         if (taskId > 0) {
             Task existingTask = processor.getFile().getTask(taskId);
             Task oldTask = new Task(existingTask);
             success = processor.getFile().updateTaskInfo(existingTask, name, due, start, end, tags);
             if (success) {
-                processor.getEditedTaskHistory().push(oldTask);
-                list.add(existingTask);
+                performUpdate(list, oldTask, existingTask);
             }
         }
         return new Result(list, success, getType());
     }
-
+    
+    private int getTaskId() {
+        int taskId = 0;
+        try {
+            taskId = Integer.parseInt(id);
+        } catch (Exception e) {
+            Processor.getLogger().warning("Invalid Task Id!");
+        }
+        return taskId;
+    }
+    
+    private void performUpdate(List<Task> list, Task oldTask, Task existingTask) {
+        Processor processor = Processor.getInstance();
+        processor.getEditedTaskHistory().push(oldTask);
+        list.add(existingTask);
+    }
+    
+    /** Undo the 'Edit' Command */
+    protected Result executeComplement() {
+        Processor processor = Processor.getInstance();
+        boolean success = false;
+        List<Task> tasks = new ArrayList<Task>();
+        
+        Task prevTask = processor.getEditedTaskHistory().pop();
+        
+        String taskName = prevTask.getName();
+        String taskDue = prevTask.getDue();
+        String taskStart = prevTask.getStart();
+        String taskEnd = prevTask.getEnd();
+        List<String> taskTags = prevTask.getTags();
+        
+        tasks.add(prevTask);
+        success = processor.getFile().updateTaskInfo(prevTask.getId(), taskName, taskDue, taskStart, taskEnd, taskTags);
+        return new Result(tasks, success, getType());
+    }
 }

@@ -72,21 +72,12 @@ public class CommandOthers extends Command {
     protected Result executeUndo() {
         Processor.getLogger().info("Executing 'Undo' Command...");
         Processor processor = Processor.getInstance();
-        boolean success = false;
         Result r = new Result(null, false, CommandType.UNDO);
         if (!processor.getBackwardCommandHistory().isEmpty()) {
             Command backwardCommand = processor.getBackwardCommandHistory().pop();
             switch(backwardCommand.getType()) {
                 case ADD:
-                    List<Task> taskList = new ArrayList<Task>();
-                    success = undoAdd(backwardCommand, taskList);
-                    r = new Result(taskList, success, CommandType.UNDO);
-                    break;
                 case EDIT:
-                    List<Task> taskList_ = new ArrayList<Task>();
-                    success = undoEdit(backwardCommand, taskList_);
-                    r = new Result(taskList_, success, CommandType.UNDO);
-                    break;
                 case DELETE:
                 case RESTORE:
                 case BLOCK:
@@ -104,36 +95,11 @@ public class CommandOthers extends Command {
         return r;
     }
 
-    /** Undo the 'Add' Command */
-    private boolean undoAdd(Command cmd, List<Task> tasks) {
-        Processor processor = Processor.getInstance();
-        int taskId = processor.getFile().getToDoTasks().size() - 1;
-        Task toDelete = processor.getFile().getToDoTasks().get(taskId);
-        tasks.add(toDelete);
-        return processor.getFile().wipeTask(toDelete);
-    }
-    
-    /** Undo the 'Edit' Command */
-    private boolean undoEdit(Command cmd, List<Task> tasks) {
-        Processor processor = Processor.getInstance();
-        Task prevTask = processor.getEditedTaskHistory().pop();
-        
-        String taskName = prevTask.getName();
-        String taskDue = prevTask.getDue();
-        String taskStart = prevTask.getStart();
-        String taskEnd = prevTask.getEnd();
-        List<String> taskTags = prevTask.getTags();
-        
-        tasks.add(prevTask);
-        return processor.getFile().updateTaskInfo(prevTask.getId(), taskName, taskDue, taskStart, taskEnd, taskTags);
-    }
-
     /**
      * Executes "redo" operation
      * Applicable for 'Add', 'Edit', 'Delete', 'Restore', 'Block', 'Unblock', 'Done', 'Todo'
      * @return true/false on whether operation is performed
      */
-    
     protected Result executeRedo() {
         Processor processor = Processor.getInstance();
         if (!processor.getForwardCommandHistory().isEmpty()) {

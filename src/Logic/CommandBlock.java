@@ -11,7 +11,13 @@ public class CommandBlock extends Command {
     private String start;
     private String end;
 
+    private CommandUnblock cmdUnblock;
+    
     public CommandBlock(List<TaskParam> content) {
+        this(content, false);
+    }
+    
+    protected CommandBlock(List<TaskParam> content, boolean isComplement) {
         if (content.isEmpty()) {
             this.type = CommandType.ERROR;
             this.error = "No arguments for block";
@@ -33,9 +39,16 @@ public class CommandBlock extends Command {
                         this.error = "Block constructor parameter error";
                 }
             }
+            if (!isComplement) {
+                initialiseComplementCommand(content);
+            }
         }
     }
 
+    private void initialiseComplementCommand(List<TaskParam> content) {
+        this.cmdUnblock = new CommandUnblock(content, true);
+    }
+    
     public String get(String field) {
         switch (field) {
             case "start":
@@ -67,5 +80,8 @@ public class CommandBlock extends Command {
         Processor.getLogger().info("Executing 'Block' Command...");
         return new Result(null, false, CommandType.ERROR);
     }
-
+    
+    protected Result executeComplement() {
+        return this.cmdUnblock.execute(false);
+    }
 }

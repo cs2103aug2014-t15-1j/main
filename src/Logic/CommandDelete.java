@@ -24,7 +24,13 @@ public class CommandDelete extends Command {
     // Delete type data [get("id")]
     private String id;
 
+    private CommandRestore cmdRestore;
+    
     public CommandDelete(List<TaskParam> content) {
+        this(content, false);
+    }
+    
+    protected CommandDelete(List<TaskParam> content, boolean isComplement) {
         if (content.isEmpty()) {
             this.type = CommandType.ERROR;
             this.error = "No arguments for delete";
@@ -46,9 +52,16 @@ public class CommandDelete extends Command {
                         this.error = "Delete constructor parameter error";
                 }
             }
+            if (!isComplement) {
+                initialiseComplementCommand(content);
+            }
         }
     }
 
+    private void initialiseComplementCommand(List<TaskParam> content) {
+        this.cmdRestore = new CommandRestore(content, true);
+    }
+    
     public String get(String field) {
         switch (field) {
             case "rangeType":
@@ -132,65 +145,13 @@ public class CommandDelete extends Command {
         return true;
     }
 
-    protected Result executeComplement() {
-        return executeComplement(false);
-    }
-    
     /**
      * Executes "Restore" operation
      * Restores a deleted Task
      * Allows restore <id>, restore search
      * @return true/false on whether operation is performed
      */
-    protected Result executeComplement(boolean userInput) {
-        Processor.getLogger().info("Executing 'Restore' Command...");
-        Processor processor = Processor.getInstance();
-        List<Task> list = new ArrayList<Task>();
-        boolean success = false;
-        switch (rangeType) {
-            case "id":
-                success = restoreUsingId(list);
-                break;
-            case "search":
-                if (userInput) {
-                    processor.getBackwardSearchListHistory().push(processor.getLastSearch());
-                }
-                success = restoreUsingSearch(list);
-                break;
-            default:
-                success = false;
-        }
-        return new Result(list, success, getType());
-    }
-
-    /** Restores a deleted Task using Id */
-    private boolean restoreUsingId(List<Task> list) {
-        Processor processor = Processor.getInstance();
-        int taskId = Integer.parseInt(id);
-        Task task = processor.getFile().getTask(taskId);
-        boolean success = processor.getFile().restoreTask(task);
-        if (success) {
-            list.add(task);
-        }
-        return success;
-    }
-    
-    /** Restores all deleted Tasks due to 'delete search' */
-    private boolean restoreUsingSearch(List<Task> list) {
-        try {
-            Processor processor = Processor.getInstance();
-            List<Task> restoreList = processor.getBackwardSearchListHistory().pop();
-            for (Task t : restoreList) {
-                boolean success = processor.getFile().restoreTask(t);
-                if (success) {
-                    list.add(t);
-                }
-            }
-            processor.getForwardSearchListHistory().push(restoreList);
-        } catch (NullPointerException e) {
-            Processor.getLogger().severe("backwardSearchListHistory is empty!");
-            return false;
-        }
-        return true;
+    protected Result executeComplement() {
+        return cmdRestore.execute(false);
     }
 }
