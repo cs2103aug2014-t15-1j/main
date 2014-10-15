@@ -74,7 +74,7 @@ public class DateTime {
      */
     @Override
     public String toString() {
-        return date + time;
+        return date + " " + time;
     }
 
     /** @return Date, format: "DD/MM/YYYY". */

@@ -325,4 +325,40 @@ public class TestParser {
         assertEquals("Help: mixed caps (add)", result4, cmd4);
 
     }
+    
+    @Test
+    public void testCmdDisplay() {
+        // TEST DISPLAY
+        System.out.println(Parser.parse("display all"));
+        System.out.println(Parser.parse("display 2"));
+        System.out.println(Parser.parse("display block"));
+        System.out.println(Parser.parse("display"));
+        System.out.println(Parser.parse("display b"));
+        
+        // Invalid help parameter
+        String result0 = "\n[[ CMD-HELP: ]]" + "\nfield: invalid";
+        String cmd0 = Parser.parse("help me").toString();
+        assertEquals("Help: invalid", result0, cmd0);
+
+        // Empty help
+        String result1 = "\n[[ CMD-HELP: ]]" + "\nfield: null";
+        String cmd1 = Parser.parse("help").toString();
+        assertEquals("Help: empty", result1, cmd1);
+
+        // Help All
+        String result2 = "\n[[ CMD-HELP: ]]" + "\nfield: all";
+        String cmd2 = Parser.parse("help all").toString();
+        assertEquals("Help: all", result2, cmd2);
+
+        // Help with command name
+        String result3 = "\n[[ CMD-HELP: ]]" + "\nfield: add";
+        String cmd3 = Parser.parse("help add").toString();
+        assertEquals("Help: command name (add)", result3, cmd3);
+
+        // Help with mixed capitals
+        String result4 = "\n[[ CMD-HELP: ]]" + "\nfield: add";
+        String cmd4 = Parser.parse("hELp aDd").toString();
+        assertEquals("Help: mixed caps (add)", result4, cmd4);
+
+    }
 }

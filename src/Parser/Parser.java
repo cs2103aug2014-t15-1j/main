@@ -20,7 +20,7 @@ import Logic.CommandUnblock;
 import Storage.Task;
 
 public class Parser {
-
+    
     private static final String TYPE_ALL = "all";
     private static final String TYPE_HELP = "help";
     private static final String TYPE_ADD = "add";
@@ -340,7 +340,7 @@ public class Parser {
         } catch (ArrayIndexOutOfBoundsException e) {
             displayFields.add(new TaskParam("rangeType", "all"));
         }
-
+        
         return new CommandDisplay(displayFields);
     }
 
@@ -670,7 +670,7 @@ public class Parser {
         return false;
     }
 
-    private static boolean isInteger(String str) {
+    public static boolean isInteger(String str) {
         try {
             Integer.parseInt(str);
             return true;
@@ -752,6 +752,8 @@ public class Parser {
     private static boolean hasValidHashTag(String word) {
         return word.startsWith("#") && (word.length() > 1);
     }
+    // ========== DATE/TIME BASED METHODS ==========//
+    
 
     // ========== TASK PARSING METHODS ==========//
     public static Task parseToTask(String text) {
