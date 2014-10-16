@@ -191,7 +191,11 @@ public class SetUp {
             @Override
             public String getText(Object element) {
                 Task task = (Task) element;
-                return task.getDue().toString();
+                String Due =  task.getDue().toString();
+                if(Due == null){
+                    return "<empty>";
+                }
+                return Due;
             }
         });
 
@@ -200,7 +204,12 @@ public class SetUp {
             @Override
             public String getText(Object element) {
                 Task task = (Task) element;
-                return task.getStart().toString();
+                String Start = task.getStart().toString();
+                if(Start == null){
+                    return "<empty>";
+                }
+                
+                return Start;
             }
         });
 
@@ -209,7 +218,11 @@ public class SetUp {
             @Override
             public String getText(Object element) {
                 Task task = (Task) element;
-                return task.getEnd().toString();
+                String End = task.getEnd().toString();
+                if(End == null){
+                    return "<empty>";
+                }
+                return End;
             }
         });
 
