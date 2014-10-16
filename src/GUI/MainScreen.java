@@ -3,6 +3,7 @@ package GUI;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
@@ -21,11 +22,7 @@ public class MainScreen {
 	// use mono-space font
 	// one line display
 
-	// Gets the new line character used by the user's system
-	private static final String LINE_SEPARATOR = System
-			.getProperty("line.separator");
-
-	private static String CODE_EXIT = " exit";
+	private static String CODE_EXIT = "exit";
 
 	/**
 	 * The entire HayStack program runs from this function. 
@@ -36,8 +33,8 @@ public class MainScreen {
 		Display display = new Display();
 		Shell shell = new Shell(display);
 
-		SetUp setUpScreen = new SetUp(display, shell);
-
+		SetUp setUpScreen = SetUp.getInstance(shell);
+		
 		readUserInput(setUpScreen);
 
 		shell.pack();
@@ -47,7 +44,7 @@ public class MainScreen {
 			if (!display.readAndDispatch())
 				display.sleep();
 		}
-		// font.dispose();
+		
 		display.dispose();
 	}
 
@@ -55,25 +52,40 @@ public class MainScreen {
 	    
 	    final SetUp screen = setUpScreen;
 		final Text commandLine = screen.getCommandLine();
+		
+		commandLine.addListener(SWT.KeyDown, new Listener() {
+            public void handleEvent(Event event) {
+                switch (event.type) {
+                    case SWT.KeyDown :
+                        commandLine.setText("");
+                        commandLine.removeListener(SWT.KeyDown, this);
+                        break;
+                }
+            }
 
+        });
+
+		
 		commandLine.addListener(SWT.DefaultSelection, new Listener() {
 			public void handleEvent(Event event) {
 
-				final Text displayScreen;
+				final Label feedback;
 				String input = commandLine.getText();
 				String output = "";
-				try {
+				//try
 					output = ResultGenerator.sendInput(input);
-					displayScreen = screen.getDisplayScreen();
+					feedback = screen.getFeedBack();
+					//   output = commandLine.getText();
 					if (!output.equals(CODE_EXIT)) {
-	                       displayScreen.append(LINE_SEPARATOR + output);
+	                       feedback.setText(output);
 	                        commandLine.setText("");
 					} else {
 					    exitProgram();
 					}
-				} catch ( Exception error) {
-					error.getMessage();
-				}
+				
+			//	catch (Exception error) {
+				//	error.getMessage();
+				//
 			}
 		});
 	}
