@@ -76,54 +76,6 @@ public class DateParser {
     }
 
     /**
-     * Checks and then parses the input <code>String</code> into a
-     * <code>DateTime</code> object. The date/time must be in one of four
-     * formats (below). An <code>IllegalArgumentException</code> will be thrown
-     * if the input is not one of the following formats, or if the date/time
-     * values are invalid (e.g. 40/01/2014 2401).
-     * <ol>
-     * Formats accepted:
-     * <li>Date only: dd/MM/yyyy
-     * <li>Time only: HHmm
-     * <li>Date and Time: dd/MM/yyyy HHmm
-     * <li>Time and Date: HHmm dd/MM/yyyy
-     * </ol>
-     * 
-     * @return <code>DateTime</code> object containing date in
-     *         <code>dd/MM/yyyy</code> and time in <code>HHmm</code>
-     */
-    public static DateTime parseToDateTime(String str) {
-        if (!isValidDateTime(str)) {
-            throw new IllegalArgumentException("Invalid input for parseToDate");
-        }
-
-        switch (getDateType(str)) {
-            case 1:
-                // Date only
-                return new DateTime(str, "");
-
-            case 2:
-                // Time only
-                return new DateTime(getCurrDateStr(), str);
-
-            case 3:
-                // <Date> then <Time>
-                String[] dateFields1 = str.split(" ");
-                return new DateTime(dateFields1[0], dateFields1[1]);
-
-            case 4:
-                // <Time> then <Date>
-                // TODO: some safety checks for array
-                String[] dateFields2 = str.split(" ");
-                return new DateTime(dateFields2[1], dateFields2[0]);
-        }
-
-        // Code should not reach this point
-        assert false : "parseToDateTime() failed to catch invalid date type";
-        return null;
-    }
-
-    /**
      * Checks if the input <code>String</code> can be parsed into a
      * <code>DateTime</code> object. The date/time must be in one of four
      * formats (below).
@@ -137,14 +89,14 @@ public class DateParser {
      */
     public static boolean isValidDateTime(String str) {
         String[] strFields = str.split(" ");
-
+    
         boolean validNumOfTerms = strFields.length > 0 && strFields.length <= 2;
         boolean containsDate = false;
         boolean containsTime = false;
         boolean containsMultipleDates = false;
         boolean containsMultipleTimes = false;
         boolean containsNonDateTime = false;
-
+    
         for (int i = 0; i < strFields.length; i++) {
             if (isValidDate(strFields[i])) {
                 if (!containsDate) {
@@ -162,10 +114,63 @@ public class DateParser {
                 containsNonDateTime = true;
             }
         }
-
+    
         return validNumOfTerms && (containsDate || containsTime) &&
                !(containsMultipleDates || containsMultipleTimes) &&
                !containsNonDateTime;
+    }
+
+    /**
+     * Checks and then parses the input <code>String</code> into a
+     * <code>DateTime</code> object. The date/time must be in one of four
+     * formats (below). An <code>IllegalArgumentException</code> will be thrown
+     * if the input is not one of the following formats, or if the date/time
+     * values are invalid (e.g. 40/01/2014 2401).
+     * <ol>
+     * Formats accepted:
+     * <li>Date only: dd/MM/yyyy
+     * <li>Time only: HHmm
+     * <li>Date and Time: dd/MM/yyyy HHmm
+     * <li>Time and Date: HHmm dd/MM/yyyy
+     * </ol>
+     * 
+     * @return <code>DateTime</code> object containing date in
+     *         <code>dd/MM/yyyy</code> and time in <code>HHmm</code>
+     */
+    public static DateTime parseToDateTime(String str) {
+        if (str==null || str.isEmpty()) {
+            return new DateTime();
+        }
+        
+        if (!isValidDateTime(str)) {
+            throw new IllegalArgumentException("Invalid input for parseToDate");
+        }
+
+        switch (getDateType(str)) {
+            case 1:
+                // Date only
+                return new DateTime(str, "");
+
+            case 2:
+                // Time only
+                return new DateTime(getCurrDateStr(), str);
+
+            case 3:
+                // <Date> then <Time>
+                String[] dateFields1 = str.split(" ");
+                assert (dateFields1.length == 2);
+                return new DateTime(dateFields1[0], dateFields1[1]);
+
+            case 4:
+                // <Time> then <Date>
+                String[] dateFields2 = str.split(" ");
+                assert (dateFields2.length == 2);
+                return new DateTime(dateFields2[1], dateFields2[0]);
+        }
+
+        // Code should not reach this point
+        assert false : "parseToDateTime() failed to catch invalid date type";
+        return null;
     }
 
     /**

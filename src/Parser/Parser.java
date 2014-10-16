@@ -17,10 +17,11 @@ import Logic.CommandRestore;
 import Logic.CommandSearch;
 import Logic.CommandTodo;
 import Logic.CommandUnblock;
+import Storage.DateTime;
 import Storage.Task;
 
 public class Parser {
-    
+
     private static final String TYPE_ALL = "all";
     private static final String TYPE_HELP = "help";
     private static final String TYPE_ADD = "add";
@@ -340,7 +341,7 @@ public class Parser {
         } catch (ArrayIndexOutOfBoundsException e) {
             displayFields.add(new TaskParam("rangeType", "all"));
         }
-        
+
         return new CommandDisplay(displayFields);
     }
 
@@ -752,8 +753,8 @@ public class Parser {
     private static boolean hasValidHashTag(String word) {
         return word.startsWith("#") && (word.length() > 1);
     }
+
     // ========== DATE/TIME BASED METHODS ==========//
-    
 
     // ========== TASK PARSING METHODS ==========//
     public static Task parseToTask(String text) {
@@ -779,7 +780,9 @@ public class Parser {
                 }
             } else {
                 int pIndex = getParamIndex(currField);
-                if (param[pIndex].isEmpty()) {
+                // NOTE: currWord.isEmpty() is to make sure the parser does not add " " for each empty string
+                // TODO: check other cases for this.
+                if (param[pIndex].isEmpty() || currWord.isEmpty()) {
                     param[pIndex] = param[pIndex].concat(currWord);
                 } else {
                     param[pIndex] = param[pIndex].concat(" " + currWord);
@@ -787,9 +790,30 @@ public class Parser {
             }
         }
 
-        Task newTask = new Task(param[0], DateParser.parseToDateTime(param[1]), 
-                                DateParser.parseToDateTime(param[2]), 
-                                DateParser.parseToDateTime(param[3]), tags);
+        // Assign proper names and check if date values are null or invalid
+        DateTime[] dateTimes = new DateTime[3];
+
+        for (int i = 1; i <= 3; i++) {
+            try {
+                if (param[i].equals("null")) {
+                    dateTimes[i - 1] = null;
+                } else {
+                    dateTimes[i - 1] = DateParser.parseToDateTime(param[i]);
+                }
+            } catch (IllegalArgumentException e) {
+                // Will be reached if user keyed in invalid date
+                dateTimes[i - 1] = null;
+                System.out.println("Invalid date input detected!");
+            }
+        }
+
+        // TODO: REORGANISE
+        String name = param[0];
+        DateTime due = dateTimes[0];
+        DateTime start = dateTimes[1];
+        DateTime end = dateTimes[2];
+
+        Task newTask = new Task(name, due, start, end, tags);
         newTask.setDone(isDone);
         return newTask;
     }
