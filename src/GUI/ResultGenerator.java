@@ -224,11 +224,11 @@ public class ResultGenerator {
 	}
 
 	private static String addOtherParameters(Task task, String message) {
-		String due = task.getDue();
+		String due = task.getDue().toString();
 		message = addToMessage(message, PARA_STRING_DUE, due);
-		String start = task.getStart();
+		String start = task.getStart().toString();
 		message = addToMessage(message, PARA_STRING_START, start);
-		String end = task.getEnd();
+		String end = task.getEnd().toString();
 		message = addToMessage(message, PARA_STRING_END, end);
 		List<String> tags = task.getTags();
 		message = addTags(message, tags);

@@ -3,15 +3,17 @@ package Logic;
 import java.util.List;
 import java.util.ArrayList;
 
+import Parser.DateParser;
 import Parser.TaskParam;
+import Storage.DateTime;
 import Storage.Task;
 
 public class CommandAdd extends Command {
     
     private String name;
-    private String due;
-    private String start;
-    private String end;
+    private DateTime due;
+    private DateTime start;
+    private DateTime end;
     
     private List<String> tags = new ArrayList<String>();
     
@@ -32,17 +34,17 @@ public class CommandAdd extends Command {
                     
                 case "due":
                 case "d":
-                    this.due = param.getField();
+                    this.due = DateParser.parseToDateTime(param.getField());
                     break;
                     
                 case "start":
                 case "s":
-                    this.start = param.getField();
+                    this.start = DateParser.parseToDateTime(param.getField());
                     break;
                     
                 case "end":
                 case "e":
-                    this.end = param.getField();
+                    this.end = DateParser.parseToDateTime(param.getField());
                     break;
                     
                 case "tag":
@@ -62,13 +64,13 @@ public class CommandAdd extends Command {
                 return this.name;
             
             case PARAM_DUE:
-                return this.due;
+                return this.due.toString();
             
             case PARAM_START:
-                return this.start;
+                return this.start.toString();
             
             case PARAM_END:
-                return this.end;
+                return this.end.toString();
                 
             default:
                 System.out.println("Add: Get's got a problem!");

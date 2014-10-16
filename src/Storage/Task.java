@@ -28,16 +28,13 @@ public class Task {
     private String name = "";
 
     /** Due date and time, format: DD/MM/YYYY HHMM. */
-    private String due = ""; // TODO Change to DateTime type
-    // private DateTime due = new DateTime();
+    private DateTime due = new DateTime();
 
     /** Scheduled start date and time, format: DD/MM/YYYY HHMM. */
-    private String start = ""; // TODO Change to DateTime type
-    // private DateTime start = new DateTime();
+    private DateTime start = new DateTime();
 
     /** Scheduled end date and time, format: DD/MM/YYYY HHMM. */
-    private String end = ""; // TODO Change to DateTime type
-    // private DateTime end = new DateTime();
+    private DateTime end = new DateTime();
 
     /** Each stored tag contains a # before the word. */
     private List<String> tags = new ArrayList<String>();
@@ -64,11 +61,8 @@ public class Task {
      * @param tags
      *            To aid searching and categorizing. Each tag contains #.
      */
-    public Task(String name, String due, String start, String end,
+    public Task(String name, DateTime due, DateTime start, DateTime end,
             List<String> tags) {
-        // TODO Change to DateTime type
-        // public Task(String name, DateTime due, DateTime start,
-        // DateTime end, List<String> tags) {
         this.ID = newId;
         newId++;
         this.name = name;
@@ -168,61 +162,43 @@ public class Task {
         name = "";
     }
 
-    public String getDue() {
-        // TODO Change to DateTime type
-        // public DateTime getDue() {
+    public DateTime getDue() {
         return due;
     }
 
-    public void setDue(String due) {
-        // TODO Change to DateTime type
-        // public void setDue(DateTime due) {
+    public void setDue(DateTime due) {
         this.due = due;
     }
 
     /** Resets due date and time to an empty String. */
     public void resetDue() {
-        due = "";
-        // TODO Change to DateTime type
-        // due.resetDateTime();
+        due.resetDateTime();
     }
 
-    public String getStart() {
-        // TODO Change to DateTime type
-        // public DateTime getStart() {
+    public DateTime getStart() {
         return start;
     }
 
-    public void setStart(String start) {
-        // TODO Change to DateTime type
-        // public void setStart(DateTime start) {
+    public void setStart(DateTime start) {
         this.start = start;
     }
 
     /** Resets scheduled start date and time to an empty String. */
     public void resetStart() {
-        start = "";
-        // TODO Change to DateTime type
-        // start.resetDateTime();
+        start.resetDateTime();
     }
 
-    public String getEnd() {
-        // TODO Change to DateTime type
-        // public DateTime getEnd() {
+    public DateTime getEnd() {
         return end;
     }
 
-    public void setEnd(String end) {
-        // TODO Change to DateTime type
-        // public void setEnd(DateTime end) {
+    public void setEnd(DateTime end) {
         this.end = end;
     }
 
     /** Resets scheduled end date and time to an empty String. */
     public void resetEnd() {
-        end = "";
-        // TODO Change to DateTime type
-        // end.resetDateTime();
+        end.resetDateTime();
     }
 
     public List<String> getTags() {
