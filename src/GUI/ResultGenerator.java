@@ -1,6 +1,5 @@
 package GUI;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import Logic.CommandType;
@@ -17,6 +16,7 @@ import Storage.Task;
 public class ResultGenerator {
 
 	private static final int FIRST_ELEMENT = 0;
+	private static final String FORMAT_DOT_AND_SPACE = ". ";
 	private static final String SUCCESSFUL_ADD = "Added %1$s";
 	private static final String SUCCESSFUL_EDIT = "Edited %1$s";
 	private static final String SUCCESSFUL_SEARCH = "Found %1$s result(s):";
@@ -41,17 +41,34 @@ public class ResultGenerator {
 	private static final String CODE_EXIT = " exit";
 	private static final String UNSUCCESSFUL_SEARCH_MESSAGE = "We could not find any results :( Try using different words?";
 	private static final String UNSUCCESSFUL_COMMAND_MESSAGE = "'%1$s'was not recognised.";
+	private static final String UNSUCCESSFUL_DISPLAY_NO_TASKS = "You are a free man! You do not have any tasks.";
 	private static final String EMPTY_MESSAGE = "That was read as empty. Try again.";
+	private static final String ERROR_DISPLAY = "Unable to display.";
 	private static final String ERROR_COMMAND_MESSAGE = "Houston, we have a problem";
 
+	private static final String PARA_STRING_ID = "Task ID: ";
+	private static final String PARA_STRING_NAME = "Name: ";
+	private static final String PARA_STRING_DUE = "Due: ";
+	private static final String PARA_STRING_START = "Start: ";
+	private static final String PARA_STRING_END = "End: ";
+	private static final String PARA_STRING_TAG = "Tag: ";
+	private static final String PARA_STRING_STATUS = "Status: ";
+	private static final String PARA_STRING_VALUE_EMPTY = "<empty>";
+
+	private static final String STATUS_DELETED = "Deleted";
+	private static final String STATUS_TODO = "To Do";
+	private static final String STATUS_DONE = "Done";
+
+	private static final String HASHTAG = "#";
+	
 	/**
 	 * This method passes a string object containing user commands to the Processor class to process.
 	 * @param userInput a string containing commands that the user entered
 	 * @return a String object containing success messages if the command was carried out or error messages if the command failed
 	 * @throws Exception 
 	 */
-	public static String sendInput(String userInput){
-	    
+	public static String sendInput(String userInput) throws Exception {
+
 		if (isEmpty(userInput)) {
 			return EMPTY_MESSAGE;
 		}
@@ -97,35 +114,26 @@ public class ResultGenerator {
 		    updateInterface(tasks);
 		    return SUCCESSFUL_DELETE;
 		case EDIT:
-		    assert(!tasks.isEmpty());
-		    updateInterface(tasks);
-		    return singleLineSuccessMessage(SUCCESSFUL_EDIT, tasks);
+			return singleLineSuccessMessage(SUCCESSFUL_EDIT, tasks);
 		case DISPLAY:
-		    assert(!tasks.isEmpty());
-		    updateInterface(tasks);
 			return "";
 		case SEARCH:
-		    assert(!tasks.isEmpty());
-		    updateInterface(tasks);
 			return successfulSearchMessage(tasks);
 		case TODO:
 			return singleLineSuccessMessage(SUCCESSFUL_TODO, tasks);
 		case DONE:
 			return singleLineSuccessMessage(SUCCESSFUL_DONE, tasks);
 		case RESTORE:
-		    assert(!tasks.isEmpty());
-		    updateInterface(tasks);
 			return SUCCESSFUL_RESTORE;
 		case BLOCK:
 			return SUCCESSFUL_BLOCK;
 		case UNBLOCK:
 			return SUCCESSFUL_UNBLOCK;
-		
 		case UNDO:
 		    
 			return SUCCESSFUL_UNDO;
 		case REDO:
-		    
+
 			return SUCCESSFUL_REDO;
 		case EXIT:
 			// to be changed
@@ -135,8 +143,8 @@ public class ResultGenerator {
 		}
 	}
 
-	// Updates relavant UIs when a SCRUD, undo + redo task is performed
 	private static void updateInterface(List<Task> tasks) {
+        // TODO Auto-generated method stub
         new UpdateUI(tasks);
     }
 
@@ -152,7 +160,6 @@ public class ResultGenerator {
 
 	private static String successfulSearchMessage(List<Task> tasks) {
 		int numOfSearchResults = tasks.size();
-	
 		if (numOfSearchResults == 0) {
 			return UNSUCCESSFUL_SEARCH_MESSAGE;
 		}
@@ -160,4 +167,7 @@ public class ResultGenerator {
 				numOfSearchResults);
 		return successMessage;
 	}
+
+
+
 }

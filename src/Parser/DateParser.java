@@ -18,7 +18,8 @@ public class DateParser {
 
     public static DateTime getCurrDateTime() {
         Calendar cal = Calendar.getInstance();
-        return new DateTime(DATE_FORMAT.format(cal.getTime()));
+        String[] date = DATE_FORMAT.format(cal.getTime()).split(" ");
+        return new DateTime(date[0], date[1]);
     }
 
     public static String getCurrDateTimeStr() {
@@ -48,11 +49,12 @@ public class DateParser {
             case 2:
                 return new DateTime(getCurrDateStr(), str);
             case 3:
-                return new DateTime(str);
+                String[] dateFields1 = str.split(" ");
+                return new DateTime(dateFields1[0], dateFields1[1]);
             case 4:
                 //TODO: some safety checks
-                String[] dateFields = str.split(" ");
-                return new DateTime(dateFields[1], dateFields[0]);
+                String[] dateFields2 = str.split(" ");
+                return new DateTime(dateFields2[1], dateFields2[0]);
         }
 
         return null;

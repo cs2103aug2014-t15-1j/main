@@ -787,7 +787,9 @@ public class Parser {
             }
         }
 
-        Task newTask = new Task(param[0], param[1], param[2], param[3], tags);
+        Task newTask = new Task(param[0], DateParser.parseToDateTime(param[1]), 
+                                DateParser.parseToDateTime(param[2]), 
+                                DateParser.parseToDateTime(param[3]), tags);
         newTask.setDone(isDone);
         return newTask;
     }

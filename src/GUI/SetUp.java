@@ -191,7 +191,7 @@ public class SetUp {
             @Override
             public String getText(Object element) {
                 Task task = (Task) element;
-                return task.getDue();
+                return task.getDue().toString();
             }
         });
 
@@ -200,7 +200,7 @@ public class SetUp {
             @Override
             public String getText(Object element) {
                 Task task = (Task) element;
-                return task.getStart();
+                return task.getStart().toString();
             }
         });
 
@@ -209,7 +209,7 @@ public class SetUp {
             @Override
             public String getText(Object element) {
                 Task task = (Task) element;
-                return task.getEnd();
+                return task.getEnd().toString();
             }
         });
 

@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="windows-1252" standalone="no"?>
+<!DOCTYPE log SYSTEM "logger.dtd">
+<log>
+<record>
+  <date>2014-10-16T20:07:37</date>
+  <millis>1413461257778</millis>
+  <sequence>0</sequence>
+  <logger>Logic.Processor</logger>
+  <level>INFO</level>
+  <class>Logic.CommandAdd</class>
+  <method>execute</method>
+  <thread>1</thread>
+  <message>Executing 'Add' Command...</message>
+</record>
+<record>
+  <date>2014-10-16T20:07:37</date>
+  <millis>1413461257808</millis>
+  <sequence>1</sequence>
+  <logger>Logic.Processor</logger>
+  <level>INFO</level>
+  <class>Logic.Processor</class>
+  <method>updateUIPanelWindow</method>
+  <thread>1</thread>
+  <message>Updated side panel.</message>
+</record>
+<record>
+  <date>2014-10-16T20:07:37</date>
+  <millis>1413461257811</millis>
+  <sequence>2</sequence>
+  <logger>Logic.Processor</logger>
+  <level>INFO</level>
+  <class>Logic.Processor</class>
+  <method>processCommand</method>
+  <thread>1</thread>
+  <message>Command executed successfully</message>
+</record>
+<record>
+  <date>2014-10-16T20:07:37</date>
+  <millis>1413461257853</millis>
+  <sequence>3</sequence>
+  <logger>Logic.Processor</logger>
+  <level>INFO</level>
+  <class>Logic.Processor</class>
+  <method>fetchFloatingTasks</method>
+  <thread>1</thread>
+  <message>Fetching Floating Tasks</message>
+</record>
+<record>
+  <date>2014-10-16T20:07:37</date>
+  <millis>1413461257860</millis>
+  <sequence>4</sequence>
+  <logger>Logic.Processor</logger>
+  <level>INFO</level>
+  <class>Logic.Processor</class>
+  <method>fetchTimedTasks</method>
+  <thread>1</thread>
+  <message>Fetching Timed Tasks</message>
+</record>
+<record>
+  <date>2014-10-16T20:07:59</date>
+  <millis>1413461279160</millis>
+  <sequence>5</sequence>
+  <logger>Logic.Processor</logger>
+  <level>INFO</level>
+  <class>Logic.CommandDelete</class>
+  <method>execute</method>
+  <thread>1</thread>
+  <message>Executing 'Delete' Command...</message>
+</record>
+<record>
+  <date>2014-10-16T20:07:59</date>
+  <millis>1413461279164</millis>
+  <sequence>6</sequence>
+  <logger>Logic.Processor</logger>
+  <level>INFO</level>
+  <class>Logic.Processor</class>
+  <method>updateUIPanelWindow</method>
+  <thread>1</thread>
+  <message>Updated side panel.</message>
+</record>
+<record>
+  <date>2014-10-16T20:07:59</date>
+  <millis>1413461279166</millis>
+  <sequence>7</sequence>
+  <logger>Logic.Processor</logger>
+  <level>INFO</level>
+  <class>Logic.Processor</class>
+  <method>processCommand</method>
+  <thread>1</thread>
+  <message>Command executed successfully</message>
+</record>
+<record>
+  <date>2014-10-16T20:07:59</date>
+  <millis>1413461279175</millis>
+  <sequence>8</sequence>
+  <logger>Logic.Processor</logger>
+  <level>INFO</level>
+  <class>Logic.Processor</class>
+  <method>fetchFloatingTasks</method>
+  <thread>1</thread>
+  <message>Fetching Floating Tasks</message>
+</record>
+<record>
+  <date>2014-10-16T20:07:59</date>
+  <millis>1413461279178</millis>
+  <sequence>9</sequence>
+  <logger>Logic.Processor</logger>
+  <level>INFO</level>
+  <class>Logic.Processor</class>
+  <method>fetchTimedTasks</method>
+  <thread>1</thread>
+  <message>Fetching Timed Tasks</message>
+</record>

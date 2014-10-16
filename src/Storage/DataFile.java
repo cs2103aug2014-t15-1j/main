@@ -272,11 +272,9 @@ public class DataFile {
      *            New tags to append with, if any.
      * @return True, if file has been successfully updated with edit.
      */
-    public boolean updateTaskInfo(Task task, String name, String due,
-                                  String start, String end, List<String> tags) {
-        // TODO Change to DateTime type
-        // public boolean updateTaskInfo(Task task, String name, DateTime due,
-        // DateTime start, DateTime end, List<String> tags) {
+    public boolean updateTaskInfo(Task task, String name, DateTime due,
+                                  DateTime start, DateTime end,
+                                  List<String> tags) {
         return updateTaskInfoByObject(task, name, due, start, end, tags);
     }
 
@@ -301,11 +299,9 @@ public class DataFile {
      *            New tags to append with, if any.
      * @return True, if file has been successfully updated with edit.
      */
-    public boolean updateTaskInfo(int id, String name, String due,
-                                  String start, String end, List<String> tags) {
-        // TODO Change to DateTime type
-        // public boolean updateTaskInfo(int id, String name, DateTime due,
-        // DateTime start, DateTime end, List<String> tags) {
+    public boolean updateTaskInfo(int id, String name, DateTime due,
+                                  DateTime start, DateTime end,
+                                  List<String> tags) {
         Task task = searchTaskById(allTasks, id);
         return updateTaskInfoByObject(task, name, due, start, end, tags);
     }
@@ -329,12 +325,9 @@ public class DataFile {
      *            New tags to append with, if any.
      * @return True, if file has been successfully updated with edit.
      */
-    private boolean updateTaskInfoByObject(Task task, String name, String due,
-                                           String start, String end,
-                                           List<String> tags) {
-        // TODO Change to DateTime type
-        // private boolean updateTaskInfoByObject(Task task, String name,
-        // DateTime due, DateTime start, DateTime end, List<String> tags) {
+    private boolean updateTaskInfoByObject(Task task, String name,
+                                           DateTime due, DateTime start,
+                                           DateTime end, List<String> tags) {
         if (task == null) {
             return false; // Invalid ID
         }

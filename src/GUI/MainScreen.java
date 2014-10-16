@@ -73,7 +73,7 @@ public class MainScreen {
 				final Label feedback;
 				String input = commandLine.getText();
 				String output = "";
-				//try
+				try{
 					output = ResultGenerator.sendInput(input);
 					feedback = screen.getFeedBack();
 					//   output = commandLine.getText();
@@ -83,10 +83,10 @@ public class MainScreen {
 					} else {
 					    exitProgram();
 					}
+				}catch (Exception error) {
+				error.getMessage();
 				
-			//	catch (Exception error) {
-				//	error.getMessage();
-				//
+			}
 			}
 		});
 	}
