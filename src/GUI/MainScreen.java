@@ -63,6 +63,18 @@ public class MainScreen {
             }
 
         });
+	    
+	    commandLine.addListener(SWT.MouseDown, new Listener() {
+            public void handleEvent(Event event) {
+                switch (event.type) {
+                    case SWT.MouseDown :
+                        commandLine.setText("");
+                        commandLine.removeListener(SWT.KeyDown, this);
+                        break;
+                }
+            }
+
+        });
     }
 
     private static void readUserInput(SetUp screen) {
