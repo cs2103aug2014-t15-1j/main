@@ -10,7 +10,7 @@ package Storage;
  * 
  */
 
-public class DateTime {
+public class DateTime implements Comparable<DateTime> {
 
     /** Regex to check for empty Strings as valid input. */
     private final static String OR_EMPTY_PATTERN = "|^$";
@@ -161,5 +161,65 @@ public class DateTime {
      */
     public static String getDateTimePattern() {
         return DATE_TIME_PATTERN;
+    }
+
+    /**
+     * Compares this <code>DateTime</code> with an input <code>DateTime</code><br>
+     * Returns 1 if it is later (larger) than the other <code>DateTime</code>, 0
+     * if they are the same, or -1 if it is earlier (smaller).
+     * 
+     * @return <ul>
+     *         <li>1 if this <code>DateTime</code> is later than the input
+     *         <code>DateTime</code>,
+     *         <li>0 if they are the same date and time,
+     *         <li>-1 if this <DateTime> is earlier.
+     *         </ul>
+     * 
+     * @author Yeo Zi Xian, Justin
+     */
+    @Override
+    public int compareTo(DateTime otherDateTime) {
+        String[] date1 = this.date.split("/");
+        String[] date2 = otherDateTime.getDate().split("/");
+
+        int day1 = Integer.parseInt(date1[0]);
+        int mth1 = Integer.parseInt(date1[1]);
+        int yr1 = Integer.parseInt(date1[2]);
+        int time1 = Integer.parseInt(this.time);
+        int day2 = Integer.parseInt(date2[0]);
+        int mth2 = Integer.parseInt(date2[1]);
+        int yr2 = Integer.parseInt(date2[2]);
+        int time2 = Integer.parseInt(otherDateTime.getTime());
+
+        // Check year for differences
+        if (yr1 < yr2) {
+            return -1;
+        } else if (yr1 > yr2) {
+            return 1;
+        }
+
+        // Then check month for differences
+        if (mth1 < mth2) {
+            return -1;
+        } else if (mth1 > mth2) {
+            return 1;
+        }
+
+        // Then check day for differences
+        if (day1 < day2) {
+            return -1;
+        } else if (day1 > day2) {
+            return 1;
+        }
+
+        // Then check time for differences
+        if (time1 < time2) {
+            return -1;
+        } else if (time1 > time2) {
+            return 1;
+        }
+
+        // No differences detected
+        return 0;
     }
 }

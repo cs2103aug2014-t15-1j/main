@@ -6,61 +6,136 @@ import java.text.SimpleDateFormat;
 
 import Storage.DateTime;
 
+// TODO: Reorganise: move all aux (e.g. isInteger()) to Parser, move all specifics out?
+
 public class DateParser {
 
+    /**
+     * The date/time format DateParser will use.
+     */
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat(
             "dd/MM/yyyy HHmm");
 
-    public static void printDate() {
+    // TODO: For testing; to remove
+    protected static void printDate() {
         Calendar cal = Calendar.getInstance();
         System.out.println(DATE_FORMAT.format(cal.getTime()));
     }
 
+    /**
+     * Returns the current date and time in a <code>DateTime</code> object.
+     * <p>
+     * <i>Uses the default system settings for date and time.</i>
+     * 
+     * @return <code>DateTime</code> object containing date in
+     *         <code>dd/MM/yyyy</code> and time in <code>HHmm</code>
+     */
     public static DateTime getCurrDateTime() {
         Calendar cal = Calendar.getInstance();
         String[] date = DATE_FORMAT.format(cal.getTime()).split(" ");
         return new DateTime(date[0], date[1]);
     }
 
+    /**
+     * Returns the current date and time in a <code>String</code>.
+     * <p>
+     * <i>Uses the default system settings for date and time.</i>
+     * 
+     * @return <code>String</code> object containing date in
+     *         <code>dd/MM/yyyy</code> and time in <code>HHmm</code>
+     */
     public static String getCurrDateTimeStr() {
         return getCurrDateTime().toString();
     }
 
+    /**
+     * Returns the current date in a <code>String</code> object.
+     * <p>
+     * <i>Uses the default system settings for date.</i>
+     * 
+     * @return <code>String</code> object containing date in
+     *         <code>dd/MM/yyyy</code>
+     */
     public static String getCurrDateStr() {
         String currDate = getCurrDateTimeStr();
         String[] dateFields = currDate.split(" ");
         return dateFields[0];
     }
 
+    /**
+     * Returns the current time in a <code>String</code> object.
+     * <p>
+     * <i>Uses the default system settings for time.</i>
+     * 
+     * @return <code>String</code> object containing time in <code>HHmm</code>
+     */
     public static String getCurrTimeStr() {
         String currDate = getCurrDateTimeStr();
         String[] dateFields = currDate.split(" ");
         return dateFields[1];
     }
 
+    /**
+     * Checks and then parses the input <code>String</code> into a
+     * <code>DateTime</code> object. The date/time must be in one of four
+     * formats (below). An <code>IllegalArgumentException</code> will be thrown
+     * if the input is not one of the following formats, or if the date/time
+     * values are invalid (e.g. 40/01/2014 2401).
+     * <ol>
+     * Formats accepted:
+     * <li>Date only: dd/MM/yyyy
+     * <li>Time only: HHmm
+     * <li>Date and Time: dd/MM/yyyy HHmm
+     * <li>Time and Date: HHmm dd/MM/yyyy
+     * </ol>
+     * 
+     * @return <code>DateTime</code> object containing date in
+     *         <code>dd/MM/yyyy</code> and time in <code>HHmm</code>
+     */
     public static DateTime parseToDateTime(String str) {
-        if (!isValidDateTime(str)){
+        if (!isValidDateTime(str)) {
             throw new IllegalArgumentException("Invalid input for parseToDate");
         }
-        
+
         switch (getDateType(str)) {
             case 1:
+                // Date only
                 return new DateTime(str, "");
+
             case 2:
+                // Time only
                 return new DateTime(getCurrDateStr(), str);
+
             case 3:
+                // <Date> then <Time>
                 String[] dateFields1 = str.split(" ");
                 return new DateTime(dateFields1[0], dateFields1[1]);
+
             case 4:
-                //TODO: some safety checks
+                // <Time> then <Date>
+                // TODO: some safety checks for array
                 String[] dateFields2 = str.split(" ");
                 return new DateTime(dateFields2[1], dateFields2[0]);
         }
 
+        // Code should not reach this point
+        assert false : "parseToDateTime() failed to catch invalid date type";
         return null;
     }
 
-    private static boolean isValidDateTime(String str) {
+    /**
+     * Checks if the input <code>String</code> can be parsed into a
+     * <code>DateTime</code> object. The date/time must be in one of four
+     * formats (below).
+     * <ol>
+     * Formats accepted:
+     * <li>Date only: dd/MM/yyyy
+     * <li>Time only: HHmm
+     * <li>Date and Time: dd/MM/yyyy HHmm
+     * <li>Time and Date: HHmm dd/MM/yyyy
+     * </ol>
+     */
+    public static boolean isValidDateTime(String str) {
         String[] strFields = str.split(" ");
 
         boolean validNumOfTerms = strFields.length > 0 && strFields.length <= 2;
@@ -93,10 +168,27 @@ public class DateParser {
                !containsNonDateTime;
     }
 
+    /**
+     * Gets the date format of the input <code>String</code>. It is assumed that
+     * the input has been checked and the <code>String</code> contains a valid
+     * date and/or time.
+     * <p>
+     * Returns an <code>int</code> based on which format in the following list
+     * the input corresponds to:
+     * <ol>
+     * <li>dd/MM/yyyy
+     * <li>HHmm
+     * <li>dd/MM/yyyy HHmm
+     * <li>HHmm dd/MM/yyyy
+     * </ol>
+     * 
+     * @return An integer from 1 to 4 based on which format the input
+     *         corresponds to (in the above list).
+     */
     private static int getDateType(String str) {
         assert (isValidDateTime(str)) : "Invalid DateTime for getDateType()!";
         String[] dateFields = str.split(" ");
-        
+
         // TODO: Magic Strings
         if (isSingleItemArray(dateFields)) {
             if (firstItemIsDate(dateFields)) {
@@ -113,56 +205,26 @@ public class DateParser {
         }
     }
 
-    private static boolean isSingleItemArray(String[] dateFields) {
-        return dateFields.length == 1;
+    /**
+     * Checks if the input array contains only 1 item.
+     */
+    private static <E> boolean isSingleItemArray(E[] array) {
+        return array.length == 1;
     }
 
+    /**
+     * Checks if the first item of the array is a valid date.
+     */
     private static boolean firstItemIsDate(String[] dateFields) {
+        assert (dateFields.length > 0) : "Empty array input for firstItemIsDate()";
         return isValidDate(dateFields[0]);
     }
 
-    // TODO: shift over to DateTime?
-    private static boolean firstDateEarlier(String first, String second) {
-        int[] date1 = splitToDatesInt(first);
-        int[] date2 = splitToDatesInt(second);
-
-        int day1 = date1[0];
-        int mth1 = date1[1];
-        int yr1 = date1[2];
-        int day2 = date2[0];
-        int mth2 = date2[1];
-        int yr2 = date2[2];
-
-        if (yr1 < yr2) {
-            return true;
-        } else if (yr1 == yr2) {
-            if (mth1 < mth2) {
-                return true;
-            } else if (mth1 == mth2 && day1 < day2) {
-                return true;
-            }
-        }
-
-        System.out.println("second is earlier");
-        return false;
-    }
-
-    private static int[] splitToDatesInt(String str) {
-        assert (isValidDate(str));
-
-        String[] split = str.split("/");
-
-        int[] result = new int[3];
-        result[0] = Integer.parseInt(split[0]);
-        result[1] = Integer.parseInt(split[1]);
-        result[2] = Integer.parseInt(split[2]);
-
-        return result;
-    }
-
-    // TODO: Reorganise: move all aux to Parser, move all specifics out?
+    /**
+     * Checks if the input <code>String</code> is in the accepted date format
+     * <code>dd/MM/yyyy</code>.
+     */
     private static boolean isValidDate(String str) {
-        // Tentatively, dates = "DD/MM/YYYY"
         boolean hasTwoSlashes;
         boolean hasValidCompLengths;
         boolean hasIntComponents;
@@ -189,14 +251,36 @@ public class DateParser {
                hasValidIntComp;
     }
 
-    // TODO: Extract to isValidDay(int, int, int) - use this method to parseInt
+    /**
+     * Checks if the input date values can form a valid day.
+     * <p>
+     * Converts input <code>String</code> values to <code>int</code> values and
+     * calls the overloaded method {@link #isValidDay(int, int, int)}.
+     */
     public static boolean isValidDay(String day, String month, String year) {
         int dayNum = Integer.parseInt(day);
         int monthNum = Integer.parseInt(month);
         int yearNum = Integer.parseInt(year);
-        boolean isLeapYear = isLeapYear(yearNum);
+        return isValidDay(dayNum, monthNum, yearNum);
+    }
 
-        switch (monthNum) {
+    /**
+     * Checks if the input <code>day</code> is valid, by checking if it falls
+     * within the <code>month</code>'s number of days.
+     * <p>
+     * The input <code>year</code> is required to determine the number of days
+     * in February (leap years).
+     * 
+     * @param day
+     * @param month
+     * @param year
+     * @return <code>true</code> if the day is valid, <br>
+     *         <code>false</code> otherwise.
+     */
+    private static boolean isValidDay(int day, int month, int year) {
+        boolean isLeapYear = isLeapYear(year);
+
+        switch (month) {
             case 1:
             case 3:
             case 5:
@@ -204,50 +288,89 @@ public class DateParser {
             case 8:
             case 10:
             case 12:
-                return dayNum > 0 && dayNum <= 31;
+                return day > 0 && day <= 31;
 
             case 2:
                 if (isLeapYear) {
-                    return dayNum > 0 && dayNum <= 29;
+                    return day > 0 && day <= 29;
                 } else {
-                    return dayNum > 0 && dayNum <= 28;
+                    return day > 0 && day <= 28;
                 }
 
             case 4:
             case 6:
             case 9:
             case 11:
-                return dayNum > 0 && dayNum <= 30;
+                return day > 0 && day <= 30;
         }
         return false;
     }
 
+    /**
+     * Checks if the input <code>year</code> is a leap year. <br>
+     * A leap year is a year that is divisible by 400, or divisible by 4 but not
+     * by 100.
+     * <p>
+     * <i> Note: This formula started proper from 8 AD, and does not apply to
+     * BC. </i>
+     */
     public static boolean isLeapYear(int year) {
+        assert (year >= 8) : "Invalid year! Our formula only works for after 8 AD";
         return (year % 400 == 0) || (year % 4 == 0 && year % 100 != 0);
     }
 
-    public static boolean isValidMonth(String string) {
-        int monthNum = Integer.parseInt(string);
+    /**
+     * Checks if the input <code>String</code> can be parsed to a valid month.
+     * 
+     * <p>
+     * <i> The input should be an integer String, and a valid month is between 1
+     * and 12 inclusive. </i>
+     * 
+     * @param monthStr
+     *            A <code>String</code> containing only an integer.
+     */
+    public static boolean isValidMonth(String monthStr) {
+        int monthNum = Integer.parseInt(monthStr);
         return monthNum > 0 && monthNum <= 12;
     }
 
-    public static boolean isValidYear(String string) {
-        int yearNum = Integer.parseInt(string);
+    /**
+     * Checks if the input <code>String</code> is a valid year.
+     * 
+     * <p>
+     * <i> The input should be an integer String, and a valid month is taken to
+     * be after 1819 (arbitrary value). </i>
+     * 
+     * @param yearStr
+     *            A <code>String</code> containing only an integer.
+     */
+    public static boolean isValidYear(String yearStr) {
+        int yearNum = Integer.parseInt(yearStr);
         // TODO: Magic strings in year, month, day
         return yearNum >= 1819;
     }
 
-    private static boolean isValidTime(String str) {
-        // Time = MMHH
+    /**
+     * Checks if the input <code>String</code> is a valid time. This method
+     * assumes the 24HR time format, i.e. 0000-2359.
+     * 
+     * <p>
+     * <i> The input should be an integer String. </i>
+     * 
+     * @param timeStr
+     *            A <code>String</code> containing only an integer of the format
+     *            <code>HHmm</code>
+     */
+    private static boolean isValidTime(String timeStr) {
         try {
-            String hours_str = str.substring(0, 2);
-            String min_str = str.substring(2, 4);
+            String hoursStr = timeStr.substring(0, 2);
+            String minStr = timeStr.substring(2, 4);
 
-            int hours_int = Integer.parseInt(hours_str);
-            int min_int = Integer.parseInt(min_str);
+            int hoursInt = Integer.parseInt(hoursStr);
+            int minInt = Integer.parseInt(minStr);
 
-            boolean isValidHH = hours_int >= 0 && hours_int < 24;
-            boolean isValidMM = min_int >= 0 && min_int < 60;
+            boolean isValidHH = hoursInt >= 0 && hoursInt < 24;
+            boolean isValidMM = minInt >= 0 && minInt < 60;
 
             return isValidHH && isValidMM;
         } catch (IndexOutOfBoundsException e) {
@@ -268,8 +391,8 @@ public class DateParser {
         System.out.println("2300: " + isLeapYear(2300));
         System.out.println("2304: " + isLeapYear(2304));
         System.out.println("2400: " + isLeapYear(2400));
-        System.out.println("-400: " + isLeapYear(-400));
-        
+        // Invalid: System.out.println("-400: " + isLeapYear(-400));
+
         System.out.println("//TIME:");
         System.out.println("0000: " + isValidTime("0000"));
         System.out.println("0001: " + isValidTime("0001"));
@@ -279,24 +402,24 @@ public class DateParser {
         System.out.println("2359: " + isValidTime("2359"));
         System.out.println("9999: " + isValidTime("9999"));
         System.out.println("abc: " + isValidTime("abc"));
-        
+
         System.out.println("//Getters:");
         System.out.println("DateTime: " + getCurrDateTime());
         System.out.println("DateTimeStr: " + getCurrDateTimeStr());
         System.out.println("Date: " + getCurrDateStr());
         System.out.println("Time: " + getCurrTimeStr());
-        
+
         System.out.println("//DateTimeValid:");
         System.out.println("23/04/2014 " + isValidDateTime("23/04/2014"));
         System.out.println("2359 " + isValidDateTime("2359"));
         System.out.println("23/04/2014 2200 " +
                            isValidDateTime("23/04/2014 2200"));
         System.out.println("2200 23/04/2014 " +
-                isValidDateTime("2200 23/04/2014"));
+                           isValidDateTime("2200 23/04/2014"));
         System.out.println("2200 29/02/2014 " +
-                isValidDateTime("2200 29/02/2014"));
+                           isValidDateTime("2200 29/02/2014"));
         System.out.println("2200 29/02/2012 " +
-                isValidDateTime("2200 29/02/2012"));
+                           isValidDateTime("2200 29/02/2012"));
         System.out.println("23/04/2014 2400 " +
                            isValidDateTime("23/04/2014 2400"));
         System.out.println("23/13/2014 2200 " +
@@ -307,14 +430,31 @@ public class DateParser {
                            isValidDateTime("aaaaaaaaaa 2200"));
         System.out.println("aaaaaaaaaa aaaa " +
                            isValidDateTime("aaaaaaaaaa aaaa"));
-        
+
         System.out.println("//parseToDate:");
         System.out.println("23/04/2014: " + parseToDateTime("23/04/2014"));
         System.out.println("2200: " + parseToDateTime("2200"));
-        System.out.println("23/04/2014 2200: " + parseToDateTime("23/04/2014 2200"));
-        System.out.println("2200 23/04/2014: " + parseToDateTime("2200 23/04/2014"));
+        System.out.println("23/04/2014 2200: " +
+                           parseToDateTime("23/04/2014 2200"));
+        System.out.println("2200 23/04/2014: " +
+                           parseToDateTime("2200 23/04/2014"));
         // TODO: test exception
         // System.out.println("exception: " + parseToDate("aaa"));
-        
+
+        DateTime dt = new DateTime("23/04/2014", "2300");
+        DateTime dt2 = new DateTime("24/04/2014", "2300");
+        System.out.println("dt<dt2: " + dt.compareTo(dt2));
+
+        dt = new DateTime("23/04/2014", "2300");
+        dt2 = new DateTime("23/04/2014", "2300");
+        System.out.println("dt=dt2: " + dt.compareTo(dt2));
+
+        dt = new DateTime("23/04/2014", "2300");
+        dt2 = new DateTime("22/04/2014", "2300");
+        System.out.println("dt>dt2: " + dt.compareTo(dt2));
+
+        dt = new DateTime("23/04/2014", "0000");
+        dt2 = new DateTime("23/04/2014", "2359");
+        System.out.println("dt<dt2: " + dt.compareTo(dt2));
     }
 }
