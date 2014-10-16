@@ -84,4 +84,56 @@ public class DateTimeTest {
         assertEquals("Empty date String", "", dT.getDate());
         assertEquals("Empty time String", "", dT.getTime());
     }
+
+    private String datePattern() {
+        return DateTime.getDatePattern();
+    }
+
+    private String timePattern() {
+        return DateTime.getTimePattern();
+    }
+
+    private String dateTimePattern() {
+        return DateTime.getDateTimePattern();
+    }
+
+    @Test
+    public void testGetDatePattern() throws Exception {
+        assertTrue("Empty string", "".matches(datePattern()));
+        assertTrue("Min day and month", "01/01/2014".matches(datePattern()));
+        assertTrue("Max day, Jun", "30/06/2014".matches(datePattern()));
+        assertTrue("Max day, Dec", "31/12/2014".matches(datePattern()));
+        assertTrue("Max day, Feb", "28/02/2014".matches(datePattern()));
+        assertTrue("Max day, leap Feb", "29/02/2016".matches(datePattern()));
+        assertTrue("Max day, leap Feb", "29/02/2000".matches(datePattern()));
+        assertTrue("Max day, leap Feb", "29/02/2400".matches(datePattern()));
+        assertFalse("Not leap year", "29/02/2014".matches(datePattern()));
+        assertFalse("Not leap year", "29/02/2100".matches(datePattern()));
+        assertFalse("Not valid day", "00/01/2014".matches(datePattern()));
+        assertFalse("Not valid day", "32/01/2014".matches(datePattern()));
+        assertFalse("Not valid day", "31/06/2014".matches(datePattern()));
+        assertFalse("Not valid month", "01/00/2014".matches(datePattern()));
+        assertFalse("Not valid month", "01/13/2014".matches(datePattern()));
+    }
+
+    @Test
+    public void testGetTimePattern() throws Exception {
+        assertTrue("Empty string", "".matches(timePattern()));
+        assertTrue("Min time", "0000".matches(timePattern()));
+        assertTrue("Max time", "2359".matches(timePattern()));
+        assertFalse("More than 23 H", "2400".matches(timePattern()));
+        assertFalse("More than 59 min", "2360".matches(timePattern()));
+        assertFalse("More than 2X H", "3000".matches(timePattern()));
+    }
+
+    @Test
+    public void testGetDateTimePattern() throws Exception {
+        assertTrue("Empty string", "".matches(dateTimePattern()));
+        assertTrue("Empty date string", "2359".matches(dateTimePattern()));
+        assertTrue("Empty time string", "11/11/2014".matches(dateTimePattern()));
+        assertTrue("Date time string", "11/11/2014 2359".matches(dateTimePattern()));
+        assertFalse("Residual space", " 2359".matches(dateTimePattern()));
+        assertFalse("Residual space", "11/11/2014 ".matches(dateTimePattern()));
+        assertFalse("Residual space", " ".matches(dateTimePattern()));
+    }
 }
