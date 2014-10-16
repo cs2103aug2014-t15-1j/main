@@ -598,7 +598,7 @@ public class Parser {
 
         removeDuplicates(addFields);
         if (containsParam(addFields, "due")) {
-            convertToDate(addFields, "due");
+            
         }
         if (containsParam(addFields, "start")) {
 
@@ -610,28 +610,6 @@ public class Parser {
         return new CommandAdd(addFields);
     }
 
-    private static void convertToDate(List<TaskParam> addFields, String string) {
-        // TODO: re-factor to getDate() and setDate();
-        String[] months = { "jan", "january", "feb", "february", "march",
-                           "mar", "april", "apr", "may", "june", "jun", "july",
-                           "jul", "august", "aug", "september", "sep",
-                           "october", "oct", "november", "nov", "december",
-                           "dec" };
-        // TODO: month max. days?
-
-        TaskParam field = getTaskParam(addFields, string);
-        String text = field.getField();
-
-        String dDay;
-        String dMonth;
-        String dYear;
-
-        /*
-         * cases: (1) 20052014 (2) 20.05.2014 (3) 20-05-2014 (4) 20/05/2014 (5)
-         * 20/05 (6) 20 May (7) 20 May 2014
-         */
-
-    }
 
     private static boolean containsParam(List<TaskParam> addFields, String pName) {
         boolean result = false;
