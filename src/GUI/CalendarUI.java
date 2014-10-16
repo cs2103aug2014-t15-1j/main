@@ -7,7 +7,9 @@ import org.eclipse.swt.widgets.DateTime;
 
 import Logic.Processor;
 import Storage.Task;
-
+/*
+ * This class updates the calendar interface whenever the change is made
+ */
 public class CalendarUI {
 
     public CalendarUI(){

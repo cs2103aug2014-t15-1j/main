@@ -16,8 +16,6 @@ import Storage.Task;
  */
 public class ResultGenerator {
 
-	private static final String LINE_SEPARATOR = System
-			.getProperty("line.separator");
 	private static final int FIRST_ELEMENT = 0;
 	private static final String SUCCESSFUL_ADD = "Added %1$s";
 	private static final String SUCCESSFUL_EDIT = "Edited %1$s";
@@ -53,7 +51,7 @@ public class ResultGenerator {
 	 * @throws Exception 
 	 */
 	public static String sendInput(String userInput){
-
+	    
 		if (isEmpty(userInput)) {
 			return EMPTY_MESSAGE;
 		}
@@ -94,10 +92,8 @@ public class ResultGenerator {
 		case ADD:
 		    assert(!tasks.isEmpty());
 		    updateInterface(tasks);
-		    System.out.println("at add");
 			return singleLineSuccessMessage(SUCCESSFUL_ADD, tasks);
 		case DELETE:
-		    assert(!tasks.isEmpty());
 		    updateInterface(tasks);
 		    return SUCCESSFUL_DELETE;
 		case EDIT:
@@ -124,12 +120,12 @@ public class ResultGenerator {
 			return SUCCESSFUL_BLOCK;
 		case UNBLOCK:
 			return SUCCESSFUL_UNBLOCK;
-		// Note: undo - 
+		
 		case UNDO:
-		    updateInterface(tasks);
+		    
 			return SUCCESSFUL_UNDO;
 		case REDO:
-		    updateInterface(tasks);
+		    
 			return SUCCESSFUL_REDO;
 		case EXIT:
 			// to be changed

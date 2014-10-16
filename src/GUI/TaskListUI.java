@@ -2,11 +2,13 @@ package GUI;
 
 import java.util.List;
 
-import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.Label;
 
 import Logic.Processor;
 import Storage.Task;
-
+/*
+ * This class updates the TaskList Interface whenever a change is made. 
+ */
 public class TaskListUI {
     private static final String LIST_HEADER_SOMEDAY = "SOMEDAY";
     private static final String DOT_AND_SPACE = ". ";
@@ -17,7 +19,7 @@ public class TaskListUI {
     }
     
     private void update(){
-        Text taskList = getTaskList();
+        Label taskList = getTaskList();
         List<Task> tasks = getTasks();
         String floatingList = getFloatingList(tasks);
         taskList.setText(floatingList);
@@ -29,9 +31,9 @@ public class TaskListUI {
       return tasks;
     }
     
-    private Text getTaskList(){
+    private Label getTaskList(){
         SetUp setUp = SetUp.getInstance();
-        Text taskList = setUp.getTaskList();
+        Label taskList = setUp.getTaskList();
         return taskList;
     }
     

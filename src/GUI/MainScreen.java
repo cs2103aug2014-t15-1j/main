@@ -35,6 +35,7 @@ public class MainScreen {
 
 		SetUp setUpScreen = SetUp.getInstance(shell);
 		
+		
 		readUserInput(setUpScreen);
 
 		shell.pack();

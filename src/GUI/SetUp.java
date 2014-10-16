@@ -56,13 +56,20 @@ public class SetUp {
     private Label feedback;
     private Text commandLine;
     private DateTime calendar;
-    private Text taskList;
+    private Label taskList;
 
     private SetUp(Shell shell) {
         this.shell = shell;
         initialise();
     }
-
+    
+    
+    // Note: SetUp will not exist if MainScreen.java is destroyed, because only MainScreen.java creates a SetUp object.
+    /**
+     * This returns a SetUp object and creates a new instance of the SetUp object if it does not exist.
+     * @param shell used to create a new SetUp object
+     * @return instance of the SetUp object created
+     */
     public static SetUp getInstance(Shell shell) {
         if (setUp == null) {
             setUp = new SetUp(shell);
@@ -70,6 +77,9 @@ public class SetUp {
         return setUp;
     }
     
+    /*
+     * This returns the instance of a SetUp object created at the earlier point of the program
+     */
     public static SetUp getInstance(){
         return setUp;
     }
@@ -82,7 +92,7 @@ public class SetUp {
         return this.commandLine;
     }
     
-    public Text getTaskList(){
+    public Label getTaskList(){
         return this.taskList;
     }
     
@@ -254,7 +264,7 @@ public class SetUp {
 
     private void setUpTaskList() {
         // TODO Auto-generated method stub
-        taskList = new Text(sidePane, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL
+        taskList = new Label(sidePane, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL
                 | SWT.READ_ONLY);
         GridData gridData = new GridData(GridData.FILL_BOTH);
         taskList.setLayoutData(gridData);
