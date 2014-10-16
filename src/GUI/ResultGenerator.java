@@ -16,7 +16,6 @@ import Storage.Task;
 public class ResultGenerator {
 
 	private static final int FIRST_ELEMENT = 0;
-	private static final String FORMAT_DOT_AND_SPACE = ". ";
 	private static final String SUCCESSFUL_ADD = "Added %1$s";
 	private static final String SUCCESSFUL_EDIT = "Edited %1$s";
 	private static final String SUCCESSFUL_SEARCH = "Found %1$s result(s):";
@@ -24,6 +23,7 @@ public class ResultGenerator {
 	private static final String SUCCESSFUL_DONE = "Marked %1$s as done";
 	private static final String SUCCESSFUL_DELETE = "Deleted!";
 	private static final String SUCCESSFUL_RESTORE = "Restored!";
+	private static final String SUCCESSFUL_DISPLAY = "Showing %1$s tasks";
 	private static final String SUCCESSFUL_UNDO = "Travelled back in time! Command has been undone";
 	private static final String SUCCESSFUL_REDO = "Travelled into the future! Command has been redone";
 
@@ -43,31 +43,15 @@ public class ResultGenerator {
 	private static final String UNSUCCESSFUL_COMMAND_MESSAGE = "'%1$s'was not recognised.";
 	private static final String UNSUCCESSFUL_DISPLAY_NO_TASKS = "You are a free man! You do not have any tasks.";
 	private static final String EMPTY_MESSAGE = "That was read as empty. Try again.";
-	private static final String ERROR_DISPLAY = "Unable to display.";
 	private static final String ERROR_COMMAND_MESSAGE = "Houston, we have a problem";
 
-	private static final String PARA_STRING_ID = "Task ID: ";
-	private static final String PARA_STRING_NAME = "Name: ";
-	private static final String PARA_STRING_DUE = "Due: ";
-	private static final String PARA_STRING_START = "Start: ";
-	private static final String PARA_STRING_END = "End: ";
-	private static final String PARA_STRING_TAG = "Tag: ";
-	private static final String PARA_STRING_STATUS = "Status: ";
-	private static final String PARA_STRING_VALUE_EMPTY = "<empty>";
-
-	private static final String STATUS_DELETED = "Deleted";
-	private static final String STATUS_TODO = "To Do";
-	private static final String STATUS_DONE = "Done";
-
-	private static final String HASHTAG = "#";
-	
 	/**
 	 * This method passes a string object containing user commands to the Processor class to process.
 	 * @param userInput a string containing commands that the user entered
 	 * @return a String object containing success messages if the command was carried out or error messages if the command failed
 	 * @throws Exception 
 	 */
-	public static String sendInput(String userInput) throws Exception {
+	public static String sendInput(String userInput){
 
 		if (isEmpty(userInput)) {
 			return EMPTY_MESSAGE;
@@ -116,7 +100,7 @@ public class ResultGenerator {
 		case EDIT:
 			return singleLineSuccessMessage(SUCCESSFUL_EDIT, tasks);
 		case DISPLAY:
-			return "";
+			return successfulDisplayMessage(tasks);
 		case SEARCH:
 			return successfulSearchMessage(tasks);
 		case TODO:
@@ -166,6 +150,15 @@ public class ResultGenerator {
 		String successMessage = String.format(SUCCESSFUL_SEARCH,
 				numOfSearchResults);
 		return successMessage;
+	}
+	
+	private static String successfulDisplayMessage(List<Task> tasks){
+	    int numOfTasks = tasks.size();
+	    if(numOfTasks == 0){
+	        return UNSUCCESSFUL_DISPLAY_NO_TASKS;
+	    }
+	    
+	    return String.format(SUCCESSFUL_DISPLAY, numOfTasks);
 	}
 
 

@@ -35,7 +35,7 @@ public class MainScreen {
 
 		SetUp setUpScreen = SetUp.getInstance(shell);
 		
-		
+		removeText(setUpScreen);
 		readUserInput(setUpScreen);
 
 		shell.pack();
@@ -49,12 +49,10 @@ public class MainScreen {
 		display.dispose();
 	}
 
-	private static void readUserInput(SetUp setUpScreen) {
+	private static void removeText(SetUp screen) {
 	    
-	    final SetUp screen = setUpScreen;
-		final Text commandLine = screen.getCommandLine();
-		
-		commandLine.addListener(SWT.KeyDown, new Listener() {
+	    final Text commandLine = screen.getCommandLine();
+	    commandLine.addListener(SWT.KeyDown, new Listener() {
             public void handleEvent(Event event) {
                 switch (event.type) {
                     case SWT.KeyDown :
@@ -65,27 +63,31 @@ public class MainScreen {
             }
 
         });
+    }
 
-		
+    private static void readUserInput(SetUp screen) {
+
+		final Text commandLine = screen.getCommandLine();
+
 		commandLine.addListener(SWT.DefaultSelection, new Listener() {
 			public void handleEvent(Event event) {
 
 				final Label feedback;
 				String input = commandLine.getText();
 				String output = "";
-				try{
+				//try{
 					output = ResultGenerator.sendInput(input);
 					feedback = screen.getFeedBack();
-					//   output = commandLine.getText();
+					//output = commandLine.getText();
 					if (!output.equals(CODE_EXIT)) {
 	                       feedback.setText(output);
 	                        commandLine.setText("");
 					} else {
 					    exitProgram();
-					}
-				}catch (Exception error) {
-				error.getMessage();
-				
+				//	}
+				//}catch (Exception error) {
+			//	error.getMessage();
+				//System.out.println("I am an exception error in main screen.java");
 			}
 			}
 		});
