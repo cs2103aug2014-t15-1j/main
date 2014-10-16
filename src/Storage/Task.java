@@ -123,7 +123,6 @@ public class Task {
         summary += due + " ";
         summary += start + " ";
         summary += end + " ";
-        summary += concatanateTags(); // TODO remove #'s?
         return summary;
     }
 
