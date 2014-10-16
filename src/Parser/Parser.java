@@ -62,7 +62,7 @@ public class Parser {
         String[] commandItems = input.split(" ");
         String commandType = commandItems[0].toLowerCase();
 
-        // TODO: create parsing methods
+        // TODO: commandParams = removeCommandWord(commandItems)
         switch (commandType) {
             case TYPE_HELP:
                 return parseHelp(commandItems);
