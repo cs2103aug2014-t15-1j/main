@@ -34,6 +34,7 @@ public class MainScreen {
 		Shell shell = new Shell(display);
 		
 		// Things to do at startUp: Display all To do Tasks
+		
 		final SetUp setUpScreen = SetUp.getInstance(shell);
 		
 		removeText(setUpScreen);

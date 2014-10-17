@@ -185,7 +185,7 @@ public class SetUp {
         column.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
-                
+                // set Name: max 40 characters
                 Task task = (Task) element;
                 assert (task != null);
                 return task.getName();
@@ -279,7 +279,7 @@ public class SetUp {
     }
 
     private void setUpCommandLine() {
-        commandLine = new Text(mainInterface, SWT.SINGLE | SWT.BORDER_SOLID);
+        commandLine = new Text(mainInterface, SWT.SINGLE | SWT.BORDER_DOT);
         GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
         commandLine.setLayoutData(gridData);
         commandLine.setText(MESSAGE_TYPE_HERE);

@@ -18,8 +18,8 @@ public class TaskTableUI {
     private void update(){
         TableViewer table = getTable();
         Processor processor = Processor.getInstance();
-        List<Task> tasks = processor.fetchTimedTasks(); 
-        Object[] tasksArray = tasks.toArray();
+        List<Task> tasksTimed = processor.fetchFloatingTasks(); 
+        Object[] tasksArray = tasksTimed.toArray();
         table.setInput(tasksArray);
         table.refresh();
     }
