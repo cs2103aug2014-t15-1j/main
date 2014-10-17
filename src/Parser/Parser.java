@@ -774,7 +774,7 @@ public class Parser {
         for (int i = 1; i <= 3; i++) {
             try {
                 if (param[i].equals("null")) {
-                    dateTimes[i - 1] = null;
+                    dateTimes[i - 1] = new DateTime();
                 } else {
                     dateTimes[i - 1] = DateParser.parseToDateTime(param[i]);
                 }
