@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import Parser.TaskParam;
+import Storage.DateTime;
 import Storage.Task;
 
 // TODO: MERGE with delete? VERY similar.
@@ -72,6 +73,7 @@ public class CommandDisplay extends Command {
         Processor.getLogger().info("Executing 'Display' Command...");
         Processor processor = Processor.getInstance();
         List<Task> list = new ArrayList<Task>();
+        List<DateTime> blockList;
         boolean success = true;
         switch (rangeType) {
             case "id":
@@ -80,6 +82,9 @@ public class CommandDisplay extends Command {
                 break;
             case "search":
                 list = processor.getLastSearch();
+                break;
+            case "block":
+                blockList = processor.getBlockedDates();
                 break;
             case "all":
                 for (Task t: processor.getFile().getToDoTasks()) {

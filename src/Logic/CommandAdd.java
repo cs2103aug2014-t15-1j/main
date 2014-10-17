@@ -119,7 +119,9 @@ public class CommandAdd extends Command {
      * @return false/true depending on the validity of blocked dates
      */
     private boolean isBlocked() {
-        return false;
+        boolean blocked = false;
+        Processor processor = Processor.getInstance();
+        return blocked;
     }
     
     /** Undo the 'Add' Command */

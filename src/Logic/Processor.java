@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 
 import Parser.Parser;
 import Storage.DataFile;
+import Storage.DateTime;
 import Storage.Task;
 
 /* This class handles inputs from UI and interacts with other components for the
@@ -56,6 +57,8 @@ public class Processor extends Observable {
 	
 	/** List of Tasks with Due date/time */
 	private List<Task> timedTasks;
+
+	private List<DateTime> blockedDates;
 	
 	/** Logger for monitoring purposes */
 	private static final Logger log = Logger.getLogger(Processor.class.getName());
@@ -71,6 +74,7 @@ public class Processor extends Observable {
 	    lastSearch = new ArrayList<Task>();
 	    floatingTasks = new ArrayList<Task>();
 	    timedTasks = new ArrayList<Task>();
+	    blockedDates = new ArrayList<DateTime>();
 	    initialiseLogger();
 	}
 	
@@ -83,6 +87,10 @@ public class Processor extends Observable {
 	        processor = new Processor();
 	    }
 	    return processor;
+	}
+	
+	private static void resetInstance() {
+	    
 	}
 	
 	private static void initialiseLogger() {
@@ -137,7 +145,7 @@ public class Processor extends Observable {
 		}
 		Result result = cmd.execute(userInput);
 
-		if (result.isSuccess() && userInput) {
+		if (result.isSuccess() && !result.needsConfirmation() && userInput) {
 			updateCommandHistory(cmd);
 			updateUIPanelWindow(cmd);
 			log.info("Command executed successfully");
@@ -205,6 +213,11 @@ public class Processor extends Observable {
 	    return true;
 	}
 	
+	public boolean wipeFile() {
+	    
+	    return file.wipeFile();
+	}
+	
 	public List<Task> getSearchList() {
         return Collections.unmodifiableList(lastSearch);
     }
@@ -223,6 +236,9 @@ public class Processor extends Observable {
 	    return file;
 	}
 	
+	protected List<DateTime> getBlockedDates() {
+	    return blockedDates;
+	}
 	protected static Logger getLogger() {
 	    return log;
 	}

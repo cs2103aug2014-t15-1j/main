@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import Parser.TaskParam;
+import Storage.DateTime;
 import Storage.Task;
 
 public class CommandTodo extends Command {
@@ -14,6 +15,8 @@ public class CommandTodo extends Command {
     // "id" data [get("id"); returns string]
     private String id;
 
+    private DateTime dateTime;
+    
     private CommandDone cmdDone;
 
     public CommandTodo(List<TaskParam> content) {
@@ -60,6 +63,9 @@ public class CommandTodo extends Command {
             case "id":
                 return this.id;
 
+            case "date":
+                return this.dateTime.toString();
+                  
             default:
                 return null;
         }

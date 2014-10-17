@@ -23,11 +23,18 @@ public class Result {
     //TODO: Include error encountered in Result?
     private CommandType cmdType;
 	
+    private boolean confirmation;
+    
     /** Constructor for Result Object */
-	public Result(List<Task> tasks, boolean success, CommandType cmdType) {
+    public Result(List<Task> tasks, boolean success, CommandType cmdType){
+        this(tasks, success, cmdType, false);
+    }
+    
+	public Result(List<Task> tasks, boolean success, CommandType cmdType, boolean confirmation) {
 		this.tasks = tasks;
 		this.success = success;
 		this.cmdType = cmdType;
+		this.confirmation = confirmation;
 	}
 	
 	/** Accessors */
@@ -43,7 +50,11 @@ public class Result {
 		return cmdType;
 	}
 	
-	/** Mutators*/
+	public boolean needsConfirmation() {
+	    return confirmation;
+	}
+	
+	// Mutators
 	public void setSuccess(boolean success) {
 	    this.success = success;
 	}

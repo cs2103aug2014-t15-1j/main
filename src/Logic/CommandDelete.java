@@ -84,9 +84,9 @@ public class CommandDelete extends Command {
     }
     
     /**
-     * Executes "delete" operation
-     * Deletes a task
-     * Allows delete <id>, delete search, delete all
+     * Executes "delete" operation<br>
+     * Deletes a task<br>
+     * Allows delete {@literal<id>}, delete search, delete all
      * @return Result
      */
     protected Result execute(boolean userInput) {
@@ -94,6 +94,8 @@ public class CommandDelete extends Command {
         Processor processor = Processor.getInstance();
         List<Task> list = new ArrayList<Task>();
         boolean success = false;
+        boolean confirmation = false;
+        
         switch (rangeType) {
             case "id":
                 success = deleteTaskUsingID(list);
@@ -106,11 +108,12 @@ public class CommandDelete extends Command {
                 break;
             case "all":
                 success = true;
+                confirmation = true;
                 break;
             default:
                 success = false;
         }
-        return new Result(list, success, this.getType());
+        return new Result(list, success, this.getType(), confirmation);
     }
     
     /** Deletes Task using Id */
@@ -146,9 +149,9 @@ public class CommandDelete extends Command {
     }
 
     /**
-     * Executes "Restore" operation
-     * Restores a deleted Task
-     * Allows restore <id>, restore search
+     * Executes "Restore" operation<br>
+     * Restores a deleted Task<br>
+     * Allows restore {@literal<id>}, restore search
      * @return true/false on whether operation is performed
      */
     protected Result executeComplement() {
