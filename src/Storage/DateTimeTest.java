@@ -17,59 +17,82 @@ public class DateTimeTest {
     public void testDefaultConstructorHasEmptyAttributes() throws Exception {
         DateTime dT = new DateTime();
         assertEquals("Empty date String", "", dT.getDate());
+        assertEquals("Zeroed day", 0, dT.getDay());
+        assertEquals("Zeroed month", 0, dT.getMonth());
+        assertEquals("Zeroed year", 0, dT.getYear());
         assertEquals("Empty time String", "", dT.getTime());
     }
 
     @Test
     public void testConstructorStoreStringArgs() throws Exception {
-        String date = "10/10/2014";
+        String date = "10/11/2014";
         String time = "2359";
         DateTime dT = new DateTime(date, time);
         date = "";
         time = "";
-        assertEquals("Stored date by value", "10/10/2014", dT.getDate());
+        assertEquals("Stored date by value", "10/11/2014", dT.getDate());
+        assertEquals("Parsed day from date", 10, dT.getDay());
+        assertEquals("Parsed month from date", 11, dT.getMonth());
+        assertEquals("Parsed year from date", 2014, dT.getYear());
         assertEquals("Stored time by value", "2359", dT.getTime());
     }
 
     @Test
     public void testConstructorClonesByValue() throws Exception {
-        String date = "10/10/2014";
+        String date = "10/11/2014";
         String time = "2359";
         DateTime dT1 = new DateTime(date, time);
         DateTime dT2 = new DateTime(dT1);
         date = "";
         time = "";
         assertEquals("Cloned date", dT1.getDate(), dT2.getDate());
+        assertEquals("Cloned day", dT1.getDay(), dT2.getDay());
+        assertEquals("Cloned month", dT1.getMonth(), dT2.getMonth());
+        assertEquals("Cloned year", dT1.getYear(), dT2.getYear());
         assertEquals("Cloned time", dT1.getTime(), dT2.getTime());
+        
         dT1.setDate(date);
         dT1.setTime(time);
         assertEquals("Empty date String", "", dT1.getDate());
+        assertEquals("Zeroed day", 0, dT1.getDay());
+        assertEquals("Zeroed month", 0, dT1.getMonth());
+        assertEquals("Zeroed year", 0, dT1.getYear());
         assertEquals("Empty time String", "", dT1.getTime());
-        assertEquals("Cloned date by value", "10/10/2014", dT2.getDate());
+        
+        assertEquals("Cloned date by value", "10/11/2014", dT2.getDate());
+        assertEquals("Cloned day by value", 10, dT2.getDay());
+        assertEquals("Cloned month by value", 11, dT2.getMonth());
+        assertEquals("Cloned year by value", 2014, dT2.getYear());
         assertEquals("Cloned time by value", "2359", dT2.getTime());
     }
 
     @Test
     public void testResetDate() throws Exception {
-        String date = "10/10/2014";
+        String date = "10/11/2014";
         String time = "2359";
         DateTime dT = new DateTime(date, time);
         dT.resetDate();
         date = "";
         time = "";
-        assertEquals("Emoty date String", "", dT.getDate());
+        assertEquals("Empty date String", "", dT.getDate());
+        assertEquals("Zeroed day", 0, dT.getDay());
+        assertEquals("Zeroed month", 0, dT.getMonth());
+        assertEquals("Zeroed year", 0, dT.getYear());
         assertEquals("Stored time by value", "2359", dT.getTime());
     }
 
     @Test
     public void testResetTime() throws Exception {
-        String date = "10/10/2014";
+        String date = "10/11/2014";
         String time = "2359";
         DateTime dT = new DateTime(date, time);
         dT.resetTime();
         date = "";
         time = "";
-        assertEquals("Stored date by value", "10/10/2014", dT.getDate());
+        assertEquals("Stored date by value", "10/11/2014", dT.getDate());
+        assertEquals("Stored day by value", 10, dT.getDay());
+        assertEquals("Stored month by value", 11, dT.getMonth());
+        assertEquals("Stored year by value", 2014, dT.getYear());
         assertEquals("Empty time String", "", dT.getTime());
     }
 
@@ -82,6 +105,9 @@ public class DateTimeTest {
         date = "";
         time = "";
         assertEquals("Empty date String", "", dT.getDate());
+        assertEquals("Zeroed day", 0, dT.getDay());
+        assertEquals("Zeroed month", 0, dT.getMonth());
+        assertEquals("Zeroed year", 0, dT.getYear());
         assertEquals("Empty time String", "", dT.getTime());
     }
 

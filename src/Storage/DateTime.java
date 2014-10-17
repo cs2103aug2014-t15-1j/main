@@ -1,8 +1,9 @@
 package Storage;
 
 /**
- * The DateTime class encapsulates date and time attributes in one neat little
- * package. Date and time attributes are managed as Strings.
+ * The DateTime class encapsulates date and time attributes in a single package.
+ * Date and time attributes are managed as Strings. Date String is internally
+ * split into day, month, and year integer attributes for easier access.
  * 
  * Date and time formats, respectively: "DD/MM/YYYY" and "HHMM".
  * 
@@ -40,10 +41,22 @@ public class DateTime implements Comparable<DateTime> {
     /** Date format: "DD/MM/YYYY" */
     private String date = "";
 
+    /** Automatically parsed from date value. */
+    private int day = 0;
+
+    /** Automatically parsed from date value. */
+    private int month = 0;
+
+    /** Automatically parsed from date value. */
+    private int year = 0;
+
     /** Time format: "HHMM" */
     private String time = "";
 
-    /** Default constructor. Attributes are initialized as empty Strings. */
+    /**
+     * Default constructor. Attributes are initialized as empty Strings and
+     * zeroed integers.
+     */
     public DateTime() {
     }
 
@@ -60,6 +73,24 @@ public class DateTime implements Comparable<DateTime> {
         assert time.matches(TIME_PATTERN);
         this.date = date;
         this.time = time;
+        if (!date.isEmpty()) {
+            parseAndSplitDate(date);
+        }
+    }
+
+    /**
+     * Parses and splits date string for storing in day, month, and year integer
+     * attributes.
+     * 
+     * @param date
+     *            Is non-empty String, format: "DD/MM/YYYY".
+     */
+    private void parseAndSplitDate(String date) {
+        assert date.matches(DATE_PATTERN);
+        assert !date.isEmpty();
+        day = Integer.parseInt(date.substring(0, 2));
+        month = Integer.parseInt(date.substring(3, 5));
+        year = Integer.parseInt(date.substring(6));
     }
 
     /**
@@ -75,6 +106,9 @@ public class DateTime implements Comparable<DateTime> {
     public DateTime(DateTime dateTime) {
         assert dateTime.toString().matches(DATE_TIME_PATTERN);
         this.date = dateTime.date;
+        this.day = dateTime.day;
+        this.month = dateTime.month;
+        this.year = dateTime.year;
         this.time = dateTime.time;
     }
 
@@ -101,12 +135,62 @@ public class DateTime implements Comparable<DateTime> {
      */
     public void setDate(String date) {
         assert date.matches(DATE_PATTERN);
-        this.date = date;
+        if (date.isEmpty()) {
+            resetDate();
+        } else {
+            this.date = date;
+            parseAndSplitDate(date);
+        }
     }
 
     /** Resets date attribute to empty String. */
     public void resetDate() {
         date = "";
+        resetDay();
+        resetMonth();
+        resetYear();
+    }
+
+    /** 
+     * Gets day value parsed from date value.
+     * 
+     * @return Day value in integer type. 
+     */
+    public int getDay() {
+        return day;
+    }
+
+    /** Zeroes day attribute. */
+    private void resetDay() {
+        day = 0;
+    }
+
+    /** 
+     * Gets month value parsed from date value.
+     * 
+     * @return Month value in integer type. 
+     */
+    public int getMonth() {
+        return month;
+    }
+
+    /** Zeroes month attribute. */
+    private void resetMonth() {
+        month = 0;
+    }
+
+    /** 
+     * Gets year value parsed from date value.
+     * 
+     * @return Year value in integer type. 
+     */
+    public int getYear() {
+        return year;
+    }
+
+    /** Zeroes year attribute. */
+    private void resetYear() {
+        year = 0;
     }
 
     /** @return Time, format: "HHMM" or empty String. */
@@ -179,17 +263,14 @@ public class DateTime implements Comparable<DateTime> {
      */
     @Override
     public int compareTo(DateTime otherDateTime) {
-        String[] date1 = this.date.split("/");
-        String[] date2 = otherDateTime.getDate().split("/");
-
-        int day1 = Integer.parseInt(date1[0]);
-        int mth1 = Integer.parseInt(date1[1]);
-        int yr1 = Integer.parseInt(date1[2]);
+        int day1 = this.day;
+        int mth1 = this.month;
+        int yr1 = this.year;
         int time1 = Integer.parseInt(this.time);
-        int day2 = Integer.parseInt(date2[0]);
-        int mth2 = Integer.parseInt(date2[1]);
-        int yr2 = Integer.parseInt(date2[2]);
-        int time2 = Integer.parseInt(otherDateTime.getTime());
+        int day2 = otherDateTime.day;
+        int mth2 = otherDateTime.month;
+        int yr2 = otherDateTime.year;
+        int time2 = Integer.parseInt(otherDateTime.time);
 
         // Check year for differences
         if (yr1 < yr2) {
