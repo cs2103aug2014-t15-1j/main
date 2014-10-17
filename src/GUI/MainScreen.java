@@ -93,11 +93,12 @@ public class MainScreen {
 					output = ResultGenerator.sendInput(input);
 					feedback = screen.getFeedBack();
 					//output = commandLine.getText();
-					if (!output.equals(CODE_EXIT)) {
-	                       feedback.setText(output);
-	                        commandLine.setText("");
-					} else {
+					if (output.equals(CODE_EXIT)) {
 					    exitProgram();
+					} else {
+					    feedback.setText(output);
+                        commandLine.setText("");
+					    
 				//	}
 				//}catch (Exception error) {
 			//	error.getMessage();

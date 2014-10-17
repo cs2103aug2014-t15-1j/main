@@ -38,7 +38,7 @@ public class ResultGenerator {
 																				// unblocked?
 
 	// to be implement: Help
-	private static final String CODE_EXIT = " exit";
+	private static final String CODE_EXIT = "exit";
 	private static final String UNSUCCESSFUL_SEARCH_MESSAGE = "We could not find any results :( Try using different words?";
 	private static final String UNSUCCESSFUL_COMMAND_MESSAGE = "'%1$s'was not recognised.";
 	private static final String UNSUCCESSFUL_DISPLAY_NO_TASKS = "You are a free man! You do not have any tasks.";
@@ -125,7 +125,6 @@ public class ResultGenerator {
 
 			return SUCCESSFUL_REDO; 
 		case EXIT:
-			// to be changed
 			return CODE_EXIT;
 		default:
 			return ERROR_COMMAND_MESSAGE;

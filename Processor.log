@@ -1,14 +1,1 @@
-[17/10/2014 10:08:23] - INFO: Executing 'Display' Command... ::: Logic.CommandDisplay - execute
-[17/10/2014 10:08:23] - INFO: Command executed successfully ::: Logic.Processor - processCommand
-[17/10/2014 10:08:23] - INFO: Fetching Floating Tasks ::: Logic.Processor - fetchFloatingTasks
-[17/10/2014 10:08:23] - INFO: Fetching Floating Tasks ::: Logic.Processor - fetchFloatingTasks
-[17/10/2014 10:08:23] - INFO: Fetching Timed Tasks ::: Logic.Processor - fetchTimedTasks
-[17/10/2014 10:08:31] - INFO: Executing 'Delete' Command... ::: Logic.CommandDelete - execute
-[17/10/2014 10:08:31] - INFO: Updated side panel. ::: Logic.Processor - updateUIPanelWindow
-[17/10/2014 10:08:31] - INFO: Command executed successfully ::: Logic.Processor - processCommand
-[17/10/2014 10:08:31] - INFO: Fetching Floating Tasks ::: Logic.Processor - fetchFloatingTasks
-[17/10/2014 10:08:31] - INFO: Fetching Floating Tasks ::: Logic.Processor - fetchFloatingTasks
-[17/10/2014 10:08:31] - INFO: Fetching Timed Tasks ::: Logic.Processor - fetchTimedTasks
-[17/10/2014 10:08:33] - INFO: Command executed successfully ::: Logic.Processor - processCommand
-[17/10/2014 10:08:38] - INFO: Command executed successfully ::: Logic.Processor - processCommand
-[17/10/2014 10:08:44] - INFO: Command executed successfully ::: Logic.Processor - processCommand
+[17/10/2014 10:25:07] - INFO: Command executed successfully ::: Logic.Processor - processCommand
