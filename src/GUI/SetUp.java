@@ -191,11 +191,11 @@ public class SetUp {
             @Override
             public String getText(Object element) {
                 Task task = (Task) element;
-                String Due =  task.getDue().toString();
+                Storage.DateTime Due =  task.getDue();
                 if(Due == null){
                     return "<empty>";
                 }
-                return Due;
+                return Due.toString();
             }
         });
 
@@ -204,12 +204,12 @@ public class SetUp {
             @Override
             public String getText(Object element) {
                 Task task = (Task) element;
-                String Start = task.getStart().toString();
+                Storage.DateTime Start = task.getStart();
                 if(Start == null){
                     return "<empty>";
                 }
                 
-                return Start;
+                return Start.toString();
             }
         });
 
@@ -218,11 +218,11 @@ public class SetUp {
             @Override
             public String getText(Object element) {
                 Task task = (Task) element;
-                String End = task.getEnd().toString();
+                Storage.DateTime End = task.getEnd();
                 if(End == null){
                     return "<empty>";
                 }
-                return End;
+                return End.toString();
             }
         });
 
@@ -233,6 +233,10 @@ public class SetUp {
                 Task task = (Task) element;
                 List<String> tags = task.getTags();
                 String tag = "";
+                
+                if(tags == null || tags.isEmpty()){
+                    return "<empty>";
+                }
                 for (int index = 0; index < tags.size(); index++) {
                     tag = tag + tags.get(index);
                 }
@@ -279,6 +283,7 @@ public class SetUp {
         // TODO Auto-generated method stub
         taskList = new Label(sidePane, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL
                 | SWT.READ_ONLY);
+         
         GridData gridData = new GridData(GridData.FILL_BOTH);
         taskList.setLayoutData(gridData);
         // to change

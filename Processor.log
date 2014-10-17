@@ -1,10 +1,6 @@
-[16/10/2014 09:27:47] - INFO: Executing 'Add' Command... ::: Logic.CommandAdd - execute
-[16/10/2014 09:27:47] - INFO: Updated side panel. ::: Logic.Processor - updateUIPanelWindow
-[16/10/2014 09:27:47] - INFO: Command executed successfully ::: Logic.Processor - processCommand
-[16/10/2014 09:27:48] - INFO: Fetching Floating Tasks ::: Logic.Processor - fetchFloatingTasks
-[16/10/2014 09:27:48] - INFO: Fetching Timed Tasks ::: Logic.Processor - fetchTimedTasks
-[16/10/2014 09:28:30] - INFO: Executing 'Add' Command... ::: Logic.CommandAdd - execute
-[16/10/2014 09:28:30] - INFO: Updated side panel. ::: Logic.Processor - updateUIPanelWindow
-[16/10/2014 09:28:30] - INFO: Command executed successfully ::: Logic.Processor - processCommand
-[16/10/2014 09:28:30] - INFO: Fetching Floating Tasks ::: Logic.Processor - fetchFloatingTasks
-[16/10/2014 09:28:30] - INFO: Fetching Timed Tasks ::: Logic.Processor - fetchTimedTasks
+[17/10/2014 02:47:54] - INFO: Executing 'Add' Command... ::: Logic.CommandAdd - execute
+[17/10/2014 02:47:54] - INFO: Updated side panel. ::: Logic.Processor - updateUIPanelWindow
+[17/10/2014 02:47:54] - INFO: Command executed successfully ::: Logic.Processor - processCommand
+[17/10/2014 02:47:54] - INFO: Fetching Floating Tasks ::: Logic.Processor - fetchFloatingTasks
+[17/10/2014 02:47:54] - INFO: Fetching Floating Tasks ::: Logic.Processor - fetchFloatingTasks
+[17/10/2014 02:47:54] - INFO: Fetching Timed Tasks ::: Logic.Processor - fetchTimedTasks
