@@ -68,5 +68,7 @@ public class ParseTester {
         System.out.println(Parser.parse("block 23/04/2012 to 23/05/2014"));
         System.out.println(Parser.parse("block 23/04/1*14"));
 
+        // TEST ADD
+        System.out.println(Parser.parse("add do homework due: 23/04/2014 start: 22/04/2014 0300 end: 0300 21/04/2014"));
     }
 }

@@ -57,66 +57,94 @@ public class Parser {
     // ========== MAIN PARSE METHOD ==========//
 
     public static Command parse(String input) {
-        // TODO: check command for errors
-
-        // First word of the input should be the command type
+        // The Parser will analyse the input word by word
         String[] commandItems = input.split(" ");
-        String commandType = commandItems[0].toLowerCase();
 
-        // TODO: commandParams = removeCommandWord(commandItems)
-        switch (commandType) {
-            case TYPE_HELP:
-                return parseHelp(commandItems);
+        if (commandItems.length > 0) {
+            // First word of command should be command type.
+            // The rest of the words in the String are parameters.
+            String commandType = getCommandWord(commandItems);
+            String[] commandParams = removeCommandWord(commandItems);
 
-            case TYPE_ADD:
-                return parseAdd(commandItems);
+            switch (commandType) {
+                case TYPE_HELP:
+                    return parseHelp(commandParams);
 
-            case TYPE_EDIT:
-                return parseEdit(commandItems);
+                case TYPE_ADD:
+                    return parseAdd(commandParams);
 
-            case TYPE_DELETE:
-                return parseDelete(commandItems);
+                case TYPE_EDIT:
+                    return parseEdit(commandParams);
 
-            case TYPE_RESTORE:
-                return parseRestore(commandItems);
+                case TYPE_DELETE:
+                    return parseDelete(commandParams);
 
-            case TYPE_SEARCH:
-                return parseSearch(commandItems);
+                case TYPE_RESTORE:
+                    return parseRestore(commandParams);
 
-            case TYPE_DISPLAY:
-            case TYPE_SHOW:
-                return parseDisplay(commandItems);
+                case TYPE_SEARCH:
+                    return parseSearch(commandParams);
 
-            case TYPE_BLOCK:
-                return parseBlock(commandItems);
+                case TYPE_DISPLAY:
+                case TYPE_SHOW:
+                    return parseDisplay(commandParams);
 
-            case TYPE_UNBLOCK:
-                return parseUnblock(commandItems);
+                case TYPE_BLOCK:
+                    return parseBlock(commandParams);
 
-            case TYPE_DONE:
-                return parseDone(commandItems);
+                case TYPE_UNBLOCK:
+                    return parseUnblock(commandParams);
 
-            case TYPE_TODO:
-                return parseTodo(commandItems);
+                case TYPE_DONE:
+                    return parseDone(commandParams);
 
-            case TYPE_UNDO:
-            case TYPE_REDO:
-            case TYPE_EXIT:
-                return new CommandOthers(commandType);
+                case TYPE_TODO:
+                    return parseTodo(commandParams);
 
-            default:
-                return new CommandOthers("error",
-                        "Error in initial command parsing");
+                case TYPE_UNDO:
+                case TYPE_REDO:
+                case TYPE_EXIT:
+                    return new CommandOthers(commandType);
+            }
+        }
+        return new CommandOthers("error", "Error in initial command parsing");
+    }
+
+    /**
+     * Returns the command word from a given string array. The command word is
+     * assumed to be the first item of the array, and is returned in lower-case.
+     * 
+     * @param commandItems
+     *            An array containing a command input split by spaces
+     * @return String containing command word in lower-case
+     */
+    private static String getCommandWord(String[] commandItems) {
+        return commandItems[0].toLowerCase();
+    }
+
+    /**
+     * @param commandItems
+     * @return
+     */
+    private static String[] removeCommandWord(String[] commandItems) {
+        try {
+            String[] commandParams = new String[commandItems.length - 1];
+            for (int i = 1; i < commandItems.length; i++) {
+                commandParams[i - 1] = commandItems[i];
+            }
+            return commandParams;
+        } catch (Exception e) {
+            return new String[0];
         }
     }
 
     // ========== INDIVIDUAL PARSE-COMMAND FUNCTIONS ==========//
 
-    private static Command parseTodo(String[] commandItems) {
+    private static Command parseTodo(String[] commandParams) {
         List<TaskParam> todoFields = new ArrayList<TaskParam>();
 
         try {
-            String firstWord = commandItems[1];
+            String firstWord = commandParams[0];
             String firstWordLC = firstWord.toLowerCase();
             if (firstWordLC.equals("last")) {
                 todoFields.add(new TaskParam("rangeType", firstWordLC));
@@ -133,30 +161,17 @@ public class Parser {
         return new CommandTodo(todoFields);
     }
 
-    private static Command parseDone(String[] commandItems) {
+    private static Command parseDone(String[] commandParams) {
         List<TaskParam> doneFields = new ArrayList<TaskParam>();
 
         try {
-            String firstWord = commandItems[1];
+            String firstWord = commandParams[0];
             String firstWordLC = firstWord.toLowerCase();
-            if (isDate(firstWord)) {
+
+            if (DateParser.isValidDate(firstWord)) {
                 doneFields.add(new TaskParam("rangeType", "dates"));
-                if (commandItems.length == 4 && commandItems[2].equals("to") &&
-                    isDate(commandItems[3])) {
-                    if (firstDateEarlier(firstWord, commandItems[3])) {
-                        doneFields.add(new TaskParam("start", firstWord));
-                        doneFields.add(new TaskParam("end", commandItems[3]));
-                    } else {
-                        doneFields.add(new TaskParam("end", firstWord));
-                        doneFields.add(new TaskParam("start", commandItems[3]));
-                    }
-                } else if (commandItems.length == 2) {
-                    doneFields.add(new TaskParam("start", firstWord));
-                    doneFields.add(new TaskParam("end", firstWord));
-                } else {
-                    return new CommandOthers("error",
-                            "Invalid arguments for block");
-                }
+                doneFields.add(new TaskParam("start", firstWord));
+                doneFields.add(new TaskParam("end", firstWord));
             } else if (firstWordLC.equals("all")) {
                 doneFields.add(new TaskParam("rangeType", firstWordLC));
             } else if (isInteger(firstWord)) {
@@ -172,11 +187,11 @@ public class Parser {
         return new CommandDone(doneFields);
     }
 
-    private static Command parseUnblock(String[] commandItems) {
+    private static Command parseUnblock(String[] commandParams) {
         List<TaskParam> unblockFields = new ArrayList<TaskParam>();
 
         try {
-            String firstWord = commandItems[1];
+            String firstWord = commandParams[0];
             if (isInteger(firstWord)) {
                 unblockFields.add(new TaskParam("id", firstWord));
             } else {
@@ -190,144 +205,50 @@ public class Parser {
         return new CommandUnblock(unblockFields);
     }
 
-    private static Command parseBlock(String[] commandItems) {
+    private static Command parseBlock(String[] commandParams) {
         List<TaskParam> blockFields = new ArrayList<TaskParam>();
 
-        // TODO: Consider date format (length 1, 2, 3?)
-        // Currently: Date must be "DD/MM/YYYY" format
-        try {
-            String firstWord = commandItems[1];
-            if (isDate(firstWord)) {
-                // TODO: Very unforgiving formatting; doesn't allow any
-                // additional statements
-                if (commandItems.length == 4 && commandItems[2].equals("to") &&
-                    isDate(commandItems[3])) {
-                    if (firstDateEarlier(firstWord, commandItems[3])) {
-                        blockFields.add(new TaskParam("start", firstWord));
-                        blockFields.add(new TaskParam("end", commandItems[3]));
-                    } else {
-                        blockFields.add(new TaskParam("end", firstWord));
-                        blockFields
-                                .add(new TaskParam("start", commandItems[3]));
-                    }
-                } else if (commandItems.length == 2) {
-                    blockFields.add(new TaskParam("start", firstWord));
-                    blockFields.add(new TaskParam("end", firstWord));
-                } else {
-                    return new CommandOthers("error",
-                            "Invalid arguments for block");
-                }
-            } else {
-                return new CommandOthers("error", "Invalid arguments for block");
-            }
-        } catch (ArrayIndexOutOfBoundsException e) {
+        if (commandParams.length == 0) {
             return new CommandOthers("error", "No arguments for block");
-        }
+        } else if (commandParams.length == 1) {
+            // TODO: Add things to blockFields with extracted method,
+            // then do something with the extra strings (length==2)
+            String date = commandParams[0];
+            if (DateParser.isValidDate(date)) {
+                blockFields.add(new TaskParam("start", date));
+                blockFields.add(new TaskParam("end", date));
+                return new CommandBlock(blockFields);
+            }
+        } else if (commandParams.length >= 3) {
+            String date1 = commandParams[0];
+            String date2 = commandParams[2];
+            String connector = commandParams[1].toLowerCase();
+            if (DateParser.isValidDate(date1) &&
+                DateParser.isValidDate(date2) && connector.equals("to")) {
+                DateTime dateTime1 = new DateTime(date1, "");
+                DateTime dateTime2 = new DateTime(date2, "");
 
-        return new CommandBlock(blockFields);
-    }
-
-    private static boolean firstDateEarlier(String first, String second) {
-        int[] date1 = splitToDatesInt(first);
-        int[] date2 = splitToDatesInt(second);
-
-        int day1 = date1[0];
-        int mth1 = date1[1];
-        int yr1 = date1[2];
-        int day2 = date2[0];
-        int mth2 = date2[1];
-        int yr2 = date2[2];
-
-        if (yr1 < yr2) {
-            return true;
-        } else if (yr1 == yr2) {
-            if (mth1 < mth2) {
-                return true;
-            } else if (mth1 == mth2 && day1 < day2) {
-                return true;
+                if (dateTime1.compareTo(dateTime2) < 0) {
+                    blockFields.add(new TaskParam("start", date1));
+                    blockFields.add(new TaskParam("end", date2));
+                } else {
+                    blockFields.add(new TaskParam("start", date2));
+                    blockFields.add(new TaskParam("end", date1));
+                }
+                return new CommandBlock(blockFields);
             }
         }
 
-        System.out.println("second is earlier");
-        return false;
+        return new CommandOthers("error", "Invalid arguments for block");
     }
 
-    private static int[] splitToDatesInt(String str) {
-        assert (isDate(str));
-
-        String[] split = str.split("/");
-
-        int[] result = new int[3];
-        result[0] = Integer.parseInt(split[0]);
-        result[1] = Integer.parseInt(split[1]);
-        result[2] = Integer.parseInt(split[2]);
-
-        return result;
-    }
-
-    private static boolean isDate(String str) {
-        // Tentatively, dates = "DD/MM/YYYY"
-        boolean hasTwoSlashes;
-        boolean hasValidCompLengths;
-        boolean hasIntComponents;
-        boolean hasValidIntComp;
-
-        try {
-            String[] components = str.split("/");
-            hasTwoSlashes = (components.length == 3);
-            hasValidCompLengths = (components[0].length() == 2) &&
-                                  (components[1].length() == 2) &&
-                                  (components[2].length() == 4);
-            hasIntComponents = isInteger(components[0]) &&
-                               isInteger(components[1]) &&
-                               isInteger(components[2]);
-            hasValidIntComp = isValidMonth(components[1]) &&
-                              isValidDay(components[0], components[1]);
-        } catch (Exception e) {
-            return false;
-        }
-        return hasTwoSlashes && hasValidCompLengths && hasIntComponents &&
-               hasValidIntComp;
-    }
-
-    private static boolean isValidDay(String day, String month) {
-        int dayNum = Integer.parseInt(day);
-        int monthNum = Integer.parseInt(month);
-
-        switch (monthNum) {
-            case 1:
-            case 3:
-            case 5:
-            case 7:
-            case 8:
-            case 10:
-            case 12:
-                return dayNum > 0 && dayNum <= 31;
-
-            case 2:
-                return dayNum > 0 && dayNum <= 28;
-
-            case 4:
-            case 6:
-            case 9:
-            case 11:
-                return dayNum > 0 && dayNum <= 30;
-        }
-        return false;
-    }
-
-    private static boolean isValidMonth(String string) {
-        int monthNum = Integer.parseInt(string);
-        return monthNum > 0 && monthNum <= 12;
-    }
-
-    private static Command parseDisplay(String[] commandItems) {
+    private static Command parseDisplay(String[] commandParams) {
         List<TaskParam> displayFields = new ArrayList<TaskParam>();
 
-        // CONSIDER: No arguments "display"?
-        // TODO: MERGE DISPLAY, DELETE, RESTORE?
-        try {
-            String firstWord = commandItems[1];
+        if (commandParams.length == 0) {
+            displayFields.add(new TaskParam("rangeType", "all"));
+        } else {
+            String firstWord = commandParams[0];
             String firstWordLC = firstWord.toLowerCase();
             if (firstWordLC.equals("block")) {
                 displayFields.add(new TaskParam("rangeType", firstWordLC));
@@ -338,28 +259,71 @@ public class Parser {
                 return new CommandOthers("error",
                         "Invalid argument for display");
             }
-        } catch (ArrayIndexOutOfBoundsException e) {
-            displayFields.add(new TaskParam("rangeType", "all"));
         }
 
         return new CommandDisplay(displayFields);
     }
 
-    private static Command parseSearch(String[] commandItems) {
+    private static Command parseDelete(String[] commandParams) {
+        List<TaskParam> deleteFields = new ArrayList<TaskParam>();
+
+        try {
+            String firstWord = commandParams[0];
+            if (DateParser.isValidDate(firstWord)) {
+                // TODO: Remove start/end for most Commands
+                deleteFields.add(new TaskParam("rangeType", "dates"));
+                deleteFields.add(new TaskParam("start", firstWord));
+                deleteFields.add(new TaskParam("end", firstWord));
+            } else if (isDeleteParamName(firstWord.toLowerCase())) {
+                deleteFields.add(new TaskParam("rangeType", firstWord
+                        .toLowerCase()));
+            } else if (isInteger(firstWord)) {
+                deleteFields.add(new TaskParam("rangeType", "id"));
+                deleteFields.add(new TaskParam("id", firstWord));
+            } else {
+                return new CommandOthers("error", "Invalid argument for delete");
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
+            return new CommandOthers("error", "No arguments for delete");
+        }
+
+        return new CommandDelete(deleteFields);
+    }
+
+    private static Command parseRestore(String[] commandParams) {
+        List<TaskParam> restoreFields = new ArrayList<TaskParam>();
+
+        try {
+            String firstWord = commandParams[0];
+            if (isInteger(firstWord)) {
+                restoreFields.add(new TaskParam("rangeType", "id"));
+                restoreFields.add(new TaskParam("id", firstWord));
+            } else {
+                return new CommandOthers("error",
+                        "Invalid argument for restore");
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
+            return new CommandOthers("error", "No arguments for restore");
+        }
+
+        return new CommandRestore(restoreFields);
+    }
+
+    private static Command parseSearch(String[] commandParams) {
         List<TaskParam> searchFields = new ArrayList<TaskParam>();
 
         // TODO: REFACTOR
         try {
-            if (commandItems.length < 2) {
+            if (commandParams.length == 0) {
                 throw new ArrayIndexOutOfBoundsException();
             }
 
             boolean donenessIndicated = false;
             boolean dateIndicated = false;
-            for (int i = 1; i < commandItems.length; i++) {
-                String currWord = commandItems[i];
+            for (int i = 0; i < commandParams.length; i++) {
+                String currWord = commandParams[i];
                 String currWordLC = currWord.toLowerCase();
-                if (isDate(currWord)) {
+                if (DateParser.isValidDate(currWord)) {
                     if (!dateIndicated) {
                         searchFields.add(new TaskParam("date", currWord));
                         dateIndicated = true;
@@ -393,71 +357,9 @@ public class Parser {
         return new CommandSearch(searchFields);
     }
 
-    private static Command parseRestore(String[] commandItems) {
-        List<TaskParam> restoreFields = new ArrayList<TaskParam>();
-
-        try {
-            String firstWord = commandItems[1];
-            if (firstWord.toLowerCase().equals("all")) {
-                restoreFields.add(new TaskParam("rangeType", firstWord
-                        .toLowerCase()));
-            } else if (isInteger(firstWord)) {
-                restoreFields.add(new TaskParam("rangeType", "id"));
-                restoreFields.add(new TaskParam("id", firstWord));
-            } else {
-                return new CommandOthers("error",
-                        "Invalid argument for restore");
-            }
-        } catch (ArrayIndexOutOfBoundsException e) {
-            return new CommandOthers("error", "No arguments for restore");
-        }
-
-        return new CommandRestore(restoreFields);
-    }
-
-    private static Command parseDelete(String[] commandItems) {
-        List<TaskParam> deleteFields = new ArrayList<TaskParam>();
-
-        try {
-            String firstWord = commandItems[1];
-            if (isDate(firstWord)) {
-                deleteFields.add(new TaskParam("rangeType", "dates"));
-                if (commandItems.length == 4 && commandItems[2].equals("to") &&
-                    isDate(commandItems[3])) {
-                    if (firstDateEarlier(firstWord, commandItems[3])) {
-                        deleteFields.add(new TaskParam("start", firstWord));
-                        deleteFields.add(new TaskParam("end", commandItems[3]));
-                    } else {
-                        deleteFields.add(new TaskParam("end", firstWord));
-                        deleteFields
-                                .add(new TaskParam("start", commandItems[3]));
-                    }
-                } else if (commandItems.length == 2) {
-                    deleteFields.add(new TaskParam("start", firstWord));
-                    deleteFields.add(new TaskParam("end", firstWord));
-                } else {
-                    return new CommandOthers("error",
-                            "Too many arguments for delete (dates) detected");
-                }
-            } else if (isDeleteParamName(firstWord.toLowerCase())) {
-                deleteFields.add(new TaskParam("rangeType", firstWord
-                        .toLowerCase()));
-            } else if (isInteger(firstWord)) {
-                deleteFields.add(new TaskParam("rangeType", "id"));
-                deleteFields.add(new TaskParam("id", firstWord));
-            } else {
-                return new CommandOthers("error", "Invalid argument for delete");
-            }
-        } catch (ArrayIndexOutOfBoundsException e) {
-            return new CommandOthers("error", "No arguments for delete");
-        }
-
-        return new CommandDelete(deleteFields);
-    }
-
-    private static Command parseEdit(String[] commandItems) {
+    private static Command parseEdit(String[] commandParams) {
         String currField = "name";
-        String prevField = "name";
+        String prevField = currField;
         String id;
         List<TaskParam> editFields = new ArrayList<TaskParam>();
 
@@ -465,15 +367,17 @@ public class Parser {
         // TODO: Note that currently all non-delete parameters will be thrown to
         // "name:" if "delete" is the current field. Also, delete has no
         // shorthand.
-        if (commandItems.length > 1 && isInteger(commandItems[1])) {
-            id = commandItems[1];
+        
+        // try saveEditIdToField() catch return CommandOthers
+        if (commandParams.length > 0 && isInteger(commandParams[0])) {
+            id = commandParams[0];
             editFields.add(new TaskParam("id", id));
         } else {
             return new CommandOthers("error", "Invalid id for edit");
         }
 
-        for (int i = 2; i < commandItems.length; i++) {
-            String currWord = commandItems[i];
+        for (int i = 1; i < commandParams.length; i++) {
+            String currWord = commandParams[i];
             String currWordLC = currWord.toLowerCase();
 
             if (isAddParamName(currWord) || currWordLC.equals("delete:")) {
@@ -482,12 +386,7 @@ public class Parser {
             } else if (containsParamName(currWord) ||
                        containsDeleteParam(currWord)) {
                 String[] wordList = currWord.split(":");
-                int endIndex;
-                if (currWord.endsWith(":")) {
-                    endIndex = wordList.length;
-                } else {
-                    endIndex = wordList.length - 1;
-                }
+                int endIndex = getLastPossibleParamIndex(currWord, wordList);
 
                 int lastValidField = 0;
                 // Check only until the second last word
@@ -504,17 +403,11 @@ public class Parser {
                     }
                 }
 
-                // Add remainder to the current field
-                String toAddToField = "";
-                for (int k = lastValidField + 1; k < wordList.length; k++) {
-                    toAddToField = toAddToField.concat(wordList[k]);
-                    if (k != wordList.length - 1) {
-                        toAddToField = toAddToField.concat(":");
-                    }
-                }
-                getTaskParam(editFields, currField).addToField(toAddToField);
+                String toAddToField = mergeWordsAfterIndex(wordList,
+                                                           lastValidField);
+                addToCurrFieldParam(editFields, currField, toAddToField);
             } else if (hasValidHashTag(currWord)) {
-                editFields.add(new TaskParam("tag", currWord));
+                addTaskParamToField(editFields, "tags", currWord);
             } else if (currField.equals("delete")) {
                 // check if it's a valid delete keyword (ignore otherwise)
                 if (Arrays.asList(TASK_PARAM_LIST).contains(currWordLC)) {
@@ -524,25 +417,27 @@ public class Parser {
                         deleteParam.addToField(currWordLC);
                     }
                 } else {
-                    getTaskParam(editFields, prevField).addToField(currWord);
+                    addToCurrFieldParam(editFields, prevField, currWord);
                 }
             } else {
-                getTaskParam(editFields, currField).addToField(currWord);
+                addToCurrFieldParam(editFields, currField, currWord);
             }
         }
 
         removeDuplicates(editFields);
+        removeInvalidDateTimes(editFields);
+        checkStartEndOrder(editFields);
 
         return new CommandEdit(editFields);
     }
 
-    private static Command parseHelp(String[] commandItems) {
+    private static Command parseHelp(String[] commandParams) {
         String helpField = null;
 
         // TODO: change CommandHelp to process "invalid" as Command.ERROR?
-        if (commandItems.length > 1) {
-            if (isHelpParam(commandItems[1])) {
-                helpField = commandItems[1].toLowerCase();
+        if (commandParams.length > 0) {
+            if (isHelpParam(commandParams[0])) {
+                helpField = commandParams[0].toLowerCase();
             } else {
                 helpField = "invalid";
             }
@@ -551,74 +446,165 @@ public class Parser {
         return new CommandHelp(helpField);
     }
 
-    private static Command parseAdd(String[] commandItems) {
+    private static Command parseAdd(String[] commandParams) {
         String currField = "name";
         List<TaskParam> addFields = new ArrayList<TaskParam>();
 
-        for (int i = 1; i < commandItems.length; i++) {
-            String currWord = commandItems[i];
+        for (int i = 0; i < commandParams.length; i++) {
+            String currWord = commandParams[i];
             if (containsParamName(currWord)) {
+                // Split up all parameter names
                 String[] wordList = currWord.split(":");
-                int endIndex;
-                if (currWord.endsWith(":")) {
-                    endIndex = wordList.length;
-                } else {
-                    endIndex = wordList.length - 1;
-                }
 
-                int lastValidField = 0;
-                // Check until endIndex
-                for (int j = 0; j < endIndex; j++) {
-                    if (isAddParamName(wordList[j] + ":")) {
-                        currField = getParamName(wordList[j] + ":");
-                        lastValidField = j;
-                    } else {
-                        break;
-                    }
-                }
+                // Get the last valid parameter, and the index in wordList it
+                // corresponds to. EndIndex checks if the last word in wordList can
+                // be a parameter name.
+                int endIndex = getLastPossibleParamIndex(currWord, wordList);
+                currField = getLastValidParamName(wordList, endIndex, currField);
+                int lastValidField = getLastValidParamNameIndex(wordList,
+                                                                endIndex);
 
                 // Add remainder to the current field
-                String toAddToField = "";
-                for (int k = lastValidField + 1; k < wordList.length; k++) {
-                    toAddToField = toAddToField.concat(wordList[k]);
-                    if (k != wordList.length - 1) {
-                        toAddToField = toAddToField.concat(":");
-                    }
-                }
-                getTaskParam(addFields, currField).addToField(toAddToField);
+                String toAddToField = mergeWordsAfterIndex(wordList,
+                                                           lastValidField);
+                addToCurrFieldParam(addFields, currField, toAddToField);
             } else if (isAddParamName(currWord)) {
                 currField = getParamName(currWord);
             } else if (hasValidHashTag(currWord)) {
-                addFields.add(new TaskParam("tag", currWord));
+                addTaskParamToField(addFields, "tag", currWord);
             } else {
-                // IMPLEMENT TIME
-                getTaskParam(addFields, currField).addToField(currWord);
+                addToCurrFieldParam(addFields, currField, currWord);
             }
         }
 
         removeDuplicates(addFields);
-        if (containsParam(addFields, "due")) {
-            
-        }
-        if (containsParam(addFields, "start")) {
-
-        }
-        if (containsParam(addFields, "end")) {
-
-        }
+        removeInvalidDateTimes(addFields);
+        checkStartEndOrder(addFields);
 
         return new CommandAdd(addFields);
     }
 
+    /**
+     * @param originalStr
+     * @param wordList
+     * @return
+     */
+    private static int getLastPossibleParamIndex(String originalStr,
+                                                 String[] wordList) {
+        if (originalStr.endsWith(":")) {
+            return wordList.length;
+        } else {
+            return wordList.length - 1;
+        }
+    }
 
-    private static boolean containsParam(List<TaskParam> addFields, String pName) {
-        boolean result = false;
-        for (TaskParam tp : addFields) {
-            if (tp.getName().equals(pName)) {
-                result = true;
+    /**
+     * @param wordList
+     * @param endIndex
+     * @param currField
+     * @return
+     */
+    private static String getLastValidParamName(String[] wordList,
+                                                int endIndex, String currField) {
+        for (int j = 0; j < endIndex; j++) {
+            if (isAddParamName(wordList[j] + ":")) {
+                currField = getParamName(wordList[j] + ":");
+            } else {
+                break;
             }
         }
-        return result;
+        return currField;
+    }
+
+    /**
+     * @param wordList
+     * @param endIndex
+     * @return
+     */
+    private static int getLastValidParamNameIndex(String[] wordList,
+                                                  int endIndex) {
+        int lastValidField = 0;
+        for (int j = 0; j < endIndex; j++) {
+            if (isAddParamName(wordList[j] + ":")) {
+                lastValidField = j;
+            } else {
+                break;
+            }
+        }
+        return lastValidField;
+    }
+
+    /**
+     * @param wordList
+     * @param index
+     * @return
+     */
+    private static String mergeWordsAfterIndex(String[] wordList, int index) {
+        String toAddToField = "";
+        for (int k = index + 1; k < wordList.length; k++) {
+            toAddToField = toAddToField.concat(wordList[k]);
+            if (k != wordList.length - 1) {
+                toAddToField = toAddToField.concat(":");
+            }
+        }
+        return toAddToField;
+    }
+
+    /**
+     * @param fields
+     * @param currField
+     * @param content
+     */
+    private static void addToCurrFieldParam(List<TaskParam> fields,
+                                       String currField, String content) {
+        getTaskParam(fields, currField).addToField(content);
+    }
+
+    /**
+     * @param fields
+     * @param paramName
+     * @param paramField
+     * @return
+     */
+    private static boolean addTaskParamToField(List<TaskParam> fields,
+                                               String paramName,
+                                               String paramField) {
+        return fields.add(new TaskParam(paramName, paramField));
+    }
+
+    /**
+     * @param fields
+     */
+    private static void removeInvalidDateTimes(List<TaskParam> fields) {
+        String[] dateParams = new String[] { "due", "start", "end" };
+        for (int i = 0; i < dateParams.length; i++) {
+            String currParamName = dateParams[i];
+            TaskParam currParam = getTaskParam(fields, currParamName);
+            if (!DateParser.isValidDateTime(currParam.getField())) {
+                fields.remove(currParam);
+            }
+        }
+    }
+
+    /**
+     * @param fields
+     */
+    private static void checkStartEndOrder(List<TaskParam> fields) {
+        TaskParam startTP = getTaskParam(fields, "start");
+        TaskParam endTP = getTaskParam(fields, "end");
+        if (!startTP.getField().isEmpty() && !endTP.getField().isEmpty()) {
+            DateTime startDT = DateParser.parseToDateTime(startTP.getField());
+            DateTime endDT = DateParser.parseToDateTime(endTP.getField());
+            if (startDT.compareTo(endDT) > 0) {
+                fields.remove(startTP);
+                fields.remove(endTP);
+                fields.add(new TaskParam("end", startTP.getField()));
+                fields.add(new TaskParam("start", endTP.getField()));
+            }
+        } else {
+            fields.remove(startTP);
+            fields.remove(endTP);
+        }
     }
 
     private static boolean isEditParamName(String toCheck) {
@@ -758,7 +744,8 @@ public class Parser {
                 }
             } else {
                 int pIndex = getParamIndex(currField);
-                // NOTE: currWord.isEmpty() is to make sure the parser does not add " " for each empty string
+                // NOTE: currWord.isEmpty() is to make sure the parser does not
+                // add " " for each empty string
                 // TODO: check other cases for this.
                 if (param[pIndex].isEmpty() || currWord.isEmpty()) {
                     param[pIndex] = param[pIndex].concat(currWord);

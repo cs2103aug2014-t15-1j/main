@@ -10,6 +10,10 @@ import Storage.DateTime;
 
 public class DateParser {
 
+    private static final int TYPE_TIME_DATE = 4;
+    private static final int TYPE_DATE_TIME = 3;
+    private static final int TYPE_TIME_ONLY = 2;
+    private static final int TYPE_DATE_ONLY = 1;
     /**
      * The date/time format DateParser will use.
      */
@@ -89,14 +93,14 @@ public class DateParser {
      */
     public static boolean isValidDateTime(String str) {
         String[] strFields = str.split(" ");
-    
+
         boolean validNumOfTerms = strFields.length > 0 && strFields.length <= 2;
         boolean containsDate = false;
         boolean containsTime = false;
         boolean containsMultipleDates = false;
         boolean containsMultipleTimes = false;
         boolean containsNonDateTime = false;
-    
+
         for (int i = 0; i < strFields.length; i++) {
             if (isValidDate(strFields[i])) {
                 if (!containsDate) {
@@ -114,7 +118,7 @@ public class DateParser {
                 containsNonDateTime = true;
             }
         }
-    
+
         return validNumOfTerms && (containsDate || containsTime) &&
                !(containsMultipleDates || containsMultipleTimes) &&
                !containsNonDateTime;
@@ -138,31 +142,27 @@ public class DateParser {
      *         <code>dd/MM/yyyy</code> and time in <code>HHmm</code>
      */
     public static DateTime parseToDateTime(String str) {
-        if (str==null || str.isEmpty()) {
+        if (str == null || str.isEmpty()) {
             return new DateTime();
         }
-        
+
         if (!isValidDateTime(str)) {
             throw new IllegalArgumentException("Invalid input for parseToDate");
         }
 
         switch (getDateType(str)) {
-            case 1:
-                // Date only
+            case TYPE_DATE_ONLY:
                 return new DateTime(str, "");
 
-            case 2:
-                // Time only
+            case TYPE_TIME_ONLY:
                 return new DateTime(getCurrDateStr(), str);
 
-            case 3:
-                // <Date> then <Time>
+            case TYPE_DATE_TIME:
                 String[] dateFields1 = str.split(" ");
                 assert (dateFields1.length == 2);
                 return new DateTime(dateFields1[0], dateFields1[1]);
 
-            case 4:
-                // <Time> then <Date>
+            case TYPE_TIME_DATE:
                 String[] dateFields2 = str.split(" ");
                 assert (dateFields2.length == 2);
                 return new DateTime(dateFields2[1], dateFields2[0]);
@@ -229,7 +229,7 @@ public class DateParser {
      * Checks if the input <code>String</code> is in the accepted date format
      * <code>dd/MM/yyyy</code>.
      */
-    private static boolean isValidDate(String str) {
+    public static boolean isValidDate(String str) {
         boolean hasTwoSlashes;
         boolean hasValidCompLengths;
         boolean hasIntComponents;
@@ -237,17 +237,17 @@ public class DateParser {
 
         try {
             String[] components = str.split("/");
+            String day = components[0];
+            String month = components[1];
+            String year = components[2];
             hasTwoSlashes = (components.length == 3);
-            hasValidCompLengths = (components[0].length() == 2) &&
-                                  (components[1].length() == 2) &&
-                                  (components[2].length() == 4);
-            hasIntComponents = Parser.isInteger(components[0]) &&
-                               Parser.isInteger(components[1]) &&
-                               Parser.isInteger(components[2]);
-            hasValidIntComp = isValidYear(components[2]) &&
-                              isValidMonth(components[1]) &&
-                              isValidDay(components[0], components[1],
-                                         components[2]);
+            hasValidCompLengths = (day.length() == 2) &&
+                                  (month.length() == 2) && (year.length() == 4);
+            hasIntComponents = Parser.isInteger(day) &&
+                               Parser.isInteger(month) &&
+                               Parser.isInteger(year);
+            hasValidIntComp = isValidYear(year) && isValidMonth(month) &&
+                              isValidDay(day, month, year);
         } catch (Exception e) {
             return false;
         }
@@ -262,7 +262,7 @@ public class DateParser {
      * Converts input <code>String</code> values to <code>int</code> values and
      * calls the overloaded method {@link #isValidDay(int, int, int)}.
      */
-    public static boolean isValidDay(String day, String month, String year) {
+    private static boolean isValidDay(String day, String month, String year) {
         int dayNum = Integer.parseInt(day);
         int monthNum = Integer.parseInt(month);
         int yearNum = Integer.parseInt(year);
@@ -319,7 +319,7 @@ public class DateParser {
      * <i> Note: This formula started proper from 8 AD, and does not apply to
      * BC. </i>
      */
-    public static boolean isLeapYear(int year) {
+    private static boolean isLeapYear(int year) {
         assert (year >= 8) : "Invalid year! Our formula only works for after 8 AD";
         return (year % 400 == 0) || (year % 4 == 0 && year % 100 != 0);
     }
@@ -334,7 +334,7 @@ public class DateParser {
      * @param monthStr
      *            A <code>String</code> containing only an integer.
      */
-    public static boolean isValidMonth(String monthStr) {
+    private static boolean isValidMonth(String monthStr) {
         int monthNum = Integer.parseInt(monthStr);
         return monthNum > 0 && monthNum <= 12;
     }
@@ -349,7 +349,7 @@ public class DateParser {
      * @param yearStr
      *            A <code>String</code> containing only an integer.
      */
-    public static boolean isValidYear(String yearStr) {
+    private static boolean isValidYear(String yearStr) {
         int yearNum = Integer.parseInt(yearStr);
         // TODO: Magic strings in year, month, day
         return yearNum >= 1819;

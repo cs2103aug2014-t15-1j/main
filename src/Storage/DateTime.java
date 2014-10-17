@@ -131,11 +131,9 @@ public class DateTime implements Comparable<DateTime> {
         int day1 = this.day;
         int mth1 = this.month;
         int yr1 = this.year;
-        int time1 = Integer.parseInt(this.time);
         int day2 = otherDateTime.day;
         int mth2 = otherDateTime.month;
         int yr2 = otherDateTime.year;
-        int time2 = Integer.parseInt(otherDateTime.time);
 
         // Check year for differences
         if (yr1 < yr2) {
@@ -158,11 +156,16 @@ public class DateTime implements Comparable<DateTime> {
             return 1;
         }
 
-        // Then check time for differences
-        if (time1 < time2) {
-            return -1;
-        } else if (time1 > time2) {
-            return 1;
+        // If all date comparison fails and time exists
+        if (!this.time.isEmpty() && !otherDateTime.time.isEmpty()) {
+            // Check time for differences
+            int time1 = Integer.parseInt(this.time);
+            int time2 = Integer.parseInt(otherDateTime.time);
+            if (time1 < time2) {
+                return -1;
+            } else if (time1 > time2) {
+                return 1;
+            }
         }
 
         // No differences detected
