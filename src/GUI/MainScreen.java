@@ -32,7 +32,8 @@ public class MainScreen {
 	public static void main(String[] args) {
 		Display display = new Display();
 		Shell shell = new Shell(display);
-
+		
+		// Things to do at startUp: Display all To do Tasks
 		SetUp setUpScreen = SetUp.getInstance(shell);
 		
 		removeText(setUpScreen);

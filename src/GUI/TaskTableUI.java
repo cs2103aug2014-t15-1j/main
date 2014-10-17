@@ -18,6 +18,7 @@ public class TaskTableUI {
         TableViewer table = getTable();
         Object[] tasksArray = tasks.toArray();
         table.setInput(tasksArray);
+        table.refresh();
     }
     
     private TableViewer getTable(){

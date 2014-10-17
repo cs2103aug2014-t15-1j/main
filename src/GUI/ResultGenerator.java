@@ -100,8 +100,10 @@ public class ResultGenerator {
 		case EDIT:
 			return singleLineSuccessMessage(SUCCESSFUL_EDIT, tasks);
 		case DISPLAY:
+		    updateInterface(tasks);
 			return successfulDisplayMessage(tasks);
 		case SEARCH:
+		    updateInterface(tasks);
 			return successfulSearchMessage(tasks);
 		case TODO:
 			return singleLineSuccessMessage(SUCCESSFUL_TODO, tasks);
