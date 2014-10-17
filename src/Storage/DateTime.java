@@ -121,7 +121,15 @@ public class DateTime implements Comparable<DateTime> {
      */
     @Override
     public String toString() {
-        return date + " " + time;
+        if (date.isEmpty() && time.isEmpty()) {
+            return "";
+        } else if (date.isEmpty()) {
+            return time;
+        } else if (time.isEmpty()) {
+            return date;
+        } else {
+            return date + " " + time;
+        }
     }
 
     /** @return Date, format: "DD/MM/YYYY" or empty String. */
