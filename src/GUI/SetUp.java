@@ -42,6 +42,8 @@ public class SetUp {
     private static final String HEADER_NAME_START = "Start";
     private static final String HEADER_NAME_END = "End";
     private static final String HEADER_NAME_TAGS = "Tags";
+    
+    private static final String CELL_EMPTY = "empty";
 
     private static final int COL_WIDTH = 175;
     private static final int COL_WIDTH_ID = 50;
@@ -172,7 +174,9 @@ public class SetUp {
         column.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
+                
                 Task task = (Task) element;
+                assert (task != null);
                 String id = task.getId() + "";
                 return id;
             }
@@ -181,7 +185,9 @@ public class SetUp {
         column.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
+                // set Name: max 40 characters
                 Task task = (Task) element;
+                assert (task != null);
                 return task.getName();
             }
         });
@@ -191,9 +197,11 @@ public class SetUp {
             @Override
             public String getText(Object element) {
                 Task task = (Task) element;
+                assert (task != null);
                 Storage.DateTime Due =  task.getDue();
+                
                 if(Due == null){
-                    return "<empty>";
+                    return CELL_EMPTY;
                 }
                 return Due.toString();
             }
@@ -204,9 +212,10 @@ public class SetUp {
             @Override
             public String getText(Object element) {
                 Task task = (Task) element;
+                assert (task != null);
                 Storage.DateTime Start = task.getStart();
                 if(Start == null){
-                    return "<empty>";
+                    return CELL_EMPTY;
                 }
                 
                 return Start.toString();
@@ -218,9 +227,10 @@ public class SetUp {
             @Override
             public String getText(Object element) {
                 Task task = (Task) element;
+                assert (task != null);
                 Storage.DateTime End = task.getEnd();
                 if(End == null){
-                    return "<empty>";
+                    return CELL_EMPTY;
                 }
                 return End.toString();
             }
@@ -231,11 +241,12 @@ public class SetUp {
             @Override
             public String getText(Object element) {
                 Task task = (Task) element;
+                assert (task != null);
                 List<String> tags = task.getTags();
                 String tag = "";
                 
                 if(tags == null || tags.isEmpty()){
-                    return "<empty>";
+                    return CELL_EMPTY;
                 }
                 for (int index = 0; index < tags.size(); index++) {
                     tag = tag + tags.get(index);
@@ -268,7 +279,7 @@ public class SetUp {
     }
 
     private void setUpCommandLine() {
-        commandLine = new Text(mainInterface, SWT.SINGLE | SWT.BORDER_SOLID);
+        commandLine = new Text(mainInterface, SWT.SINGLE | SWT.BORDER_DOT);
         GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
         commandLine.setLayoutData(gridData);
         commandLine.setText(MESSAGE_TYPE_HERE);

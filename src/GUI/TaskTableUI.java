@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.eclipse.jface.viewers.TableViewer;
 
+import Logic.Processor;
 import Storage.Task;
 /*
  * This class updates the task table interface whenever a change is made
@@ -11,12 +12,14 @@ import Storage.Task;
 public class TaskTableUI {
     
     public TaskTableUI(List<Task> tasks){
-        update(tasks);
+        update();
     }
     
-    private void update(List<Task> tasks){
+    private void update(){
         TableViewer table = getTable();
-        Object[] tasksArray = tasks.toArray();
+        Processor processor = Processor.getInstance();
+        List<Task> tasksTimed = processor.fetchFloatingTasks(); 
+        Object[] tasksArray = tasksTimed.toArray();
         table.setInput(tasksArray);
         table.refresh();
     }

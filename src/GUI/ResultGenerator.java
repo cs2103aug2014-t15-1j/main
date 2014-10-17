@@ -95,6 +95,8 @@ public class ResultGenerator {
 		    updateInterface(tasks);
 			return singleLineSuccessMessage(SUCCESSFUL_ADD, tasks);
 		case DELETE:
+		    // delete all --> implement confirmation
+		    
 		    updateInterface(tasks);
 		    return SUCCESSFUL_DELETE;
 		case EDIT:
@@ -112,6 +114,7 @@ public class ResultGenerator {
 		case RESTORE:
 			return SUCCESSFUL_RESTORE;
 		case BLOCK:
+		    // ask user, if user wants to block a place with tasks assigned
 			return SUCCESSFUL_BLOCK;
 		case UNBLOCK:
 			return SUCCESSFUL_UNBLOCK;
@@ -120,7 +123,7 @@ public class ResultGenerator {
 			return SUCCESSFUL_UNDO;
 		case REDO:
 
-			return SUCCESSFUL_REDO;
+			return SUCCESSFUL_REDO; 
 		case EXIT:
 			// to be changed
 			return CODE_EXIT;
