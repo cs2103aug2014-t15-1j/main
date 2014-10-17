@@ -50,7 +50,7 @@ public class DateTimeTest {
         assertEquals("Cloned month", dT1.getMonth(), dT2.getMonth());
         assertEquals("Cloned year", dT1.getYear(), dT2.getYear());
         assertEquals("Cloned time", dT1.getTime(), dT2.getTime());
-        
+
         dT1.setDate(date);
         dT1.setTime(time);
         assertEquals("Empty date String", "", dT1.getDate());
@@ -58,7 +58,7 @@ public class DateTimeTest {
         assertEquals("Zeroed month", 0, dT1.getMonth());
         assertEquals("Zeroed year", 0, dT1.getYear());
         assertEquals("Empty time String", "", dT1.getTime());
-        
+
         assertEquals("Cloned date by value", "10/11/2014", dT2.getDate());
         assertEquals("Cloned day by value", 10, dT2.getDay());
         assertEquals("Cloned month by value", 11, dT2.getMonth());
@@ -157,7 +157,8 @@ public class DateTimeTest {
         assertTrue("Empty string", "".matches(dateTimePattern()));
         assertTrue("Empty date string", "2359".matches(dateTimePattern()));
         assertTrue("Empty time string", "11/11/2014".matches(dateTimePattern()));
-        assertTrue("Date time string", "11/11/2014 2359".matches(dateTimePattern()));
+        assertTrue("Date time string",
+                   "11/11/2014 2359".matches(dateTimePattern()));
         assertFalse("Residual space", " 2359".matches(dateTimePattern()));
         assertFalse("Residual space", "11/11/2014 ".matches(dateTimePattern()));
         assertFalse("Residual space", " ".matches(dateTimePattern()));

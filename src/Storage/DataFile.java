@@ -221,7 +221,7 @@ public class DataFile {
     private String getTaskInfo(List<Task> tasks) {
         String taskInfo = "";
         for (Task task : tasks) {
-            taskInfo += task.getFullInfo() + "\n";
+            taskInfo += task.toString() + "\n";
         }
         return taskInfo;
     }

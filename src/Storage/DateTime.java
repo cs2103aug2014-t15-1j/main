@@ -113,6 +113,67 @@ public class DateTime implements Comparable<DateTime> {
     }
 
     /**
+     * Compares this <code>DateTime</code> with an input <code>DateTime</code><br>
+     * Returns 1 if it is later (larger) than the other <code>DateTime</code>, 0
+     * if they are the same, or -1 if it is earlier (smaller).
+     * 
+     * @return <ul>
+     *         <li>1 if this <code>DateTime</code> is later than the input
+     *         <code>DateTime</code>,
+     *         <li>0 if they are the same date and time,
+     *         <li>-1 if this <DateTime> is earlier.
+     *         </ul>
+     * 
+     * @author Yeo Zi Xian, Justin
+     */
+    @Override
+    public int compareTo(DateTime otherDateTime) {
+        int day1 = this.day;
+        int mth1 = this.month;
+        int yr1 = this.year;
+        int time1 = Integer.parseInt(this.time);
+        int day2 = otherDateTime.day;
+        int mth2 = otherDateTime.month;
+        int yr2 = otherDateTime.year;
+        int time2 = Integer.parseInt(otherDateTime.time);
+
+        // Check year for differences
+        if (yr1 < yr2) {
+            return -1;
+        } else if (yr1 > yr2) {
+            return 1;
+        }
+
+        // Then check month for differences
+        if (mth1 < mth2) {
+            return -1;
+        } else if (mth1 > mth2) {
+            return 1;
+        }
+
+        // Then check day for differences
+        if (day1 < day2) {
+            return -1;
+        } else if (day1 > day2) {
+            return 1;
+        }
+
+        // Then check time for differences
+        if (time1 < time2) {
+            return -1;
+        } else if (time1 > time2) {
+            return 1;
+        }
+
+        // No differences detected
+        return 0;
+    }
+
+    public boolean equalsTo(DateTime otherDateTime) {
+        return (compareTo(otherDateTime) == 0);
+    }
+
+    /**
      * Returns a String object representing this DateTime's value.
      * 
      * @return A String representation of the date and time value of this
@@ -159,10 +220,10 @@ public class DateTime implements Comparable<DateTime> {
         resetYear();
     }
 
-    /** 
+    /**
      * Gets day value parsed from date value.
      * 
-     * @return Day value in integer type. 
+     * @return Day value in integer type.
      */
     public int getDay() {
         return day;
@@ -173,10 +234,10 @@ public class DateTime implements Comparable<DateTime> {
         day = 0;
     }
 
-    /** 
+    /**
      * Gets month value parsed from date value.
      * 
-     * @return Month value in integer type. 
+     * @return Month value in integer type.
      */
     public int getMonth() {
         return month;
@@ -187,10 +248,10 @@ public class DateTime implements Comparable<DateTime> {
         month = 0;
     }
 
-    /** 
+    /**
      * Gets year value parsed from date value.
      * 
-     * @return Year value in integer type. 
+     * @return Year value in integer type.
      */
     public int getYear() {
         return year;
@@ -253,62 +314,5 @@ public class DateTime implements Comparable<DateTime> {
      */
     public static String getDateTimePattern() {
         return DATE_TIME_PATTERN;
-    }
-
-    /**
-     * Compares this <code>DateTime</code> with an input <code>DateTime</code><br>
-     * Returns 1 if it is later (larger) than the other <code>DateTime</code>, 0
-     * if they are the same, or -1 if it is earlier (smaller).
-     * 
-     * @return <ul>
-     *         <li>1 if this <code>DateTime</code> is later than the input
-     *         <code>DateTime</code>,
-     *         <li>0 if they are the same date and time,
-     *         <li>-1 if this <DateTime> is earlier.
-     *         </ul>
-     * 
-     * @author Yeo Zi Xian, Justin
-     */
-    @Override
-    public int compareTo(DateTime otherDateTime) {
-        int day1 = this.day;
-        int mth1 = this.month;
-        int yr1 = this.year;
-        int time1 = Integer.parseInt(this.time);
-        int day2 = otherDateTime.day;
-        int mth2 = otherDateTime.month;
-        int yr2 = otherDateTime.year;
-        int time2 = Integer.parseInt(otherDateTime.time);
-
-        // Check year for differences
-        if (yr1 < yr2) {
-            return -1;
-        } else if (yr1 > yr2) {
-            return 1;
-        }
-
-        // Then check month for differences
-        if (mth1 < mth2) {
-            return -1;
-        } else if (mth1 > mth2) {
-            return 1;
-        }
-
-        // Then check day for differences
-        if (day1 < day2) {
-            return -1;
-        } else if (day1 > day2) {
-            return 1;
-        }
-
-        // Then check time for differences
-        if (time1 < time2) {
-            return -1;
-        } else if (time1 > time2) {
-            return 1;
-        }
-
-        // No differences detected
-        return 0;
     }
 }

@@ -92,14 +92,16 @@ public class Task {
     /**
      * Converts Task object to a single String to write to system file.
      * Parameter tags are added to aid in parsing text when reading from file.
+     * TODO fix extraneous spaces when attributes are empty.
      * 
      * @return String to write to system file for storage.
      */
-    public String getFullInfo() {
+    @Override
+    public String toString() {
         String fullInfo = "Name: " + name + " ";
-        fullInfo += "Due: " + due + " ";
-        fullInfo += "Start: " + start + " ";
-        fullInfo += "End: " + end + " ";
+        fullInfo += "Due: " + due.toString() + " ";
+        fullInfo += "Start: " + start.toString() + " ";
+        fullInfo += "End: " + end.toString() + " ";
         fullInfo += concatanateTags();
         fullInfo += done ? "#done" : "#todo";
 
