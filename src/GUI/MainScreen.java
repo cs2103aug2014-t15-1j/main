@@ -35,7 +35,7 @@ public class MainScreen {
 		
 		// Things to do at startUp: Display all To do Tasks
 		
-		final SetUp setUpScreen = SetUp.getInstance(shell);
+		SetUp setUpScreen = SetUp.getInstance(shell);
 		
 		removeText(setUpScreen);
 		readUserInput(setUpScreen);
@@ -79,7 +79,7 @@ public class MainScreen {
         });
     }
 
-    private static void readUserInput(SetUp screen) {
+    private static void readUserInput(final SetUp screen) {
 
 		final Text commandLine = screen.getCommandLine();
 
