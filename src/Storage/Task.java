@@ -63,8 +63,7 @@ public class Task {
      */
     public Task(String name, DateTime due, DateTime start, DateTime end,
             List<String> tags) {
-        this.ID = newId;
-        newId++;
+        this.ID = newId++;
         this.name = name;
         this.due = due;
         this.start = start;
@@ -98,14 +97,15 @@ public class Task {
      */
     @Override
     public String toString() {
-        String fullInfo = "Name: " + name + " ";
-        fullInfo += "Due: " + due.toString() + " ";
-        fullInfo += "Start: " + start.toString() + " ";
-        fullInfo += "End: " + end.toString() + " ";
-        fullInfo += concatanateTags();
-        fullInfo += done ? "#done" : "#todo";
+        String tempString = "";
+        tempString += name + " ";
+        tempString += "due:" + due.toString() + " ";
+        tempString += "start:" + start.toString() + " ";
+        tempString += "end:" + end.toString() + " ";
+        tempString += concatanateTags();
+        tempString += done ? "#done" : "#todo";
 
-        return fullInfo;
+        return tempString;
     }
 
     /**
@@ -137,11 +137,13 @@ public class Task {
         return concatanatedTags;
     }
 
+    // TODO rename?
     /** Reduces ID counter when Task object is to be wiped. */
     public void wipeTask() {
         newId--;
     }
 
+    // TODO rename?
     /** Resets ID counter when all Tasks objects are wiped. */
     public static void wipeAllTasks() {
         newId = 1;
