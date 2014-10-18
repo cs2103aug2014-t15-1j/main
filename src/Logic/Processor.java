@@ -7,12 +7,12 @@ import java.util.Observable;
 import java.util.Stack;
 import java.util.logging.FileHandler;
 import java.util.logging.Formatter;
-import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
+import Logic.Result.ResultType;
 import Parser.Parser;
+import Storage.BlockDate;
 import Storage.DataFile;
-import Storage.DateTime;
 import Storage.Task;
 
 /* This class handles inputs from UI and interacts with other components for the
@@ -40,15 +40,21 @@ public class Processor extends Observable {
 	/** Stores Command History for Redo */
 	private Stack<Command> forwardCommandHistory;
 	
-	/** Store Search History for Undo Operations*/
+	/** Stores Search History for Undo Operations*/
 	private Stack<List<Task>> backwardSearchListHistory;
 	
-	/** Store Search History for Redo Operations */
+	/** Stores Search History for Redo Operations */
 	private Stack<List<Task>> forwardSearchListHistory;
 	
 	/** Stores Task objects that are being edited */
 	private Stack<Task> editedTaskHistory;
 	
+	/** Store a List of Blocked Date */
+    private List<BlockDate> blockedDateList;
+	
+    /** Stores a Stack of Deleted Block Date */
+    private Stack<BlockDate> deletedBlockedDateList;
+    
 	/** Last search performed*/
 	private List<Task> lastSearch;
 	
@@ -57,13 +63,11 @@ public class Processor extends Observable {
 	
 	/** List of Tasks with Due date/time */
 	private List<Task> timedTasks;
-
-	private List<DateTime> blockedDates;
 	
 	/** Logger for monitoring purposes */
 	private static final Logger log = Logger.getLogger(Processor.class.getName());
 	
-	/** Constructor */
+	/** Default Constructor for Processor */
 	private Processor() {
 	    file = new DataFile();
 	    backwardCommandHistory = new Stack<Command>();
@@ -74,7 +78,8 @@ public class Processor extends Observable {
 	    lastSearch = new ArrayList<Task>();
 	    floatingTasks = new ArrayList<Task>();
 	    timedTasks = new ArrayList<Task>();
-	    blockedDates = new ArrayList<DateTime>();
+	    blockedDateList = new ArrayList<BlockDate>();
+	    deletedBlockedDateList = new Stack<BlockDate>();
 	    initialiseLogger();
 	}
 	
@@ -89,8 +94,10 @@ public class Processor extends Observable {
 	    return processor;
 	}
 	
-	private static void resetInstance() {
-	    
+	public static Processor reset() {
+	    processor.wipeFile();
+	    processor = new Processor();
+	    return processor;
 	}
 	
 	private static void initialiseLogger() {
@@ -127,21 +134,21 @@ public class Processor extends Observable {
 	 * Executes the appropriate actions for each command
      * 
      * @param cmd
-     *      Command Object returned from Parser
+     *      - Command Object returned from Parser
      *      
      * @param userInput
-     *      userInput determines if the command was given by the user or internally
+     *      - userInput determines if the command was given by the user or internally
      *      
      * @return Result
-     *      boolean success
-     *      List<Task> tasks - This reference is passed into the methods to return
-     *          Tasks that are affected in the operation
-     *      CommandType cmdExecuted
+     *      - boolean {@code success}<br>
+     *      List{@literal <Task>} {@code tasks} - This reference is passed into 
+     *      the methods to return {@code Task} that are affected in the operation<br>
+     *      CommandType {@code cmdExecuted}
      */
 	protected Result processCommand(Command cmd, boolean userInput) {
 		if (cmd == null || cmd.getType() == CommandType.ERROR) {
 		    log.warning("Error in the input, unable to perform operation.");
-			return new Result(null, false, CommandType.ERROR);
+			return new Result(null, false, CommandType.ERROR, ResultType.TASK);
 		}
 		Result result = cmd.execute(userInput);
 
@@ -204,17 +211,8 @@ public class Processor extends Observable {
 	    floatingTasks.clear();
         timedTasks.clear();
 	}
-	
-	/**
-	 * Returns back to UI to display a 'HELP' picture
-	 * @return true
-	 */
-	private boolean displayHelp(Command cmd) {
-	    return true;
-	}
-	
-	public boolean wipeFile() {
-	    
+		
+	private boolean wipeFile() {
 	    return file.wipeFile();
 	}
 	
@@ -232,14 +230,24 @@ public class Processor extends Observable {
 	    return Collections.unmodifiableList(floatingTasks);
 	}
 	
+	public List<BlockDate> fetchBlockedDate() {
+        log.info("Fetching Blocked Dates");
+        return Collections.unmodifiableList(blockedDateList);
+    }
+	
 	protected DataFile getFile() {
 	    return file;
 	}
 	
-	protected List<DateTime> getBlockedDates() {
-	    return blockedDates;
+	protected List<BlockDate> getBlockedDates() {
+	    return blockedDateList;
 	}
-	protected static Logger getLogger() {
+	
+	protected Stack<BlockDate> getDeletedBlockDates() {
+        return deletedBlockedDateList;
+    }
+
+    protected static Logger getLogger() {
 	    return log;
 	}
 	

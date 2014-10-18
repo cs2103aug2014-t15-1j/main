@@ -3,8 +3,10 @@ package Logic;
 import java.util.List;
 import java.util.ArrayList;
 
+import Logic.Result.ResultType;
 import Parser.DateParser;
 import Parser.TaskParam;
+import Storage.BlockDate;
 import Storage.DateTime;
 import Storage.Task;
 
@@ -97,30 +99,40 @@ public class CommandAdd extends Command {
 
     
     /** 
-     * Executes 'add' operation of a task 
-     * Add a Task to 'todo' List
+     * Executes 'add' operation of a task<br>
+     * This method adds a new Task to the Todo List
      * @return Result
      */
     protected Result execute(boolean userInput) {
         boolean success = false;
         List<Task> list = new ArrayList<Task>();
         Processor.getLogger().info("Executing 'Add' Command...");
+        boolean confirmation = true;
         if (!isBlocked()) {
             Task newTask = new Task(name, due, start, end, tags);
             success = Processor.getInstance().getFile().addNewTask(newTask);
             list.add(newTask);
+            confirmation = false;
         }
-        return new Result(list, success, getType());
+        return new Result(list, success, getType(), confirmation, ResultType.TASK);
     }
     
     /**
-     * Check if the date is blocked
-     * @param cmd
-     * @return false/true depending on the validity of blocked dates
+     * This method checks if the Task contains dates that are already blocked.
+     * @return
+     *      Returns true if when trying to Add a Task with a specified date 
+     *      that fall within a blocked date range, else false.
      */
     private boolean isBlocked() {
         boolean blocked = false;
         Processor processor = Processor.getInstance();
+        List<BlockDate> blockDates = processor.getBlockedDates();
+        BlockDate currDate = new BlockDate(start, end);
+        for (BlockDate blockDate : blockDates) {
+            if (blockDate.contains(currDate)) {
+                return true;
+            }
+        }
         return blocked;
     }
     
@@ -139,7 +151,7 @@ public class CommandAdd extends Command {
             tasks.add(toDelete);
         }
         
-        return new Result(tasks, success, getType());
+        return new Result(tasks, success, getType(), ResultType.TASK);
     }
     
 }

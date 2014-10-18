@@ -3,6 +3,7 @@ package Logic;
 import java.util.ArrayList;
 import java.util.List;
 
+import Logic.Result.ResultType;
 import Parser.TaskParam;
 import Storage.DateTime;
 import Storage.Task;
@@ -96,7 +97,7 @@ public class CommandTodo extends Command {
         if (success) {
             list.add(existingTask);
         }
-        return new Result(list, success, getType());
+        return new Result(list, success, getType(), ResultType.TASK);
     }
     
     /**

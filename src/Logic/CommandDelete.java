@@ -3,6 +3,7 @@ package Logic;
 import java.util.ArrayList;
 import java.util.List;
 
+import Logic.Result.ResultType;
 import Parser.TaskParam;
 import Storage.Task;
 
@@ -113,7 +114,7 @@ public class CommandDelete extends Command {
             default:
                 success = false;
         }
-        return new Result(list, success, this.getType(), confirmation);
+        return new Result(list, success, this.getType(), confirmation, ResultType.TASK);
     }
     
     /** Deletes Task using Id */

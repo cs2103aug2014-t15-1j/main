@@ -2,8 +2,6 @@ package Logic;
 
 import static org.junit.Assert.*;
 
-import java.io.IOException;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -47,7 +45,7 @@ public class ProcessorTest {
 		assertTrue(equalsObj(t, r.getTasks().get(0)));
 		
 		//Test undo & redo of Add
-        Result r1 = TestProcessor.processInput("undo");
+        TestProcessor.processInput("undo");
 		Result r2 = TestProcessor.processInput("redo");
 		assertTrue(equalsObj(t, r2.getTasks().get(0)));
 	}
@@ -61,7 +59,7 @@ public class ProcessorTest {
 		assertTrue(equalsObj(r.getTasks().get(0), t));
 
 		//Test undo & redo of Edit
-		Result r1 = TestProcessor.processInput("undo");
+		TestProcessor.processInput("undo");
         Result r2 = TestProcessor.processInput("redo");
         assertTrue(equalsObj(r2.getTasks().get(0), t));
 	}
@@ -201,9 +199,9 @@ public class ProcessorTest {
 
 	@Test
 	public void testDone() throws Exception {
-	    Result r1 = TestProcessor.processInput("add n: Task1 Add Bubble");
-	    Result r2 = TestProcessor.processInput("add n: Task2 Add Bubble");
-	    Result r3 = TestProcessor.processInput("add n: Task3 Add Bubble");
+	    TestProcessor.processInput("add n: Task1 Add Bubble");
+	    TestProcessor.processInput("add n: Task2 Add Bubble");
+	    TestProcessor.processInput("add n: Task3 Add Bubble");
         TestProcessor.processInput("done 1");
         assertTrue(TestProcessor.getFile().getToDoTasks().size() == 2);
         TestProcessor.processInput("done 3");

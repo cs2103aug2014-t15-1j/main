@@ -3,8 +3,8 @@ package Logic;
 import java.util.ArrayList;
 import java.util.List;
 
+import Logic.Result.ResultType;
 import Parser.TaskParam;
-import Storage.DateTime;
 import Storage.Task;
 
 // TODO: MERGE with delete? VERY similar.
@@ -69,12 +69,13 @@ public class CommandDisplay extends Command {
      * Allows show, show <id>, show search
      * @return Result
      */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     protected Result execute(boolean userInput) {
         Processor.getLogger().info("Executing 'Display' Command...");
         Processor processor = Processor.getInstance();
-        List<Task> list = new ArrayList<Task>();
-        List<DateTime> blockList;
+        List list = new ArrayList();
         boolean success = true;
+        ResultType resultType = ResultType.TASK;
         switch (rangeType) {
             case "id":
                 int taskId = Integer.parseInt(id);
@@ -84,7 +85,8 @@ public class CommandDisplay extends Command {
                 list = processor.getLastSearch();
                 break;
             case "block":
-                blockList = processor.getBlockedDates();
+                list = processor.getBlockedDates();
+                resultType = ResultType.BLOCKDATE;
                 break;
             case "all":
                 for (Task t: processor.getFile().getToDoTasks()) {
@@ -94,6 +96,6 @@ public class CommandDisplay extends Command {
             default:
                 success = false;
         }
-        return new Result(list, success, getType());
+        return new Result(list, success, getType(), resultType);
     }
 }

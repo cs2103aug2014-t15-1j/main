@@ -3,6 +3,7 @@ package Logic;
 import java.util.ArrayList;
 import java.util.List;
 
+import Logic.Result.ResultType;
 import Parser.TaskParam;
 import Storage.DateTime;
 import Storage.Task;
@@ -97,7 +98,7 @@ public class CommandDone extends Command {
                 break;
         }
         
-        return new Result(list, success, getType());
+        return new Result(list, success, getType(), ResultType.TASK);
     }
     
     private boolean doneById(List<Task> list) {

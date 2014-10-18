@@ -1,6 +1,5 @@
 package Logic;
 
-
 public class CommandHelp extends Command {
     
     // help fields: "all" or "<command>" or "invalid"
@@ -23,6 +22,6 @@ public class CommandHelp extends Command {
     }
 
     protected Result execute(boolean userInput) {
-        return new Result(null, true, getType());
+        return new Result(null, true, getType(), null);
     }
 }

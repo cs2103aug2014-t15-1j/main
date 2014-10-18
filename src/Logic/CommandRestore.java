@@ -3,6 +3,7 @@ package Logic;
 import java.util.ArrayList;
 import java.util.List;
 
+import Logic.Result.ResultType;
 import Parser.TaskParam;
 import Storage.Task;
 
@@ -96,7 +97,7 @@ public class CommandRestore extends Command {
             default:
                 success = false;
         }
-        return new Result(list, success, getType());
+        return new Result(list, success, getType(), ResultType.TASK);
     }
 
     /** Restores a deleted Task using Id */

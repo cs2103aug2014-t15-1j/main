@@ -2,6 +2,8 @@ package Logic;
 
 import java.util.List;
 
+import Logic.Result.ResultType;
+
 public abstract class Command {
 
     // Variables for all Commands
@@ -29,11 +31,11 @@ public abstract class Command {
     }
     
     protected Result execute(boolean userInput) {
-        return new Result(null, false, CommandType.ERROR);
+        return new Result(null, false, CommandType.ERROR, ResultType.TASK);
     }
     
     protected Result executeComplement() {
-        return new Result(null, false, CommandType.ERROR);
+        return new Result(null, false, CommandType.ERROR, ResultType.TASK);
     }
     
     protected void setType(CommandType type) {

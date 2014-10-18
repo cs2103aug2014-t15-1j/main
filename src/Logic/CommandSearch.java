@@ -3,6 +3,7 @@ package Logic;
 import java.util.List;
 import java.util.ArrayList;
 
+import Logic.Result.ResultType;
 import Parser.TaskParam;
 import Storage.Task;
 
@@ -82,7 +83,7 @@ public class CommandSearch extends Command {
         } else if (keywords != null || tags != null) {
             searchUsingKeyOrTags(keywords, tags);
         }
-        return new Result(Processor.getInstance().getLastSearch(), true, getType());
+        return new Result(Processor.getInstance().getLastSearch(), true, getType(), ResultType.TASK);
     }
     
     /* Performs search using date */

@@ -1,17 +1,21 @@
 package Logic;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import Logic.Result.ResultType;
+import Parser.DateParser;
 import Parser.TaskParam;
+import Storage.BlockDate;
+import Storage.DateTime;
 
 public class CommandBlock extends Command {
 
     // Block dates range [get("start"), get("end"); returns date]
     // If it's only 1 day, start = end
-    private String start;
-    private String end;
-
-    private CommandUnblock cmdUnblock;
+    private DateTime start;
+    private DateTime end;
     
     public CommandBlock(List<TaskParam> content) {
         this(content, false);
@@ -27,11 +31,11 @@ public class CommandBlock extends Command {
             for (TaskParam param : content) {
                 switch (param.getName()) {
                     case "start":
-                        this.start = param.getField();
+                        this.start = DateParser.parseToDateTime(param.getField());
                         break;
 
                     case "end":
-                        this.end = param.getField();
+                        this.end = DateParser.parseToDateTime(param.getField());
                         break;
 
                     default:
@@ -39,23 +43,17 @@ public class CommandBlock extends Command {
                         this.error = "Block constructor parameter error";
                 }
             }
-            if (!isComplement) {
-                initialiseComplementCommand(content);
-            }
         }
     }
 
-    private void initialiseComplementCommand(List<TaskParam> content) {
-        this.cmdUnblock = new CommandUnblock(content, true);
-    }
     
     public String get(String field) {
         switch (field) {
             case "start":
-                return this.start;
+                return this.start.toString();
 
             case "end":
-                return this.end;
+                return this.end.toString();
 
             default:
                 return null;
@@ -72,16 +70,41 @@ public class CommandBlock extends Command {
     
 
     /**
-     * Check if the date is blocked
-     * @param cmd
+     * Executes Block Command
+     * @param userInput
      * @return Result
      */
     protected Result execute(boolean userInput) {
         Processor.getLogger().info("Executing 'Block' Command...");
-        return new Result(null, false, CommandType.ERROR);
+        Processor processor = Processor.getInstance();
+        List<BlockDate> blockRange = processor.getBlockedDates();
+        BlockDate currBlock = new BlockDate(start, end);
+        boolean success = true;
+
+        List<BlockDate> outputs = new ArrayList<BlockDate>();
+        
+        for (BlockDate blockedDate : blockRange) {
+            if (blockedDate.contains(currBlock)) {
+                success = false;
+                outputs.add(blockedDate);
+                break;
+            }
+        }
+        
+        if (success) {
+            blockRange.add(currBlock);
+            outputs.add(currBlock);
+            Collections.sort(blockRange);
+        }
+        
+        return new Result(outputs, success, CommandType.BLOCK, ResultType.BLOCKDATE);
     }
     
     protected Result executeComplement() {
-        return this.cmdUnblock.execute(false);
+        BlockDate currBlock = new BlockDate(start, end);
+        Processor processor = Processor.getInstance();
+        List<BlockDate> blockRange = processor.getBlockedDates();
+        boolean success = blockRange.remove(currBlock);
+        return new Result(blockRange, success, CommandType.BLOCK, ResultType.BLOCKDATE);
     }
 }

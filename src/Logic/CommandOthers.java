@@ -1,9 +1,6 @@
 package Logic;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import Storage.Task;
+import Logic.Result.ResultType;
 
 
 /**
@@ -63,16 +60,16 @@ public class CommandOthers extends Command {
             case UNDO:
                 return executeUndo();
             case EXIT:
-                return new Result(null, true, getType());
+                return new Result(null, true, getType(), ResultType.TASK);
             default:
-                return new Result(null, false, getType());
+                return new Result(null, false, getType(), ResultType.TASK);
         }
     }
     
     protected Result executeUndo() {
         Processor.getLogger().info("Executing 'Undo' Command...");
         Processor processor = Processor.getInstance();
-        Result r = new Result(null, false, CommandType.UNDO);
+        Result r = new Result(null, false, CommandType.UNDO, null);
         if (!processor.getBackwardCommandHistory().isEmpty()) {
             Command backwardCommand = processor.getBackwardCommandHistory().pop();
             switch(backwardCommand.getType()) {
@@ -87,7 +84,7 @@ public class CommandOthers extends Command {
                     r = backwardCommand.executeComplement();
                     break;
                 default:
-                    return new Result(null, false, CommandType.ERROR);
+                    return new Result(null, false, CommandType.ERROR, null);
             }
             modifyHistory(backwardCommand, r.isSuccess(), false);
         }
@@ -106,9 +103,10 @@ public class CommandOthers extends Command {
             Command forwardCommand = processor.getForwardCommandHistory().pop();
             Result result = processor.processCommand(forwardCommand, false);
             modifyHistory(forwardCommand, result.isSuccess(), true);
-            return new Result(result.getTasks(), result.isSuccess(), getType());
+            result.setCommandType(CommandType.REDO);
+            return result;
         }
-        return new Result(null, false, getType());
+        return new Result(null, false, getType(), null);
     }
 
     /**

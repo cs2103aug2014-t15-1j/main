@@ -3,6 +3,7 @@ package Logic;
 import java.util.List;
 import java.util.ArrayList;
 
+import Logic.Result.ResultType;
 import Parser.DateParser;
 import Parser.TaskParam;
 import Storage.DateTime;
@@ -135,7 +136,7 @@ public class CommandEdit extends Command {
                 performUpdate(list, oldTask, existingTask);
             }
         }
-        return new Result(list, success, getType());
+        return new Result(list, success, getType(), ResultType.TASK);
     }
     
     private int getTaskId() {
@@ -170,6 +171,6 @@ public class CommandEdit extends Command {
         
         tasks.add(prevTask);
         success = processor.getFile().updateTaskInfo(prevTask.getId(), taskName, taskDue, taskStart, taskEnd, taskTags);
-        return new Result(tasks, success, getType());
+        return new Result(tasks, success, getType(), ResultType.TASK);
     }
 }

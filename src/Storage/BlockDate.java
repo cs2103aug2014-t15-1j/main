@@ -1,5 +1,6 @@
 package Storage;
 
+
 /**
  * The BlockDate class keeps track of the start/end dates and times of a blocked
  * time period.
@@ -8,7 +9,7 @@ package Storage;
  * 
  */
 
-public class BlockDate {
+public class BlockDate implements Comparable<BlockDate> {
 
     private DateTime start;
     private DateTime end;
@@ -108,5 +109,24 @@ public class BlockDate {
     /** Resets end's DateTime object's time to empty String. */
     public void resetEndTime() {
         end.resetTime();
+    }
+    
+    public boolean contains(BlockDate blockDate) {
+        boolean contains = false;
+        //Within Range of days
+        if (this.getStart().compareTo(blockDate.getStart()) >= 0 && this.getEnd().compareTo(blockDate.getEnd()) <= 0) {
+            contains = true;
+        }
+        return contains;
+    }
+    
+    public boolean equals(Object obj) {
+        BlockDate blockDate = (BlockDate) obj;
+        return blockDate.getStart().equalsTo(this.getStart()) && 
+                blockDate.getEnd().equalsTo(this.getEnd());
+    }
+    
+    public int compareTo(BlockDate blockDate) {
+        return this.getEnd().compareTo(blockDate.getStart());
     }
 }

@@ -1,8 +1,12 @@
 package Logic;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import Logic.Result.ResultType;
 import Parser.TaskParam;
+import Storage.BlockDate;
 
 public class CommandUnblock extends Command {
 
@@ -34,15 +38,7 @@ public class CommandUnblock extends Command {
                         this.error = "Unblock constructor parameter error";
                 }
             }
-            if (!isComplement) {
-                initialiseComplementCommand(content);
-            }
         }
-    }
-
-    
-    private void initialiseComplementCommand(List<TaskParam> content) {
-        this.cmdBlock = new CommandBlock(content, true);
     }
     
     // TODO: Change to empty get()?
@@ -77,12 +73,43 @@ public class CommandUnblock extends Command {
         return result;
     }
 
+    /**
+     * Executes Block Command
+     * @param userInput
+     * @return Result
+     */
     protected Result execute(boolean userInput) {
         Processor.getLogger().info("Executing 'Unblock' Command...");
-        return new Result(null, false, CommandType.ERROR);
+        Processor processor = Processor.getInstance();
+        List<BlockDate> blockRange = processor.getBlockedDates();
+        boolean success = false;
+        int unblockId = Integer.parseInt(id) - 1;
+        List<BlockDate> outputs = new ArrayList<BlockDate>();
+        
+        if (unblockId < blockRange.size() && unblockId > 0) {
+            BlockDate blockedDate = blockRange.remove(unblockId);
+            processor.getDeletedBlockDates().push(blockedDate);
+            outputs.add(blockedDate);
+            success = true;
+        }
+        
+        return new Result(outputs, success, CommandType.UNBLOCK, ResultType.BLOCKDATE);
     }
     
     protected Result executeComplement() {
-        return this.cmdBlock.execute(false);
+        boolean success = false;
+        Processor processor = Processor.getInstance();
+        List<BlockDate> outputs = null;
+        List<BlockDate> blockRange = processor.getBlockedDates();
+        
+        if (!processor.getDeletedBlockDates().isEmpty()) {
+            BlockDate blockDate = processor.getDeletedBlockDates().pop();
+            outputs = new ArrayList<BlockDate>();
+            outputs.add(blockDate);
+            success = blockRange.add(blockDate);
+            Collections.sort(blockRange);
+        }
+        
+        return new Result(outputs, success, CommandType.UNBLOCK, ResultType.BLOCKDATE);
     }
 }

@@ -2,6 +2,7 @@ package Logic;
 
 import java.util.List;
 
+import Storage.BlockDate;
 import Storage.Task;
 
 /**
@@ -12,8 +13,9 @@ import Storage.Task;
  */
 public class Result {
     
-	//Contains Tasks that are affected in an operation
-    private List<Task> tasks;
+	//Contains Task/BlockDate Objects that are affected in an operation
+    @SuppressWarnings("rawtypes")
+    private List outputs;
     
 	//True if the operation performed is successful, else False.
     private boolean success;
@@ -24,22 +26,60 @@ public class Result {
     private CommandType cmdType;
 	
     private boolean confirmation;
+    private ResultType resultType;
     
-    /** Constructor for Result Object */
-    public Result(List<Task> tasks, boolean success, CommandType cmdType){
-        this(tasks, success, cmdType, false);
+    /** There are currently 2 ResultType that can be retrieved from Result
+     *  The output can be accessed via {@link getTasks()} or {@link getBlockedDates}
+     *  
+     *  @author Yao Xiang
+     */
+    public enum ResultType {
+        TASK,
+        BLOCKDATE;
     }
     
-	public Result(List<Task> tasks, boolean success, CommandType cmdType, boolean confirmation) {
-		this.tasks = tasks;
+    /** Dummy Constructor for Result */
+    public Result() {
+        this(null, false, CommandType.ERROR, false, null);
+    }
+    
+    /** Main Constructor for Result Object */
+    @SuppressWarnings("rawtypes")
+    public Result(List outputs, boolean success, CommandType cmdType, ResultType resultType){
+        this(outputs, success, cmdType, false, resultType);
+    }
+    
+    /** Overloaded Constructor for Result Object
+     * 
+     * @param outputs
+     *         - Contains relevant outputs for the user
+     * @param success
+     *         -  {@code true} if operation is successful, else {@code false}.
+     * @param cmdType
+     *         - CommandType of the operation performed.
+     * @param confirmation
+     *         - {@code true} if requires confirmation from user, {@code false} if no further action is require from the user.
+     * @param resultType
+     *         - equals  {@code ResultType.TASK} or {@code ResultType.BLOCKDATE}.
+     */
+	@SuppressWarnings("rawtypes")
+    public Result(List outputs, boolean success, CommandType cmdType, boolean confirmation, ResultType resultType) {
+		this.outputs = outputs;
 		this.success = success;
 		this.cmdType = cmdType;
 		this.confirmation = confirmation;
+		this.resultType = resultType;
 	}
 	
 	/** Accessors */
-	public List<Task> getTasks() {
-		return tasks;
+	@SuppressWarnings("unchecked")
+    public List<Task> getTasks() {
+		return outputs;
+	}
+	
+	@SuppressWarnings("unchecked")
+    public List<BlockDate> getBlockedDates() {
+	    return outputs;
 	}
 
 	public boolean isSuccess() {
@@ -53,6 +93,10 @@ public class Result {
 	public boolean needsConfirmation() {
 	    return confirmation;
 	}
+	
+	public ResultType getResultType() {
+        return resultType;
+    }
 	
 	// Mutators
 	public void setSuccess(boolean success) {
