@@ -21,7 +21,9 @@ public class MainScreen {
 	// add hayStack icon, ASCII picture
 	// use mono-space font
 	// one line display
-
+    private static final String ASK_CONFIRM_DELETE = "Are you sure you want to wipe file? This is irreversible";
+    private static final String CONFIRM = "yes";
+    private static final String NO_CONFIRM = "no";
 	private static String CODE_EXIT = "exit";
 
 	/**
@@ -95,7 +97,10 @@ public class MainScreen {
 					//output = commandLine.getText();
 					if (output.equals(CODE_EXIT)) {
 					    exitProgram();
-					} else {
+					} else if (output.equals(ASK_CONFIRM_DELETE)){
+					    
+					    //ResultGenerator.processDelete();
+					}else {
 					    feedback.setText(output);
                         commandLine.setText("");
 					    

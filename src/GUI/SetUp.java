@@ -42,6 +42,11 @@ public class SetUp {
     private static final String HEADER_NAME_START = "Start";
     private static final String HEADER_NAME_END = "End";
     private static final String HEADER_NAME_TAGS = "Tags";
+    private static final String HEADER_NAME_STATUS = "Status";
+    
+    private static final String PARA_STATUS_DELETED = "Deleted";
+    private static final String PARA_STATUS_TODO = "To do";
+    private static final String PARA_STATUS_DONE = "Done";
     
     private static final String CELL_EMPTY = "empty";
 
@@ -252,6 +257,24 @@ public class SetUp {
                     tag = tag + tags.get(index);
                 }
                 return tag;
+            }
+        });
+        
+        column = setColumnHeader(HEADER_NAME_STATUS, COL_WIDTH);
+        column.setLabelProvider(new ColumnLabelProvider() {
+            @Override
+            public String getText(Object element) {
+                Task task = (Task) element;
+                assert (task != null);
+                String Status;
+                if(task.isDeleted()){
+                    Status = PARA_STATUS_DELETED;
+                }else if(task.isDone()){
+                    Status = PARA_STATUS_DONE;
+                }else{
+                    Status = PARA_STATUS_TODO;
+                }
+                return Status;
             }
         });
 

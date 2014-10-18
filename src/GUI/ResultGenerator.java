@@ -38,6 +38,7 @@ public class ResultGenerator {
 																				// unblocked?
 
 	// to be implement: Help
+	private static final String ASK_CONFIRM_DELETE = "Are you sure you want to wipe file? This is irreversible";
 	private static final String CODE_EXIT = "exit";
 	private static final String UNSUCCESSFUL_SEARCH_MESSAGE = "We could not find any results :( Try using different words?";
 	private static final String UNSUCCESSFUL_COMMAND_MESSAGE = "'%1$s'was not recognised.";
@@ -96,7 +97,9 @@ public class ResultGenerator {
 			return singleLineSuccessMessage(SUCCESSFUL_ADD, tasks);
 		case DELETE:
 		    // delete all --> implement confirmation
-		    
+		    if(result.needsConfirmation()){
+		        return ASK_CONFIRM_DELETE;
+		    }
 		    updateInterface(tasks);
 		    return SUCCESSFUL_DELETE;
 		case EDIT:
