@@ -12,9 +12,9 @@ public class CommandEdit extends Command {
     
     private String id;
     private String name;
-    private DateTime due;
-    private DateTime start;
-    private DateTime end;
+    private DateTime due = new DateTime();
+    private DateTime start = new DateTime();
+    private DateTime end = new DateTime();
     private String delete;
     
     private List<String> tags = new ArrayList<String>();

@@ -11,9 +11,9 @@ import Storage.Task;
 public class CommandAdd extends Command {
     
     private String name;
-    private DateTime due;
-    private DateTime start;
-    private DateTime end;
+    private DateTime due = new DateTime();
+    private DateTime start = new DateTime();
+    private DateTime end = new DateTime();
     
     private List<String> tags = new ArrayList<String>();
     
