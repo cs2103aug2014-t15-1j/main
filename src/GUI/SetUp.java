@@ -65,7 +65,7 @@ public class SetUp {
     private Label feedback;
     private Text commandLine;
     private DateTime calendar;
-    private Label taskList;
+    private Text taskList;
 
     private SetUp(Shell shell) {
         this.shell = shell;
@@ -101,7 +101,7 @@ public class SetUp {
         return this.commandLine;
     }
     
-    public Label getTaskList(){
+    public Text getTaskList(){
         return this.taskList;
     }
     
@@ -162,7 +162,8 @@ public class SetUp {
 
     private void setUpCanvas() {
         // TODO Auto-generated method stub
-        new Canvas(mainInterface, SWT.NONE);
+        Canvas canvas = new Canvas(mainInterface, SWT.NONE);
+        canvas.setEnabled(false);
     }
 
     private void setUpTable() {
@@ -173,6 +174,7 @@ public class SetUp {
         Table table = tableViewer.getTable();
         table.setLinesVisible(true);
         table.setHeaderVisible(true);
+        table.setEnabled(false);
     }
 
     // to refactor method
@@ -323,11 +325,19 @@ public class SetUp {
 
     private void setUpTaskList() {
         // TODO Auto-generated method stub
-        taskList = new Label(sidePane, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL
+        taskList = new Text(sidePane, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL
                 | SWT.READ_ONLY);
          
         GridData gridData = new GridData(GridData.FILL_BOTH);
+        gridData.heightHint = 500;
         taskList.setLayoutData(gridData);
+        
+        Display display = shell.getDisplay();
+        Color white = display.getSystemColor(SWT.COLOR_WHITE);
+        taskList.setBackground(white);
+        taskList.setEnabled(false);
+        
+        
         // to change
        /** String textToSet = "UPCOMING TASK:" + LINE_SEPARATOR
                 + "1. Implement task list" + LINE_SEPARATOR + "SOMEDAY:"
