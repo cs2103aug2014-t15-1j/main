@@ -20,7 +20,7 @@ import java.util.Collections;
 public class DataFile {
 
     /** Name of file to write tasks to. */
-    final private static String FILENAME = "Data";
+    final private static String FILENAME = "Task Data";
 
     /** Reads from file containing tasks */
     private TaskReader taskReader;

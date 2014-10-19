@@ -5,13 +5,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 /**
- * In charge of writing task info to file.
+ * In charge of writing blocked dates to file.
  * 
  * @author Pierce Anderson Fu
  * 
  */
 
-public class TaskWriter {
+public class BlockDateWriter {
 
     /** The file object to read from. */
     private File file;
@@ -21,11 +21,11 @@ public class TaskWriter {
      * 
      * Made private to prevent instantiation without providing filename.
      */
-    private TaskWriter() {
+    private BlockDateWriter() {
     }
 
     /** Constructor. Creates file with provided filename if it does not exist. */
-    public TaskWriter(String filename) {
+    public BlockDateWriter(String filename) {
         this();
         file = new File(filename);
         if (!file.exists()) {
@@ -39,16 +39,16 @@ public class TaskWriter {
     }
 
     /**
-     * Writes String containing task info to system file.
+     * Writes String containing blocked dates to system file.
      * 
-     * @param allTaskInfo
-     *            Info of tasks to write to file.
+     * @param allBlockDates
+     *            Blocked dates to write to file.
      * @return True, if successfully written to file.
      */
-    public boolean write(String allTaskInfo) {
+    public boolean write(String allBlockDates) {
         try {
             FileWriter newFile = new FileWriter(file, false);
-            newFile.write(allTaskInfo);
+            newFile.write(allBlockDates);
             newFile.close();
             return true;
         } catch (IOException e) {
