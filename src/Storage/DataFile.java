@@ -1,15 +1,8 @@
 package Storage;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Scanner;
-
-import Parser.Parser;
 
 /**
  * This class handles the logic involved in reading and writing of tasks to the
@@ -29,6 +22,12 @@ public class DataFile {
     /** Name of file to write tasks to. */
     final private static String FILENAME = "Data";
 
+    /** Reads from file containing tasks */
+    private TaskReader taskReader;
+
+    /** Writes to file containing tasks */
+    private TaskWriter taskWriter;
+
     /** Exclusively contains undeleted to-do tasks. */
     private static List<Task> toDoTasks = new ArrayList<Task>();
 
@@ -47,28 +46,22 @@ public class DataFile {
     /**
      * Default constructor.
      * 
-     * Checks if file exists and task lists are not populated before reading
-     * from file, and populating lists with Task objects. If lists are already
-     * populated, it signals that other DataFile instances exist, and avoids
-     * populating the task lists with duplicate Task objects from file.
+     * Checks if task file exists and allTasks list is empty before populating
+     * list. If allTasks list is already populated, it signals that other
+     * DataFile instances exist, and avoids populating task lists with duplicate
+     * Task objects from file.
      */
     public DataFile() {
-        File file = new File(FILENAME);
-        if (file.exists() && allTasks.isEmpty()) {
-            getTasksFromFile(file);
-        } else {
-            try {
-                file.createNewFile();
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+        taskReader = new TaskReader(FILENAME);
+        taskWriter = new TaskWriter(FILENAME);
+        if (taskReader.fileExists() && allTasks.isEmpty()) {
+            populateTaskLists();
         }
     }
 
     /**
-     * Populates to-do and done task lists with data from system file. Deleted
-     * tasks are not written to file, hence deleted task list is not populated.
+     * Populates task lists with data from system file. Deleted tasks are not
+     * written to file, hence the deleted task list is not populated.
      * 
      * Benefits from branch prediction because of the order in which tasks are
      * written to the file. See {@link updateFile()}.
@@ -76,24 +69,14 @@ public class DataFile {
      * @param file
      *            The file to read from.
      */
-    private void getTasksFromFile(File file) {
-        try {
-            Scanner scanner = new Scanner(file);
-            while (scanner.hasNextLine()) {
-                String unparsedText = scanner.nextLine();
-                Task newTask = Parser.parseToTask(unparsedText);
-
-                allTasks.add(newTask);
-                if (!newTask.isDone()) {
-                    toDoTasks.add(newTask);
-                } else {
-                    doneTasks.add(newTask);
-                }
+    private void populateTaskLists() {
+        allTasks.addAll(taskReader.read());
+        for (Task tempTask : allTasks) {
+            if (!tempTask.isDone()) {
+                toDoTasks.add(tempTask);
+            } else {
+                doneTasks.add(tempTask);
             }
-            scanner.close();
-        } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         }
     }
 
@@ -216,39 +199,25 @@ public class DataFile {
      * 
      * @param tasks
      *            The specified list to get Task objects from.
-     * @return A single String containing all Task data to write to file.
+     * @return A single String containing all Task info to write to file.
      */
     private String getTaskInfo(List<Task> tasks) {
-        String taskInfo = "";
+        String allTaskInfo = "";
         for (Task task : tasks) {
-            taskInfo += task.toString() + "\n";
+            allTaskInfo += task.toString() + "\n";
         }
-        return taskInfo;
+        return allTaskInfo;
     }
 
     /**
-     * Writes String, containing all to-do and done task data, to system file.
+     * Writes String containing all to-do and done task info to system file.
      * 
-     * @param newFileText
+     * @param allTaskInfo
      *            Data of all to-do and done tasks to write to file.
      * @return True, if successfully written to file.
      */
-    private boolean writeToFile(String newFileText) {
-        try {
-            File file = new File(FILENAME);
-            if (!file.exists()) {
-                file.createNewFile();
-            }
-
-            FileWriter newFile = new FileWriter(file, false);
-            newFile.write(newFileText);
-            newFile.close();
-            return true;
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            return false;
-        }
+    private boolean writeToFile(String allTaskInfo) {
+        return taskWriter.write(allTaskInfo);
     }
 
     /**
