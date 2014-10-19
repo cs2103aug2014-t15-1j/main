@@ -12,13 +12,13 @@ import Storage.Task;
 public class TaskTableUI {
     
     public TaskTableUI(List<Task> tasks){
-        update(tasks);
+        update();
     }
     
-    private void update(List<Task> tasks){
+    private void update(){
         TableViewer table = getTable();
-       /* Processor processor = Processor.getInstance();
-        List<Task> tasks = processor.fetchFloatingTasks(); **/
+       Processor processor = Processor.getInstance();
+        List<Task> tasks = processor.fetchTimedTasks(); 
         Object[] tasksArray = tasks.toArray();
         
         
