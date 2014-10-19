@@ -303,13 +303,13 @@ public class DataFile {
         if (name != null) {
             task.setName(name);
         }
-        if (due != null) {
+        if (!due.getDate().isEmpty() || !due.getTime().isEmpty()) {
             task.setDue(due);
         }
-        if (start != null) {
+        if (!start.getDate().isEmpty() || !start.getTime().isEmpty()) {
             task.setStart(start);
         }
-        if (end != null) {
+        if (!end.getDate().isEmpty() || !end.getTime().isEmpty()) {
             task.setEnd(end);
         }
         if (tags != null) {
