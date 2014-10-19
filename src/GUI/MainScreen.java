@@ -22,10 +22,14 @@ public class MainScreen {
 	// use mono-space font
 	// one line display
     private static final String ASK_CONFIRM_DELETE = "Are you sure you want to wipe file? This is irreversible";
+    private static final String INVALID_INPUT = "Invalid Input. Type yes or no.";
+    
+
     private static final String CONFIRM = "yes";
     private static final String NO_CONFIRM = "no";
+    
 	private static String CODE_EXIT = "exit";
-
+	private static boolean askConfrim = false;
 	/**
 	 * The entire HayStack program runs from this function. 
 	 * It sets up the graphical user interface that the user interacts with any reads any input that the user enters.
@@ -88,18 +92,29 @@ public class MainScreen {
 		commandLine.addListener(SWT.DefaultSelection, new Listener() {
 			public void handleEvent(Event event) {
 
-				final Label feedback;
+				final Label feedback = screen.getFeedBack();
 				String input = commandLine.getText();
 				String output = "";
+				if(askConfrim){
+				    while(!isValidInput(input)){
+				        feedback.setText(INVALID_INPUT);
+				    }
+				    askConfrim = false;
+				    commandLine.setText("");
+				    ResultGenerator.processDelete(input);
+				    
+				}else{
 				//try{
 					output = ResultGenerator.sendInput(input);
-					feedback = screen.getFeedBack();
+				
 					//output = commandLine.getText();
 					if (output.equals(CODE_EXIT)) {
 					    exitProgram();
 					} else if (output.equals(ASK_CONFIRM_DELETE)){
+					    feedback.setText(ASK_CONFIRM_DELETE);
+					    askConfrim = true;
+					    commandLine.setText("");
 					    
-					    //ResultGenerator.processDelete();
 					}else {
 					    feedback.setText(output);
                         commandLine.setText("");
@@ -109,7 +124,22 @@ public class MainScreen {
 			//	error.getMessage();
 				//System.out.println("I am an exception error in main screen.java");
 			}
+				}
 			}
+
+            private boolean isValidInput(String input) {
+                String inputLowerCase = input.toLowerCase();
+                if(inputLowerCase.equals(CONFIRM) || inputLowerCase.equals("y")){
+                    return true;
+                } 
+                
+                if(inputLowerCase.equals(NO_CONFIRM) || inputLowerCase.equals("n")){
+                    return true;
+                } 
+                
+                
+                return false;
+            }
 		});
 	}
 

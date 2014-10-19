@@ -22,6 +22,7 @@ public class ResultGenerator {
 	private static final String SUCCESSFUL_TODO = "Marked %1$s as to do";
 	private static final String SUCCESSFUL_DONE = "Marked %1$s as done";
 	private static final String SUCCESSFUL_DELETE = "Deleted!";
+	private static final String SUCCESSFUL_DELETE_ALL = "Erased all data!";
 	private static final String SUCCESSFUL_RESTORE = "Restored!";
 	private static final String SUCCESSFUL_DISPLAY = "Showing %1$s tasks";
 	private static final String SUCCESSFUL_UNDO = "Travelled back in time! Command has been undone";
@@ -45,7 +46,8 @@ public class ResultGenerator {
 	private static final String UNSUCCESSFUL_DISPLAY_NO_TASKS = "You are a free man! You do not have any tasks.";
 	private static final String EMPTY_MESSAGE = "That was read as empty. Try again.";
 	private static final String ERROR_COMMAND_MESSAGE = "Houston, we have a problem";
-
+	
+	private static final String CONFIRM = "yes";
 	/**
 	 * This method passes a string object containing user commands to the Processor class to process.
 	 * @param userInput a string containing commands that the user entered
@@ -57,6 +59,7 @@ public class ResultGenerator {
 		if (isEmpty(userInput)) {
 			return EMPTY_MESSAGE;
 		}
+		
 		Processor processor = Processor.getInstance();
 		
 		/** if(isResultValid(result)){
@@ -78,7 +81,7 @@ public class ResultGenerator {
 		return message;
 	}
 
-	private static boolean isEmpty(String line) {
+    private static boolean isEmpty(String line) {
 		String message = line.trim();
 		if (message.isEmpty()) {
 			return true;
@@ -167,6 +170,14 @@ public class ResultGenerator {
 	    
 	    return String.format(SUCCESSFUL_DISPLAY, numOfTasks);
 	}
+
+    public static void processDelete(String userInput) {
+        if(userInput.toLowerCase().equals(CONFIRM) || userInput.toLowerCase().equals("y")){
+            Processor.reset();
+        }
+            return;
+            
+    }
 
 
 
