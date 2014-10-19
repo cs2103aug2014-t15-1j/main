@@ -99,9 +99,9 @@ public class Task {
     public String toString() {
         String tempString = "";
         tempString += name + " ";
-        tempString += "due:" + due.toString() + " ";
-        tempString += "start:" + start.toString() + " ";
-        tempString += "end:" + end.toString() + " ";
+        tempString += "due: " + due.toString() + " ";
+        tempString += "start :" + start.toString() + " ";
+        tempString += "end :" + end.toString() + " ";
         tempString += concatanateTags();
         tempString += done ? "#done" : "#todo";
 
