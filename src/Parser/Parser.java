@@ -407,7 +407,7 @@ public class Parser {
                                                            lastValidField);
                 addToCurrFieldParam(editFields, currField, toAddToField);
             } else if (hasValidHashTag(currWord)) {
-                addTaskParamToField(editFields, "tags", currWord);
+                addTaskParamToField(editFields, "tag", currWord);
             } else if (currField.equals("delete")) {
                 // check if it's a valid delete keyword (ignore otherwise)
                 if (Arrays.asList(TASK_PARAM_LIST).contains(currWordLC)) {
@@ -476,7 +476,7 @@ public class Parser {
                 addToCurrFieldParam(addFields, currField, currWord);
             }
         }
-
+        
         removeDuplicates(addFields);
         removeInvalidDateTimes(addFields);
         checkStartEndOrder(addFields);
@@ -601,9 +601,6 @@ public class Parser {
                 fields.add(new TaskParam("end", startTP.getField()));
                 fields.add(new TaskParam("start", endTP.getField()));
             }
-        } else {
-            fields.remove(startTP);
-            fields.remove(endTP);
         }
     }
 

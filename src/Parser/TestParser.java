@@ -12,6 +12,8 @@ public class TestParser {
     // Consider using object.equals() to test assertEquals()
     @Test
     public void testInvalid() {
+        System.out.println("\nTest Invalid");
+
         // TEST INVALID COMMAND
         assertEquals("\n[[ CMD-OTHERS ]]" + "\ncmd-type: ERROR"
                      + "\ncmd-info: Error in initial command parsing", Parser
@@ -25,15 +27,25 @@ public class TestParser {
 
     @Test
     public void testParseToTask() {
+        System.out.println("\nTest ParseToTask");
+
         // Test parsing from stored data
         // Pre-cond: the data should have been formatted properly by Storage
         String task1 = tempTaskToString(Parser
                 .parseToTask("nAme: do Due: #cs2103 wed namE: homework M: late "
                              + "start: priority: due: 9am eNd: now name: quickly #done\n"));
         String result1 = "\n[[ Task ]]" + "\nName: do homework M: late quickly"
-                         + "\nDue: null" + "\nStart: null"
-                         + "\nEnd: null" + "\nTags: [#cs2103]"
-                         + "\nDoneness: #done";
+                         + "\nDue: null" + "\nStart: null" + "\nEnd: null"
+                         + "\nTags: [#cs2103]" + "\nDoneness: #done";
+        assertEquals(result1, task1);
+
+        task1 = tempTaskToString(Parser
+                .parseToTask("nAme: do Due: #cs2103 namE: homework M: late "
+                             + "start: 23/04/2014 0300 due: 24/04/2014 eNd: 23/04/2014 0500 name: quickly #done\n"));
+        result1 = "\n[[ Task ]]" + "\nName: do homework M: late quickly"
+                  + "\nDue: 24/04/2014" + "\nStart: 23/04/2014 0300"
+                  + "\nEnd: 23/04/2014 0500" + "\nTags: [#cs2103]"
+                  + "\nDoneness: #done";
         assertEquals(result1, task1);
     }
 
@@ -52,6 +64,7 @@ public class TestParser {
 
     @Test
     public void testCmdGetter() {
+        System.out.println("\nTest Getters");
         // Test getters of a Command subclass (Edit)
         Command testEdit = Parser
                 .parse("edit 3 cs2103 delete: name name nil name name n: todo homework delete: name name #cs2103");
@@ -65,20 +78,21 @@ public class TestParser {
 
     @Test
     public void testCmdAdd() {
+        System.out.println("\nTest Add");
         // TODO: Change due, start, end test values to proper date/times
         // TODO: Test date/time cases
 
         // Ignore Add for now
-        
+
         // Empty Add
-        String result0 = "\n[[ CMD-ADD: ]]" + "\nname: null" + "\ndue: null"
-                         + "\nstart: null" + "\nend: null" + "\ntags: []";
+        String result0 = "\n[[ CMD-ADD: ]]" + "\nname: null" + "\ndue: "
+                         + "\nstart: " + "\nend: " + "\ntags: []";
         String cmd0 = Parser.parse("add").toString();
         assertEquals("Add: empty", result0, cmd0);
 
         // Basic Add ending with a parameter
         String result1 = "\n[[ CMD-ADD: ]]" + "\nname: do homework it's cs2103"
-                         + "\ndue: null" + "\nstart: null" + "\nend: null"
+                         + "\ndue: " + "\nstart: " + "\nend: "
                          + "\ntags: [#cs2103]";
         String cmd1 = Parser.parse("add do homework it's #cs2103 cs2103 end:")
                 .toString();
@@ -86,8 +100,8 @@ public class TestParser {
 
         // Full Add with repeated parameters and consecutive parameters
         String result2 = "\n[[ CMD-ADD: ]]"
-                         + "\nname: do homework late quickly" + "\ndue: null"
-                         + "\nstart: null" + "\nend: null"
+                         + "\nname: do homework late quickly" + "\ndue: "
+                         + "\nstart: " + "\nend: "
                          + "\ntags: [#cs2103]";
         String cmd2 = Parser
                 .parse("add name: do start: #cs2103 wed name: homework late "
@@ -98,37 +112,38 @@ public class TestParser {
 
         // Full Add with shorthand
         String result2B = "\n[[ CMD-ADD: ]]" + "\nname: do homework"
-                          + "\ndue: thurs" + "\nstart: tues" + "\nend: wed"
+                          + "\ndue: 24/04/2014" + "\nstart: 22/04/2014" + "\nend: 23/04/2014"
                           + "\ntags: [#cs2103]";
-        String cmd2B = Parser.parse("add do s: #cs2103 tues n: homework "
-                                            + "d: thurs e: wed\n").toString();
+        String cmd2B = Parser.parse("add do s: #cs2103 23/04/2014 n: homework "
+                                            + "d: 24/04/2014 e: 22/04/2014\n").toString();
         assertEquals("Add: full, shorthand", result2B, cmd2B);
 
+        System.out.println("nospaces");
         // Add parameters typed without spaces after colons
         String result3 = "\n[[ CMD-ADD: ]]" + "\nname: homework"
-                         + "\ndue: null" + "\nstart: null" + "\nend: today"
+                         + "\ndue: " + "\nstart: " + "\nend: 23/04/2014"
                          + "\ntags: []";
         String cmd3 = Parser
-                .parse("add name:homework start:end:start:end:today")
+                .parse("add name:homework start:end:start:end:23/04/2014")
                 .toString();
         assertEquals("Add: no-spaces", result3, cmd3);
 
         // Full Add with mixed capitals for parameters
         String result4 = "\n[[ CMD-ADD: ]]"
-                         + "\nname: do homework late quickly" + "\ndue: thurs"
-                         + "\nstart: wed 9am" + "\nend: now"
+                         + "\nname: do homework late quickly" + "\ndue: 25/04/2014"
+                         + "\nstart: 23/04/2014" + "\nend: 24/04/2014"
                          + "\ntags: [#cs2103]";
         String cmd4 = Parser
-                .parse("aDD nAMe: do stArt: #cs2103 wed naMe: homework late "
-                               + "duE: start: 9am end: now NAME: quickly D: thurs\n")
+                .parse("aDD nAMe: do stArt: #cs2103 naMe: homework late "
+                               + "duE: start: 23/04/2014 end: 24/04/2014 NAME: quickly D: 25/04/2014\n")
                 .toString();
         assertEquals("Add: full, mixed caps", result4, cmd4);
 
         // Add with mixed capitals for no-space parameters and shorthand
         String result5 = "\n[[ CMD-ADD: ]]" + "\nname: homework"
-                         + "\ndue: null" + "\nstart: null" + "\nend: today"
+                         + "\ndue: " + "\nstart: " + "\nend: 23/04/2014"
                          + "\ntags: []";
-        String cmd5 = Parser.parse("add S:e:N:homework staRt:E:S:eNd: today")
+        String cmd5 = Parser.parse("add S:e:N:homework staRt:E:S:eNd: 23/04/2014")
                 .toString();
         assertEquals("Add: no-spaces, mixed caps", result5, cmd5);
 
@@ -136,6 +151,8 @@ public class TestParser {
 
     @Test
     public void testCmdEdit() {
+        System.out.println("\nTest Edit");
+
         // Empty Edit
         String result0 = "\n[[ CMD-OTHERS ]]" + "\ncmd-type: ERROR"
                          + "\ncmd-info: Invalid id for edit";
@@ -151,38 +168,38 @@ public class TestParser {
         // Edit with only id
         // TODO: Shouldn't this be invalid?
         String result2 = "\n[[ CMD-EDIT: ]]" + "\nid: 1" + "\nname: null"
-                         + "\ndue: null" + "\nstart: null" + "\nend: null"
-                         + "\ntags: []" + "\ndelete: null";
+                         + "\ndue: " + "\nstart: " + "\nend: " + "\ntags: []"
+                         + "\ndelete: null";
         String cmd2 = Parser.parse("edit 1").toString();
         assertEquals("Edit: id only", result2, cmd2);
 
         // Simple Edit
         String result3 = "\n[[ CMD-EDIT: ]]" + "\nid: 2"
                          + "\nname: do homework" + "\ndue: 23/04/2014"
-                         + "\nstart: null" + "\nend: null" + "\ntags: []"
+                         + "\nstart: " + "\nend: " + "\ntags: []"
                          + "\ndelete: null";
         String cmd3 = Parser.parse("edit 2 do homework due: 23/04/2014")
                 .toString();
         assertEquals("Edit: simple", result3, cmd3);
-/*
- * // CURRENTLY HAS AN ERROR WITH TIME IN DATETIME
-        // Full Edit with repeated parameters and consecutive parameters
+
+        // CURRENTLY HAS AN ERROR WITH TIME IN DATETIME
+        // Full Edit withrepeated parameters and consecutive parameters
         String result4 = "\n[[ CMD-EDIT: ]]" + "\nid: 3"
                          + "\nname: do homework for CS2103 project"
                          + "\ndue: 23/04/2014" + "\nstart: 22/04/2014 0200"
-                         + "\nend: 22/04/2014 0300" + "\ntags: [#CS2103]"
+                         + "\nend: 22/04/2014 0200" + "\ntags: [#CS2103]"
                          + "\ndelete: end";
         String cmd4 = Parser
-                .parse("edit 3 do #CS2103 homework due: 23/04/2014 start: 22/04/2014 0300"
+                .parse("edit 3 do #CS2103 homework due: 23/04/2014 start: 22/04/2014 0200 "
                                + "name: end: 22/04/2014 0200 name: for CS2103 delete: end name: project")
                 .toString();
         assertEquals("Edit: full, repeated param, consecutive param", result4,
                      cmd4);
-*/
+
         // Edit with non-delete parameters after delete
         String result5 = "\n[[ CMD-EDIT: ]]" + "\nid: 4"
-                         + "\nname: do homework by tonight" + "\ndue: null"
-                         + "\nstart: null" + "\nend: null" + "\ntags: []"
+                         + "\nname: do homework by tonight" + "\ndue: "
+                         + "\nstart: " + "\nend: " + "\ntags: []"
                          + "\ndelete: end";
         String cmd5 = Parser.parse("edit 4 do homework delete: end by tonight")
                 .toString();
@@ -228,6 +245,8 @@ public class TestParser {
 
     @Test
     public void testCmdDelete() {
+        System.out.println("\nTest Delete");
+
         // Empty delete (invalid)
         String result0 = "\n[[ CMD-OTHERS ]]" + "\ncmd-type: ERROR"
                          + "\ncmd-info: No arguments for delete";
@@ -273,6 +292,8 @@ public class TestParser {
 
     @Test
     public void testCmdRestore() {
+        System.out.println("\nTest Restore");
+
         // Empty Restore
         String result0 = "\n[[ CMD-OTHERS ]]" + "\ncmd-type: ERROR"
                          + "\ncmd-info: No arguments for restore";
@@ -294,6 +315,8 @@ public class TestParser {
 
     @Test
     public void testCmdHelp() {
+        System.out.println("\nTest Help");
+
         // Invalid help parameter
         String result0 = "\n[[ CMD-HELP: ]]" + "\nfield: invalid";
         String cmd0 = Parser.parse("help me").toString();
@@ -323,7 +346,10 @@ public class TestParser {
 
     @Test
     public void testCmdDisplay() {
+        System.out.println("\nTest Display");
+
         // TEST DISPLAY
+
         System.out.println(Parser.parse("display all"));
         System.out.println(Parser.parse("display 2"));
         System.out.println(Parser.parse("display block"));
