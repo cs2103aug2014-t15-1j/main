@@ -90,7 +90,7 @@ public class ResultGenerator {
 		return false;
 	}
 
-	private static String getResultMessage(CommandType commandDone,
+	public static String getResultMessage(CommandType commandDone,
 			Result result) {
 		List<Task> tasks = result.getTasks();
 		switch (commandDone) {

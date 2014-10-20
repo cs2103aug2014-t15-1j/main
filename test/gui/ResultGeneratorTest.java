@@ -1,7 +1,11 @@
 package gui;
 
-import static org.junit.Assert.*;
-import gui.ResultGenerator;
+import java.util.ArrayList;
+import java.util.List;
+
+import logic.CommandType;
+import logic.Result;
+import logic.Result.ResultType;
 
 import org.junit.Test;
 
@@ -9,11 +13,15 @@ public class ResultGeneratorTest {
 
     @Test
     public void test_Add_All_Para() {
-        String userInput = "add buy fish for party due: 15:25 19/10/2014 start: 13:00 19/10/2014 end: 1500 19/10/2014 #fishy";
-        String actual = ResultGenerator.sendInput(userInput);
-        String expected = "Added buy fish for party!";
-        
-        assertEquals(expected, actual);
+        CommandType commandDone = CommandType.ADD;
+        List<TaskStub> outputs = new ArrayList<TaskStub>();
+        DateTimeStub due = new DateTimeStub();
+        DateTimeStub start = new DateTimeStub();
+        DateTimeStub end = new DateTimeStub();
+        outputs.add(new TaskStub("finish testing", null, null, null, null));
+        Result result = new Result(outputs, true, commandDone, ResultType.TASK);
+
+        ResultGenerator.getResultMessage(userInput);
     }
 
 }
