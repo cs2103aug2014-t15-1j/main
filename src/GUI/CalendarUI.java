@@ -3,10 +3,11 @@ package GUI;
 import java.util.Date;
 import java.util.List;
 
+import logic.Processor;
+
 import org.eclipse.swt.widgets.DateTime;
 
-import Logic.Processor;
-import Storage.Task;
+import database.Task;
 /*
  * This class updates the calendar interface whenever the change is made
  */

@@ -1,14 +1,14 @@
-package Logic;
+package logic;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import Logic.Result.ResultType;
-import Parser.DateParser;
-import Parser.TaskParam;
-import Storage.BlockDate;
-import Storage.DateTime;
+import database.BlockDate;
+import database.DateTime;
+import parser.DateParser;
+import parser.TaskParam;
+import logic.Result.ResultType;
 
 public class CommandBlock extends Command {
 

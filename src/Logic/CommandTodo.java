@@ -1,12 +1,12 @@
-package Logic;
+package logic;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import Logic.Result.ResultType;
-import Parser.TaskParam;
-import Storage.DateTime;
-import Storage.Task;
+import database.DateTime;
+import database.Task;
+import parser.TaskParam;
+import logic.Result.ResultType;
 
 public class CommandTodo extends Command {
 

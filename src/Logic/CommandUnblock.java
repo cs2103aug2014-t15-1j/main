@@ -1,12 +1,12 @@
-package Logic;
+package logic;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import Logic.Result.ResultType;
-import Parser.TaskParam;
-import Storage.BlockDate;
+import database.BlockDate;
+import parser.TaskParam;
+import logic.Result.ResultType;
 
 public class CommandUnblock extends Command {
 

@@ -1,9 +1,9 @@
-package Logic;
+package logic;
 
 import java.util.List;
 
-import Storage.BlockDate;
-import Storage.Task;
+import database.BlockDate;
+import database.Task;
 
 /**
  * A Result object contains the necessary information of an operation.

@@ -2,10 +2,11 @@ package GUI;
 
 import java.util.List;
 
+import logic.Processor;
+
 import org.eclipse.jface.viewers.TableViewer;
 
-import Logic.Processor;
-import Storage.Task;
+import database.Task;
 /*
  * This class updates the task table interface whenever a change is made
  */

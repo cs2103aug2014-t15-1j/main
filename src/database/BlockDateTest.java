@@ -1,4 +1,4 @@
-package Storage;
+package database;
 
 import static org.junit.Assert.assertEquals;
 

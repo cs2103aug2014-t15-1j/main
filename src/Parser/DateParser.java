@@ -1,10 +1,10 @@
-package Parser;
+package parser;
 
 import java.util.Calendar;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
-import Storage.DateTime;
+import database.DateTime;
 
 // TODO: Reorganise: move all aux (e.g. isInteger()) to Parser, move all specifics out?
 

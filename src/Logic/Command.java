@@ -1,8 +1,8 @@
-package Logic;
+package logic;
 
 import java.util.List;
 
-import Logic.Result.ResultType;
+import logic.Result.ResultType;
 
 public abstract class Command {
 

@@ -1,24 +1,24 @@
-package Parser;
+package parser;
 
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import Logic.Command;
-import Logic.CommandAdd;
-import Logic.CommandBlock;
-import Logic.CommandDelete;
-import Logic.CommandDisplay;
-import Logic.CommandDone;
-import Logic.CommandEdit;
-import Logic.CommandHelp;
-import Logic.CommandOthers;
-import Logic.CommandRestore;
-import Logic.CommandSearch;
-import Logic.CommandTodo;
-import Logic.CommandUnblock;
-import Storage.DateTime;
-import Storage.Task;
+import database.DateTime;
+import database.Task;
+import logic.Command;
+import logic.CommandAdd;
+import logic.CommandBlock;
+import logic.CommandDelete;
+import logic.CommandDisplay;
+import logic.CommandDone;
+import logic.CommandEdit;
+import logic.CommandHelp;
+import logic.CommandOthers;
+import logic.CommandRestore;
+import logic.CommandSearch;
+import logic.CommandTodo;
+import logic.CommandUnblock;
 
 public class Parser {
 

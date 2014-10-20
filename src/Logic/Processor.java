@@ -1,4 +1,4 @@
-package Logic;
+package logic;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -9,11 +9,11 @@ import java.util.logging.FileHandler;
 import java.util.logging.Formatter;
 import java.util.logging.Logger;
 
-import Logic.Result.ResultType;
-import Parser.Parser;
-import Storage.BlockDate;
-import Storage.DataFile;
-import Storage.Task;
+import database.BlockDate;
+import database.DataFile;
+import database.Task;
+import parser.Parser;
+import logic.Result.ResultType;
 
 /* This class handles inputs from UI and interacts with other components for the
  * necessary operations. It is dependent on DataFile for operations related to 

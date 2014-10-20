@@ -1,4 +1,4 @@
-package Parser;
+package parser;
 
 public class ParseTester {
     // ========== TESTING (TO REMOVE) ==========//

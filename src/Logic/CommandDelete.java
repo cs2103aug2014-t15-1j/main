@@ -1,11 +1,11 @@
-package Logic;
+package logic;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import Logic.Result.ResultType;
-import Parser.TaskParam;
-import Storage.Task;
+import database.Task;
+import parser.TaskParam;
+import logic.Result.ResultType;
 
 /**
  * This Command stores the delete type and if applicable, an id value.

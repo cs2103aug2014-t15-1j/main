@@ -1,4 +1,4 @@
-package Logic;
+package logic;
 
 /**
  * List below are the Command Type available for the different operations

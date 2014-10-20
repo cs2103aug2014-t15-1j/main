@@ -2,10 +2,10 @@ package GUI;
 
 import java.util.List;
 
-import Logic.CommandType;
-import Logic.Processor;
-import Logic.Result;
-import Storage.Task;
+import database.Task;
+import logic.CommandType;
+import logic.Processor;
+import logic.Result;
 /**
  * It creates a success or error message for any user input entered by the end user.
  * The class calls Processor to process the input and then converts the result object returned by processor into error or success messages

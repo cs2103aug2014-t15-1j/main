@@ -1,11 +1,11 @@
-package Parser;
+package parser;
 
 import static org.junit.Assert.*;
+import logic.Command;
 
 import org.junit.Test;
 
-import Logic.Command;
-import Storage.Task;
+import database.Task;
 
 public class TestParser {
 

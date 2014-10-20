@@ -1,6 +1,6 @@
-package Logic;
+package logic;
 
-import Logic.Result.ResultType;
+import logic.Result.ResultType;
 
 
 /**

@@ -2,11 +2,12 @@ package GUI;
 
 import java.util.List;
 
+import logic.Processor;
+
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
-import Logic.Processor;
-import Storage.Task;
+import database.Task;
 /*
  * This class updates the TaskList Interface whenever a change is made. 
  */

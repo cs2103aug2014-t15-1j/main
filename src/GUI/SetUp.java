@@ -22,7 +22,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 
-import Storage.Task;
+import database.Task;
 
 
 public class SetUp {
@@ -211,7 +211,7 @@ public class SetUp {
             public String getText(Object element) {
                 Task task = (Task) element;
                 assert (task != null);
-                Storage.DateTime Due =  task.getDue();
+                database.DateTime Due =  task.getDue();
                 
                 if(Due == null){
                     return CELL_EMPTY;
@@ -226,7 +226,7 @@ public class SetUp {
             public String getText(Object element) {
                 Task task = (Task) element;
                 assert (task != null);
-                Storage.DateTime Start = task.getStart();
+                database.DateTime Start = task.getStart();
                 if(Start == null){
                     return CELL_EMPTY;
                 }
@@ -241,7 +241,7 @@ public class SetUp {
             public String getText(Object element) {
                 Task task = (Task) element;
                 assert (task != null);
-                Storage.DateTime End = task.getEnd();
+                database.DateTime End = task.getEnd();
                 if(End == null){
                     return CELL_EMPTY;
                 }

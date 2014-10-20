@@ -1,11 +1,11 @@
-package Logic;
+package logic;
 
 import static org.junit.Assert.*;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import Storage.Task;
+import database.Task;
 
 import java.util.ArrayList;
 

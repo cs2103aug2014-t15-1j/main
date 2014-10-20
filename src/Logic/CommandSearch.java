@@ -1,11 +1,11 @@
-package Logic;
+package logic;
 
 import java.util.List;
 import java.util.ArrayList;
 
-import Logic.Result.ResultType;
-import Parser.TaskParam;
-import Storage.Task;
+import database.Task;
+import parser.TaskParam;
+import logic.Result.ResultType;
 
 public class CommandSearch extends Command {
 

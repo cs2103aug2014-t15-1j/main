@@ -1,4 +1,4 @@
-package Storage;
+package database;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -7,18 +7,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import Parser.Parser;
+import parser.Parser;
 
 /**
- * In charge of reading blocked dates from file, and returning a list of
- * BlockDate objects. Only run once at instantiation of TODO <insert name>
- * class.
+ * In charge of reading task info from file, and returning a list of Task
+ * objects. Only run once at instantiation of DataFile class.
  * 
  * @author Pierce Anderson Fu
  * 
  */
 
-public class BlockDateReader {
+public class TaskReader {
 
     /** The file object to read from. */
     private File file;
@@ -28,23 +27,22 @@ public class BlockDateReader {
      * 
      * Made private to prevent instantiation without providing filename.
      */
-    private BlockDateReader() {
+    private TaskReader() {
     }
 
     /** Constructor. */
-    public BlockDateReader(String filename) {
+    public TaskReader(String filename) {
         this();
         file = new File(filename);
     }
 
     /**
-     * Reads blocked dates from file, and returns a list of BlockDate objects.
-     * Creates file with provided filename if it does not exist.
+     * Reads task info from file, and returns a list of Task objects. Creates
+     * file with provided filename if it does not exist.
      * 
-     * @return List of blocked dates from file, or null if an error was
-     *         encountered.
+     * @return List of tasks from file, or null if an error was encountered.
      */
-    public List<BlockDate> read() {
+    public List<Task> read() {
         if (!file.exists()) {
             try {
                 file.createNewFile();
@@ -54,20 +52,20 @@ public class BlockDateReader {
             }
         }
 
-        List<BlockDate> blocksFromFile = new ArrayList<BlockDate>();
+        List<Task> tasksFromFile = new ArrayList<Task>();
         try {
             Scanner scanner = new Scanner(file);
             while (scanner.hasNextLine()) {
-                String unparsedBlock = scanner.nextLine();
-                BlockDate tempBlock = Parser.parseToBlock(unparsedBlock);
-                blocksFromFile.add(tempBlock);
+                String unparsedText = scanner.nextLine();
+                Task tempTask = Parser.parseToTask(unparsedText);
+                tasksFromFile.add(tempTask);
             }
             scanner.close();
         } catch (FileNotFoundException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        return blocksFromFile;
+        return tasksFromFile;
     }
 
     /**
