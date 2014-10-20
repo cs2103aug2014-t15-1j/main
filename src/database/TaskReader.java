@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import textParser.Parser;
+import parser.Parser;
 
 /**
  * In charge of reading task info from file, and returning a list of Task
