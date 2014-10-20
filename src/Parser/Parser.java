@@ -405,7 +405,7 @@ public class Parser {
 
                 String toAddToField = mergeWordsAfterIndex(wordList,
                                                            lastValidField);
-                addToCurrFieldParam(editFields, currField, toAddToField);
+                addToFieldParam(editFields, currField, toAddToField);
             } else if (hasValidHashTag(currWord)) {
                 addTaskParamToField(editFields, "tag", currWord);
             } else if (currField.equals("delete")) {
@@ -416,11 +416,18 @@ public class Parser {
                     if (!deleteParam.getField().contains(currWordLC)) {
                         deleteParam.addToField(currWordLC);
                     }
-                } else {
-                    addToCurrFieldParam(editFields, prevField, currWord);
+                } else if (hasValidHashTag(currWord)){
+                    // What if an edited field is deleted?
+                    // Refactor
+                    TaskParam deleteParam = getTaskParam(editFields, currField);
+                    if (!deleteParam.getField().contains(currWord)) {
+                        deleteParam.addToField(currWord);
+                    }
+                }else{
+                    addToFieldParam(editFields, prevField, currWord);
                 }
             } else {
-                addToCurrFieldParam(editFields, currField, currWord);
+                addToFieldParam(editFields, currField, currWord);
             }
         }
 
@@ -467,13 +474,13 @@ public class Parser {
                 // Add remainder to the current field
                 String toAddToField = mergeWordsAfterIndex(wordList,
                                                            lastValidField);
-                addToCurrFieldParam(addFields, currField, toAddToField);
+                addToFieldParam(addFields, currField, toAddToField);
             } else if (isAddParamName(currWord)) {
                 currField = getParamName(currWord);
             } else if (hasValidHashTag(currWord)) {
                 addTaskParamToField(addFields, "tag", currWord);
             } else {
-                addToCurrFieldParam(addFields, currField, currWord);
+                addToFieldParam(addFields, currField, currWord);
             }
         }
         
@@ -552,12 +559,12 @@ public class Parser {
 
     /**
      * @param fields
-     * @param currField
+     * @param field
      * @param content
      */
-    private static void addToCurrFieldParam(List<TaskParam> fields,
-                                       String currField, String content) {
-        getTaskParam(fields, currField).addToField(content);
+    private static void addToFieldParam(List<TaskParam> fields,
+                                       String field, String content) {
+        getTaskParam(fields, field).addToField(content);
     }
 
     /**

@@ -57,6 +57,7 @@ public class CommandDone extends Command {
         this.cmdTodo = new CommandTodo(content, true);
     }
     
+    @Override
     public String get(String field) {
         switch (field) {
             case "rangeType":
@@ -70,6 +71,7 @@ public class CommandDone extends Command {
         }
     }
 
+    @Override
     public String toString() {
         String result = "\n[[ CMD-DONE: ]]";
         result = result.concat("\nrangeType: " + rangeType);
@@ -83,6 +85,7 @@ public class CommandDone extends Command {
      * Marks a task as 'done'
      * @return Result
      */
+    @Override
     protected Result execute(boolean userInput) {
         Processor.getLogger().info("Executing 'Done' Command...");
         List<Task> list = new ArrayList<Task>();
@@ -131,6 +134,7 @@ public class CommandDone extends Command {
      * Marks a 'done' task as 'todo'
      * @return Result
      */
+    @Override
     protected Result executeComplement() {
         return this.cmdTodo.execute(false);
     }

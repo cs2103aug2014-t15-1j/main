@@ -63,6 +63,7 @@ public class MainScreen {
 	    
 	    final Text commandLine = screen.getCommandLine();
 	    commandLine.addListener(SWT.KeyDown, new Listener() {
+            @Override
             public void handleEvent(Event event) {
                 switch (event.type) {
                     case SWT.KeyDown :
@@ -75,6 +76,7 @@ public class MainScreen {
         });
 	    
 	    commandLine.addListener(SWT.MouseDown, new Listener() {
+            @Override
             public void handleEvent(Event event) {
                 switch (event.type) {
                     case SWT.MouseDown :
@@ -92,7 +94,8 @@ public class MainScreen {
 		final Text commandLine = screen.getCommandLine();
 
 		commandLine.addListener(SWT.DefaultSelection, new Listener() {
-			public void handleEvent(Event event) {
+			@Override
+            public void handleEvent(Event event) {
 
 				final Label feedback = screen.getFeedBack();
 				String input = commandLine.getText();

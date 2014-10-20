@@ -31,10 +31,12 @@ public class TaskParam {
         }
     }
 
+    @Override
     public String toString() {
         return "[ " + name + " // " + field + " ]";
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj == this) {
             return true;

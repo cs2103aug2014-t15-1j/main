@@ -52,6 +52,7 @@ public class CommandRestore extends Command {
         this.cmdDelete = new CommandDelete(content, true);
     }
 
+    @Override
     public String get(String field) {
         switch (field) {
             case "rangeType":
@@ -65,6 +66,7 @@ public class CommandRestore extends Command {
         }
     }
 
+    @Override
     public String toString() {
         String result = "\n[[ CMD-RESTORE: ]]";
         result = result.concat("\nrangeType: " + rangeType);
@@ -79,6 +81,7 @@ public class CommandRestore extends Command {
      * Allows restore <id>, restore search
      * @return true/false on whether operation is performed
      */
+    @Override
     protected Result execute(boolean userInput) {
         Processor.getLogger().info("Executing 'Restore' Command...");
         Processor processor = Processor.getInstance();
@@ -137,6 +140,7 @@ public class CommandRestore extends Command {
      * Allows delete <id>, delete search, delete all
      * @return Result
      */
+    @Override
     protected Result executeComplement() {
         return cmdDelete.execute(false);
     }

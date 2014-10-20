@@ -71,6 +71,7 @@ public class CommandEdit extends Command {
         }
     }
     
+    @Override
     public String get(String paramName){
         switch(paramName){
             case PARAM_ID:
@@ -97,10 +98,12 @@ public class CommandEdit extends Command {
         }
     }
     
+    @Override
     public List<String> getTags(){
         return this.tags;
     }
     
+    @Override
     public String toString() {
         
         String result = "\n[[ CMD-EDIT: ]]";
@@ -120,6 +123,7 @@ public class CommandEdit extends Command {
      * Allow edit/deletion of parameters of a Task
      * @return Result
      */
+    @Override
     protected Result execute(boolean userInput) {
         Processor.getLogger().info("Executing 'Edit' Command...");
         Processor processor = Processor.getInstance();
@@ -156,6 +160,7 @@ public class CommandEdit extends Command {
     }
     
     /** Undo the 'Edit' Command */
+    @Override
     protected Result executeComplement() {
         Processor processor = Processor.getInstance();
         boolean success = false;

@@ -14,6 +14,7 @@ public class CommandHelp extends Command {
         return this.field;
     }
     
+    @Override
     public String toString() {
         String result = "\n[[ CMD-HELP: ]]";
         result = result.concat("\nfield: " + field);
@@ -21,6 +22,7 @@ public class CommandHelp extends Command {
         return result;
     }
 
+    @Override
     protected Result execute(boolean userInput) {
         return new Result(null, true, getType(), null);
     }

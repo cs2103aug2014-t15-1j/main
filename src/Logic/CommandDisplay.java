@@ -42,6 +42,7 @@ public class CommandDisplay extends Command {
         }
     }
 
+    @Override
     public String get(String field) {
         switch (field) {
             case "rangeType":
@@ -55,6 +56,7 @@ public class CommandDisplay extends Command {
         }
     }
 
+    @Override
     public String toString() {
         String result = "\n[[ CMD-DISPLAY: ]]";
         result = result.concat("\nrangeType: " + rangeType);
@@ -69,6 +71,7 @@ public class CommandDisplay extends Command {
      * Allows show, show <id>, show search
      * @return Result
      */
+    @Override
     @SuppressWarnings({ "unchecked", "rawtypes" })
     protected Result execute(boolean userInput) {
         Processor.getLogger().info("Executing 'Display' Command...");

@@ -183,7 +183,7 @@ public class TestParser {
         assertEquals("Edit: simple", result3, cmd3);
 
         // CURRENTLY HAS AN ERROR WITH TIME IN DATETIME
-        // Full Edit withrepeated parameters and consecutive parameters
+        // Full Edit with repeated parameters and consecutive parameters
         String result4 = "\n[[ CMD-EDIT: ]]" + "\nid: 3"
                          + "\nname: do homework for CS2103 project"
                          + "\ndue: 23/04/2014" + "\nstart: 22/04/2014 0200"

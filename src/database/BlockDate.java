@@ -120,12 +120,14 @@ public class BlockDate implements Comparable<BlockDate> {
         return contains;
     }
     
+    @Override
     public boolean equals(Object obj) {
         BlockDate blockDate = (BlockDate) obj;
         return blockDate.getStart().equalsTo(this.getStart()) && 
                 blockDate.getEnd().equalsTo(this.getEnd());
     }
     
+    @Override
     public int compareTo(BlockDate blockDate) {
         return this.getEnd().compareTo(blockDate.getStart());
     }

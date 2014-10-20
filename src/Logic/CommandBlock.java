@@ -47,6 +47,7 @@ public class CommandBlock extends Command {
     }
 
     
+    @Override
     public String get(String field) {
         switch (field) {
             case "start":
@@ -60,6 +61,7 @@ public class CommandBlock extends Command {
         }
     }
 
+    @Override
     public String toString() {
         String result = "\n[[ CMD-BLOCK: ]]";
         result = result.concat("\nstart: " + start);
@@ -74,6 +76,7 @@ public class CommandBlock extends Command {
      * @param userInput
      * @return Result
      */
+    @Override
     protected Result execute(boolean userInput) {
         Processor.getLogger().info("Executing 'Block' Command...");
         Processor processor = Processor.getInstance();
@@ -100,6 +103,7 @@ public class CommandBlock extends Command {
         return new Result(outputs, success, CommandType.BLOCK, ResultType.BLOCKDATE);
     }
     
+    @Override
     protected Result executeComplement() {
         BlockDate currBlock = new BlockDate(start, end);
         Processor processor = Processor.getInstance();

@@ -60,6 +60,7 @@ public class CommandAdd extends Command {
         }
     }
     
+    @Override
     public String get(String paramName){
         switch(paramName){
             case PARAM_NAME:
@@ -80,10 +81,12 @@ public class CommandAdd extends Command {
         }
     }
     
+    @Override
     public List<String> getTags(){
         return this.tags;
     }
     
+    @Override
     public String toString() {
         
         String result = "\n[[ CMD-ADD: ]]";
@@ -103,6 +106,7 @@ public class CommandAdd extends Command {
      * This method adds a new Task to the Todo List
      * @return Result
      */
+    @Override
     protected Result execute(boolean userInput) {
         boolean success = false;
         List<Task> list = new ArrayList<Task>();
@@ -137,6 +141,7 @@ public class CommandAdd extends Command {
     }
     
     /** Undo the 'Add' Command */
+    @Override
     protected Result executeComplement() {
         Processor processor = Processor.getInstance();
         List<Task> tasks = new ArrayList<Task>();

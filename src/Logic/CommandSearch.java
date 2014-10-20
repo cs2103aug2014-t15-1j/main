@@ -41,6 +41,7 @@ public class CommandSearch extends Command {
         }
     }
 
+    @Override
     public String get(String field) {
         switch (field) {
             case "date":
@@ -51,15 +52,18 @@ public class CommandSearch extends Command {
         }
     }
 
+    @Override
     public List<String> getTags() {
         return this.tags;
     }
 
     // TODO: Add to Command
+    @Override
     public List<String> getKeywords() {
         return this.keywords;
     }
 
+    @Override
     public String toString() {
         String result = "\n[[ CMD-SEARCH: ]]";
         result = result.concat("\nCmdType: " + this.type);
@@ -75,6 +79,7 @@ public class CommandSearch extends Command {
      * Allows search <date>, search <key1> <key2> #tag1 #tag2
      * @return Result
      */
+    @Override
     protected Result execute(boolean userInput) {
         Processor.getLogger().info("Executing 'Search' Command...");
         Processor.getInstance().initialiseNewSearchList();

@@ -42,6 +42,7 @@ public class CommandUnblock extends Command {
     }
     
     // TODO: Change to empty get()?
+    @Override
     public String get(String field) {
         switch (field) {
             case "id":
@@ -66,6 +67,7 @@ public class CommandUnblock extends Command {
         this.cmdBlock = cmdBlock;
     }
 
+    @Override
     public String toString() {
         String result = "\n[[ CMD-Unblock: ]]";
         result = result.concat("\nid: " + id);
@@ -78,6 +80,7 @@ public class CommandUnblock extends Command {
      * @param userInput
      * @return Result
      */
+    @Override
     protected Result execute(boolean userInput) {
         Processor.getLogger().info("Executing 'Unblock' Command...");
         Processor processor = Processor.getInstance();
@@ -96,6 +99,7 @@ public class CommandUnblock extends Command {
         return new Result(outputs, success, CommandType.UNBLOCK, ResultType.BLOCKDATE);
     }
     
+    @Override
     protected Result executeComplement() {
         boolean success = false;
         Processor processor = Processor.getInstance();
