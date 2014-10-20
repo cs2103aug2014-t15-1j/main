@@ -1,8 +1,7 @@
 package gui;
 
+import java.util.ArrayList;
 import java.util.List;
-
-import logic.Processor;
 
 import org.eclipse.jface.viewers.TableViewer;
 
@@ -13,25 +12,25 @@ import database.Task;
  */
 public class TaskTableUI {
 
-    public TaskTableUI() {
-        update();
+    public TaskTableUI(List<Task> tasks) {
+        update(tasks);
     }
 
-    private void update() {
+    private void update(List<Task> tasks) {
         TableViewer table = getTable();
-        Processor processor = Processor.getInstance();
-        List<Task> timedTasks = processor.fetchTimedTasks();
-        List<Task> floatingTasks = processor.fetchFloatingTasks();
-        if (isValid(timedTasks) && isValid(floatingTasks)) {
-
-            List<Task> tasks = mergeTasks(timedTasks, floatingTasks);
-            setTasks(table, tasks);
-
-        } else if (isValid(floatingTasks)) {
-            setTasks(table, floatingTasks);
-        } else if (!isValid(timedTasks)) {
-            setTasks(table, timedTasks);
-        }
+        // Processor processor = Processor.getInstance();
+        /**
+         * List<Task> timedTasks = processor.fetchTimedTasks(); List<Task>
+         * floatingTasks = processor.fetchFloatingTasks(); if
+         * (isValid(timedTasks) && isValid(floatingTasks)) {
+         * 
+         * List<Task> tasks = mergeTasks(timedTasks, floatingTasks);
+         * setTasks(table, tasks);
+         * 
+         * } else if (isValid(floatingTasks)) { setTasks(table, floatingTasks);
+         * } else if (isValid(timedTasks)) { setTasks(table, timedTasks); }
+         **/
+        setTasks(table, tasks);
     }
 
     private void setTasks(TableViewer table, List<Task> tasks) {
@@ -58,11 +57,17 @@ public class TaskTableUI {
     private List<Task> mergeTasks(List<Task> timedTasks,
                                   List<Task> floatingTasks) {
         int sizeFloatingTasks = floatingTasks.size();
+        int sizeTimedTasks = timedTasks.size();
+        List<Task> list = new ArrayList<Task>();
 
-        for (int index = 0; index < sizeFloatingTasks; index++) {
-            timedTasks.add(floatingTasks.get(index));
+        for (int index = 0; index < sizeTimedTasks; index++) {
+            list.add(timedTasks.get(index));
         }
 
-        return timedTasks;
+        for (int index = 0; index < sizeFloatingTasks; index++) {
+            list.add(floatingTasks.get(index));
+        }
+
+        return list;
     }
 }
