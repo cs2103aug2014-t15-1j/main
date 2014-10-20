@@ -13,7 +13,7 @@ import java.util.ArrayList;
  * 
  */
 
-public class Task {
+public class Task implements Comparable<Task> {
 
     /**
      * Unique ID for each new Task object. Increments at new Task instantiation.
@@ -89,9 +89,23 @@ public class Task {
     }
 
     /**
+     * Compares this Task object with the specified Task object for order.
+     * Returns a negative integer, zero, or a positive integer if this object's
+     * due date is less earlier than, equal to, or later than that of the
+     * specified object. Implementation is dependent on DateTime's compareTo().
+     * 
+     * @return A negative integer, zero, or a positive integer if this object's
+     *         due date is less earlier than, equal to, or later than that of
+     *         the specified object.
+     */
+    @Override
+    public int compareTo(Task otherTask) {
+        return this.due.compareTo(otherTask.due);
+    }
+
+    /**
      * Converts Task object to a single String to write to system file.
      * Parameter tags are added to aid in parsing text when reading from file.
-     * TODO fix extraneous spaces when attributes are empty.
      * 
      * @return String to write to system file for storage.
      */
