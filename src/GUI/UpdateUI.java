@@ -1,4 +1,4 @@
-package GUI;
+package gui;
 
 /**
  * This classes calls all the 'update-able' user Interfaces ( Task Table, TaskList, Calendar ) to update themselves.

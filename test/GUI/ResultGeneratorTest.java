@@ -1,6 +1,7 @@
 package GUI;
 
 import static org.junit.Assert.*;
+import gui.ResultGenerator;
 
 import org.junit.Test;
 
