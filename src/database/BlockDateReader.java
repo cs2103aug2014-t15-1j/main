@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import parser.Parser;
+import textParser.Parser;
 
 /**
  * In charge of reading blocked dates from file, and returning a list of
