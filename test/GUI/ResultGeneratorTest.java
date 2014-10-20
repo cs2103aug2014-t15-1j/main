@@ -1,4 +1,4 @@
-package GUI;
+package gui;
 
 import static org.junit.Assert.*;
 import gui.ResultGenerator;
