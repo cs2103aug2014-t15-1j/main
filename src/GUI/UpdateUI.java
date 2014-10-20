@@ -1,20 +1,17 @@
 package GUI;
 
-import java.util.List;
-
-import Storage.Task;
 /**
  * This classes calls all the 'update-able' user Interfaces ( Task Table, TaskList, Calendar ) to update themselves.
  * @author Sharon
  *
  */
 public class UpdateUI {
-    public UpdateUI(List<Task> tasks){
-        update(tasks);
+    public UpdateUI(){
+        update();
     }
     
-    private void update(List<Task> tasks){
-        new TaskTableUI(tasks);
+    private void update(){
+        new TaskTableUI();
         new TaskListUI();
         new CalendarUI();
     }

@@ -22,7 +22,7 @@ public class ResultGenerator {
 	private static final String SUCCESSFUL_TODO = "Marked %1$s as to do";
 	private static final String SUCCESSFUL_DONE = "Marked %1$s as done";
 	private static final String SUCCESSFUL_DELETE = "Deleted!";
-	private static final String SUCCESSFUL_DELETE_ALL = "Erased all data!";
+	
 	private static final String SUCCESSFUL_RESTORE = "Restored!";
 	private static final String SUCCESSFUL_DISPLAY = "Showing %1$s tasks";
 	private static final String SUCCESSFUL_UNDO = "Travelled back in time! Command has been undone";
@@ -96,22 +96,22 @@ public class ResultGenerator {
 		switch (commandDone) {
 		case ADD:
 		    assert(!tasks.isEmpty());
-		    updateInterface(tasks);
+		    updateInterface();
 			return singleLineSuccessMessage(SUCCESSFUL_ADD, tasks);
 		case DELETE:
 		    // delete all --> implement confirmation
 		    if(result.needsConfirmation()){
 		        return ASK_CONFIRM_DELETE;
 		    }
-		    updateInterface(tasks);
+		    updateInterface();
 		    return SUCCESSFUL_DELETE;
 		case EDIT:
 			return singleLineSuccessMessage(SUCCESSFUL_EDIT, tasks);
 		case DISPLAY:
-		    updateInterface(tasks);
+		    updateInterface();
 			return successfulDisplayMessage(tasks);
 		case SEARCH:
-		    updateInterface(tasks);
+		    updateInterface();
 			return successfulSearchMessage(tasks);
 		case TODO:
 			return singleLineSuccessMessage(SUCCESSFUL_TODO, tasks);
@@ -137,9 +137,9 @@ public class ResultGenerator {
 		}
 	}
 
-	private static void updateInterface(List<Task> tasks) {
+	private static void updateInterface() {
         // TODO Auto-generated method stub
-        new UpdateUI(tasks);
+        new UpdateUI();
     }
 
     // Returns message of format "Successfully (task done) (task name)"
@@ -171,11 +171,13 @@ public class ResultGenerator {
 	    return String.format(SUCCESSFUL_DISPLAY, numOfTasks);
 	}
 
-    public static void processDelete(String userInput) {
+    public static boolean processDelete(String userInput) {
         if(userInput.toLowerCase().equals(CONFIRM) || userInput.toLowerCase().equals("y")){
             Processor.reset();
+            updateInterface();
+            return true;
         }
-            return;
+            return false;
             
     }
 

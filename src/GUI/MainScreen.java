@@ -23,6 +23,8 @@ public class MainScreen {
 	// one line display
     private static final String ASK_CONFIRM_DELETE = "Are you sure you want to wipe file? This is irreversible";
     private static final String INVALID_INPUT = "Invalid Input. Type yes or no.";
+    private static final String SUCCESSFUL_DELETE_ALL = "Erased all data!";
+    private static final String UNSUCCESSFUL_DELETE_ALL = "Did not delete anything";
     
 
     private static final String CONFIRM = "yes";
@@ -99,9 +101,14 @@ public class MainScreen {
 				    while(!isValidInput(input)){
 				        feedback.setText(INVALID_INPUT);
 				    }
-				    askConfrim = false;
+				    if(ResultGenerator.processDelete(input)){
+				        feedback.setText(SUCCESSFUL_DELETE_ALL);
+				    }else{
+				        feedback.setText(UNSUCCESSFUL_DELETE_ALL);
+				    }
 				    commandLine.setText("");
-				    ResultGenerator.processDelete(input);
+				    askConfrim = false;
+				    
 				    
 				}else{
 				//try{

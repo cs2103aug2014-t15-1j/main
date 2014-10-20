@@ -11,7 +11,7 @@ import Storage.Task;
  */
 public class TaskTableUI {
     
-    public TaskTableUI(List<Task> tasks){
+    public TaskTableUI(){
         update();
     }
     
@@ -19,6 +19,9 @@ public class TaskTableUI {
         TableViewer table = getTable();
        Processor processor = Processor.getInstance();
         List<Task> tasks = processor.fetchTimedTasks(); 
+       if(!isValid(tasks)){
+           return;
+       }
         Object[] tasksArray = tasks.toArray();
         
         
@@ -30,5 +33,13 @@ public class TaskTableUI {
         SetUp setUp = SetUp.getInstance();
         TableViewer table = setUp.getTableViewer();
         return table;
+    }
+    
+    private boolean isValid(List<Task> tasks){
+        if(tasks == null || tasks.isEmpty()){
+            return false;
+        }
+        
+        return true;
     }
 }
