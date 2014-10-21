@@ -4,7 +4,7 @@ import java.util.List;
 
 import logic.Processor;
 import logic.Result;
-import database.DateTime;
+import database.BlockDate;
 import database.Task;
 
 public class ResultGenerator {
@@ -26,6 +26,10 @@ public class ResultGenerator {
         return false;
     }
 
+    public void updateInterface(List<Task> tasks) {
+        new UpdateUI(tasks);
+    }
+
     public String processResult(Result result, String input) {
 
         if (result.isSuccess()) {
@@ -34,6 +38,9 @@ public class ResultGenerator {
                     return processDateBasedResult(result);
                 case TASK:
                     return processTaskBasedResult(result);
+                default:
+                    // HELP -- open dialog; press key to close note: cmdType is
+                    // Display
             }
 
         }
@@ -42,7 +49,7 @@ public class ResultGenerator {
 
     // Not implemented yet
     private String processDateBasedResult(Result result) {
-        List<DateTime> dates = null; // get list of dates
+        List<BlockDate> dates = result.getBlockedDates(); // get list of dates
         String message;
         assert (dates.size() != 0);
         if (dates.size() == 1) {
@@ -56,29 +63,40 @@ public class ResultGenerator {
                 case UNBLOCK:
                     return "UNBLOCKED: " + message;// format: UNBLOCKED:
                                                    // DateTime
+                case REDO:
+                    return null;
+
+                case UNDO:
+                    return null;
+
+                default:
+                    // catch error?
             }
         }
 
         return feedbackMessageMultiResults(dates, "Showing %1$s blocks.");
     }
 
-    private String feedbackSingleBlock(List<DateTime> dates) {
-        assert (dates.size() == 1);
-        DateTime date = dates.get(0);
-        return date.toString();
+    private String feedbackSingleBlock(List<BlockDate> dates) {
+        BlockDate date = dates.get(0);
+        return date.getStartDate().toString() + " to " +
+               date.getEndDate().toString();
     }
 
     private String processTaskBasedResult(Result result) {
         List<Task> outputs = result.getTasks();
-
+        updateInterface(outputs);
         switch (result.getCommandType()) {
             case ADD:
+                if (result.needsConfirmation()) {
+                    return "Unable to add task. Task coincides with a blocked date. Key 'y' to override date or 'n' to abort";
+                }
                 return feedbackMessage(outputs, "Added %1$s");
             case DELETE:
                 if (result.needsConfirmation()) {
                     return "This will erase all data, PERMANENTLY.  Key 'y' to continue or 'n' to abort";
                 }
-                return "Deleted!";
+                return feedbackMessage(outputs, "Deleted %1$s");
             case EDIT:
                 return feedbackMessage(outputs, "Edited %1$s");
             case DISPLAY:

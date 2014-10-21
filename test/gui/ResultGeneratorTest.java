@@ -57,6 +57,21 @@ public class ResultGeneratorTest {
     }
 
     @Test
+    public void test_Add_NeedConfirmation() {
+        ResultGenerator resultGenerator = new ResultGenerator();
+        ArrayList<TaskStub> outputs = new ArrayList<TaskStub>();
+        outputs.add(new TaskStub("name", new DateTimeStub("", ""),
+                new DateTimeStub("21/10/2014", "18:53"), new DateTimeStub(
+                        "21/10/2014", "21:00"), null));
+        ResultStub result = new ResultStub(outputs, true, CommandType.ADD,
+                true, ResultType.TASK);
+
+        String actual = resultGenerator.processResult(result, "add name");
+        String expected = "Unable to add task. Task coincides with a blocked date. Key 'y' to override date or 'n' to abort";
+        assertEquals(expected, actual);
+    }
+
+    @Test
     public void test_Delete() {
         ResultGenerator resultGenerator = new ResultGenerator();
         ArrayList<TaskStub> outputs = new ArrayList<TaskStub>();
@@ -65,7 +80,7 @@ public class ResultGeneratorTest {
         ResultStub result = new ResultStub(outputs, true, CommandType.DELETE,
                 false, ResultType.TASK);
         String actual = resultGenerator.processResult(result, "delete name");
-        String expected = "Deleted!";
+        String expected = "Deleted name";
         assertEquals(expected, actual);
     }
 
@@ -78,7 +93,7 @@ public class ResultGeneratorTest {
         ResultStub result = new ResultStub(outputs, true, CommandType.DELETE,
                 true, ResultType.TASK);
         String actual = resultGenerator.processResult(result, "delete name");
-        String expected = "This will erase all data, PERMANENTLY. Key 'y' to continue or 'n' to abort";
+        String expected = "This will erase all data, PERMANENTLY.  Key 'y' to continue or 'n' to abort";
         assertEquals(expected, actual);
     }
 
@@ -86,11 +101,13 @@ public class ResultGeneratorTest {
     public void test_Edit() {
         ResultGenerator resultGenerator = new ResultGenerator();
         ArrayList<TaskStub> outputs = new ArrayList<TaskStub>();
-        outputs.add(new TaskStub("name", new DateTimeStub("", ""),
-                new DateTimeStub("", ""), new DateTimeStub("", ""), null));
+        TaskStub task = new TaskStub("name", new DateTimeStub("", ""),
+                new DateTimeStub("", ""), new DateTimeStub("", ""), null);
+        outputs.add(task);
         ResultStub result = new ResultStub(outputs, true, CommandType.EDIT,
                 false, ResultType.TASK);
-        String actual = resultGenerator.processResult(result, "edit name");
+        String actual = resultGenerator.processResult(result,
+                                                      "edit" + task.getID());
         String expected = "Edited name";
         assertEquals(expected, actual);
     }
@@ -184,4 +201,18 @@ public class ResultGeneratorTest {
         assertEquals(expected, actual);
     }
 
+    @Test
+    public void test_Block() {
+        ResultGenerator resultGenerator = new ResultGenerator();
+        ArrayList<BlockDateStub> outputs = new ArrayList<BlockDateStub>();
+        outputs.add(new BlockDateStub(new DateTimeStub("21/10/2014", "1922"),
+                new DateTimeStub("21/10/2014", "1927")));
+        ResultStub result = new ResultStub(outputs, true, CommandType.BLOCK,
+                false, ResultType.BLOCKDATE);
+        String actual = resultGenerator
+                .processResult(result,
+                               "block 1922 21/10/2014 to 1927 21/10/2014");
+        String expected = "BLOCKED: 21/10/2014 1922 to 21/10/2014 1927";
+        assertEquals(expected, actual);
+    }
 }

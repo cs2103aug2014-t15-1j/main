@@ -33,4 +33,8 @@ public class DateTimeStub extends DateTime {
     public DateTimeStub(String date, String time) {
         super(date, time);
     }
+
+    public DateTimeStub() {
+        super();
+    }
 }

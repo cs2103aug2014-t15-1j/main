@@ -31,10 +31,15 @@ public class ResultStub extends Result {
         setResultType(resultType);
     }
 
-    /*** MUTATORS ***/
+    /*** ACCESSORS ***/
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public List getTasks() {
+        return outputs;
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public List getBlockedDates() {
         return outputs;
     }
 
@@ -54,7 +59,7 @@ public class ResultStub extends Result {
         return confirmation;
     }
 
-    /*** ACCESSORS ***/
+    /*** MUTATORS ***/
 
     @SuppressWarnings("rawtypes")
     public void setTasks(List outputs) {
