@@ -114,8 +114,8 @@ public class Task implements Comparable<Task> {
         String tempString = "";
         tempString += name + " ";
         tempString += "due: " + due.toString() + " ";
-        tempString += "start :" + start.toString() + " ";
-        tempString += "end :" + end.toString() + " ";
+        tempString += "start: " + start.toString() + " ";
+        tempString += "end: " + end.toString() + " ";
         tempString += concatanateTags();
         tempString += done ? "#done" : "#todo";
 
