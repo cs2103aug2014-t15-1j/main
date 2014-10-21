@@ -13,12 +13,16 @@ import database.Task;
  */
 public class UpdateUI {
     public UpdateUI(List<Task> tasks) {
-        update(tasks);
+        updateObservers(tasks);
     }
 
-    private void update(List<Task> tasks) {
+    private void updateObservers(List<Task> tasks) {
         new TaskTableUI(tasks);
         new TaskListUI();
         new CalendarUI();
     }
+    /**
+     * public void update(Observable observable, Object object) {
+     * updateObservers() }
+     **/
 }

@@ -23,7 +23,6 @@ import org.eclipse.swt.widgets.Text;
 
 import database.Task;
 
-
 public class SetUp {
 
     public static final String LINE_SEPARATOR = System
@@ -35,8 +34,8 @@ public class SetUp {
     private static final int NUM_COLS_COMPOSITE = 1;
     private static final int MIN_WIDTH_SCREEN = 1800;
     private static final int MIN_HEIGHT_SCREEN = 1500;
-   // private static final int MIN_WIDTH_SIDE_PANE = 1200;
-   // private static final int MIN_HEIGHT_SIDE_PANE = 1000;
+    // private static final int MIN_WIDTH_SIDE_PANE = 1200;
+    // private static final int MIN_HEIGHT_SIDE_PANE = 1000;
 
     private static final String HEADER_NAME_ID = "Id";
     private static final String HEADER_NAME_NAME = "Name";
@@ -45,11 +44,11 @@ public class SetUp {
     private static final String HEADER_NAME_END = "End";
     private static final String HEADER_NAME_TAGS = "Tags";
     private static final String HEADER_NAME_STATUS = "Status";
-    
+
     private static final String PARA_STATUS_DELETED = "Deleted";
     private static final String PARA_STATUS_TODO = "To do";
     private static final String PARA_STATUS_DONE = "Done";
-    
+
     private static final String CELL_EMPTY = "empty";
 
     private static final int COL_WIDTH = 175;
@@ -71,12 +70,15 @@ public class SetUp {
         this.shell = shell;
         initialise();
     }
-    
-    
-    // Note: SetUp will not exist if MainScreen.java is destroyed, because only MainScreen.java creates a SetUp object.
+
+    // Note: SetUp will not exist if MainScreen.java is destroyed, because only
+    // MainScreen.java creates a SetUp object.
     /**
-     * This returns a SetUp object and creates a new instance of the SetUp object if it does not exist.
-     * @param shell used to create a new SetUp object
+     * This returns a SetUp object and creates a new instance of the SetUp
+     * object if it does not exist.
+     * 
+     * @param shell
+     *            used to create a new SetUp object
      * @return instance of the SetUp object created
      */
     public static SetUp getInstance(Shell shell) {
@@ -85,34 +87,35 @@ public class SetUp {
         }
         return setUp;
     }
-    
+
     /*
-     * This returns the instance of a SetUp object created at the earlier point of the program
+     * This returns the instance of a SetUp object created at the earlier point
+     * of the program
      */
-    public static SetUp getInstance(){
+    public static SetUp getInstance() {
         return setUp;
     }
-    
-    public Label getFeedBack(){
+
+    public Label getFeedBack() {
         return this.feedback;
     }
-    
-    public Text getCommandLine(){
+
+    public Text getCommandLine() {
         return this.commandLine;
     }
-    
-    public Text getTaskList(){
+
+    public Text getTaskList() {
         return this.taskList;
     }
-    
-    public TableViewer getTableViewer(){
+
+    public TableViewer getTableViewer() {
         return this.tableViewer;
     }
-    
-    public DateTime getCalendar(){
+
+    public DateTime getCalendar() {
         return this.calendar;
     }
-    
+
     private void initialise() {
         setUpShell();
         setUpComposites();
@@ -120,14 +123,14 @@ public class SetUp {
     }
 
     private void setUpShell() {
-        //Image icon = new Image("images/HayStackIcon.gif");
-        //shell.setImage(icon);
+        // Image icon = new Image("images/HayStackIcon.gif");
+        // shell.setImage(icon);
         GridLayout layout = new GridLayout();
         layout.numColumns = NUM_COLS_SCREEN;
         this.shell.setLayout(layout);
         this.shell.setSize(MIN_WIDTH_SCREEN, MIN_HEIGHT_SCREEN);
         this.shell.setText(PROGRAM_NAME);
-        
+
     }
 
     private void setUpComposites() {
@@ -170,7 +173,7 @@ public class SetUp {
 
     private void setUpTable() {
         tableViewer = new TableViewer(mainInterface, SWT.MULTI | SWT.BORDER);
-        tableViewer.setContentProvider(new ArrayContentProvider() );
+        tableViewer.setContentProvider(new ArrayContentProvider());
         tableViewer.setLabelProvider(new LabelProvider());
         setUpTableColumns();
         Table table = tableViewer.getTable();
@@ -186,7 +189,7 @@ public class SetUp {
         column.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
-                
+
                 Task task = (Task) element;
                 assert (task != null);
                 String id = task.getId() + "";
@@ -210,9 +213,9 @@ public class SetUp {
             public String getText(Object element) {
                 Task task = (Task) element;
                 assert (task != null);
-                database.DateTime Due =  task.getDue();
-                
-                if(Due == null){
+                database.DateTime Due = task.getDue();
+
+                if (Due == null) {
                     return CELL_EMPTY;
                 }
                 return Due.toString();
@@ -226,10 +229,10 @@ public class SetUp {
                 Task task = (Task) element;
                 assert (task != null);
                 database.DateTime Start = task.getStart();
-                if(Start == null){
+                if (Start == null) {
                     return CELL_EMPTY;
                 }
-                
+
                 return Start.toString();
             }
         });
@@ -241,7 +244,7 @@ public class SetUp {
                 Task task = (Task) element;
                 assert (task != null);
                 database.DateTime End = task.getEnd();
-                if(End == null){
+                if (End == null) {
                     return CELL_EMPTY;
                 }
                 return End.toString();
@@ -256,8 +259,8 @@ public class SetUp {
                 assert (task != null);
                 List<String> tags = task.getTags();
                 String tag = "";
-                
-                if(tags == null || tags.isEmpty()){
+
+                if (tags == null || tags.isEmpty()) {
                     return CELL_EMPTY;
                 }
                 for (int index = 0; index < tags.size(); index++) {
@@ -266,7 +269,7 @@ public class SetUp {
                 return tag;
             }
         });
-        
+
         column = setColumnHeader(HEADER_NAME_STATUS, COL_WIDTH);
         column.setLabelProvider(new ColumnLabelProvider() {
             @Override
@@ -274,11 +277,11 @@ public class SetUp {
                 Task task = (Task) element;
                 assert (task != null);
                 String Status;
-                if(task.isDeleted()){
+                if (task.isDeleted()) {
                     Status = PARA_STATUS_DELETED;
-                }else if(task.isDone()){
+                } else if (task.isDone()) {
                     Status = PARA_STATUS_DONE;
-                }else{
+                } else {
                     Status = PARA_STATUS_TODO;
                 }
                 return Status;
@@ -327,24 +330,23 @@ public class SetUp {
 
     private void setUpTaskList() {
         // TODO Auto-generated method stub
-        taskList = new Text(sidePane, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL
-                | SWT.READ_ONLY);
-         
+        taskList = new Text(sidePane, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL |
+                                      SWT.READ_ONLY);
+
         GridData gridData = new GridData(GridData.FILL_BOTH);
         gridData.heightHint = 500;
         taskList.setLayoutData(gridData);
-        
+
         Display display = shell.getDisplay();
         Color white = display.getSystemColor(SWT.COLOR_WHITE);
         taskList.setBackground(white);
         taskList.setEnabled(false);
-        
-        
+
         // to change
-       /** String textToSet = "UPCOMING TASK:" + LINE_SEPARATOR
-                + "1. Implement task list" + LINE_SEPARATOR + "SOMEDAY:"
-                + LINE_SEPARATOR + "1. End world hunger";
-        taskList.setText(textToSet);
-        **/
+        /**
+         * String textToSet = "UPCOMING TASK:" + LINE_SEPARATOR +
+         * "1. Implement task list" + LINE_SEPARATOR + "SOMEDAY:" +
+         * LINE_SEPARATOR + "1. End world hunger"; taskList.setText(textToSet);
+         **/
     }
 }

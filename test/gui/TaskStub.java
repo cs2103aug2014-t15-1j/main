@@ -17,17 +17,22 @@ public class TaskStub extends Task {
     private static int newId = 1;
     // removed final modifier for testing purposes
     private int ID;
-    private String name = "";
+    private String name;
     private DateTime due = new DateTime();
     private DateTime start = new DateTime();
     private DateTime end = new DateTime();
     private List<String> tags = new ArrayList<String>();
-    private boolean done = false;
+    private boolean done;
     private boolean deleted = false;
 
     public TaskStub(String name, DateTime due, DateTime start, DateTime end,
             List<String> tags) {
         super(name, due, start, end, tags);
+        setName(name);
+        setDue(due);
+        setStart(start);
+        setEnd(end);
+        setTags(tags);
     }
 
     /*** ACCESSORS ***/

@@ -20,23 +20,21 @@ public class ResultStub extends Result {
     private boolean confirmation = false;
     private ResultType resultType;
 
-    public ResultStub() {
-        super();
-    }
-
     @SuppressWarnings("rawtypes")
     public ResultStub(List outputs, boolean success, CommandType cmdType,
-            ResultType resultType) {
-        setOutputs(outputs);
+            boolean confirmation, ResultType resultType) {
+        super(outputs, success, cmdType, confirmation, resultType);
+        setTasks(outputs);
         setSuccess(success);
         setCmdType(cmdType);
+        setConfirmation(confirmation);
         setResultType(resultType);
     }
 
     /*** MUTATORS ***/
 
-    @SuppressWarnings("rawtypes")
-    public List getOutputs() {
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public List getTasks() {
         return outputs;
     }
 
@@ -59,7 +57,7 @@ public class ResultStub extends Result {
     /*** ACCESSORS ***/
 
     @SuppressWarnings("rawtypes")
-    public void setOutputs(List outputs) {
+    public void setTasks(List outputs) {
         this.outputs = outputs;
     }
 

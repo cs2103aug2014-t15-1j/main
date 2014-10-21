@@ -2,191 +2,130 @@ package gui;
 
 import java.util.List;
 
-import logic.CommandType;
 import logic.Processor;
 import logic.Result;
+import database.DateTime;
 import database.Task;
 
-/**
- * It creates a success or error message for any user input entered by the end
- * user. The class calls Processor to process the input and then converts the
- * result object returned by processor into error or success messages Note: All
- * methods in this class are static
- * 
- * @author Sharon
- *
- */
 public class ResultGenerator {
 
-    private static final int FIRST_ELEMENT = 0;
-    private static final String SUCCESSFUL_ADD = "Added %1$s";
-    private static final String SUCCESSFUL_EDIT = "Edited %1$s";
-    private static final String SUCCESSFUL_SEARCH = "Found %1$s result(s):";
-    private static final String SUCCESSFUL_TODO = "Marked %1$s as to do";
-    private static final String SUCCESSFUL_DONE = "Marked %1$s as done";
-    private static final String SUCCESSFUL_DELETE = "Deleted!";
+    public String sendInput(String input) {
+        Processor processor = Processor.getInstance();
+        Result result = processor.processInput(input);
+        assert (result != null);
+        return processResult(result, input);
+    }
 
-    private static final String SUCCESSFUL_RESTORE = "Restored!";
-    private static final String SUCCESSFUL_DISPLAY = "Showing %1$s tasks";
-    private static final String SUCCESSFUL_UNDO = "Travelled back in time! Command has been undone";
-    private static final String SUCCESSFUL_REDO = "Travelled into the future! Command has been redone";
-
-    // to be changed at a later implementation -- display and show same
-    // implementation.
-    //
-    // Not implemented: search, block, unblock, help
-    private static final String SUCCESSFUL_BLOCK = "Successfully blocked"; // include:
-                                                                           // range
-                                                                           // blocked?
-    private static final String SUCCESSFUL_UNBLOCK = "Successfully unblocked"; // include:
-                                                                               // range
-                                                                               // unblocked?
-
-    // to be implement: Help
-    private static final String ASK_CONFIRM_DELETE = "Are you sure you want to wipe file? This is irreversible";
-    private static final String CODE_EXIT = "exit";
-    private static final String UNSUCCESSFUL_SEARCH_MESSAGE = "We could not find any results :( Try using different words?";
-    private static final String UNSUCCESSFUL_COMMAND_MESSAGE = "'%1$s'was not recognised.";
-    private static final String UNSUCCESSFUL_DISPLAY_NO_TASKS = "You are a free man! You do not have any tasks.";
-    private static final String EMPTY_MESSAGE = "That was read as empty. Try again.";
-    private static final String ERROR_COMMAND_MESSAGE = "Houston, we have a problem";
-
-    private static final String CONFIRM = "yes";
-
-    /**
-     * This method passes a string object containing user commands to the
-     * Processor class to process.
-     * 
-     * @param userInput
-     *            a string containing commands that the user entered
-     * @return a String object containing success messages if the command was
-     *         carried out or error messages if the command failed
-     * @throws Exception
-     */
-    public static String sendInput(String userInput) {
-
-        if (isEmpty(userInput)) {
-            return EMPTY_MESSAGE;
+    public boolean processDeleteAll(String input) {
+        input = input.toLowerCase();
+        if (input.equals("y") || input.equals("yes")) {
+            Processor.reset();
+            return true;
         }
 
-        Processor processor = Processor.getInstance();
+        return false;
+    }
 
-        /**
-         * if(isResultValid(result)){ //String message = getResultMessa
-         * ge(result); // find command Type // then see if command is successful
-         * --> return sucess // if command is unsuccessful --> return error
-         * message specific to command else{}
-         **/
-        Result result = processor.processInput(userInput);
-        String message = "";
+    public String processResult(Result result, String input) {
 
         if (result.isSuccess()) {
-            CommandType commandDone = result.getCommandType();
-            message = getResultMessage(commandDone, result);
-        } else {
-            message = String.format(UNSUCCESSFUL_COMMAND_MESSAGE, userInput);
+            switch (result.getResultType()) {
+                case BLOCKDATE:
+                    return processDateBasedResult(result);
+                case TASK:
+                    return processTaskBasedResult(result);
+            }
+
         }
-        return message;
+        return String.format("Not able to process '%1$s'", input);
     }
 
-    private static boolean isEmpty(String line) {
-        String message = line.trim();
-        if (message.isEmpty()) {
-            return true;
+    // Not implemented yet
+    private String processDateBasedResult(Result result) {
+        List<DateTime> dates = null; // get list of dates
+        String message;
+        assert (dates.size() != 0);
+        if (dates.size() == 1) {
+            message = feedbackSingleBlock(dates);
+
+            // change table?
+            switch (result.getCommandType()) {
+            // check for confirmation
+                case BLOCK:
+                    return "BLOCKED: " + message;// format: BLOCKED: DateTime
+                case UNBLOCK:
+                    return "UNBLOCKED: " + message;// format: UNBLOCKED:
+                                                   // DateTime
+            }
         }
 
-        return false;
+        return feedbackMessageMultiResults(dates, "Showing %1$s blocks.");
     }
 
-    public static String getResultMessage(CommandType commandDone, Result result) {
-        List<Task> tasks = result.getTasks();
-        switch (commandDone) {
+    private String feedbackSingleBlock(List<DateTime> dates) {
+        assert (dates.size() == 1);
+        DateTime date = dates.get(0);
+        return date.toString();
+    }
+
+    private String processTaskBasedResult(Result result) {
+        List<Task> outputs = result.getTasks();
+
+        switch (result.getCommandType()) {
             case ADD:
-                assert (!tasks.isEmpty());
-                updateInterface(tasks);
-                return singleLineSuccessMessage(SUCCESSFUL_ADD, tasks);
+                return feedbackMessage(outputs, "Added %1$s");
             case DELETE:
-                // delete all --> implement confirmation
                 if (result.needsConfirmation()) {
-                    return ASK_CONFIRM_DELETE;
+                    return "This will erase all data, PERMANENTLY.  Key 'y' to continue or 'n' to abort";
                 }
-                updateInterface(tasks);
-                return SUCCESSFUL_DELETE;
+                return "Deleted!";
             case EDIT:
-                return singleLineSuccessMessage(SUCCESSFUL_EDIT, tasks);
+                return feedbackMessage(outputs, "Edited %1$s");
             case DISPLAY:
-                updateInterface(tasks);
-                return successfulDisplayMessage(tasks);
+                if (outputs.size() == 0) {
+                    return "No tasks to show.";
+                }
+                return feedbackMessageMultiResults(outputs,
+                                                   "%1$s task(s) found.");
             case SEARCH:
-                updateInterface(tasks);
-                return successfulSearchMessage(tasks);
+                return feedbackMessageMultiResults(outputs,
+                                                   "Found %1$s match(es).");
             case TODO:
-                return singleLineSuccessMessage(SUCCESSFUL_TODO, tasks);
+                return feedbackMessage(outputs, "Marked %1$s as todo.");
             case DONE:
-                return singleLineSuccessMessage(SUCCESSFUL_DONE, tasks);
-            case RESTORE:
-                return SUCCESSFUL_RESTORE;
-            case BLOCK:
-                // ask user, if user wants to block a place with tasks assigned
-                return SUCCESSFUL_BLOCK;
-            case UNBLOCK:
-                return SUCCESSFUL_UNBLOCK;
+                return feedbackMessage(outputs, "Marked %1$s as done.");
             case UNDO:
-
-                return SUCCESSFUL_UNDO;
+                return "Command Undone.";
             case REDO:
-
-                return SUCCESSFUL_REDO;
+                return "Command Redone.";
             case EXIT:
-                return CODE_EXIT;
+                return "exit";
             default:
-                return ERROR_COMMAND_MESSAGE;
+                return "";
         }
     }
 
-    private static void updateInterface(List<Task> tasks) {
-        // TODO Auto-generated method stub
-        new UpdateUI(tasks);
-    }
-
-    // Returns message of format "Successfully (task done) (task name)"
-    // Pre-condition: tasks only has one element
-    private static String singleLineSuccessMessage(String message,
-                                                   List<Task> tasks) {
+    private String feedbackMessage(List<Task> tasks, String commandDone) {
         assert (tasks.size() == 1);
-        Task task = tasks.get(FIRST_ELEMENT);
-        String taskName = task.getName();
-        return String.format(message, taskName);
+        Task taskDone = tasks.get(0);
+        checkValidName(taskDone);
+        return String.format(commandDone, taskDone.getName());
     }
 
-    private static String successfulSearchMessage(List<Task> tasks) {
-        int numOfSearchResults = tasks.size();
-        if (numOfSearchResults == 0) {
-            return UNSUCCESSFUL_SEARCH_MESSAGE;
+    private String feedbackMessageMultiResults(@SuppressWarnings("rawtypes") List outputs,
+                                               String feedback) {
+        int size = outputs.size();
+        return String.format(feedback, size);
+    }
+
+    private void checkValidName(Task task) {
+        if (isValidString(task.getName())) {
+            throw new NullPointerException("Task name is null");
         }
-        String successMessage = String.format(SUCCESSFUL_SEARCH,
-                                              numOfSearchResults);
-        return successMessage;
     }
 
-    private static String successfulDisplayMessage(List<Task> tasks) {
-        int numOfTasks = tasks.size();
-        if (numOfTasks == 0) {
-            return UNSUCCESSFUL_DISPLAY_NO_TASKS;
-        }
-
-        return String.format(SUCCESSFUL_DISPLAY, numOfTasks);
+    private boolean isValidString(String parameter) {
+        return parameter.equals(null) || parameter.isEmpty() ||
+               parameter.equals("null");
     }
-
-    public static boolean processDelete(String userInput) {
-        if (userInput.toLowerCase().equals(CONFIRM) ||
-            userInput.toLowerCase().equals("y")) {
-            Processor.reset();
-            updateInterface();
-            return true;
-        }
-        return false;
-
-    }
-
 }

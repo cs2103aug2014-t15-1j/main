@@ -31,23 +31,29 @@ public class TaskTableUI {
          * } else if (isValid(timedTasks)) { setTasks(table, timedTasks); }
          **/
         setTasks(table, tasks);
+        // setTasks(table, processor.fetchFloatingTasks());
     }
 
     private void setTasks(TableViewer table, List<Task> tasks) {
         Object[] tasksArray = tasks.toArray();
-
+        if (table.equals(null)) {
+            return;
+        }
         table.setInput(tasksArray);
         table.refresh();
     }
 
     private TableViewer getTable() {
         SetUp setUp = SetUp.getInstance();
+        if (setUp.getTableViewer().equals(null)) {
+            return null;
+        }
         TableViewer table = setUp.getTableViewer();
         return table;
     }
 
     private boolean isValid(List<Task> tasks) {
-        if (tasks == null || tasks.size() == 0 || tasks.isEmpty()) {
+        if (tasks.equals(null) || tasks.size() == 0 || tasks.isEmpty()) {
             return false;
         }
 
