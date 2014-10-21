@@ -27,7 +27,7 @@ public class ResultGenerator {
     }
 
     public void updateInterface(List<Task> tasks) {
-        new UpdateUI(tasks);
+        // new UpdateUI(tasks);
     }
 
     public String processResult(Result result, String input) {
@@ -64,10 +64,10 @@ public class ResultGenerator {
                     return "UNBLOCKED: " + message;// format: UNBLOCKED:
                                                    // DateTime
                 case REDO:
-                    return null;
+                    return "Command Redone.";
 
                 case UNDO:
-                    return null;
+                    return "Command Undone.";
 
                 default:
                     // catch error?

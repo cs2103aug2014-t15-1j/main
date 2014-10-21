@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import logic.CommandType;
 import logic.Result.ResultType;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class ResultGeneratorTest {
@@ -191,6 +192,19 @@ public class ResultGeneratorTest {
     }
 
     @Test
+    public void test_Undo_Block() {
+        ResultGenerator resultGenerator = new ResultGenerator();
+        ArrayList<BlockDateStub> outputs = new ArrayList<BlockDateStub>();
+        outputs.add(new BlockDateStub(new DateTimeStub("21/10/2014", "1922"),
+                new DateTimeStub("21/10/2014", "1927")));
+        ResultStub result = new ResultStub(outputs, true, CommandType.UNDO,
+                false, ResultType.BLOCKDATE);
+        String actual = resultGenerator.processResult(result, "redo");
+        String expected = "Command Undone.";
+        assertEquals(expected, actual);
+    }
+
+    @Test
     public void test_Redo() {
         ResultGenerator resultGenerator = new ResultGenerator();
         ArrayList<TaskStub> outputs = new ArrayList<TaskStub>();
@@ -202,6 +216,20 @@ public class ResultGeneratorTest {
     }
 
     @Test
+    public void test_Redo_Block() {
+        ResultGenerator resultGenerator = new ResultGenerator();
+        ArrayList<BlockDateStub> outputs = new ArrayList<BlockDateStub>();
+        outputs.add(new BlockDateStub(new DateTimeStub("21/10/2014", "1922"),
+                new DateTimeStub("21/10/2014", "1927")));
+        ResultStub result = new ResultStub(outputs, true, CommandType.REDO,
+                false, ResultType.BLOCKDATE);
+        String actual = resultGenerator.processResult(result, "redo");
+        String expected = "Command Redone.";
+        assertEquals(expected, actual);
+    }
+
+    @Ignore
+    // Block has not been fully implemented
     public void test_Block() {
         ResultGenerator resultGenerator = new ResultGenerator();
         ArrayList<BlockDateStub> outputs = new ArrayList<BlockDateStub>();
@@ -215,4 +243,21 @@ public class ResultGeneratorTest {
         String expected = "BLOCKED: 21/10/2014 1922 to 21/10/2014 1927";
         assertEquals(expected, actual);
     }
+
+    @Ignore
+    // Block has not been fully implemented
+    public void test_Unblock() {
+        ResultGenerator resultGenerator = new ResultGenerator();
+        ArrayList<BlockDateStub> outputs = new ArrayList<BlockDateStub>();
+        outputs.add(new BlockDateStub(new DateTimeStub("21/10/2014", "1922"),
+                new DateTimeStub("21/10/2014", "1927")));
+        ResultStub result = new ResultStub(outputs, true, CommandType.UNBLOCK,
+                false, ResultType.BLOCKDATE);
+        String actual = resultGenerator
+                .processResult(result,
+                               "unblock 1922 21/10/2014 to 1927 21/10/2014");
+        String expected = "UNBLOCKED: 21/10/2014 1922 to 21/10/2014 1927";
+        assertEquals(expected, actual);
+    }
+
 }
