@@ -129,12 +129,14 @@ public class CommandAdd extends Command {
      */
     private boolean isBlocked() {
         boolean blocked = false;
-        Processor processor = Processor.getInstance();
-        List<BlockDate> blockDates = processor.getBlockedDates();
-        BlockDate currDate = new BlockDate(start, end);
-        for (BlockDate blockDate : blockDates) {
-            if (blockDate.contains(currDate)) {
-                return true;
+        if (due != null || start != null || end != null) {
+            Processor processor = Processor.getInstance();
+            List<BlockDate> blockDates = processor.getBlockedDates();
+            BlockDate currDate = new BlockDate(start, end);
+            for (BlockDate blockDate : blockDates) {
+                if (blockDate.contains(currDate)) {
+                    return true;
+                }
             }
         }
         return blocked;

@@ -89,7 +89,7 @@ public class CommandUnblock extends Command {
         int unblockId = Integer.parseInt(id) - 1;
         List<BlockDate> outputs = new ArrayList<BlockDate>();
         
-        if (unblockId < blockRange.size() && unblockId > 0) {
+        if (unblockId < blockRange.size() && unblockId >= 0) {
             BlockDate blockedDate = blockRange.remove(unblockId);
             processor.getDeletedBlockDates().push(blockedDate);
             outputs.add(blockedDate);

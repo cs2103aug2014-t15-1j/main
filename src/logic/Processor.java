@@ -28,6 +28,8 @@ import database.Task;
 
 public class Processor extends Observable {
     
+    private final static boolean ENABLE_LOGGING = false;
+    
     /** Instance of Processor */
     private static Processor processor;
     
@@ -101,13 +103,15 @@ public class Processor extends Observable {
 	}
 	
 	private static void initialiseLogger() {
-	    try {
-	        FileHandler fh = new FileHandler("Processor.log");  
-	        Formatter format = new LogFormatter();
-	        fh.setFormatter(format);
-	        log.addHandler(fh);
-	    } catch (Exception e) {
-	        e.printStackTrace();
+	    if (ENABLE_LOGGING) {
+    	    try {
+    	        FileHandler fh = new FileHandler("Processor.log", true);  
+    	        Formatter format = new LogFormatter();
+    	        fh.setFormatter(format);
+    	        log.addHandler(fh);
+    	    } catch (Exception e) {
+    	        e.printStackTrace();
+    	    }
 	    }
 	}
 	
