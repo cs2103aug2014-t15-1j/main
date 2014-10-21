@@ -8,15 +8,24 @@ import java.util.ArrayList;
 import logic.CommandType;
 import logic.Result.ResultType;
 
+import org.junit.After;
 import org.junit.Ignore;
 import org.junit.Test;
 
 public class ResultGeneratorTest {
 
+    private static ResultGenerator resultGenerator = new ResultGenerator();
+    private static ArrayList<TaskStub> outputs = new ArrayList<TaskStub>();
+    private static ArrayList<BlockDateStub> outputsDate = new ArrayList<BlockDateStub>();
+
+    @After
+    public void tearDown() {
+        outputs.clear();
+        outputsDate.clear();
+    }
+
     @Test
     public void test_Add() {
-        ResultGenerator resultGenerator = new ResultGenerator();
-        ArrayList<TaskStub> outputs = new ArrayList<TaskStub>();
         outputs.add(new TaskStub("name", new DateTimeStub("", ""),
                 new DateTimeStub("", ""), new DateTimeStub("", ""), null));
         ResultStub result = new ResultStub(outputs, true, CommandType.ADD,
@@ -29,8 +38,6 @@ public class ResultGeneratorTest {
 
     @Test
     public void test_Add_Unsucessful() {
-        ResultGenerator resultGenerator = new ResultGenerator();
-        ArrayList<TaskStub> outputs = new ArrayList<TaskStub>();
         outputs.add(new TaskStub("name", new DateTimeStub("", ""),
                 new DateTimeStub("", ""), new DateTimeStub("", ""), null));
         ResultStub result = new ResultStub(outputs, false, CommandType.ADD,
@@ -42,11 +49,34 @@ public class ResultGeneratorTest {
     }
 
     @Test
-    public void test_Add_EmptyName() {
-
-        ResultGenerator resultGenerator = new ResultGenerator();
-        ArrayList<TaskStub> outputs = new ArrayList<TaskStub>();
+    public void test_Add_NullName() {
         outputs.add(new TaskStub(null, new DateTimeStub("", ""),
+                new DateTimeStub("", ""), new DateTimeStub("", ""), null));
+        ResultStub result = new ResultStub(outputs, false, CommandType.ADD,
+                false, ResultType.TASK);
+        try {
+            resultGenerator.processResult(result, "add name");
+        } catch (NullPointerException error) {
+            assertTrue(error.getMessage().contains("Task name is invalid"));
+        }
+    }
+
+    @Test
+    public void test_Add_EmptyName() {
+        outputs.add(new TaskStub("", new DateTimeStub("", ""),
+                new DateTimeStub("", ""), new DateTimeStub("", ""), null));
+        ResultStub result = new ResultStub(outputs, false, CommandType.ADD,
+                false, ResultType.TASK);
+        try {
+            resultGenerator.processResult(result, "add name");
+        } catch (NullPointerException error) {
+            assertTrue(error.getMessage().contains("Task name is invalid"));
+        }
+    }
+
+    @Test
+    public void test_Add_NullStringName() {
+        outputs.add(new TaskStub("null", new DateTimeStub("", ""),
                 new DateTimeStub("", ""), new DateTimeStub("", ""), null));
         ResultStub result = new ResultStub(outputs, false, CommandType.ADD,
                 false, ResultType.TASK);
@@ -59,8 +89,6 @@ public class ResultGeneratorTest {
 
     @Test
     public void test_Add_NeedConfirmation() {
-        ResultGenerator resultGenerator = new ResultGenerator();
-        ArrayList<TaskStub> outputs = new ArrayList<TaskStub>();
         outputs.add(new TaskStub("name", new DateTimeStub("", ""),
                 new DateTimeStub("21/10/2014", "18:53"), new DateTimeStub(
                         "21/10/2014", "21:00"), null));
@@ -72,10 +100,36 @@ public class ResultGeneratorTest {
         assertEquals(expected, actual);
     }
 
+    @Ignore
+    public void test_CommandType_NullTaskResultType() {
+        outputs.add(new TaskStub("name", new DateTimeStub("", ""),
+                new DateTimeStub("", ""), new DateTimeStub("", ""), null));
+        ResultStub result = new ResultStub(outputs, true, null, false,
+                ResultType.TASK);
+
+        try {
+            resultGenerator.processResult(result, "add name");
+        } catch (IllegalArgumentException error) {
+            assertTrue(error.getMessage().contains("Illegal Command Type"));
+        }
+    }
+
+    @Ignore
+    public void test_CommandType_NullBlockDateResultType() {
+        outputs.add(new TaskStub("name", new DateTimeStub("", ""),
+                new DateTimeStub("", ""), new DateTimeStub("", ""), null));
+        ResultStub result = new ResultStub(outputs, true, null, false,
+                ResultType.BLOCKDATE);
+
+        try {
+            resultGenerator.processResult(result, "add name");
+        } catch (IllegalArgumentException error) {
+            assertTrue(error.getMessage().contains("Illegal Command Type"));
+        }
+    }
+
     @Test
     public void test_Delete() {
-        ResultGenerator resultGenerator = new ResultGenerator();
-        ArrayList<TaskStub> outputs = new ArrayList<TaskStub>();
         outputs.add(new TaskStub("name", new DateTimeStub("", ""),
                 new DateTimeStub("", ""), new DateTimeStub("", ""), null));
         ResultStub result = new ResultStub(outputs, true, CommandType.DELETE,
@@ -87,8 +141,6 @@ public class ResultGeneratorTest {
 
     @Test
     public void test_DeleteAll() {
-        ResultGenerator resultGenerator = new ResultGenerator();
-        ArrayList<TaskStub> outputs = new ArrayList<TaskStub>();
         outputs.add(new TaskStub("name", new DateTimeStub("", ""),
                 new DateTimeStub("", ""), new DateTimeStub("", ""), null));
         ResultStub result = new ResultStub(outputs, true, CommandType.DELETE,
@@ -100,8 +152,6 @@ public class ResultGeneratorTest {
 
     @Test
     public void test_Edit() {
-        ResultGenerator resultGenerator = new ResultGenerator();
-        ArrayList<TaskStub> outputs = new ArrayList<TaskStub>();
         TaskStub task = new TaskStub("name", new DateTimeStub("", ""),
                 new DateTimeStub("", ""), new DateTimeStub("", ""), null);
         outputs.add(task);
@@ -115,8 +165,6 @@ public class ResultGeneratorTest {
 
     @Test
     public void test_Display() {
-        ResultGenerator resultGenerator = new ResultGenerator();
-        ArrayList<TaskStub> outputs = new ArrayList<TaskStub>();
         outputs.add(new TaskStub("name", new DateTimeStub("", ""),
                 new DateTimeStub("", ""), new DateTimeStub("", ""), null));
         ResultStub result = new ResultStub(outputs, true, CommandType.DISPLAY,
@@ -128,8 +176,6 @@ public class ResultGeneratorTest {
 
     @Test
     public void test_Display_EmptyFile() {
-        ResultGenerator resultGenerator = new ResultGenerator();
-        ArrayList<TaskStub> outputs = new ArrayList<TaskStub>();
         ResultStub result = new ResultStub(outputs, true, CommandType.DISPLAY,
                 false, ResultType.TASK);
         String actual = resultGenerator.processResult(result, "display");
@@ -139,8 +185,6 @@ public class ResultGeneratorTest {
 
     @Test
     public void test_Search() {
-        ResultGenerator resultGenerator = new ResultGenerator();
-        ArrayList<TaskStub> outputs = new ArrayList<TaskStub>();
         outputs.add(new TaskStub("name", new DateTimeStub("", ""),
                 new DateTimeStub("", ""), new DateTimeStub("", ""), null));
         ResultStub result = new ResultStub(outputs, true, CommandType.SEARCH,
@@ -152,8 +196,6 @@ public class ResultGeneratorTest {
 
     @Test
     public void test_Todo() {
-        ResultGenerator resultGenerator = new ResultGenerator();
-        ArrayList<TaskStub> outputs = new ArrayList<TaskStub>();
         TaskStub task = new TaskStub("name", new DateTimeStub("", ""),
                 new DateTimeStub("", ""), new DateTimeStub("", ""), null);
         int ID = task.getId();
@@ -167,8 +209,6 @@ public class ResultGeneratorTest {
 
     @Test
     public void test_Done() {
-        ResultGenerator resultGenerator = new ResultGenerator();
-        ArrayList<TaskStub> outputs = new ArrayList<TaskStub>();
         TaskStub task = new TaskStub("name", new DateTimeStub("", ""),
                 new DateTimeStub("", ""), new DateTimeStub("", ""), null);
         int ID = task.getId();
@@ -182,8 +222,6 @@ public class ResultGeneratorTest {
 
     @Test
     public void test_Undo() {
-        ResultGenerator resultGenerator = new ResultGenerator();
-        ArrayList<TaskStub> outputs = new ArrayList<TaskStub>();
         ResultStub result = new ResultStub(outputs, true, CommandType.UNDO,
                 false, ResultType.TASK);
         String actual = resultGenerator.processResult(result, "undo");
@@ -193,11 +231,10 @@ public class ResultGeneratorTest {
 
     @Test
     public void test_Undo_Block() {
-        ResultGenerator resultGenerator = new ResultGenerator();
-        ArrayList<BlockDateStub> outputs = new ArrayList<BlockDateStub>();
-        outputs.add(new BlockDateStub(new DateTimeStub("21/10/2014", "1922"),
-                new DateTimeStub("21/10/2014", "1927")));
-        ResultStub result = new ResultStub(outputs, true, CommandType.UNDO,
+        outputsDate.add(new BlockDateStub(
+                new DateTimeStub("21/10/2014", "1922"), new DateTimeStub(
+                        "21/10/2014", "1927")));
+        ResultStub result = new ResultStub(outputsDate, true, CommandType.UNDO,
                 false, ResultType.BLOCKDATE);
         String actual = resultGenerator.processResult(result, "redo");
         String expected = "Command Undone.";
@@ -206,8 +243,6 @@ public class ResultGeneratorTest {
 
     @Test
     public void test_Redo() {
-        ResultGenerator resultGenerator = new ResultGenerator();
-        ArrayList<TaskStub> outputs = new ArrayList<TaskStub>();
         ResultStub result = new ResultStub(outputs, true, CommandType.REDO,
                 false, ResultType.TASK);
         String actual = resultGenerator.processResult(result, "redo");
@@ -217,11 +252,10 @@ public class ResultGeneratorTest {
 
     @Test
     public void test_Redo_Block() {
-        ResultGenerator resultGenerator = new ResultGenerator();
-        ArrayList<BlockDateStub> outputs = new ArrayList<BlockDateStub>();
-        outputs.add(new BlockDateStub(new DateTimeStub("21/10/2014", "1922"),
-                new DateTimeStub("21/10/2014", "1927")));
-        ResultStub result = new ResultStub(outputs, true, CommandType.REDO,
+        outputsDate.add(new BlockDateStub(
+                new DateTimeStub("21/10/2014", "1922"), new DateTimeStub(
+                        "21/10/2014", "1927")));
+        ResultStub result = new ResultStub(outputsDate, true, CommandType.REDO,
                 false, ResultType.BLOCKDATE);
         String actual = resultGenerator.processResult(result, "redo");
         String expected = "Command Redone.";
@@ -231,12 +265,11 @@ public class ResultGeneratorTest {
     @Ignore
     // Block has not been fully implemented
     public void test_Block() {
-        ResultGenerator resultGenerator = new ResultGenerator();
-        ArrayList<BlockDateStub> outputs = new ArrayList<BlockDateStub>();
-        outputs.add(new BlockDateStub(new DateTimeStub("21/10/2014", "1922"),
-                new DateTimeStub("21/10/2014", "1927")));
-        ResultStub result = new ResultStub(outputs, true, CommandType.BLOCK,
-                false, ResultType.BLOCKDATE);
+        outputsDate.add(new BlockDateStub(
+                new DateTimeStub("21/10/2014", "1922"), new DateTimeStub(
+                        "21/10/2014", "1927")));
+        ResultStub result = new ResultStub(outputsDate, true,
+                CommandType.BLOCK, false, ResultType.BLOCKDATE);
         String actual = resultGenerator
                 .processResult(result,
                                "block 1922 21/10/2014 to 1927 21/10/2014");
@@ -247,12 +280,11 @@ public class ResultGeneratorTest {
     @Ignore
     // Block has not been fully implemented
     public void test_Unblock() {
-        ResultGenerator resultGenerator = new ResultGenerator();
-        ArrayList<BlockDateStub> outputs = new ArrayList<BlockDateStub>();
-        outputs.add(new BlockDateStub(new DateTimeStub("21/10/2014", "1922"),
-                new DateTimeStub("21/10/2014", "1927")));
-        ResultStub result = new ResultStub(outputs, true, CommandType.UNBLOCK,
-                false, ResultType.BLOCKDATE);
+        outputsDate.add(new BlockDateStub(
+                new DateTimeStub("21/10/2014", "1922"), new DateTimeStub(
+                        "21/10/2014", "1927")));
+        ResultStub result = new ResultStub(outputsDate, true,
+                CommandType.UNBLOCK, false, ResultType.BLOCKDATE);
         String actual = resultGenerator
                 .processResult(result,
                                "unblock 1922 21/10/2014 to 1927 21/10/2014");

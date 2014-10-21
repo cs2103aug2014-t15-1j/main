@@ -27,7 +27,7 @@ public class ResultGenerator {
     }
 
     public void updateInterface(List<Task> tasks) {
-        // new UpdateUI(tasks);
+        new UpdateUI(tasks);
     }
 
     public String processResult(Result result, String input) {
@@ -41,6 +41,7 @@ public class ResultGenerator {
                 default:
                     // HELP -- open dialog; press key to close note: cmdType is
                     // Display
+                    // ERROR?
             }
 
         }
@@ -54,7 +55,7 @@ public class ResultGenerator {
         assert (dates.size() != 0);
         if (dates.size() == 1) {
             message = feedbackSingleBlock(dates);
-
+            checkCommandType(result);
             // change table?
             switch (result.getCommandType()) {
             // check for confirmation
@@ -68,9 +69,12 @@ public class ResultGenerator {
 
                 case UNDO:
                     return "Command Undone.";
+                case ERROR:
+                    return "Not able to fully process command";
 
                 default:
-                    // catch error?
+                    // this line of code should never be reached
+                    throw new IllegalArgumentException("Illegal Command Type");
             }
         }
 
@@ -85,41 +89,54 @@ public class ResultGenerator {
 
     private String processTaskBasedResult(Result result) {
         List<Task> outputs = result.getTasks();
-        updateInterface(outputs);
+
+        checkCommandType(result);
         switch (result.getCommandType()) {
             case ADD:
+                updateInterface(outputs);
                 if (result.needsConfirmation()) {
                     return "Unable to add task. Task coincides with a blocked date. Key 'y' to override date or 'n' to abort";
                 }
                 return feedbackMessage(outputs, "Added %1$s");
             case DELETE:
+                updateInterface(outputs);
                 if (result.needsConfirmation()) {
                     return "This will erase all data, PERMANENTLY.  Key 'y' to continue or 'n' to abort";
                 }
                 return feedbackMessage(outputs, "Deleted %1$s");
             case EDIT:
+                updateInterface(outputs);
                 return feedbackMessage(outputs, "Edited %1$s");
             case DISPLAY:
+                updateInterface(outputs);
                 if (outputs.size() == 0) {
                     return "No tasks to show.";
                 }
                 return feedbackMessageMultiResults(outputs,
                                                    "%1$s task(s) found.");
             case SEARCH:
+                updateInterface(outputs);
                 return feedbackMessageMultiResults(outputs,
                                                    "Found %1$s match(es).");
             case TODO:
+                updateInterface(outputs);
                 return feedbackMessage(outputs, "Marked %1$s as todo.");
             case DONE:
+                updateInterface(outputs);
                 return feedbackMessage(outputs, "Marked %1$s as done.");
             case UNDO:
+                updateInterface(outputs);
                 return "Command Undone.";
             case REDO:
+                updateInterface(outputs);
                 return "Command Redone.";
             case EXIT:
                 return "exit";
+            case ERROR:
+                return "Not able to fully process command.";
             default:
-                return "";
+                // this line of code should never be reached
+                throw new IllegalArgumentException("Illegal Command Type");
         }
     }
 
@@ -138,12 +155,18 @@ public class ResultGenerator {
 
     private void checkValidName(Task task) {
         if (isValidString(task.getName())) {
-            throw new NullPointerException("Task name is null");
+            throw new NullPointerException("Task name is invalid");
+        }
+    }
+
+    private void checkCommandType(Result result) throws NullPointerException {
+        if (result.getCommandType() == null) {
+            throw new NullPointerException("CommandType is null");
         }
     }
 
     private boolean isValidString(String parameter) {
-        return parameter.equals(null) || parameter.isEmpty() ||
+        return parameter == null || parameter.isEmpty() ||
                parameter.equals("null");
     }
 }
