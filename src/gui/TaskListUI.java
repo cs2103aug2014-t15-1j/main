@@ -1,5 +1,6 @@
 package gui;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import logic.Processor;
@@ -20,13 +21,27 @@ public class TaskListUI {
         update();
     }
     
+    public TaskListUI(List<Task> tasks){
+        update(tasks);
+    }
+    
+    private void update(List<Task> tasks){
+        Text taskList = getTaskList();
+        List<Task> upcomingTasks = getUpcomingTasks(tasks);
+        List<Task> floatingTasks = getFloatingTasks(tasks);
+        String upcomingList = getStringList(upcomingTasks, LIST_HEADER_UPCOMING); // to implement: overdue tasks in red
+        
+       String floatingList = getStringList(floatingTasks, LIST_HEADER_SOMEDAY);
+        taskList.setText(upcomingList + LINE_SEPARATOR +  floatingList);
+     }
+    
     private void update(){
         Text taskList = getTaskList();
         List<Task> upcomingTasks = getUpcomingTasks();
         List<Task> floatingTasks = getFloatingTasks();
         String upcomingList = getStringList(upcomingTasks, LIST_HEADER_UPCOMING); // to implement: overdue tasks in red
         
-        String floatingList = getStringList(floatingTasks, LIST_HEADER_SOMEDAY);
+       String floatingList = getStringList(floatingTasks, LIST_HEADER_SOMEDAY);
         taskList.setText(upcomingList + LINE_SEPARATOR +  floatingList);
     }
   
@@ -37,10 +52,34 @@ public class TaskListUI {
       return tasks;
     }
     
+    private List<Task> getUpcomingTasks(List<Task> tasks){
+        int size = tasks.size();
+        List<Task> upcomingTasks = new ArrayList<Task> ();
+        for(int index = 0; index < size; index++){
+            Task task = tasks.get(index);
+            if(!task.getDue().equals(null) || !task.getStart().equals(null) || !task.getEnd().equals(null)){
+                upcomingTasks.add(task);
+            }
+        }
+        return tasks;
+    }
+    
     private List<Task> getFloatingTasks(){
         Processor processor = Processor.getInstance();
       List<Task> tasks =   processor.fetchFloatingTasks();
       return tasks;
+    }
+    
+    private List<Task> getFloatingTasks(List<Task> tasks){
+        int size = tasks.size();
+        List<Task> floatingTasks = new ArrayList<Task>();
+        for(int index = 0; index < size; index++){
+            Task task = tasks.get(index);
+            if(task.getDue() == null|| task.getStart() == null|| task.getEnd() == null){
+                floatingTasks.add(task);
+            }
+        }
+        return floatingTasks;
     }
     
     private Text getTaskList(){
@@ -61,7 +100,7 @@ public class TaskListUI {
     private String changeTaskListToString(List<Task> tasks){
         int size = tasks.size();
         String list = "";
-        for(int index = 0; index<size; index++){
+        for(int index = 0; index < size; index++){
             Task currentTask = tasks.get(index);
             String iD = currentTask.getId() + "";
             String name = currentTask.getName();

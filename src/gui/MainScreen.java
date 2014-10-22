@@ -3,9 +3,9 @@ package gui;
 import java.util.Stack;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
@@ -55,14 +55,20 @@ public class MainScreen {
         // imageData = imageData.scaledTo(rect.x, rect.y);
         // shell.setBackgroundImage(background);
         shell.setBackgroundMode(SWT.INHERIT_FORCE);
-
+        shell.setBackground(display.getSystemColor(SWT.COLOR_CYAN));
         // Things to do at startUp: Display all To do Tasks
 
         SetUp setUpScreen = SetUp.getInstance(shell);
+        resultGenerator.start();
         new TaskTableUI();
         removeText(setUpScreen);
-        readUserInput(setUpScreen);
-
+        try {
+            readUserInput(setUpScreen);
+        } catch (Exception e) {
+            String message = e.getMessage();
+            System.out.println(message);
+            exitProgram();
+        }
         shell.pack();
         shell.open();
 
@@ -113,7 +119,7 @@ public class MainScreen {
             @Override
             public void handleEvent(Event event) {
 
-                final Label feedback = screen.getFeedBack();
+                final StyledText feedback = screen.getFeedBack();
                 String input = commandLine.getText();
                 String output = "";
                 if (askConfrim) {

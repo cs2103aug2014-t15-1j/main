@@ -2,20 +2,22 @@ package gui;
 
 import java.util.List;
 
+import org.eclipse.jface.resource.FontRegistry;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -61,10 +63,12 @@ public class SetUp {
 
     private TableViewer tableViewer;
 
-    private Label feedback;
+    private StyledText feedback;
     private Text commandLine;
     private DateTime calendar;
     private Text taskList;
+
+    private FontRegistry registry;
 
     private SetUp(Shell shell) {
         this.shell = shell;
@@ -96,7 +100,7 @@ public class SetUp {
         return setUp;
     }
 
-    public Label getFeedBack() {
+    public StyledText getFeedBack() {
         return this.feedback;
     }
 
@@ -156,12 +160,27 @@ public class SetUp {
     }
 
     private void setUpWidgets() {
+        formatRegistry();
         setUpCanvas();
         setUpTable();
         setUpFeedBack();
         setUpCommandLine();
         setUpCalendar();
         setUpTaskList();
+    }
+
+    private void formatRegistry() {
+
+        this.registry = new FontRegistry(shell.getDisplay());
+        FontData font = new FontData("New Courier", 11, SWT.NORMAL);
+        FontData[] fontData = new FontData[] { font };
+        registry.put("type box", fontData);
+        fontData = new FontData[] { new FontData("Arial Unicode", 9,
+                SWT.NORMAL) };
+        registry.put("feedback", fontData);
+        fontData = new FontData[] { new FontData("Times New Roman", 10,
+                SWT.NORMAL) };
+        registry.put("list headers", fontData);
     }
 
     private void setUpCanvas() {
@@ -183,6 +202,8 @@ public class SetUp {
         // ".\\images\\resultbg.png");
 
         // table.setBackgroundImage(tableBackground);
+        Color white = shell.getDisplay().getSystemColor(SWT.COLOR_WHITE);
+        table.setBackground(white);
     }
 
     // to refactor method
@@ -307,10 +328,14 @@ public class SetUp {
     }
 
     private void setUpFeedBack() {
-        feedback = new Label(mainInterface, SWT.SINGLE);
-        feedback.setText("Feedback");
+        feedback = new StyledText(mainInterface, SWT.MULTI);
+        feedback.setText("");
         GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
         feedback.setLayoutData(gridData);
+        feedback.setFont(registry.get("feedback"));
+        Color white = shell.getDisplay().getSystemColor(SWT.COLOR_WHITE);
+        this.feedback.setForeground(white);
+        feedback.setEnabled(false);
 
     }
 
@@ -320,10 +345,11 @@ public class SetUp {
         commandLine.setLayoutData(gridData);
         commandLine.setText(MESSAGE_TYPE_HERE);
         Display display = shell.getDisplay();
-        Color black = display.getSystemColor(SWT.COLOR_TITLE_BACKGROUND);
+        Color black = display.getSystemColor(SWT.COLOR_BLACK);
         Color white = display.getSystemColor(SWT.COLOR_WHITE);
         this.commandLine.setBackground(black);
         this.commandLine.setForeground(white);
+        commandLine.setFont(registry.get("type box"));
     }
 
     private void setUpCalendar() {
@@ -343,7 +369,8 @@ public class SetUp {
         Display display = shell.getDisplay();
         Color white = display.getSystemColor(SWT.COLOR_WHITE);
         taskList.setBackground(white);
-        taskList.setEnabled(false);
+        taskList.setEnabled(true);
+        taskList.setFont(registry.get("list headers"));
 
         // to change
         /**

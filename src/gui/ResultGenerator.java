@@ -9,6 +9,11 @@ import database.Task;
 
 public class ResultGenerator {
 
+    public void start() {
+        Processor processor = Processor.getInstance();
+        processor.processInput("invalid input");
+    }
+
     public String sendInput(String input) {
         Processor processor = Processor.getInstance();
         Result result = processor.processInput(input);
@@ -133,7 +138,7 @@ public class ResultGenerator {
             case EXIT:
                 return "exit";
             case ERROR:
-                return "Not able to fully process command.";
+                return "The command format is wrong. Type help for command format";
             default:
                 // this line of code should never be reached
                 throw new IllegalArgumentException("Illegal Command Type");
