@@ -4,18 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import logic.Result.ResultType;
+import parser.DateParser;
 import parser.TaskParam;
 import database.DateTime;
 import database.Task;
 
 public class CommandDone extends Command {
 
-    // Done types [get("rangeType"); returns "all" | "id" | "dates"]
+    // Done types [get("rangeType"); returns "all" | "id" | "date"]
     private String rangeType;
 
     private DateTime dateTime;
-    // Done data [get("id"), get("start"), get("end"); returns string]
-    // If only 1 date, start = end;
+    // Done data [get("id"), get("date"); returns string]
     private String id;
 
     private CommandTodo cmdTodo;
@@ -41,9 +41,11 @@ public class CommandDone extends Command {
                         this.id = param.getField();
                         break;
                     
-                    case "date": 
-                        this.dateTime = null;
+                    case "date": ;
+                        assert (DateParser.isValidDate(param.getField())) : "Invalid date for done";
+                        this.dateTime = new DateTime(param.getField(), "");
                         break;
+                        
                     default:
                         this.type = CommandType.ERROR;
                         this.error = "Todo constructor parameter error";
@@ -65,6 +67,9 @@ public class CommandDone extends Command {
 
             case "id":
                 return this.id;
+                
+            case "date":
+                return this.dateTime.toString();
 
             default:
                 return null;
@@ -76,6 +81,7 @@ public class CommandDone extends Command {
         String result = "\n[[ CMD-DONE: ]]";
         result = result.concat("\nrangeType: " + rangeType);
         result = result.concat("\nid: " + id);
+        result = result.concat("\ndateTime: " + dateTime);
 
         return result;
     }

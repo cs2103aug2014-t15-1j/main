@@ -4,12 +4,6 @@ public class ParseTester {
     // ========== TESTING (TO REMOVE) ==========//
 
     public static void main(String[] args) {
-        // TEST DISPLAY
-        System.out.println(Parser.parse("display all"));
-        System.out.println(Parser.parse("display 2"));
-        System.out.println(Parser.parse("display block"));
-        System.out.println(Parser.parse("display"));
-        System.out.println(Parser.parse("display b"));
 
         // TEST OTHERS
         System.out.println(Parser.parse("undo"));
@@ -29,23 +23,9 @@ public class ParseTester {
         System.out.println(Parser.parse("todo one"));
         System.out.println(Parser.parse("tODo"));
 
-        // TEST DONE
-        System.out.println(Parser.parse("done all"));
-        System.out.println(Parser.parse("done 2"));
-        System.out.println(Parser.parse("done 23/04/2014"));
-        System.out.println(Parser.parse("done 23/04/2014 to 23/05/2014"));
 
-        // TEST SEARCH
-        System.out.println(Parser.parse("search"));
-        System.out.println(Parser.parse("search "));
-        System.out.println(Parser.parse("search one two three"));
-        System.out.println(Parser.parse("search #one #two #three"));
-        System.out.println(Parser.parse("search #done #tag keyword"));
-        System.out.println(Parser.parse("search #done #deleted #todo after"));
-        System.out.println(Parser.parse("search 23/04/2014 to 23/05/2014"));
-        System.out.println(Parser.parse("search 23/04/2014"));
-        System.out.println(Parser
-                .parse("search 23/04/2014 to 23/05/2014 #done"));
+
+
 
         // TEST BLOCK // TODO: today? tomorrow? Required?
         System.out.println(Parser.parse("block"));
@@ -73,6 +53,5 @@ public class ParseTester {
     
         // TEST toBLOCK
         System.out.println(Parser.parseToBlock("23/04/2014 0000 to 23/04/2014 2359"));
-        System.out.println(Parser.parseToBlock("23/04/2014 to 23/04/2014 2359"));
     }
 }

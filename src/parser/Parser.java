@@ -170,9 +170,8 @@ public class Parser {
             String firstWordLC = firstWord.toLowerCase();
 
             if (DateParser.isValidDate(firstWord)) {
-                doneFields.add(new TaskParam("rangeType", "dates"));
-                doneFields.add(new TaskParam("start", firstWord));
-                doneFields.add(new TaskParam("end", firstWord));
+                doneFields.add(new TaskParam("rangeType", "date"));
+                doneFields.add(new TaskParam("date", firstWord));
             } else if (firstWordLC.equals("all")) {
                 doneFields.add(new TaskParam("rangeType", firstWordLC));
             } else if (isInteger(firstWord)) {
@@ -820,7 +819,8 @@ public class Parser {
      */
     public static BlockDate parseToBlock(String text) {
         String[] fields = text.split(" ");
-        assert (fields.length == 5 && fields[2].equals("to")) : "Invalid Block string format";
+        assert (fields.length == 5) : "Invalid number of terms";
+        assert (fields[2].equals("to")) : "Missing \"to\"";
 
         String startDate = fields[0];
         String startTime = fields[1];
