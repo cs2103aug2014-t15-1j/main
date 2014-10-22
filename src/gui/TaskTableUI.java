@@ -3,6 +3,8 @@ package gui;
 import java.util.ArrayList;
 import java.util.List;
 
+import logic.Processor;
+
 import org.eclipse.jface.viewers.TableViewer;
 
 import database.Task;
@@ -13,25 +15,38 @@ import database.Task;
 public class TaskTableUI {
 
     public TaskTableUI(List<Task> tasks) {
-        update(tasks);
+        update();
+        if (tasks != null) {
+            update(tasks);
+        }
+    }
+
+    public TaskTableUI() {
+        update();
     }
 
     private void update(List<Task> tasks) {
         TableViewer table = getTable();
-        // Processor processor = Processor.getInstance();
-        /**
-         * List<Task> timedTasks = processor.fetchTimedTasks(); List<Task>
-         * floatingTasks = processor.fetchFloatingTasks(); if
-         * (isValid(timedTasks) && isValid(floatingTasks)) {
-         * 
-         * List<Task> tasks = mergeTasks(timedTasks, floatingTasks);
-         * setTasks(table, tasks);
-         * 
-         * } else if (isValid(floatingTasks)) { setTasks(table, floatingTasks);
-         * } else if (isValid(timedTasks)) { setTasks(table, timedTasks); }
-         **/
         setTasks(table, tasks);
         // setTasks(table, processor.fetchFloatingTasks());
+    }
+
+    private void update() {
+        Processor processor = Processor.getInstance();
+        TableViewer table = getTable();
+        List<Task> timedTasks = processor.fetchTimedTasks();
+        List<Task> floatingTasks = processor.fetchFloatingTasks();
+        if (isValid(timedTasks) && isValid(floatingTasks)) {
+
+            List<Task> tasks = mergeTasks(timedTasks, floatingTasks);
+            setTasks(table, tasks);
+
+        } else if (isValid(floatingTasks)) {
+            setTasks(table, floatingTasks);
+        } else if (isValid(timedTasks)) {
+            setTasks(table, timedTasks);
+        }
+
     }
 
     private void setTasks(TableViewer table, List<Task> tasks) {

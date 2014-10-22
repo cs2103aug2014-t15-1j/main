@@ -12,6 +12,12 @@ import org.junit.After;
 import org.junit.Ignore;
 import org.junit.Test;
 
+/*
+ * This class contains the junit tests for the ResultGenerator.java class. 
+ * It uses dependency injection to ensure that all results are based solely from ResultGenerator.java.
+ * NOTE: Only the name parameters for tasks have been tested since ResultGenerator.java only uses the name parameter
+ */
+
 public class ResultGeneratorTest {
 
     private static ResultGenerator resultGenerator = new ResultGenerator();
@@ -24,6 +30,9 @@ public class ResultGeneratorTest {
         outputsDate.clear();
     }
 
+    /**
+     * Tests a generic successful add command for the Task ResultType.
+     */
     @Test
     public void test_Add() {
         outputs.add(new TaskStub("name", new DateTimeStub("", ""),
@@ -36,6 +45,11 @@ public class ResultGeneratorTest {
         assertEquals(expected, actual);
     }
 
+    /**
+     * Tests a generic unsuccessful add command for the Task ResultType. Since
+     * ResultGenerator treats all unsucessful commands the same, only one test
+     * case has been implemented for all the commands.
+     */
     @Test
     public void test_Add_Unsucessful() {
         outputs.add(new TaskStub("name", new DateTimeStub("", ""),
@@ -48,6 +62,12 @@ public class ResultGeneratorTest {
         assertEquals(expected, actual);
     }
 
+    /**
+     * Tests an invalid Result Object for add command for Task Result Type. The
+     * Result Object has a null for task name. Since ResultGenerator.java treats
+     * an invalid Result Object the same for all commands, only one test case
+     * for add has been implemented.
+     */
     @Test
     public void test_Add_NullName() {
         outputs.add(new TaskStub(null, new DateTimeStub("", ""),
@@ -61,6 +81,12 @@ public class ResultGeneratorTest {
         }
     }
 
+    /**
+     * Tests an invalid Result Object for add command for Task Result Type. The
+     * result object has a empty string for task name. Since
+     * ResultGenerator.java treats an invalid Result Object the same for all
+     * commands, only one test case for add has been implemented.
+     */
     @Test
     public void test_Add_EmptyName() {
         outputs.add(new TaskStub("", new DateTimeStub("", ""),
@@ -74,6 +100,12 @@ public class ResultGeneratorTest {
         }
     }
 
+    /**
+     * Tests an invalid Result Object for add command for Task Result Type. The
+     * result object has a "null" string for task name. Since
+     * ResultGenerator.java treats an invalid Result Object the same for all
+     * commands, only one test case for add has been implemented.
+     */
     @Test
     public void test_Add_NullStringName() {
         outputs.add(new TaskStub("null", new DateTimeStub("", ""),
@@ -87,6 +119,9 @@ public class ResultGeneratorTest {
         }
     }
 
+    /**
+     * Tests when an task to be added command coincides with the a blocked date.
+     */
     @Test
     public void test_Add_NeedConfirmation() {
         outputs.add(new TaskStub("name", new DateTimeStub("", ""),
@@ -128,6 +163,9 @@ public class ResultGeneratorTest {
         }
     }
 
+    /**
+     * Tests generic delete
+     */
     @Test
     public void test_Delete() {
         outputs.add(new TaskStub("name", new DateTimeStub("", ""),
@@ -139,6 +177,9 @@ public class ResultGeneratorTest {
         assertEquals(expected, actual);
     }
 
+    /**
+     * Tests generic deleteAll, asks the user for confirmation
+     */
     @Test
     public void test_DeleteAll() {
         outputs.add(new TaskStub("name", new DateTimeStub("", ""),
@@ -150,6 +191,9 @@ public class ResultGeneratorTest {
         assertEquals(expected, actual);
     }
 
+    /**
+     * Tests generic edit
+     */
     @Test
     public void test_Edit() {
         TaskStub task = new TaskStub("name", new DateTimeStub("", ""),
@@ -163,6 +207,9 @@ public class ResultGeneratorTest {
         assertEquals(expected, actual);
     }
 
+    /**
+     * Tests generic display
+     */
     @Test
     public void test_Display() {
         outputs.add(new TaskStub("name", new DateTimeStub("", ""),
@@ -174,6 +221,9 @@ public class ResultGeneratorTest {
         assertEquals(expected, actual);
     }
 
+    /**
+     * Tests display when there are no tasks to be displayed to the user
+     */
     @Test
     public void test_Display_EmptyFile() {
         ResultStub result = new ResultStub(outputs, true, CommandType.DISPLAY,
@@ -183,6 +233,9 @@ public class ResultGeneratorTest {
         assertEquals(expected, actual);
     }
 
+    /**
+     * Tests generic search
+     */
     @Test
     public void test_Search() {
         outputs.add(new TaskStub("name", new DateTimeStub("", ""),
@@ -194,6 +247,9 @@ public class ResultGeneratorTest {
         assertEquals(expected, actual);
     }
 
+    /**
+     * Tests generic ToDo
+     */
     @Test
     public void test_Todo() {
         TaskStub task = new TaskStub("name", new DateTimeStub("", ""),
@@ -207,6 +263,9 @@ public class ResultGeneratorTest {
         assertEquals(expected, actual);
     }
 
+    /**
+     * Tests generic done
+     */
     @Test
     public void test_Done() {
         TaskStub task = new TaskStub("name", new DateTimeStub("", ""),
@@ -220,6 +279,10 @@ public class ResultGeneratorTest {
         assertEquals(expected, actual);
     }
 
+    /**
+     * Tests generic undo for ResultType Task. Undo a command related to a task
+     * e.g. add, edit, delete
+     */
     @Test
     public void test_Undo() {
         ResultStub result = new ResultStub(outputs, true, CommandType.UNDO,
@@ -229,6 +292,10 @@ public class ResultGeneratorTest {
         assertEquals(expected, actual);
     }
 
+    /**
+     * Tests generic undo for ResultType blockdate. Undo a block/unblock date
+     * command
+     */
     @Test
     public void test_Undo_Block() {
         outputsDate.add(new BlockDateStub(
@@ -241,6 +308,10 @@ public class ResultGeneratorTest {
         assertEquals(expected, actual);
     }
 
+    /**
+     * Test generic redo for ResultType task. Redo a command related to task
+     * e.g. add, edit, delete
+     */
     @Test
     public void test_Redo() {
         ResultStub result = new ResultStub(outputs, true, CommandType.REDO,
@@ -250,6 +321,10 @@ public class ResultGeneratorTest {
         assertEquals(expected, actual);
     }
 
+    /**
+     * Test generic redo for ResultType block date. Redo a block/unblock date
+     * command
+     */
     @Test
     public void test_Redo_Block() {
         outputsDate.add(new BlockDateStub(

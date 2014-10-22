@@ -123,7 +123,6 @@ public class SetUp {
     }
 
     private void setUpShell() {
-        // Image icon = new Image("images/HayStackIcon.gif");
         // shell.setImage(icon);
         GridLayout layout = new GridLayout();
         layout.numColumns = NUM_COLS_SCREEN;
@@ -180,6 +179,10 @@ public class SetUp {
         table.setLinesVisible(true);
         table.setHeaderVisible(true);
         table.setEnabled(false);
+        // Image tableBackground = new Image(shell.getDisplay(),
+        // ".\\images\\resultbg.png");
+
+        // table.setBackgroundImage(tableBackground);
     }
 
     // to refactor method

@@ -1,5 +1,7 @@
 package gui;
 
+import java.util.Stack;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
@@ -34,6 +36,8 @@ public class MainScreen {
     private static boolean askConfrim = false;
 
     private static ResultGenerator resultGenerator = new ResultGenerator();
+    private static Stack<String> forwardHistoryOfInputs = new Stack<String>();
+    private static Stack<String> backwardHistoryOfInputs = new Stack<String>();
 
     /**
      * The entire HayStack program runs from this function. It sets up the
@@ -44,12 +48,18 @@ public class MainScreen {
      */
     public static void main(String[] args) {
         Display display = new Display();
+        // Image background = new Image(display, ".\\images\\mainbg.png");
         Shell shell = new Shell(display);
+        // ImageData imageData = background.getImageData();
+        // Point rect = shell.getSize();
+        // imageData = imageData.scaledTo(rect.x, rect.y);
+        // shell.setBackgroundImage(background);
+        shell.setBackgroundMode(SWT.INHERIT_FORCE);
 
         // Things to do at startUp: Display all To do Tasks
 
         SetUp setUpScreen = SetUp.getInstance(shell);
-
+        new TaskTableUI();
         removeText(setUpScreen);
         readUserInput(setUpScreen);
 
@@ -61,6 +71,7 @@ public class MainScreen {
                 display.sleep();
         }
 
+        // background.dispose();
         display.dispose();
     }
 
