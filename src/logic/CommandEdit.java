@@ -135,6 +135,25 @@ public class CommandEdit extends Command {
         if (taskId > 0) {
             Task existingTask = processor.getFile().getTask(taskId);
             Task oldTask = new Task(existingTask);
+            if (delete != null) {
+                switch (delete) {
+                    case "name":
+                        name = "";
+                        break;
+                    case "due":
+                        due = new DateTime();
+                        break;
+                    case "start":
+                        start = new DateTime();
+                        break;
+                    case "end":
+                        end = new DateTime();
+                        break;
+                    case "tags":
+                        tags = new ArrayList<String>();
+                        break;
+                }
+            }
             success = processor.getFile().updateTaskInfo(existingTask, name, due, start, end, tags);
             if (success) {
                 performUpdate(list, oldTask, existingTask);
