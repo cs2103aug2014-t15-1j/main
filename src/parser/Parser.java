@@ -208,6 +208,7 @@ public class Parser {
     private static Command parseBlock(String[] commandParams) {
         List<TaskParam> blockFields = new ArrayList<TaskParam>();
 
+        // TODO: ADD TIME
         if (commandParams.length == 0) {
             return new CommandOthers("error", "No arguments for block");
         } else if (commandParams.length == 1) {
@@ -215,8 +216,8 @@ public class Parser {
             // then do something with the extra strings (length==2)
             String date = commandParams[0];
             if (DateParser.isValidDate(date)) {
-                blockFields.add(new TaskParam("start", date));
-                blockFields.add(new TaskParam("end", date));
+                blockFields.add(new TaskParam("start", date + " 0000"));
+                blockFields.add(new TaskParam("end", date + " 2359"));
                 return new CommandBlock(blockFields);
             }
         } else if (commandParams.length >= 3) {
@@ -239,7 +240,7 @@ public class Parser {
             }
         }
 
-        return new CommandOthers("error", "Invalid arguments for block");
+        return new CommandOthers("error", "Invalid argument for block");
     }
 
     private static Command parseDisplay(String[] commandParams) {

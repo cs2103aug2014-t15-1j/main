@@ -69,7 +69,7 @@ public class CommandUnblock extends Command {
 
     @Override
     public String toString() {
-        String result = "\n[[ CMD-Unblock: ]]";
+        String result = "\n[[ CMD-UNBLOCK: ]]";
         result = result.concat("\nid: " + id);
 
         return result;
