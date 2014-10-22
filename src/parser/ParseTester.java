@@ -70,5 +70,9 @@ public class ParseTester {
 
         // TEST ADD
         System.out.println(Parser.parse("add do homework due: 23/04/2014 start: 22/04/2014 0300 end: 0300 21/04/2014"));
+    
+        // TEST toBLOCK
+        System.out.println(Parser.parseToBlock("23/04/2014 0000 to 23/04/2014 2359"));
+        System.out.println(Parser.parseToBlock("23/04/2014 to 23/04/2014 2359"));
     }
 }

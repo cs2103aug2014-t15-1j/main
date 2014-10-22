@@ -17,6 +17,7 @@ import logic.CommandRestore;
 import logic.CommandSearch;
 import logic.CommandTodo;
 import logic.CommandUnblock;
+import database.BlockDate;
 import database.DateTime;
 import database.Task;
 
@@ -367,7 +368,7 @@ public class Parser {
         // TODO: Note that currently all non-delete parameters will be thrown to
         // "name:" if "delete" is the current field. Also, delete has no
         // shorthand.
-        
+
         // try saveEditIdToField() catch return CommandOthers
         if (commandParams.length > 0 && isInteger(commandParams[0])) {
             id = commandParams[0];
@@ -416,14 +417,14 @@ public class Parser {
                     if (!deleteParam.getField().contains(currWordLC)) {
                         deleteParam.addToField(currWordLC);
                     }
-                } else if (hasValidHashTag(currWord)){
+                } else if (hasValidHashTag(currWord)) {
                     // What if an edited field is deleted?
                     // Refactor
                     TaskParam deleteParam = getTaskParam(editFields, currField);
                     if (!deleteParam.getField().contains(currWord)) {
                         deleteParam.addToField(currWord);
                     }
-                }else{
+                } else {
                     addToFieldParam(editFields, prevField, currWord);
                 }
             } else {
@@ -464,7 +465,8 @@ public class Parser {
                 String[] wordList = currWord.split(":");
 
                 // Get the last valid parameter, and the index in wordList it
-                // corresponds to. EndIndex checks if the last word in wordList can
+                // corresponds to. EndIndex checks if the last word in wordList
+                // can
                 // be a parameter name.
                 int endIndex = getLastPossibleParamIndex(currWord, wordList);
                 currField = getLastValidParamName(wordList, endIndex, currField);
@@ -483,7 +485,7 @@ public class Parser {
                 addToFieldParam(addFields, currField, currWord);
             }
         }
-        
+
         removeDuplicates(addFields);
         removeInvalidDateTimes(addFields);
         checkStartEndOrder(addFields);
@@ -562,8 +564,8 @@ public class Parser {
      * @param field
      * @param content
      */
-    private static void addToFieldParam(List<TaskParam> fields,
-                                       String field, String content) {
+    private static void addToFieldParam(List<TaskParam> fields, String field,
+                                        String content) {
         getTaskParam(fields, field).addToField(content);
     }
 
@@ -722,8 +724,6 @@ public class Parser {
         return word.startsWith("#") && (word.length() > 1);
     }
 
-    // ========== DATE/TIME BASED METHODS ==========//
-
     // ========== TASK PARSING METHODS ==========//
     public static Task parseToTask(String text) {
         String[] textItems = text.trim().split(" ");
@@ -801,6 +801,40 @@ public class Parser {
                 System.out.println("raw-parsing getParamIndex failure");
                 return -1;
         }
+    }
+
+    // ========== BLOCK PARSING METHODS ==========//
+
+    /**
+     * Forms a <code>BlockDate</code> object by parsing a <code>String</code>
+     * containing the saved string literals of two <code>DateTime</code> objects
+     * (starting and ending dates and times).
+     * <p>
+     * Note: the input <code>String</code> must be of the given format(below),
+     * containing two pairs of dates and times, and the word "to" between them.
+     * All 5 items must have spaces between them.
+     * 
+     * @param text
+     *            format: "{@literal <date> <time> to <date> <time>}"
+     * 
+     */
+    public static BlockDate parseToBlock(String text) {
+        String[] fields = text.split(" ");
+        assert (fields.length == 5 && fields[2].equals("to")) : "Invalid Block string format";
+
+        String startDate = fields[0];
+        String startTime = fields[1];
+        String endDate = fields[3];
+        String endTime = fields[4];
+        assert (DateParser.isValidDate(startDate) && DateParser
+                .isValidTime(startTime)) : "Invalid start DateTime saved";
+        assert (DateParser.isValidDate(endDate) && DateParser
+                .isValidTime(endTime)) : "invalid end DateTime saved";
+
+        DateTime startDt = new DateTime(startDate, startTime);
+        DateTime endDt = new DateTime(endDate, endTime);
+
+        return new BlockDate(startDt, endDt);
     }
 
 }

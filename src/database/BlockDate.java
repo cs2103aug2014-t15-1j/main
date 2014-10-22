@@ -131,4 +131,15 @@ public class BlockDate implements Comparable<BlockDate> {
     public int compareTo(BlockDate blockDate) {
         return this.getEnd().compareTo(blockDate.getStart());
     }
+    
+    /**
+     * Converts <code>BlockDate</code> to a <code>String</code> containing "
+     * <code>DateTime1</code> to <code>DateTime2</code>"
+     * 
+     * @author Yeo Zi Xian, Justin
+     */
+    @Override
+    public String toString() {
+        return start.toString() + " to " + end.toString();
+    }
 }

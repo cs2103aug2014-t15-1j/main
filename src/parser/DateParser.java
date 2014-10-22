@@ -366,7 +366,7 @@ public class DateParser {
      *            A <code>String</code> containing only an integer of the format
      *            <code>HHmm</code>
      */
-    private static boolean isValidTime(String timeStr) {
+    public static boolean isValidTime(String timeStr) {
         try {
             String hoursStr = timeStr.substring(0, 2);
             String minStr = timeStr.substring(2, 4);
