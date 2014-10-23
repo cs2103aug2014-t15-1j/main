@@ -24,6 +24,10 @@ public class ProcessorTest {
 	private static Task testTask5 = new Task(null, null, null, null, testTags);
 	private static Task testTask6 = new Task("Do CS2103 Homework", testTime, testTime, testTime, testTags);
 	private static Task testTask7 = new Task("Do EE2020 Homework", null, null, null, new ArrayList<String>());
+	private static Task testTask8 = new Task("Do EE2020 Homework", testTime, null, null,  new ArrayList<String>());
+    private static Task testTask9 = new Task("Do EE2020 Homework", testTime, testTime, null, new ArrayList<String>());
+    private static Task testTask10 = new Task("Do EE2020 Homework", testTime, testTime, testTime, new ArrayList<String>());
+
 	
 	@Before
 	public void initialiseProcessor() {
@@ -51,32 +55,50 @@ public class ProcessorTest {
 	}
 	
 	@Test
-	//Test for 'Add' Command
+	//Test for 'Add' Command & Inclusive of Undo/Redo
 	public void testAdd() throws Exception {
 	    //Add with name
 		Result r1 = TestProcessor.processInput("add n: Do CS2103 Homework");
 		assertTrue(equalsObj(testTask1, r1.getTasks().get(0)));
+		TestProcessor.processInput("undo");
+        Result r1a = TestProcessor.processInput("redo");
+        assertTrue(equalsObj(testTask1, r1a.getTasks().get(0)));
         
 		//Add with due
         Result r2 = TestProcessor.processInput("add d: 10/10/2012 1010");
         assertTrue(equalsObj(testTask2, r2.getTasks().get(0)));
+        TestProcessor.processInput("undo");
+        Result r2a = TestProcessor.processInput("redo");
+        assertTrue(equalsObj(testTask2, r2a.getTasks().get(0)));
         
         //Add with start
         Result r3 = TestProcessor.processInput("add s: 10/10/2012 1010");
         assertTrue(equalsObj(testTask3, r3.getTasks().get(0)));
+        TestProcessor.processInput("undo");
+        Result r3a = TestProcessor.processInput("redo");
+        assertTrue(equalsObj(testTask3, r3a.getTasks().get(0)));
         
         //Add with end
         Result r4 = TestProcessor.processInput("add e: 10/10/2012 1010");
         assertTrue(equalsObj(testTask4, r4.getTasks().get(0)));
+        TestProcessor.processInput("undo");
+        Result r4a = TestProcessor.processInput("redo");
+        assertTrue(equalsObj(testTask4, r4a.getTasks().get(0)));
         
         //Add with tags
         Result r5 = TestProcessor.processInput("add #homework");
         testTags.add("#homework");
         assertTrue(equalsObj(testTask5, r5.getTasks().get(0)));
+        TestProcessor.processInput("undo");
+        Result r5a = TestProcessor.processInput("redo");
+        assertTrue(equalsObj(testTask5, r5a.getTasks().get(0)));
         
         //All valid parameters
         Result r6 = TestProcessor.processInput("add n: Do CS2103 Homework d: 10/10/2012 1010 s: 10/10/2012 1010 e: 10/10/2012 1010 #homework");
         assertTrue(equalsObj(testTask6, r6.getTasks().get(0)));
+        TestProcessor.processInput("undo");
+        Result r6a = TestProcessor.processInput("redo");
+        assertTrue(equalsObj(testTask6, r6a.getTasks().get(0)));
         
         //Test undo & redo of Add
         TestProcessor.processInput("undo");
@@ -88,14 +110,33 @@ public class ProcessorTest {
     //Test for 'Edit' Command
 	public void testEdit() throws Exception {
 	    Result r0 = TestProcessor.processInput("add n: Do CS2103 Homework");
+	    //Edit Name
 		Result r1 = TestProcessor.processInput("edit 1 n: Do EE2020 Homework");
 		assertTrue(equalsObj(r1.getTasks().get(0), testTask7));
 
-		//Test undo & redo of Edit
+		//Test undo & redo of Edit Name
 		Result r2 =TestProcessor.processInput("undo");
 		assertTrue(equalsObj(r2.getTasks().get(0), testTask1));
         Result r3 = TestProcessor.processInput("redo");
         assertTrue(equalsObj(r3.getTasks().get(0), testTask7));
+        
+        //Test Edit Due
+        Result r4 = TestProcessor.processInput("edit 1 d: 10/10/2012 1010");
+        Result r5 =TestProcessor.processInput("undo");
+        Result r6 = TestProcessor.processInput("redo");
+        assertTrue(equalsObj(r6.getTasks().get(0), testTask8));
+        //Test Edit Start
+        Result r7 = TestProcessor.processInput("edit 1 s: 10/10/2012 1010");
+        Result r8 =TestProcessor.processInput("undo");
+        Result r9 = TestProcessor.processInput("redo");
+        assertTrue(equalsObj(r9.getTasks().get(0), testTask9));
+        //Test Edit End
+        Result r10 = TestProcessor.processInput("edit 1 e: 10/10/2012 1010");
+        Result r11 =TestProcessor.processInput("undo");
+        Result r12 = TestProcessor.processInput("redo");
+        assertTrue(equalsObj(r12.getTasks().get(0), testTask10));
+        
+        //Test Edit Tags
 	}
 
 	@Test
