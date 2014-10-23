@@ -98,19 +98,19 @@ public class ResultGenerator {
         checkCommandType(result);
         switch (result.getCommandType()) {
             case ADD:
-                updateInterface(outputs);
+                cheat();
                 if (result.needsConfirmation()) {
                     return "Unable to add task. Task coincides with a blocked date. Key 'y' to override date or 'n' to abort";
                 }
                 return feedbackMessage(outputs, "Added %1$s");
             case DELETE:
-                updateInterface(outputs);
+                cheat();
                 if (result.needsConfirmation()) {
                     return "This will erase all data, PERMANENTLY.  Key 'y' to continue or 'n' to abort";
                 }
                 return feedbackMessage(outputs, "Deleted %1$s");
             case EDIT:
-                updateInterface(outputs);
+                cheat();
                 return feedbackMessage(outputs, "Edited %1$s");
             case DISPLAY:
                 updateInterface(outputs);
@@ -124,16 +124,16 @@ public class ResultGenerator {
                 return feedbackMessageMultiResults(outputs,
                                                    "Found %1$s match(es).");
             case TODO:
-                updateInterface(outputs);
+                cheat();
                 return feedbackMessage(outputs, "Marked %1$s as todo.");
             case DONE:
-                updateInterface(outputs);
+                cheat();
                 return feedbackMessage(outputs, "Marked %1$s as done.");
             case UNDO:
-                updateInterface(outputs);
+                cheat();
                 return "Command Undone.";
             case REDO:
-                updateInterface(outputs);
+                cheat();
                 return "Command Redone.";
             case EXIT:
                 return "exit";
@@ -173,5 +173,17 @@ public class ResultGenerator {
     private boolean isValidString(String parameter) {
         return parameter == null || parameter.isEmpty() ||
                parameter.equals("null");
+    }
+
+    // to be removed
+    private void cheat() {
+        Processor processor = Processor.getInstance();
+        Result result = processor.processInput("display");
+        List<Task> outputs = result.getTasks();
+        if (outputs.size() == 0) {
+            return;
+        }
+        updateInterface(outputs);
+
     }
 }
