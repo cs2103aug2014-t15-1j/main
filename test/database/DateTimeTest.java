@@ -13,6 +13,12 @@ import org.junit.Test;
 
 public class DateTimeTest {
 
+    /**
+     * Checks if default constructor initializes objects with correct attribute
+     * values.
+     * 
+     * @throws Exception
+     */
     @Test
     public void testDefaultConstructorHasEmptyAttributes() throws Exception {
         DateTime dT = new DateTime();
@@ -23,6 +29,13 @@ public class DateTimeTest {
         assertEquals("Empty time String", "", dT.getTime());
     }
 
+    /**
+     * Checks if constructor that takes in Strings for date and time as
+     * arguments initializes date and time values correctly, and attributes have
+     * been cloned by value, not reference.
+     * 
+     * @throws Exception
+     */
     @Test
     public void testConstructorStoreStringArgs() throws Exception {
         String date = "10/11/2014";
@@ -37,6 +50,13 @@ public class DateTimeTest {
         assertEquals("Stored time by value", "2359", dT.getTime());
     }
 
+    /**
+     * Checks if constructor that takes in a DateTime object argument creates a
+     * new object with correct attributes, and that attributes have been cloned
+     * by value, not reference.
+     * 
+     * @throws Exception
+     */
     @Test
     public void testConstructorClonesByValue() throws Exception {
         String date = "10/11/2014";
@@ -66,6 +86,12 @@ public class DateTimeTest {
         assertEquals("Cloned time by value", "2359", dT2.getTime());
     }
 
+    /**
+     * Checks if resetDate() sets date attributes to correct value, without
+     * affecting time attribute.
+     * 
+     * @throws Exception
+     */
     @Test
     public void testResetDate() throws Exception {
         String date = "10/11/2014";
@@ -81,6 +107,12 @@ public class DateTimeTest {
         assertEquals("Stored time by value", "2359", dT.getTime());
     }
 
+    /**
+     * Checks if resetTime() sets time attributes to correct value, without
+     * affecting date attribute.
+     * 
+     * @throws Exception
+     */
     @Test
     public void testResetTime() throws Exception {
         String date = "10/11/2014";
@@ -96,6 +128,12 @@ public class DateTimeTest {
         assertEquals("Empty time String", "", dT.getTime());
     }
 
+    /**
+     * Checks if resetDateTime() sets both date and time attributes to correct
+     * values.
+     * 
+     * @throws Exception
+     */
     @Test
     public void testResetDateTime() throws Exception {
         String date = "10/10/2014";
@@ -123,44 +161,115 @@ public class DateTimeTest {
         return DateTime.getDateTimePattern();
     }
 
+    /**
+     * Checks if regex String used to assert that dates provided as arguments
+     * have valid formats and values.
+     * 
+     * @throws Exception
+     */
     @Test
     public void testGetDatePattern() throws Exception {
+        // This is the boundary case for empty values.
         assertTrue("Empty string", "".matches(datePattern()));
+
+        // This is a boundary case for both minimum day and month partition.
         assertTrue("Min day and month", "01/01/2014".matches(datePattern()));
+
+        // This is a boundary case for the maximum day of months with 30 days.
         assertTrue("Max day, Jun", "30/06/2014".matches(datePattern()));
+
+        // This is a boundary case for both maximum day and month partition.
         assertTrue("Max day, Dec", "31/12/2014".matches(datePattern()));
+
+        // This is a boundary case for the maximum day in non-leap February.
         assertTrue("Max day, Feb", "28/02/2014".matches(datePattern()));
+
+        // This is a boundary case for the maximum day in leap year February.
         assertTrue("Max day, leap Feb", "29/02/2016".matches(datePattern()));
+
+        // This is a boundary case for the maximum day in leap year February.
         assertTrue("Max day, leap Feb", "29/02/2000".matches(datePattern()));
+
+        // This is a boundary case for the maximum day in leap year February.
         assertTrue("Max day, leap Feb", "29/02/2400".matches(datePattern()));
+
+        // This is a boundary case for the maximum day in non-leap February.
         assertFalse("Not leap year", "29/02/2014".matches(datePattern()));
+
+        // This is a boundary case for the maximum day in non-leap February.
         assertFalse("Not leap year", "29/02/2100".matches(datePattern()));
+
+        // This is a boundary case for the minimum day value partition.
         assertFalse("Not valid day", "00/01/2014".matches(datePattern()));
+
+        // This is a boundary case for the maximum day value partition.
         assertFalse("Not valid day", "32/01/2014".matches(datePattern()));
+
+        // This is a boundary case for the maximum day of months with 30 days.
         assertFalse("Not valid day", "31/06/2014".matches(datePattern()));
+
+        // This is a boundary case for the minimum month value partition.
         assertFalse("Not valid month", "01/00/2014".matches(datePattern()));
+
+        // This is a boundary case for the maximum month value partition.
         assertFalse("Not valid month", "01/13/2014".matches(datePattern()));
     }
 
+    /**
+     * Checks if regex String used to assert that times provided as arguments
+     * have valid formats and values.
+     * 
+     * @throws Exception
+     */
     @Test
     public void testGetTimePattern() throws Exception {
+        // This is the boundary case for empty values.
         assertTrue("Empty string", "".matches(timePattern()));
+
+        // This is the boundary case for the minimum hour and minute partition.
         assertTrue("Min time", "0000".matches(timePattern()));
+
+        // This is the boundary case for the maximum hour and minute partition.
         assertTrue("Max time", "2359".matches(timePattern()));
+
+        // This is the boundary case for the maximum hour partition.
         assertFalse("More than 23 H", "2400".matches(timePattern()));
-        assertFalse("More than 59 min", "2360".matches(timePattern()));
+
+        // This is the boundary case for the maximum hour partition.
         assertFalse("More than 2X H", "3000".matches(timePattern()));
+
+        // This is the boundary case for the maximum minute partition.
+        assertFalse("More than 59 min", "2360".matches(timePattern()));
     }
 
+    /**
+     * Checks if regex String used to assert that DateTimes provided as
+     * arguments have valid formats and values.
+     * 
+     * @throws Exception
+     */
     @Test
     public void testGetDateTimePattern() throws Exception {
+        // This is the boundary case for empty formats.
         assertTrue("Empty string", "".matches(dateTimePattern()));
+        
+        // This is the boundary case for empty date formats.
         assertTrue("Empty date string", "2359".matches(dateTimePattern()));
+        
+        // This is the boundary case for empty time formats.
         assertTrue("Empty time string", "11/11/2014".matches(dateTimePattern()));
+        
+        // This is the boundary case for date and time formats.
         assertTrue("Date time string",
                    "11/11/2014 2359".matches(dateTimePattern()));
+        
+        // This is the boundary case for empty date formats.
         assertFalse("Residual space", " 2359".matches(dateTimePattern()));
+        
+        // This is the boundary case for empty time formats.
         assertFalse("Residual space", "11/11/2014 ".matches(dateTimePattern()));
+        
+        // This is the boundary case for empty date and time formats.
         assertFalse("Residual space", " ".matches(dateTimePattern()));
     }
 }
