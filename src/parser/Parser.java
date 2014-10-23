@@ -58,6 +58,8 @@ public class Parser {
     // ========== MAIN PARSE METHOD ==========//
 
     public static Command parse(String input) {
+        assert (input != null);
+
         // The Parser will analyse the input word by word
         String[] commandItems = input.split(" ");
 

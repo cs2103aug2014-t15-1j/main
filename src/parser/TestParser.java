@@ -13,6 +13,8 @@ public class TestParser {
 
     // Consider using object.equals() to test assertEquals()
     // Rejected: Errors in constructor will not be caught
+    
+    
     @Test
     public void testInvalid() {
         System.out.println("\n>> Testing invalid commands...");
@@ -26,6 +28,15 @@ public class TestParser {
         assertEquals("\n[[ CMD-OTHERS ]]" + "\ncmd-type: ERROR"
                      + "\ncmd-info: Error in initial command parsing", Parser
                 .parse("").toString());
+        
+        System.out.println("...success!");
+    }
+    
+    @Test (expected=AssertionError.class)
+    public void failInvalid() {
+        System.out.println("\n>> Failing invalid commands...");
+
+        Parser.parse(null);
 
         System.out.println("...success!");
     }
@@ -653,6 +664,8 @@ public class TestParser {
 
     @Test(expected = AssertionError.class)
     public void failParseToBlock() {
+        System.out.println("\n>> Failing parseToBlock()...");
+        
         // Note: -ea needed to trigger AssertionError
         System.out
                 .println(Parser.parseToBlock("23/04/2014 0000 to 23/04/2014"));
