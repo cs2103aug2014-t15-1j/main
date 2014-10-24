@@ -171,7 +171,18 @@ public class DateTime implements Comparable<DateTime> {
         // No differences detected
         return 0;
     }
+    
+    /**
+     * Compares this <code>DateTime</code> with an input <code>DateTime</code>.<br>
+     * Returns <code>true</code> if it is earlier than the other <code>DateTime</code>.
+     * 
+     * @author Yeo Zi Xian, Justin
+     */
+    public boolean isEarlierThan(DateTime otherDateTime) {
+       return (this.compareTo(otherDateTime) < 0);
+    }
 
+    // TODO: Should this be the overriding equals()?
     public boolean equalsTo(DateTime otherDateTime) {
         return (compareTo(otherDateTime) == 0);
     }

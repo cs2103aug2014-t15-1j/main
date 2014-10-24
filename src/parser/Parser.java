@@ -61,7 +61,7 @@ public class Parser {
         assert (input != null);
 
         // The Parser will analyse the input word by word
-        String[] commandItems = input.split(" ");
+        String[] commandItems = input.trim().split(" ");
 
         if (commandItems.length > 0) {
             // First word of command should be command type.
@@ -208,41 +208,122 @@ public class Parser {
     }
 
     private static Command parseBlock(String[] commandParams) {
+        if (commandParams.length == 0) {
+            throw new IllegalArgumentException(
+                    "You can't block nothing! Input a date or time frame!");
+        }
+
         List<TaskParam> blockFields = new ArrayList<TaskParam>();
 
-        // TODO: ADD TIME
-        if (commandParams.length == 0) {
-            return new CommandOthers("error", "No arguments for block");
-        } else if (commandParams.length == 1) {
-            // TODO: Add things to blockFields with extracted method,
-            // then do something with the extra strings (length==2)
-            String date = commandParams[0];
-            if (DateParser.isValidDate(date)) {
-                blockFields.add(new TaskParam("start", date + " 0000"));
-                blockFields.add(new TaskParam("end", date + " 2359"));
-                return new CommandBlock(blockFields);
-            }
-        } else if (commandParams.length >= 3) {
-            String date1 = commandParams[0];
-            String date2 = commandParams[2];
-            String connector = commandParams[1].toLowerCase();
-            if (DateParser.isValidDate(date1) &&
-                DateParser.isValidDate(date2) && connector.equals("to")) {
-                DateTime dateTime1 = new DateTime(date1, "");
-                DateTime dateTime2 = new DateTime(date2, "");
+        boolean hasConnector = false;
+        boolean hasFirstDate = false;
+        boolean hasFirstTime = false;
+        boolean hasSecondDate = false;
+        boolean hasSecondTime = false;
 
-                if (dateTime1.compareTo(dateTime2) < 0) {
-                    blockFields.add(new TaskParam("start", date1));
-                    blockFields.add(new TaskParam("end", date2));
+        String firstDateStr = "";
+        String secondDateStr = "";
+        String firstTimeStr = "";
+        String secondTimeStr = "";
+
+        // Collect fields; each date and each time should only be filled once.
+        int index;
+        for (index = 0; index < commandParams.length; index++) {
+            String currWord = commandParams[index];
+            if (!hasConnector && currWord.equalsIgnoreCase("to")) {
+                hasConnector = true;
+            } else if (DateParser.isValidDate(currWord)) {
+                if (!hasConnector && !hasFirstDate) {
+                    firstDateStr = currWord;
+                    hasFirstDate = true;
+                } else if (hasConnector && !hasSecondDate) {
+                    secondDateStr = currWord;
+                    hasSecondDate = true;
                 } else {
-                    blockFields.add(new TaskParam("start", date2));
-                    blockFields.add(new TaskParam("end", date1));
+                    throw new IllegalArgumentException(
+                            "That format for multiple dates is not accepted!");
                 }
-                return new CommandBlock(blockFields);
+            } else if (DateParser.isValidTime(currWord)) {
+                if (!hasConnector && !hasFirstTime) {
+                    firstTimeStr = currWord;
+                    hasFirstTime = true;
+                } else if (hasConnector && !hasSecondTime) {
+                    secondTimeStr = currWord;
+                    hasSecondTime = true;
+                } else {
+                    throw new IllegalArgumentException(
+                            "That format for multiple times is not accepted!");
+                }
+            } else if (currWord.isEmpty()) {
+                // An empty string accommodates for multiple spaces
+                continue;
+            } else {
+                // Stop checking upon reaching an invalid word.
+                break;
             }
         }
 
-        return new CommandOthers("error", "Invalid argument for block");
+        // Save leftover strings
+        // TODO: Check if this is necessary/can be used.
+        // Should be done for add and edit?
+        int lastIndex = index;
+        String leftovers = "";
+        if (lastIndex < commandParams.length) {
+            for (int i = lastIndex; i < commandParams.length; i++) {
+                leftovers = leftovers + " " + commandParams[i];
+            }
+            leftovers = leftovers.trim();
+        }
+
+        // Check if any fields have been input
+        if (!hasFirstDate && !hasFirstTime && !hasSecondDate && !hasSecondTime) {
+            throw new IllegalArgumentException(
+                    "No date or time detected! "
+                            + "Please input a date/time range to block!");
+        }
+
+        // Fill in empty dates
+        if (!hasFirstDate && !hasSecondDate) {
+            firstDateStr = DateParser.getCurrDateStr();
+            secondDateStr = firstDateStr;
+        } else if (!hasFirstDate) {
+            // TODO: Based on time stated
+            firstDateStr = secondDateStr;
+        } else if (!hasSecondDate) {
+            secondDateStr = firstDateStr;
+        }
+
+        // Check order of date/times; switch if necessary.
+        DateTime dateTime1 = new DateTime(firstDateStr, firstTimeStr);
+        DateTime dateTime2 = new DateTime(secondDateStr, secondTimeStr);
+        TaskParam startTp;
+        TaskParam endTp;
+        if (dateTime1.isEarlierThan(dateTime2) || dateTime1.equalsTo(dateTime2)) {
+            startTp = new TaskParam("start", dateTime1.toString());
+            endTp = new TaskParam("end", dateTime2.toString());
+            // Fill in empty times
+            if (!hasFirstTime) {
+                startTp.addToField("0000");
+            }
+            if (!hasSecondTime) {
+                endTp.addToField("2359");
+            }
+        } else {
+            startTp = new TaskParam("start", dateTime2.toString());
+            endTp = new TaskParam("end", dateTime1.toString());
+            // Fill in empty times
+            if (!hasFirstTime) {
+                endTp.addToField("2359");
+            }
+            if (!hasSecondTime) {
+                startTp.addToField("0000");
+            }
+        }
+
+        // Create and return Command
+        blockFields.add(startTp);
+        blockFields.add(endTp);
+        return new CommandBlock(blockFields);
     }
 
     private static Command parseDisplay(String[] commandParams) {
