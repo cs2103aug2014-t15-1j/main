@@ -27,6 +27,7 @@ public class ProcessorTest {
 	private static Task testTask8 = new Task("Do EE2020 Homework", testTime, null, null,  new ArrayList<String>());
     private static Task testTask9 = new Task("Do EE2020 Homework", testTime, testTime, null, new ArrayList<String>());
     private static Task testTask10 = new Task("Do EE2020 Homework", testTime, testTime, testTime, new ArrayList<String>());
+    private static Task testTask11 = new Task("Do EE2020 Homework", testTime, testTime, testTime, testTags);
 
 	
 	@Before
@@ -130,6 +131,7 @@ public class ProcessorTest {
         Result r8 =TestProcessor.processInput("undo");
         Result r9 = TestProcessor.processInput("redo");
         assertTrue(equalsObj(r9.getTasks().get(0), testTask9));
+        
         //Test Edit End
         Result r10 = TestProcessor.processInput("edit 1 e: 10/10/2012 1010");
         Result r11 =TestProcessor.processInput("undo");
@@ -137,6 +139,12 @@ public class ProcessorTest {
         assertTrue(equalsObj(r12.getTasks().get(0), testTask10));
         
         //Test Edit Tags
+        testTags.add("#homework");
+        System.out.println(testTags);
+        Result r13 = TestProcessor.processInput("edit 1 #homework");
+        Result r14 =TestProcessor.processInput("undo");
+        Result r15 = TestProcessor.processInput("redo");
+        assertTrue(equalsObj(r15.getTasks().get(0), testTask11));
 	}
 
 	@Test

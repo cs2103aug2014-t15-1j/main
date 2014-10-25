@@ -141,16 +141,16 @@ public class CommandEdit extends Command {
                         name = "";
                         break;
                     case "due":
-                        due = new DateTime();
+                        due = null;
                         break;
                     case "start":
-                        start = new DateTime();
+                        start = null;
                         break;
                     case "end":
-                        end = new DateTime();
+                        end = null;
                         break;
                     case "tags":
-                        tags = new ArrayList<String>();
+                        tags = null;
                         break;
                 }
             }
