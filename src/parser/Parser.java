@@ -21,6 +21,8 @@ import database.BlockDate;
 import database.DateTime;
 import database.Task;
 
+
+// TODO: Class description with reason why it's static
 public class Parser {
 
     private static final String TYPE_ALL = "all";
@@ -39,6 +41,7 @@ public class Parser {
     private static final String TYPE_UNDO = "undo";
     private static final String TYPE_REDO = "redo";
     private static final String TYPE_EXIT = "exit";
+    private static final String TYPE_RESET = "reset";
 
     // TODO: CONSIDER USING PARAM_FIRST_WORD = 1
     private static final String[] TASK_PARAM_LIST_COLON = { "name:", "n:",
@@ -107,10 +110,11 @@ public class Parser {
                 case TYPE_UNDO:
                 case TYPE_REDO:
                 case TYPE_EXIT:
+                case TYPE_RESET:
                     return new CommandOthers(commandType);
             }
         }
-        return new CommandOthers("error", "Error in initial command parsing");
+        throw new IllegalArgumentException("Invalid command!");
     }
 
     /**
@@ -413,7 +417,7 @@ public class Parser {
                         dateIndicated = true;
                     } else {
                         System.out.println("A date has already been indicated");
-                        // TODO: Update GUI w/ error
+                        // TODO: throw exception
                     }
                 } else if (hasValidHashTag(currWord)) {
                     // TODO: Error Handling for multiple doneness keywords
@@ -463,7 +467,7 @@ public class Parser {
         for (int i = 1; i < commandParams.length; i++) {
             String currWord = commandParams[i];
             String currWordLC = currWord.toLowerCase();
-            
+
             // TODO: case for two deletes?
             if (isAddParamName(currWord) || currWordLC.equals("delete:")) {
                 prevField = currField;
@@ -542,16 +546,22 @@ public class Parser {
         String currField = "name";
         List<TaskParam> addFields = new ArrayList<TaskParam>();
 
+        for (int j = 0; j < commandParams.length; j++) {
+            String currWord = commandParams[j];
+            if (isAddParamName(currWord)) {
+                currField = currWord;
+            } else {
+        }
+
         for (int i = 0; i < commandParams.length; i++) {
-            String currWord = commandParams[i];
+            currWord = commandParams[i];
             if (containsParamName(currWord)) {
                 // Split up all parameter names
                 String[] wordList = currWord.split(":");
 
                 // Get the last valid parameter, and the index in wordList it
                 // corresponds to. EndIndex checks if the last word in wordList
-                // can
-                // be a parameter name.
+                // can be a parameter name.
                 int endIndex = getLastPossibleParamIndex(currWord, wordList);
                 currField = getLastValidParamName(wordList, endIndex, currField);
                 int lastValidField = getLastValidParamNameIndex(wordList,
