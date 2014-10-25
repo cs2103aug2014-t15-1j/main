@@ -31,8 +31,8 @@ public class ResultGenerator {
         return false;
     }
 
-    public void updateInterface(List<Task> tasks) {
-        new UpdateUI(tasks);
+    public void updateInterface(List<Task> tasks, boolean dateType) {
+        new UpdateUI(tasks, dateType);
     }
 
     public String processResult(Result result, String input) {
@@ -115,14 +115,20 @@ public class ResultGenerator {
                 cheat();
                 return feedbackMessage(outputs, "Edited %1$s");
             case DISPLAY:
-                updateInterface(outputs);
+                updateInterface(outputs, false);
                 if (outputs.size() == 0) {
                     return "No tasks to show.";
                 }
                 return feedbackMessageMultiResults(outputs,
                                                    "%1$s task(s) found.");
+                // case :
+                // cheat();
+                // if (result.needsConfirmation()) {
+                // return
+                // "This will erase all data, PERMANENTLY.  Key 'y' to continue or 'n' to abort";
+                // }
             case SEARCH:
-                updateInterface(outputs);
+                updateInterface(outputs, false);
                 return feedbackMessageMultiResults(outputs,
                                                    "Found %1$s match(es).");
             case TODO:
@@ -189,7 +195,7 @@ public class ResultGenerator {
         if (outputs.size() == 0) {
             return;
         }
-        updateInterface(outputs);
+        updateInterface(outputs, false);
 
     }
 }

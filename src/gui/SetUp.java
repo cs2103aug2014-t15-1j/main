@@ -35,8 +35,8 @@ public class SetUp {
     private static final int NUM_COLS_COMPOSITE = 1;
     private static final int MIN_WIDTH_SCREEN = 1800;
     private static final int MIN_HEIGHT_SCREEN = 1500;
-    private static final int MIN_WIDTH_SIDE_PANE = 1200;
-    private static final int MIN_HEIGHT_SIDE_PANE = 1000;
+    private static final int MIN_WIDTH_SIDE_PANE = 1500;
+    private static final int MIN_HEIGHT_SIDE_PANE = 1300;
 
     private static final String HEADER_NAME_ID = "Id";
     private static final String HEADER_NAME_NAME = "Name";
