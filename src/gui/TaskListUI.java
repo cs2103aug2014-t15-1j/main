@@ -17,7 +17,7 @@ public class TaskListUI {
     private static final String DOT_AND_SPACE = ". ";
     private static final String LINE_SEPARATOR = System
             .getProperty("line.separator");
-    private static final String NO_NAME = "<no name>";
+    private static final String NO_NAME = "[no name]";
 
     public TaskListUI() {
         update();
@@ -61,13 +61,30 @@ public class TaskListUI {
         floatingTasksList.setText(floatingList);
     }
 
+    private StyledText getUpcomingList() {
+        SetUp setUp = SetUp.getInstance();
+        StyledText taskList = setUp.getUpcomingTasksList();
+        return taskList;
+    }
+
+    private StyledText getFloatingList() {
+        SetUp setUp = SetUp.getInstance();
+        StyledText taskList = setUp.getFloatingTasksList();
+        return taskList;
+    }
+
     private List<Task> getUpcomingTasks() {
 
         Processor processor = Processor.getInstance();
-        List<Task> tasks = processor.fetchFloatingTasks();
+        List<Task> tasks = processor.fetchTimedTasks();
         return tasks;
     }
 
+    /**
+     * Sorts through the tasks list returned by ResultGenerator
+     * 
+     * @return upcomingTasksList tasks with dates
+     */
     private List<Task> getUpcomingTasks(List<Task> tasks) {
         int size = tasks.size();
         List<Task> upcomingTasks = new ArrayList<Task>();
@@ -87,6 +104,11 @@ public class TaskListUI {
         return tasks;
     }
 
+    /**
+     * Sorts through the tasks list returned by ResultGenerator
+     * 
+     * @return floatingTasksList tasks without dates
+     */
     private List<Task> getFloatingTasks(List<Task> tasks) {
         int size = tasks.size();
         List<Task> floatingTasks = new ArrayList<Task>();
@@ -100,18 +122,6 @@ public class TaskListUI {
         return floatingTasks;
     }
 
-    private StyledText getUpcomingList() {
-        SetUp setUp = SetUp.getInstance();
-        StyledText taskList = setUp.getUpcomingTasksList();
-        return taskList;
-    }
-
-    private StyledText getFloatingList() {
-        SetUp setUp = SetUp.getInstance();
-        StyledText taskList = setUp.getFloatingTasksList();
-        return taskList;
-    }
-
     private String getStringList(List<Task> tasks, boolean isFloating) {
         if (!isValid(tasks)) {
             return "Nothing to display" + LINE_SEPARATOR;
@@ -119,6 +129,7 @@ public class TaskListUI {
         String list = "";
         if (isFloating) {
             list = list + changeFloatingListToString(tasks);
+            return list;
         }
         list = list + changeTaskListToString(tasks);
         return list;
