@@ -277,8 +277,8 @@ public class DataFile {
 
     /**
      * Updates Task object's attributes with provided arguments. Null arguments
-     * are provided for attributes that are not meant to be changed. Task to
-     * edit is specified by Task object provided in argument.
+     * are provided for attributes to reset. Empty, non-null arguments are
+     * provided for attributes that are not meant to be changed.
      * 
      * @param task
      *            Task object to modify.
@@ -300,19 +300,34 @@ public class DataFile {
         if (task == null) {
             return false; // Invalid ID
         }
-        if (name != null) {
+
+        if (name == null) {
+            task.resetName();
+        } else if (!name.isEmpty()) {
             task.setName(name);
         }
-        if (!due.getDate().isEmpty() || !due.getTime().isEmpty()) {
+
+        if (due == null) {
+            task.resetDue();
+        } else if (!due.toString().isEmpty()) {
             task.setDue(due);
         }
-        if (!start.getDate().isEmpty() || !start.getTime().isEmpty()) {
+
+        if (start == null) {
+            task.resetStart();
+        } else if (!start.toString().isEmpty()) {
             task.setStart(start);
         }
-        if (!end.getDate().isEmpty() || !end.getTime().isEmpty()) {
+
+        if (end == null) {
+            task.resetEnd();
+        } else if (!end.toString().isEmpty()) {
             task.setEnd(end);
         }
-        if (tags != null) {
+
+        if (tags == null) {
+            task.resetTags();
+        } else if (!tags.isEmpty()) {
             task.setTags(tags);
         }
 
