@@ -133,6 +133,7 @@ public class Task implements Comparable<Task> {
         summary += due + " ";
         summary += start + " ";
         summary += end + " ";
+        summary += concatanateTags();
         return summary;
     }
 

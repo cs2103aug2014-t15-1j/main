@@ -277,8 +277,9 @@ public class DataFile {
 
     /**
      * Updates Task object's attributes with provided arguments. Null arguments
-     * are provided for attributes to reset. Empty, non-null arguments are
-     * provided for attributes that are not meant to be changed.
+     * are provided for attributes to reset. Non-empty, non-null arguments are
+     * used to update attributes' data. Empty, non-null arguments are provided
+     * for attributes that are not meant to be changed.
      * 
      * @param task
      *            Task object to modify.
@@ -292,7 +293,7 @@ public class DataFile {
      *            New scheduled end date and time, if any.
      * @param tags
      *            New tags to append with, if any.
-     * @return True, if file has been successfully updated with edit.
+     * @return True, if file has been successfully updated.
      */
     private boolean updateTaskInfoByObject(Task task, String name,
                                            DateTime due, DateTime start,
