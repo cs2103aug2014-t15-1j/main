@@ -83,7 +83,7 @@ public class CommandSearch extends Command {
     protected Result execute(boolean userInput) {
         Processor.getLogger().info("Executing 'Search' Command...");
         Processor.getInstance().initialiseNewSearchList();
-        if (date != null) {
+        if (date != "") {
             searchUsingDate(date);
         } else if (keywords != null || tags != null) {
             searchUsingKeyOrTags(keywords, tags);
