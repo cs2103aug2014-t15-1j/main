@@ -546,13 +546,16 @@ public class Parser {
         String currField = "name";
         List<TaskParam> addFields = new ArrayList<TaskParam>();
 
-        for (int j = 0; j < commandParams.length; j++) {
-            String currWord = commandParams[j];
+        String currWord;
+/*        for (int j = 0; j < commandParams.length; j++) {
+            currWord = commandParams[j];
             if (isAddParamName(currWord)) {
                 currField = currWord;
             } else {
+                
+            }
         }
-
+*/
         for (int i = 0; i < commandParams.length; i++) {
             currWord = commandParams[i];
             if (containsParamName(currWord)) {
