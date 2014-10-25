@@ -113,6 +113,26 @@ public class DateTime implements Comparable<DateTime> {
     }
 
     /**
+     * Returns a String object representing this DateTime's value.
+     * 
+     * @return A String representation of the date and time value of this
+     *         object. Format: "DD/MM/YYYY HHMM", ""DD/MM/YYYY", "HHMM", or
+     *         empty String.
+     */
+    @Override
+    public String toString() {
+        if (date.isEmpty() && time.isEmpty()) {
+            return "";
+        } else if (date.isEmpty()) {
+            return time;
+        } else if (time.isEmpty()) {
+            return date;
+        } else {
+            return date + " " + time;
+        }
+    }
+
+    /**
      * Compares this <code>DateTime</code> with an input <code>DateTime</code><br>
      * Returns 1 if it is later (larger) than the other <code>DateTime</code>, 0
      * if they are the same, or -1 if it is earlier (smaller).
@@ -263,26 +283,6 @@ public class DateTime implements Comparable<DateTime> {
      */
     public boolean isEarlierThan(DateTime otherDateTime) {
         return (this.compareTo(otherDateTime) < 0);
-    }
-
-    /**
-     * Returns a String object representing this DateTime's value.
-     * 
-     * @return A String representation of the date and time value of this
-     *         object. Format: "DD/MM/YYYY HHMM", ""DD/MM/YYYY", "HHMM", or
-     *         empty String.
-     */
-    @Override
-    public String toString() {
-        if (date.isEmpty() && time.isEmpty()) {
-            return "";
-        } else if (date.isEmpty()) {
-            return time;
-        } else if (time.isEmpty()) {
-            return date;
-        } else {
-            return date + " " + time;
-        }
     }
 
     /** @return Date, format: "DD/MM/YYYY" or empty String. */

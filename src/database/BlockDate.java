@@ -32,6 +32,17 @@ public class BlockDate implements Comparable<BlockDate> {
         this.end = new DateTime(end);
     }
 
+    /**
+     * Converts <code>BlockDate</code> to a <code>String</code> containing "
+     * <code>DateTime1</code> to <code>DateTime2</code>"
+     * 
+     * @author Yeo Zi Xian, Justin
+     */
+    @Override
+    public String toString() {
+        return start.toString() + " to " + end.toString();
+    }
+
     @Override
     public int compareTo(BlockDate blockDate) {
         return this.getEnd().compareTo(blockDate.getStart());
@@ -82,10 +93,10 @@ public class BlockDate implements Comparable<BlockDate> {
         } else if (obj == this) {
             return true;
         }
-    
-        BlockDate blockDate = (BlockDate) obj;
-        return blockDate.getStart().equals(this.getStart()) &&
-               blockDate.getEnd().equals(this.getEnd());
+
+        BlockDate otherBlockDate = (BlockDate) obj;
+        return otherBlockDate.start.equals(this.start) &&
+               otherBlockDate.end.equals(this.end);
     }
 
     /**
@@ -118,17 +129,6 @@ public class BlockDate implements Comparable<BlockDate> {
     @Override
     public int hashCode() {
         return start.hashCode() + end.hashCode();
-    }
-
-    /**
-     * Converts <code>BlockDate</code> to a <code>String</code> containing "
-     * <code>DateTime1</code> to <code>DateTime2</code>"
-     * 
-     * @author Yeo Zi Xian, Justin
-     */
-    @Override
-    public String toString() {
-        return start.toString() + " to " + end.toString();
     }
 
     public boolean contains(BlockDate blockDate) {
