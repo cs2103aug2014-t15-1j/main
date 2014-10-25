@@ -31,8 +31,9 @@ public class ResultGenerator {
         return false;
     }
 
-    public void updateInterface(List<Task> tasks, boolean dateType) {
-        new UpdateUI(tasks, dateType);
+    @SuppressWarnings("rawtypes")
+    public void updateInterface(List tasks, boolean isDateType) {
+        new UpdateUI(tasks, isDateType);
     }
 
     public String processResult(Result result, String input) {
@@ -53,39 +54,43 @@ public class ResultGenerator {
         return String.format("Not able to process '%1$s'", input);
     }
 
-    // Not implemented yet
     private String processDateBasedResult(Result result) {
         List<BlockDate> dates = result.getBlockedDates(); // get list of dates
-        String message;
         if (dates.size() == 0) {
             return "No dates have been blocked";
         }
-        if (dates.size() == 1) {
-            message = feedbackSingleBlock(dates);
-            checkCommandType(result);
-            // change table?
-            switch (result.getCommandType()) {
-            // check for confirmation
-                case BLOCK:
-                    return "BLOCKED: " + message;// format: BLOCKED: DateTime
-                case UNBLOCK:
-                    return "UNBLOCKED: " + message;// format: UNBLOCKED:
-                                                   // DateTime
-                case REDO:
-                    return "Command Redone.";
 
-                case UNDO:
-                    return "Command Undone.";
-                case ERROR:
-                    return "Not able to fully process command";
+        feedbackSingleBlock(dates);
+        assert (result.getCommandType() != null);
 
-                default:
-                    // this line of code should never be reached
-                    throw new IllegalArgumentException("Illegal Command Type");
-            }
+        switch (result.getCommandType()) {
+        // check for confirmation
+            case BLOCK:
+                if (result.needsConfirmation()) {
+                    return "Unable to block date. Date coincides with another blocked date or task. Key 'y' to override date or 'n' to abort";
+                }
+                return "BLOCKED: " + feedbackSingleBlock(dates);
+            case UNBLOCK:
+                return "UNBLOCKED: " + feedbackSingleBlock(dates);
+
+            case REDO:
+                return "Command Redone.";
+
+            case UNDO:
+                return "Command Undone.";
+
+            case DISPLAY:
+                updateInterface(dates, true);
+                return feedbackMessageMultiResults(dates,
+                                                   "Showing %1$s blocks.");
+            case ERROR:
+                return "Not able to fully process command";
+
+            default:
+                // this line of code should never be reached
+                throw new IllegalArgumentException("Illegal Command Type");
         }
 
-        return feedbackMessageMultiResults(dates, "Showing %1$s blocks.");
     }
 
     private String feedbackSingleBlock(List<BlockDate> dates) {
@@ -97,7 +102,8 @@ public class ResultGenerator {
     private String processTaskBasedResult(Result result) {
         List<Task> outputs = result.getTasks();
 
-        checkCommandType(result);
+        assert (result.getCommandType() != null);
+
         switch (result.getCommandType()) {
             case ADD:
                 cheat();
@@ -163,8 +169,8 @@ public class ResultGenerator {
         return String.format(commandDone, taskDone.getName());
     }
 
-    private String feedbackMessageMultiResults(@SuppressWarnings("rawtypes") List outputs,
-                                               String feedback) {
+    @SuppressWarnings("rawtypes")
+    private String feedbackMessageMultiResults(List outputs, String feedback) {
         int size = outputs.size();
         return String.format(feedback, size);
     }
@@ -175,12 +181,6 @@ public class ResultGenerator {
         }
 
         return true;
-    }
-
-    private void checkCommandType(Result result) throws NullPointerException {
-        if (result.getCommandType() == null) {
-            throw new NullPointerException("CommandType is null");
-        }
     }
 
     private boolean isValidString(String parameter) {

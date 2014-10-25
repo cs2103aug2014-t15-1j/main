@@ -6,6 +6,7 @@ import java.util.List;
 import logic.Processor;
 
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.swt.widgets.TabFolder;
 
 import database.Task;
 
@@ -57,6 +58,7 @@ public class TaskTableUI {
         }
         table.setInput(tasksArray);
         table.refresh();
+        setFocus();
     }
 
     private TableViewer getTable() {
@@ -91,5 +93,11 @@ public class TaskTableUI {
         }
 
         return list;
+    }
+
+    private void setFocus() {
+        SetUp setUp = SetUp.getInstance();
+        TabFolder tabs = setUp.getTabFolder();
+        tabs.setSelection(0);
     }
 }

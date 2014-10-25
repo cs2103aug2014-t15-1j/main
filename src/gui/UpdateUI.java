@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
+import database.Task;
+
 /**
  * This classes calls all the 'update-able' user Interfaces ( Task Table,
  * TaskList, Calendar ) to update themselves.
@@ -12,29 +14,26 @@ import java.util.Observer;
  *
  */
 public class UpdateUI implements Observer {
-    public UpdateUI(List tasks, boolean isDateType) {
+    @SuppressWarnings("rawtypes")
+    public UpdateUI(List<Task> tasks, boolean isDateType) {
         updateObservers(tasks, isDateType);
     }
 
-    private void updateObservers(@SuppressWarnings("rawtypes") List list,
-                                 boolean isDateType) {
-
-        new TaskListUI(list);
-
-        if (isDateType) {
-            new DateTableUI(list);
-            return;
-        }
-        new TaskTableUI(list);
+    @SuppressWarnings("rawtypes")
+    private void updateObservers(List<Task> list, boolean isDateType) {
+        /**
+         * if (isDateType) { new DateTableUI(list); return; }
+         **/
+        new TaskListUI();
+        new TaskTableUI();
     }
 
-    /**
-     * public void update(Observable observable, Object object) {
-     * updateObservers() }
-     **/
-    @Override
-    public void update(Observable arg0, Object arg1) {
-        new TaskTableUI();
+    public void update(Observable observable, Object object) {
+        updateObservers();
+    }
+
+    private void updateObservers() {
         new TaskListUI();
+        new TaskTableUI();
     }
 }

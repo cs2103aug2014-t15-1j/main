@@ -25,6 +25,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 
 import database.BlockDate;
+import database.DateTime;
 import database.Task;
 
 public class SetUp {
@@ -74,6 +75,7 @@ public class SetUp {
     private TabItem dateTable;
 
     private TableViewer tableViewer;
+    private TableViewer dateViewer;
 
     private StyledText feedback;
     private Text commandLine;
@@ -133,6 +135,14 @@ public class SetUp {
         return this.tableViewer;
     }
 
+    public TableViewer getDateViewer() {
+        return this.dateViewer;
+    }
+
+    public TabFolder getTabFolder() {
+        return this.tabFolder;
+    }
+
     private void initialise() {
         setUpShell();
         setUpComposites();
@@ -162,12 +172,12 @@ public class SetUp {
         FontData font = new FontData("New Courier", 11, SWT.NORMAL);
         FontData[] fontData = new FontData[] { font };
         registry.put("type box", fontData);
-        fontData = new FontData[] { new FontData("Arial", 9, SWT.NORMAL) };
+        fontData = new FontData[] { new FontData("Arial", 11, SWT.NORMAL) };
         registry.put("feedback", fontData);
-        fontData = new FontData[] { new FontData("Times New Roman", 10,
+        fontData = new FontData[] { new FontData("Times New Roman", 11,
                 SWT.NORMAL) };
         registry.put("list headers", fontData);
-        fontData = new FontData[] { new FontData("Arial", 9,
+        fontData = new FontData[] { new FontData("Arial", 10,
                 SWT.BOLD | SWT.UNDERLINE_SINGLE) };
         registry.put("title", fontData);
     }
@@ -196,12 +206,16 @@ public class SetUp {
 
         tabFolder = new TabFolder(mainInterface, SWT.BORDER);
         tabFolder.setLayoutData(new GridData(GridData.FILL_BOTH));
+
         taskTable = new TabItem(tabFolder, SWT.BORDER);
         taskTable.setText("Tasks");
         setUpTaskTable();
+        taskTable.setControl(tableViewer.getTable());
+
         dateTable = new TabItem(tabFolder, SWT.NONE);
         dateTable.setText("Blocked Dates");
         setUpDateTable();
+        dateTable.setControl(dateViewer.getTable());
 
     }
 
@@ -231,6 +245,104 @@ public class SetUp {
         setUpDate();
     }
 
+    private void setUpDateTable() {
+        StyledText tableTitle = new StyledText(tabFolder, SWT.READ_ONLY);
+        tableTitle.setText("Dates Blocked:");
+        tableTitle.setEnabled(false);
+        tableTitle.setFont(registry.get("title"));
+
+        dateViewer = new TableViewer(tabFolder, SWT.MULTI | SWT.BORDER);
+
+        dateViewer.setContentProvider(new ArrayContentProvider());
+        dateViewer.setLabelProvider(new LabelProvider());
+        setUpDateTableColumns();
+
+        Table table = tableViewer.getTable();
+        table.setLinesVisible(true);
+        table.setHeaderVisible(true);
+        table.setEnabled(false);
+
+    }
+
+    // to refactor method
+    private void setUpDateTableColumns() {
+
+        TableViewerColumn column = setColumnHeader(HEADER_DATE_START_DATE,
+                                                   COL_WIDTH);
+        column.setLabelProvider(new ColumnLabelProvider() {
+            @Override
+            public String getText(Object element) {
+
+                if (element instanceof Task) {
+                    return "";
+                }
+                BlockDate date = (BlockDate) element;
+                assert (date != null);
+                String startDate = date.getStartDate();
+                if (startDate == null) {
+                    return CELL_EMPTY;
+                }
+                return startDate;
+            }
+        });
+        column = setColumnHeader(HEADER_DATE_START_TIME, COL_WIDTH);
+        column.setLabelProvider(new ColumnLabelProvider() {
+            @Override
+            public String getText(Object element) {
+                if (element instanceof Task) {
+                    return "";
+                }
+
+                BlockDate date = (BlockDate) element;
+                assert (date != null);
+                String startTime = date.getStartTime();
+                if (startTime == null) {
+                    return CELL_EMPTY;
+                }
+                return startTime;
+            }
+        });
+
+        column = setColumnHeader(HEADER_DATE_END_DATE, COL_WIDTH);
+        column.setLabelProvider(new ColumnLabelProvider() {
+            @Override
+            public String getText(Object element) {
+                if (element instanceof Task) {
+                    return "";
+                }
+
+                BlockDate date = (BlockDate) element;
+                assert (date != null);
+                String endDate = date.getEndDate();
+                if (endDate == null) {
+                    return CELL_EMPTY;
+                }
+                return endDate;
+            }
+        });
+
+        column = setColumnHeader(HEADER_DATE_END_TIME, COL_WIDTH);
+        column.setLabelProvider(new ColumnLabelProvider() {
+            @Override
+            public String getText(Object element) {
+                if (element instanceof Task) {
+                    return "";
+                }
+
+                BlockDate date = (BlockDate) element;
+                assert (date != null);
+                String endTime = date.getEndTime();
+                if (endTime == null) {
+                    return CELL_EMPTY;
+                }
+                return endTime;
+            }
+        });
+
+        Table table = dateViewer.getTable();
+        table.setLayoutData(new GridData(GridData.FILL_BOTH));
+    }
+
     private void setUpTaskTable() {
 
         StyledText tableTitle = new StyledText(tabFolder, SWT.READ_ONLY);
@@ -248,109 +360,9 @@ public class SetUp {
         table.setLinesVisible(true);
         table.setHeaderVisible(true);
         table.setEnabled(false);
-        // Image tableBackground = new Image(shell.getDisplay(),
-        // ".\\images\\resultbg.png");
-
-        // table.setBackgroundImage(tableBackground);
-        Color white = shell.getDisplay().getSystemColor(SWT.COLOR_WHITE);
-        table.setBackground(white);
-
-        taskTable.setControl(tableViewer.getTable());
-
     }
 
-    // to refactor method
     private void setUpTaskTableColumns() {
-
-        TableViewerColumn column = setColumnHeader(HEADER_DATE_START_DATE,
-                                                   COL_WIDTH);
-        column.setLabelProvider(new ColumnLabelProvider() {
-            @Override
-            public String getText(Object element) {
-
-                BlockDate date = (BlockDate) element;
-                assert (date != null);
-                String startDate = date.getStartDate();
-                if (startDate == null) {
-                    return CELL_EMPTY;
-                }
-                return startDate;
-            }
-        });
-        column = setColumnHeader(HEADER_DATE_START_TIME, COL_WIDTH);
-        column.setLabelProvider(new ColumnLabelProvider() {
-            @Override
-            public String getText(Object element) {
-                BlockDate date = (BlockDate) element;
-                assert (date != null);
-                String startTime = date.getStartTime();
-                if (startTime == null) {
-                    return CELL_EMPTY;
-                }
-                return startTime;
-            }
-        });
-
-        column = setColumnHeader(HEADER_DATE_END_DATE, COL_WIDTH);
-        column.setLabelProvider(new ColumnLabelProvider() {
-            @Override
-            public String getText(Object element) {
-                BlockDate date = (BlockDate) element;
-                assert (date != null);
-                String endDate = date.getEndDate();
-                if (endDate == null) {
-                    return CELL_EMPTY;
-                }
-                return endDate;
-            }
-        });
-
-        column = setColumnHeader(HEADER_DATE_END_TIME, COL_WIDTH);
-        column.setLabelProvider(new ColumnLabelProvider() {
-            @Override
-            public String getText(Object element) {
-                BlockDate date = (BlockDate) element;
-                assert (date != null);
-                String endTime = date.getEndTime();
-                if (endTime == null) {
-                    return CELL_EMPTY;
-                }
-                return endTime;
-            }
-        });
-
-        Table table = tableViewer.getTable();
-        table.setLayoutData(new GridData(GridData.FILL_BOTH));
-    }
-
-    private void setUpDateTable() {
-        StyledText tableTitle = new StyledText(tabFolder, SWT.READ_ONLY);
-        tableTitle.setText("Dates Blocked:");
-        tableTitle.setEnabled(false);
-        tableTitle.setFont(registry.get("title"));
-
-        tableViewer = new TableViewer(tabFolder, SWT.MULTI | SWT.BORDER);
-
-        tableViewer.setContentProvider(new ArrayContentProvider());
-        tableViewer.setLabelProvider(new LabelProvider());
-        setUpDateTableColumns();
-
-        Table table = tableViewer.getTable();
-        table.setLinesVisible(true);
-        table.setHeaderVisible(true);
-        table.setEnabled(true);
-        // Image tableBackground = new Image(shell.getDisplay(),
-        // ".\\images\\resultbg.png");
-
-        // table.setBackgroundImage(tableBackground);
-        Color white = shell.getDisplay().getSystemColor(SWT.COLOR_WHITE);
-        table.setBackground(white);
-
-        dateTable.setControl(tableViewer.getTable());
-
-    }
-
-    private void setUpDateTableColumns() {
         TableViewerColumn column = setColumnHeader(HEADER_NAME_ID, COL_WIDTH_ID);
         column.setLabelProvider(new ColumnLabelProvider() {
             @Override
@@ -383,7 +395,7 @@ public class SetUp {
             public String getText(Object element) {
                 Task task = (Task) element;
                 assert (task != null);
-                database.DateTime Due = task.getDue();
+                DateTime Due = task.getDue();
 
                 if (Due == null) {
                     return CELL_EMPTY;
@@ -398,7 +410,7 @@ public class SetUp {
             public String getText(Object element) {
                 Task task = (Task) element;
                 assert (task != null);
-                database.DateTime Start = task.getStart();
+                DateTime Start = task.getStart();
                 if (Start == null) {
                     return CELL_EMPTY;
                 }
@@ -413,7 +425,7 @@ public class SetUp {
             public String getText(Object element) {
                 Task task = (Task) element;
                 assert (task != null);
-                database.DateTime End = task.getEnd();
+                DateTime End = task.getEnd();
                 if (End == null) {
                     return CELL_EMPTY;
                 }
