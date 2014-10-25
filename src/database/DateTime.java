@@ -204,7 +204,8 @@ public class DateTime implements Comparable<DateTime> {
      * have equal hash codes.
      * 
      * 
-     * @param obj The reference object with which to compare.
+     * @param obj
+     *            The reference object with which to compare.
      * 
      * @returns True if this object is the same as the obj argument; false
      *          otherwise.
