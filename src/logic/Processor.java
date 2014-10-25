@@ -122,6 +122,7 @@ public class Processor extends Observable {
      */
 	public Result processInput(String input) throws IllegalArgumentException {
 		Command cmd = Parser.parse(input);
+		assert cmd != null;
 		return processCommand(cmd);
 	}
 	
@@ -141,7 +142,7 @@ public class Processor extends Observable {
      *      - Command Object returned from Parser
      *      
      * @param userInput
-     *      - userInput determines if the command was given by the user or internally
+     *      - userInput determines if the command was given by the user or internally by the system
      *      
      * @return Result
      *      - boolean {@code success}<br>
@@ -159,7 +160,7 @@ public class Processor extends Observable {
 		if (result.isSuccess() && !result.needsConfirmation() && userInput) {
 			updateCommandHistory(cmd);
 			updateUIPanelWindow(cmd);
-			log.info("Command executed successfully");
+			log.info(result.getCommandType() + " Command executed successfully");
 		}
 		return result;
 	}
