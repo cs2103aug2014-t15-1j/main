@@ -9,13 +9,13 @@ import database.Task;
 
 public class ResultGenerator {
 
+    private static Processor processor;
+
     public void start() {
-        Processor processor = Processor.getInstance();
-        processor.processInput("invalid input");
+        processor = Processor.getInstance();
     }
 
     public String sendInput(String input) {
-        Processor processor = Processor.getInstance();
         Result result = processor.processInput(input);
         assert (result != null);
         return processResult(result, input);
@@ -148,6 +148,9 @@ public class ResultGenerator {
     private String feedbackMessage(List<Task> tasks, String commandDone) {
         assert (tasks.size() == 1);
         Task taskDone = tasks.get(0);
+        if (taskDone.getName() == null || taskDone.getName().isEmpty()) {
+            return String.format(commandDone, "empty task");
+        }
         checkValidName(taskDone);
         return String.format(commandDone, taskDone.getName());
     }
@@ -158,10 +161,12 @@ public class ResultGenerator {
         return String.format(feedback, size);
     }
 
-    private void checkValidName(Task task) {
+    private boolean checkValidName(Task task) {
         if (isValidString(task.getName())) {
-            throw new NullPointerException("Task name is invalid");
+            return false;
         }
+
+        return true;
     }
 
     private void checkCommandType(Result result) throws NullPointerException {
@@ -177,7 +182,6 @@ public class ResultGenerator {
 
     // to be removed
     private void cheat() {
-        Processor processor = Processor.getInstance();
         Result result = processor.processInput("display");
         List<Task> outputs = result.getTasks();
         if (outputs.size() == 0) {
