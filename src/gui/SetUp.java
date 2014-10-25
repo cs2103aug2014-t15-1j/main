@@ -14,10 +14,9 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -36,8 +35,8 @@ public class SetUp {
     private static final int NUM_COLS_COMPOSITE = 1;
     private static final int MIN_WIDTH_SCREEN = 1800;
     private static final int MIN_HEIGHT_SCREEN = 1500;
-    // private static final int MIN_WIDTH_SIDE_PANE = 1200;
-    // private static final int MIN_HEIGHT_SIDE_PANE = 1000;
+    private static final int MIN_WIDTH_SIDE_PANE = 1200;
+    private static final int MIN_HEIGHT_SIDE_PANE = 1000;
 
     private static final String HEADER_NAME_ID = "Id";
     private static final String HEADER_NAME_NAME = "Name";
@@ -52,6 +51,7 @@ public class SetUp {
     private static final String PARA_STATUS_DONE = "Done";
 
     private static final String CELL_EMPTY = "empty";
+    private static final String CELL_NAME_EMPTY = "no name";
 
     private static final int COL_WIDTH = 175;
     private static final int COL_WIDTH_ID = 50;
@@ -65,8 +65,9 @@ public class SetUp {
 
     private StyledText feedback;
     private Text commandLine;
-    private DateTime calendar;
-    private Text taskList;
+    private StyledText upcomingTasksList;
+    private StyledText floatingTasksList;
+    private StyledText todaysDate;
 
     private FontRegistry registry;
 
@@ -108,16 +109,16 @@ public class SetUp {
         return this.commandLine;
     }
 
-    public Text getTaskList() {
-        return this.taskList;
+    public StyledText getUpcomingTasksList() {
+        return this.upcomingTasksList;
+    }
+
+    public StyledText getFloatingTasksList() {
+        return this.floatingTasksList;
     }
 
     public TableViewer getTableViewer() {
         return this.tableViewer;
-    }
-
-    public DateTime getCalendar() {
-        return this.calendar;
     }
 
     private void initialise() {
@@ -137,36 +138,51 @@ public class SetUp {
     }
 
     private void setUpComposites() {
+        setUpProgramLabel();
         setUpMainInterface();
         setUpSidePane();
+    }
+
+    private void setUpProgramLabel() {
+        Composite programLabel = new Composite(this.shell, SWT.NONE);
+        GridLayout layout = new GridLayout();
+        layout.numColumns = NUM_COLS_SCREEN;
+        programLabel.setLayout(layout);
+        GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
+        gridData.horizontalSpan = 2;
+        programLabel.setLayoutData(gridData);
+
+        Label title = new Label(programLabel, SWT.SINGLE);
+        title.setText("Haystack");
+
     }
 
     private void setUpMainInterface() {
         mainInterface = new Composite(this.shell, SWT.NONE);
         GridLayout layout = new GridLayout();
         layout.numColumns = NUM_COLS_COMPOSITE;
-        GridData gridData = new GridData(GridData.FILL_BOTH);
-        mainInterface.setLayoutData(gridData);
         mainInterface.setLayout(layout);
+        GridData gridData = new GridData(GridData.FILL_VERTICAL);
+        mainInterface.setLayoutData(gridData);
     }
 
     private void setUpSidePane() {
         sidePane = new Composite(this.shell, SWT.NONE);
         GridLayout sidePaneLayout = new GridLayout();
         sidePaneLayout.numColumns = 1;
-        sidePane.setLayoutData(new GridData(GridData.FILL_BOTH));
         sidePane.setLayout(sidePaneLayout);
-        // sidePane.setSize(MIN_WIDTH_SIDE_PANE, MIN_HEIGHT_SIDE_PANE);
+        sidePane.setLayoutData(new GridData(GridData.FILL_BOTH));
+        sidePane.setSize(MIN_WIDTH_SIDE_PANE, MIN_HEIGHT_SIDE_PANE);
     }
 
     private void setUpWidgets() {
         formatRegistry();
-        setUpCanvas();
         setUpTable();
-        setUpFeedBack();
         setUpCommandLine();
-        setUpCalendar();
-        setUpTaskList();
+        setUpFeedBack();
+        setUpUpcomingTaskList();
+        setUpFloatingTaskList();
+        setUpDate();
     }
 
     private void formatRegistry() {
@@ -175,21 +191,22 @@ public class SetUp {
         FontData font = new FontData("New Courier", 11, SWT.NORMAL);
         FontData[] fontData = new FontData[] { font };
         registry.put("type box", fontData);
-        fontData = new FontData[] { new FontData("Arial Unicode", 9,
-                SWT.NORMAL) };
+        fontData = new FontData[] { new FontData("Arial", 9, SWT.NORMAL) };
         registry.put("feedback", fontData);
         fontData = new FontData[] { new FontData("Times New Roman", 10,
                 SWT.NORMAL) };
         registry.put("list headers", fontData);
-    }
-
-    private void setUpCanvas() {
-        // TODO Auto-generated method stub
-        Canvas canvas = new Canvas(mainInterface, SWT.NONE);
-        canvas.setEnabled(false);
+        fontData = new FontData[] { new FontData("Arial", 9,
+                SWT.BOLD | SWT.UNDERLINE_SINGLE) };
+        registry.put("title", fontData);
     }
 
     private void setUpTable() {
+        StyledText tableTitle = new StyledText(mainInterface, SWT.READ_ONLY);
+        tableTitle.setText("Results:");
+        tableTitle.setEnabled(false);
+        tableTitle.setFont(registry.get("title"));
+
         tableViewer = new TableViewer(mainInterface, SWT.MULTI | SWT.BORDER);
         tableViewer.setContentProvider(new ArrayContentProvider());
         tableViewer.setLabelProvider(new LabelProvider());
@@ -226,7 +243,11 @@ public class SetUp {
             public String getText(Object element) {
                 // set Name: max 40 characters
                 Task task = (Task) element;
+                String name = task.getName();
                 assert (task != null);
+                if (name == null || name.isEmpty() || name.equals("null")) {
+                    return CELL_NAME_EMPTY;
+                }
                 return task.getName();
             }
         });
@@ -336,7 +357,6 @@ public class SetUp {
         Color white = shell.getDisplay().getSystemColor(SWT.COLOR_WHITE);
         this.feedback.setForeground(white);
         feedback.setEnabled(false);
-
     }
 
     private void setUpCommandLine() {
@@ -352,31 +372,54 @@ public class SetUp {
         commandLine.setFont(registry.get("type box"));
     }
 
-    private void setUpCalendar() {
-        // TODO Auto-generated method stub
-        calendar = new DateTime(sidePane, SWT.CALENDAR);
-    }
+    private void setUpUpcomingTaskList() {
+        Label upcomingTask = new Label(sidePane, SWT.SINGLE);
+        upcomingTask.setText("Upcoming Task");
 
-    private void setUpTaskList() {
-        // TODO Auto-generated method stub
-        taskList = new Text(sidePane, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL |
-                                      SWT.READ_ONLY);
+        upcomingTasksList = new StyledText(sidePane, SWT.MULTI | SWT.READ_ONLY |
+                                                     SWT.LEFT_TO_RIGHT);
 
+        upcomingTasksList.setFont(registry.get("list headers"));
         GridData gridData = new GridData(GridData.FILL_BOTH);
-        gridData.heightHint = 500;
-        taskList.setLayoutData(gridData);
+        gridData.heightHint = 250;
+        upcomingTasksList.setLayoutData(gridData);
+        upcomingTasksList.setWordWrap(true);
 
         Display display = shell.getDisplay();
         Color white = display.getSystemColor(SWT.COLOR_WHITE);
-        taskList.setBackground(white);
-        taskList.setEnabled(true);
-        taskList.setFont(registry.get("list headers"));
+        upcomingTasksList.setBackground(white);
+        upcomingTasksList.setEnabled(true);
+        upcomingTasksList.setFont(registry.get("list headers"));
 
-        // to change
-        /**
-         * String textToSet = "UPCOMING TASK:" + LINE_SEPARATOR +
-         * "1. Implement task list" + LINE_SEPARATOR + "SOMEDAY:" +
-         * LINE_SEPARATOR + "1. End world hunger"; taskList.setText(textToSet);
-         **/
+    }
+
+    private void setUpFloatingTaskList() {
+        Label floatingTask = new Label(sidePane, SWT.SINGLE);
+        floatingTask.setText("Someday");
+
+        floatingTasksList = new StyledText(sidePane, SWT.MULTI | SWT.READ_ONLY |
+                                                     SWT.LEFT_TO_RIGHT);
+        floatingTasksList.setFont(registry.get("list headers"));
+        GridData gridData = new GridData(GridData.FILL_BOTH);
+        gridData.heightHint = 250;
+        floatingTasksList.setLayoutData(gridData);
+        floatingTasksList.setEnabled(false);
+        floatingTasksList.setWordWrap(true);
+
+        Display display = shell.getDisplay();
+        Color white = display.getSystemColor(SWT.COLOR_WHITE);
+        floatingTasksList.setBackground(white);
+        floatingTasksList.setEnabled(true);
+        floatingTasksList.setFont(registry.get("list headers"));
+    }
+
+    private void setUpDate() {
+
+        todaysDate = new StyledText(sidePane, SWT.READ_ONLY | SWT.SINGLE |
+                                              SWT.RIGHT_TO_LEFT);
+        todaysDate.setFont(registry.get("list headers"));
+        todaysDate.setText("today's date");
+
+        todaysDate.setEnabled(false);
     }
 }

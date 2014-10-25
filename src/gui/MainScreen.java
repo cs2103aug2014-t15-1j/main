@@ -4,6 +4,8 @@ import java.util.Stack;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
@@ -48,12 +50,12 @@ public class MainScreen {
      */
     public static void main(String[] args) {
         Display display = new Display();
-        // Image background = new Image(display, ".\\images\\mainbg.png");
+        Image background = new Image(display,
+                ".\\images\\mainbg_removedLabel.png");
         Shell shell = new Shell(display);
-        // ImageData imageData = background.getImageData();
-        // Point rect = shell.getSize();
-        // imageData = imageData.scaledTo(rect.x, rect.y);
-        // shell.setBackgroundImage(background);
+        ImageData imageData = background.getImageData();
+        imageData = imageData.scaledTo(shell.getSize().x, shell.getSize().y);
+        shell.setBackgroundImage(background);
         shell.setBackgroundMode(SWT.INHERIT_FORCE);
         shell.setBackground(display.getSystemColor(SWT.COLOR_CYAN));
         // Things to do at startUp: Display all To do Tasks
@@ -77,7 +79,7 @@ public class MainScreen {
                 display.sleep();
         }
 
-        // background.dispose();
+        background.dispose();
         display.dispose();
     }
 

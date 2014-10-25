@@ -5,7 +5,7 @@ import java.util.List;
 
 import logic.Processor;
 
-import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.custom.StyledText;
 
 import database.DateTime;
 import database.Task;
@@ -14,11 +14,10 @@ import database.Task;
  * This class updates the TaskList Interface whenever a change is made. 
  */
 public class TaskListUI {
-    private static final String LIST_HEADER_SOMEDAY = "SOMEDAY:";
-    private static final String LIST_HEADER_UPCOMING = "UPCOMING:";
     private static final String DOT_AND_SPACE = ". ";
     private static final String LINE_SEPARATOR = System
             .getProperty("line.separator");
+    private static final String NO_NAME = "<no name>";
 
     public TaskListUI() {
         update();
@@ -29,33 +28,37 @@ public class TaskListUI {
     }
 
     private void update(List<Task> tasks) {
-        Text taskList = getTaskList();
+        StyledText upcomingTasksList = getUpcomingList();
+        StyledText floatingTasksList = getFloatingList();
         List<Task> upcomingTasks = getUpcomingTasks(tasks);
         List<Task> floatingTasks = getFloatingTasks(tasks);
-        String upcomingList = getStringList(upcomingTasks, LIST_HEADER_UPCOMING); // to
-                                                                                  // implement:
-                                                                                  // overdue
-                                                                                  // tasks
-                                                                                  // in
-                                                                                  // red
+        String upcomingList = getStringList(upcomingTasks, false); // to
+        // implement:
+        // overdue
+        // tasks
+        // in
+        // red
 
-        String floatingList = getStringList(floatingTasks, LIST_HEADER_SOMEDAY);
-        taskList.setText(upcomingList + LINE_SEPARATOR + floatingList);
+        String floatingList = getStringList(floatingTasks, true);
+        upcomingTasksList.setText(upcomingList);
+        floatingTasksList.setText(floatingList);
     }
 
     private void update() {
-        Text taskList = getTaskList();
+        StyledText upcomingTasksList = getUpcomingList();
+        StyledText floatingTasksList = getFloatingList();
         List<Task> upcomingTasks = getUpcomingTasks();
         List<Task> floatingTasks = getFloatingTasks();
-        String upcomingList = getStringList(upcomingTasks, LIST_HEADER_UPCOMING); // to
-                                                                                  // implement:
-                                                                                  // overdue
-                                                                                  // tasks
-                                                                                  // in
-                                                                                  // red
+        String upcomingList = getStringList(upcomingTasks, false); // to
+        // implement:
+        // overdue
+        // tasks
+        // in
+        // red
 
-        String floatingList = getStringList(floatingTasks, LIST_HEADER_SOMEDAY);
-        taskList.setText(upcomingList + LINE_SEPARATOR + floatingList);
+        String floatingList = getStringList(floatingTasks, true);
+        upcomingTasksList.setText(upcomingList);
+        floatingTasksList.setText(floatingList);
     }
 
     private List<Task> getUpcomingTasks() {
@@ -97,18 +100,26 @@ public class TaskListUI {
         return floatingTasks;
     }
 
-    private Text getTaskList() {
+    private StyledText getUpcomingList() {
         SetUp setUp = SetUp.getInstance();
-        Text taskList = setUp.getTaskList();
+        StyledText taskList = setUp.getUpcomingTasksList();
         return taskList;
     }
 
-    private String getStringList(List<Task> tasks, String header) {
+    private StyledText getFloatingList() {
+        SetUp setUp = SetUp.getInstance();
+        StyledText taskList = setUp.getFloatingTasksList();
+        return taskList;
+    }
+
+    private String getStringList(List<Task> tasks, boolean isFloating) {
         if (!isValid(tasks)) {
-            return header + LINE_SEPARATOR + "Nothing to display" +
-                   LINE_SEPARATOR;
+            return "Nothing to display" + LINE_SEPARATOR;
         }
-        String list = header + LINE_SEPARATOR;
+        String list = "";
+        if (isFloating) {
+            list = list + changeFloatingListToString(tasks);
+        }
         list = list + changeTaskListToString(tasks);
         return list;
     }
@@ -120,6 +131,25 @@ public class TaskListUI {
             Task currentTask = tasks.get(index);
             String iD = currentTask.getId() + "";
             String name = currentTask.getName();
+            if (name == null || name.isEmpty() || name.equals("null")) {
+                name = NO_NAME;
+            }
+            list = list + iD + DOT_AND_SPACE + name + LINE_SEPARATOR;
+        }
+
+        return list;
+    }
+
+    private String changeFloatingListToString(List<Task> tasks) {
+        int size = tasks.size();
+        String list = "";
+        for (int index = 0; index < size; index++) {
+            Task currentTask = tasks.get(index);
+            String iD = currentTask.getId() + "";
+            String name = currentTask.getName();
+            if (name == null || name.isEmpty() || name.equals("null")) {
+                name = NO_NAME;
+            }
             list = list + iD + DOT_AND_SPACE + name + LINE_SEPARATOR;
         }
 

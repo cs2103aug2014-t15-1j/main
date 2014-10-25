@@ -57,7 +57,9 @@ public class ResultGenerator {
     private String processDateBasedResult(Result result) {
         List<BlockDate> dates = result.getBlockedDates(); // get list of dates
         String message;
-        assert (dates.size() != 0);
+        if (dates.size() == 0) {
+            return "No dates have been blocked";
+        }
         if (dates.size() == 1) {
             message = feedbackSingleBlock(dates);
             checkCommandType(result);
