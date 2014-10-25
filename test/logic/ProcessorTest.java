@@ -261,7 +261,7 @@ public class ProcessorTest {
         
         //Test search by keyword OR tags
         Result r8 = TestProcessor.processInput("search cs2103 #cshomework");
-        assertTrue(r8.getTasks().size() == 6);
+        assertTrue(r8.getTasks().size() == 3);
 	}
 	
 	@Test

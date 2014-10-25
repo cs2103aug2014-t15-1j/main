@@ -100,7 +100,7 @@ public class CommandSearch extends Command {
                 }
                 if (!keywords.isEmpty()) {
                     for (String keyword : keywords) {
-                        if (task.getSummary().contains(keyword)) {
+                        if (task.getSummary().toLowerCase().contains(keyword)) {
                             found--;
                             break;
                         }
@@ -108,7 +108,7 @@ public class CommandSearch extends Command {
                 }
                 if (!tags.isEmpty()) {
                     for (String tag : tags) {
-                        if (task.getSummary().contains(tag)) {
+                        if (task.getSummary().toLowerCase().contains(tag)) {
                             found--;
                             break;
                         }
@@ -133,6 +133,9 @@ public class CommandSearch extends Command {
         }
         return count;
     }
+    
+    
+    //Obsolete Codes below, due to changing of conditions for Search Command
     
     /* Performs search using date */
     private void searchUsingDate(String date) {
