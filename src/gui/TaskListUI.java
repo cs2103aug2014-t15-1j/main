@@ -17,7 +17,6 @@ public class TaskListUI {
     private static final String DOT_AND_SPACE = ". ";
     private static final String LINE_SEPARATOR = System
             .getProperty("line.separator");
-    private static final String NO_NAME = "[no name]";
 
     public TaskListUI() {
         update();
@@ -143,7 +142,7 @@ public class TaskListUI {
             String iD = currentTask.getId() + "";
             String name = currentTask.getName();
             if (name == null || name.isEmpty() || name.equals("null")) {
-                name = NO_NAME;
+                name = "";
             }
             list = list + iD + DOT_AND_SPACE + name + LINE_SEPARATOR;
         }
@@ -159,7 +158,7 @@ public class TaskListUI {
             String iD = currentTask.getId() + "";
             String name = currentTask.getName();
             if (name == null || name.isEmpty() || name.equals("null")) {
-                name = NO_NAME;
+                name = "";
             }
             list = list + iD + DOT_AND_SPACE + name + LINE_SEPARATOR;
         }

@@ -18,8 +18,14 @@ public class UpdateUI implements Observer {
 
     private void updateObservers(@SuppressWarnings("rawtypes") List list,
                                  boolean isDateType) {
-        new TaskTableUI(list, isDateType);
+
         new TaskListUI(list);
+
+        if (isDateType) {
+            new DateTableUI(list);
+            return;
+        }
+        new TaskTableUI(list);
     }
 
     /**

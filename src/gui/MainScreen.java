@@ -69,7 +69,7 @@ public class MainScreen {
         } catch (Exception e) {
             String message = e.getMessage();
             System.out.println(message);
-            exitProgram();
+            setUpScreen.getFeedBack().setText(message);
         }
         shell.pack();
         shell.open();

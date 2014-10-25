@@ -18,10 +18,13 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TabFolder;
+import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 
+import database.BlockDate;
 import database.Task;
 
 public class SetUp {
@@ -46,12 +49,16 @@ public class SetUp {
     private static final String HEADER_NAME_TAGS = "Tags";
     private static final String HEADER_NAME_STATUS = "Status";
 
+    private static final String HEADER_DATE_START_DATE = "Start Date";
+    private static final String HEADER_DATE_START_TIME = "Start Time";
+    private static final String HEADER_DATE_END_DATE = "End Date";
+    private static final String HEADER_DATE_END_TIME = "End Time";
+
     private static final String PARA_STATUS_DELETED = "Deleted";
     private static final String PARA_STATUS_TODO = "To do";
     private static final String PARA_STATUS_DONE = "Done";
 
     private static final String CELL_EMPTY = "empty";
-    private static final String CELL_NAME_EMPTY = "no name";
 
     private static final int COL_WIDTH = 175;
     private static final int COL_WIDTH_ID = 50;
@@ -60,6 +67,11 @@ public class SetUp {
     private Shell shell;
     private Composite mainInterface;
     private Composite sidePane;
+    private Composite feedbackAndInput;
+
+    private TabFolder tabFolder;
+    private TabItem taskTable;
+    private TabItem dateTable;
 
     private TableViewer tableViewer;
 
@@ -134,13 +146,30 @@ public class SetUp {
         this.shell.setLayout(layout);
         this.shell.setSize(MIN_WIDTH_SCREEN, MIN_HEIGHT_SCREEN);
         this.shell.setText(PROGRAM_NAME);
-
     }
 
     private void setUpComposites() {
+        formatRegistry();
         setUpProgramLabel();
         setUpMainInterface();
         setUpSidePane();
+        setUpFeedbackAndInput();
+    }
+
+    private void formatRegistry() {
+
+        this.registry = new FontRegistry(shell.getDisplay());
+        FontData font = new FontData("New Courier", 11, SWT.NORMAL);
+        FontData[] fontData = new FontData[] { font };
+        registry.put("type box", fontData);
+        fontData = new FontData[] { new FontData("Arial", 9, SWT.NORMAL) };
+        registry.put("feedback", fontData);
+        fontData = new FontData[] { new FontData("Times New Roman", 10,
+                SWT.NORMAL) };
+        registry.put("list headers", fontData);
+        fontData = new FontData[] { new FontData("Arial", 9,
+                SWT.BOLD | SWT.UNDERLINE_SINGLE) };
+        registry.put("title", fontData);
     }
 
     private void setUpProgramLabel() {
@@ -162,8 +191,18 @@ public class SetUp {
         GridLayout layout = new GridLayout();
         layout.numColumns = NUM_COLS_COMPOSITE;
         mainInterface.setLayout(layout);
-        GridData gridData = new GridData(GridData.FILL_VERTICAL);
+        GridData gridData = new GridData(GridData.FILL_BOTH);
         mainInterface.setLayoutData(gridData);
+
+        tabFolder = new TabFolder(mainInterface, SWT.BORDER);
+        tabFolder.setLayoutData(new GridData(GridData.FILL_BOTH));
+        taskTable = new TabItem(tabFolder, SWT.BORDER);
+        taskTable.setText("Tasks");
+        setUpTaskTable();
+        dateTable = new TabItem(tabFolder, SWT.NONE);
+        dateTable.setText("Blocked Dates");
+        setUpDateTable();
+
     }
 
     private void setUpSidePane() {
@@ -171,13 +210,20 @@ public class SetUp {
         GridLayout sidePaneLayout = new GridLayout();
         sidePaneLayout.numColumns = 1;
         sidePane.setLayout(sidePaneLayout);
-        sidePane.setLayoutData(new GridData(GridData.FILL_BOTH));
+        sidePane.setLayoutData(new GridData(GridData.FILL_VERTICAL));
         sidePane.setSize(MIN_WIDTH_SIDE_PANE, MIN_HEIGHT_SIDE_PANE);
     }
 
+    private void setUpFeedbackAndInput() {
+        feedbackAndInput = new Composite(this.shell, SWT.NONE);
+        GridLayout layout = new GridLayout();
+        layout.numColumns = NUM_COLS_COMPOSITE;
+        feedbackAndInput.setLayout(layout);
+        GridData gridData = new GridData(GridData.FILL_BOTH);
+        feedbackAndInput.setLayoutData(gridData);
+    }
+
     private void setUpWidgets() {
-        formatRegistry();
-        setUpTable();
         setUpCommandLine();
         setUpFeedBack();
         setUpUpcomingTaskList();
@@ -185,32 +231,19 @@ public class SetUp {
         setUpDate();
     }
 
-    private void formatRegistry() {
+    private void setUpTaskTable() {
 
-        this.registry = new FontRegistry(shell.getDisplay());
-        FontData font = new FontData("New Courier", 11, SWT.NORMAL);
-        FontData[] fontData = new FontData[] { font };
-        registry.put("type box", fontData);
-        fontData = new FontData[] { new FontData("Arial", 9, SWT.NORMAL) };
-        registry.put("feedback", fontData);
-        fontData = new FontData[] { new FontData("Times New Roman", 10,
-                SWT.NORMAL) };
-        registry.put("list headers", fontData);
-        fontData = new FontData[] { new FontData("Arial", 9,
-                SWT.BOLD | SWT.UNDERLINE_SINGLE) };
-        registry.put("title", fontData);
-    }
-
-    private void setUpTable() {
-        StyledText tableTitle = new StyledText(mainInterface, SWT.READ_ONLY);
+        StyledText tableTitle = new StyledText(tabFolder, SWT.READ_ONLY);
         tableTitle.setText("Results:");
         tableTitle.setEnabled(false);
         tableTitle.setFont(registry.get("title"));
 
-        tableViewer = new TableViewer(mainInterface, SWT.MULTI | SWT.BORDER);
+        tableViewer = new TableViewer(tabFolder, SWT.MULTI | SWT.BORDER);
+
         tableViewer.setContentProvider(new ArrayContentProvider());
         tableViewer.setLabelProvider(new LabelProvider());
-        setUpTableColumns();
+        setUpTaskTableColumns();
+
         Table table = tableViewer.getTable();
         table.setLinesVisible(true);
         table.setHeaderVisible(true);
@@ -221,11 +254,103 @@ public class SetUp {
         // table.setBackgroundImage(tableBackground);
         Color white = shell.getDisplay().getSystemColor(SWT.COLOR_WHITE);
         table.setBackground(white);
+
+        taskTable.setControl(tableViewer.getTable());
+
     }
 
     // to refactor method
-    private void setUpTableColumns() {
+    private void setUpTaskTableColumns() {
 
+        TableViewerColumn column = setColumnHeader(HEADER_DATE_START_DATE,
+                                                   COL_WIDTH);
+        column.setLabelProvider(new ColumnLabelProvider() {
+            @Override
+            public String getText(Object element) {
+
+                BlockDate date = (BlockDate) element;
+                assert (date != null);
+                String startDate = date.getStartDate();
+                if (startDate == null) {
+                    return CELL_EMPTY;
+                }
+                return startDate;
+            }
+        });
+        column = setColumnHeader(HEADER_DATE_START_TIME, COL_WIDTH);
+        column.setLabelProvider(new ColumnLabelProvider() {
+            @Override
+            public String getText(Object element) {
+                BlockDate date = (BlockDate) element;
+                assert (date != null);
+                String startTime = date.getStartTime();
+                if (startTime == null) {
+                    return CELL_EMPTY;
+                }
+                return startTime;
+            }
+        });
+
+        column = setColumnHeader(HEADER_DATE_END_DATE, COL_WIDTH);
+        column.setLabelProvider(new ColumnLabelProvider() {
+            @Override
+            public String getText(Object element) {
+                BlockDate date = (BlockDate) element;
+                assert (date != null);
+                String endDate = date.getEndDate();
+                if (endDate == null) {
+                    return CELL_EMPTY;
+                }
+                return endDate;
+            }
+        });
+
+        column = setColumnHeader(HEADER_DATE_END_TIME, COL_WIDTH);
+        column.setLabelProvider(new ColumnLabelProvider() {
+            @Override
+            public String getText(Object element) {
+                BlockDate date = (BlockDate) element;
+                assert (date != null);
+                String endTime = date.getEndTime();
+                if (endTime == null) {
+                    return CELL_EMPTY;
+                }
+                return endTime;
+            }
+        });
+
+        Table table = tableViewer.getTable();
+        table.setLayoutData(new GridData(GridData.FILL_BOTH));
+    }
+
+    private void setUpDateTable() {
+        StyledText tableTitle = new StyledText(tabFolder, SWT.READ_ONLY);
+        tableTitle.setText("Dates Blocked:");
+        tableTitle.setEnabled(false);
+        tableTitle.setFont(registry.get("title"));
+
+        tableViewer = new TableViewer(tabFolder, SWT.MULTI | SWT.BORDER);
+
+        tableViewer.setContentProvider(new ArrayContentProvider());
+        tableViewer.setLabelProvider(new LabelProvider());
+        setUpDateTableColumns();
+
+        Table table = tableViewer.getTable();
+        table.setLinesVisible(true);
+        table.setHeaderVisible(true);
+        table.setEnabled(true);
+        // Image tableBackground = new Image(shell.getDisplay(),
+        // ".\\images\\resultbg.png");
+
+        // table.setBackgroundImage(tableBackground);
+        Color white = shell.getDisplay().getSystemColor(SWT.COLOR_WHITE);
+        table.setBackground(white);
+
+        dateTable.setControl(tableViewer.getTable());
+
+    }
+
+    private void setUpDateTableColumns() {
         TableViewerColumn column = setColumnHeader(HEADER_NAME_ID, COL_WIDTH_ID);
         column.setLabelProvider(new ColumnLabelProvider() {
             @Override
@@ -246,7 +371,7 @@ public class SetUp {
                 String name = task.getName();
                 assert (task != null);
                 if (name == null || name.isEmpty() || name.equals("null")) {
-                    return CELL_NAME_EMPTY;
+                    return "";
                 }
                 return task.getName();
             }
@@ -335,6 +460,7 @@ public class SetUp {
 
         Table table = tableViewer.getTable();
         table.setLayoutData(new GridData(GridData.FILL_BOTH));
+
     }
 
     private TableViewerColumn setColumnHeader(String headerName, int colWidth) {
@@ -349,7 +475,7 @@ public class SetUp {
     }
 
     private void setUpFeedBack() {
-        feedback = new StyledText(mainInterface, SWT.MULTI);
+        feedback = new StyledText(feedbackAndInput, SWT.MULTI);
         feedback.setText("");
         GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
         feedback.setLayoutData(gridData);
@@ -360,7 +486,7 @@ public class SetUp {
     }
 
     private void setUpCommandLine() {
-        commandLine = new Text(mainInterface, SWT.SINGLE | SWT.BORDER_DOT);
+        commandLine = new Text(feedbackAndInput, SWT.SINGLE | SWT.BORDER_DOT);
         GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
         commandLine.setLayoutData(gridData);
         commandLine.setText(MESSAGE_TYPE_HERE);
@@ -390,7 +516,6 @@ public class SetUp {
         upcomingTasksList.setBackground(white);
         upcomingTasksList.setEnabled(true);
         upcomingTasksList.setFont(registry.get("list headers"));
-
     }
 
     private void setUpFloatingTaskList() {
@@ -420,6 +545,5 @@ public class SetUp {
         todaysDate.setFont(registry.get("list headers"));
         todaysDate.setText("today's date");
 
-        todaysDate.setEnabled(false);
     }
 }

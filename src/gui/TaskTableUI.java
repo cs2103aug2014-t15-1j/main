@@ -14,13 +14,8 @@ import database.Task;
  */
 public class TaskTableUI {
 
-    public TaskTableUI(@SuppressWarnings("rawtypes") List list,
-            boolean isDateType) {
+    public TaskTableUI(List<Task> list) {
 
-        if (isDateType) {
-            showBlockDates();
-            return;
-        }
         update();
         if (list != null) {
             update(list);
@@ -29,11 +24,6 @@ public class TaskTableUI {
 
     public TaskTableUI() {
         update();
-    }
-
-    private void showBlockDates() {
-        TableViewer table = getTable();
-
     }
 
     private void update(List<Task> tasks) {
