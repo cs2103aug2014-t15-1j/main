@@ -123,6 +123,21 @@ public class Task implements Comparable<Task> {
     }
 
     /**
+     * Stores searchable Task attributes in a single String. To be processed by
+     * a search function matching search terms.
+     * 
+     * @return String containing searchable Task attributes.
+     */
+    public String getSummary() {
+        String summary = name + " ";
+        summary += due + " ";
+        summary += start + " ";
+        summary += end + " ";
+        summary += concatanateTags();
+        return summary;
+    }
+
+    /**
      * Concatenates list of tags into a single String.
      * 
      * @return Concatenated String of tags.
@@ -246,4 +261,23 @@ public class Task implements Comparable<Task> {
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;
     }
+    /*
+     * Legacy code from YX public Task(Command cmd) { this.cmdType =
+     * cmd.getType(); this.details = ; this.numTasks++; }
+     * 
+     * public Command getCommand() { return this.cmd; }
+     * 
+     * public boolean delete() { numTasks--; // Do some deleting return true; }
+     * 
+     * public Map<String, String> getDetails() { return this.details; }
+     * 
+     * @Override public String toString() { String output = ""; for
+     * (Map.Entry<String, String> entry : details.entrySet()) { output +=
+     * entry.getKey() + ": " + entry.getValue() + "\n"; }
+     * 
+     * if (output.length() > 1) { output = output.substring(0, output.length() -
+     * 1); }
+     * 
+     * return output; }
+     */
 }
