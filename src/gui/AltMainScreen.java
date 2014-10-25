@@ -31,7 +31,7 @@ public class AltMainScreen {
         
         Display display = new Display();
         Image bg = new Image(display, ".\\images\\mainbg.png");
-        Shell shell = new Shell(display, SWT.NO_TRIM | SWT.ON_TOP);
+        final Shell shell = new Shell(display, SWT.NO_TRIM | SWT.ON_TOP);
         shell.setBackgroundImage(bg);
         shell.setBackgroundMode(SWT.INHERIT_FORCE);
         
