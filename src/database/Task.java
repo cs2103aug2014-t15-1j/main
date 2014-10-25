@@ -89,23 +89,8 @@ public class Task implements Comparable<Task> {
     }
 
     /**
-     * Compares this Task object with the specified Task object for order.
-     * Returns a negative integer, zero, or a positive integer if this object's
-     * due date is less earlier than, equal to, or later than that of the
-     * specified object. Implementation is dependent on DateTime's compareTo().
-     * 
-     * @return A negative integer, zero, or a positive integer if this object's
-     *         due date is less earlier than, equal to, or later than that of
-     *         the specified object.
-     */
-    @Override
-    public int compareTo(Task otherTask) {
-        return this.due.compareTo(otherTask.due);
-    }
-
-    /**
      * Converts Task object to a single String to write to system file.
-     * Parameter tags are added to aid in parsing text when reading from file.
+     * Parameter text are added to aid in parsing text when reading from file.
      * 
      * @return String to write to system file for storage.
      */
@@ -135,6 +120,109 @@ public class Task implements Comparable<Task> {
         summary += end + " ";
         summary += concatanateTags();
         return summary;
+    }
+
+    /**
+     * Compares this Task object with the specified Task object for order.
+     * Returns a negative integer, zero, or a positive integer if this object's
+     * due date is less earlier than, equal to, or later than that of the
+     * specified object. Implementation is dependent on DateTime's compareTo().
+     * 
+     * @return A negative integer, zero, or a positive integer if this object's
+     *         due date is less earlier than, equal to, or later than that of
+     *         the specified object.
+     */
+    @Override
+    public int compareTo(Task otherTask) {
+        return this.due.compareTo(otherTask.due);
+    }
+
+    /**
+     * Indicates whether some other object is "equal to" this one.
+     * 
+     * The equals method implements an equivalence relation on non-null object
+     * references:
+     * <ul>
+     * <li>It is reflexive: for any non-null reference value x, x.equals(x)
+     * should return true.
+     * <li>It is symmetric: for any non-null reference values x and y,
+     * x.equals(y) should return true if and only if y.equals(x) returns true.
+     * <li>It is transitive: for any non-null reference values x, y, and z, if
+     * x.equals(y) returns true and y.equals(z) returns true, then x.equals(z)
+     * should return true.
+     * <li>It is consistent: for any non-null reference values x and y, multiple
+     * invocations of x.equals(y) consistently return true or consistently
+     * return false, provided no information used in equals comparisons on the
+     * objects is modified.
+     * <li>For any non-null reference value x, x.equals(null) should return
+     * false.
+     * </ul>
+     * 
+     * The equals method for class Object implements the most discriminating
+     * possible equivalence relation on objects; that is, for any non-null
+     * reference values x and y, this method returns true if and only if x and y
+     * refer to the same object (x == y has the value true).
+     * 
+     * Note that it is generally necessary to override the hashCode method
+     * whenever this method is overridden, so as to maintain the general
+     * contract for the hashCode method, which states that equal objects must
+     * have equal hash codes.
+     * 
+     * 
+     * @param obj
+     *            The reference object with which to compare.
+     * 
+     * @returns True if this object is the same as the obj argument; false
+     *          otherwise.
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Task)) {
+            return false;
+        } else if (obj == this) {
+            return true;
+        }
+
+        Task otherTask = (Task) obj;
+        return otherTask.deleted == this.deleted &&
+               otherTask.done == this.done &&
+               otherTask.name.equals(this.name) &&
+               otherTask.due.equals(this.due) &&
+               otherTask.start.equals(this.start) &&
+               otherTask.end.equals(this.end) &&
+               otherTask.tags.equals(this.tags);
+    }
+
+    /**
+     * Returns a hash code value for the object. This method is supported for
+     * the benefit of hash tables such as those provided by HashMap.
+     * 
+     * The general contract of hashCode is:
+     * <ul>
+     * <li>Whenever it is invoked on the same object more than once during an
+     * execution of a Java application, the hashCode method must consistently
+     * return the same integer, provided no information used in equals
+     * comparisons on the object is modified. This integer need not remain
+     * consistent from one execution of an application to another execution of
+     * the same application.
+     * <li>If two objects are equal according to the equals(Object) method, then
+     * calling the hashCode method on each of the two objects must produce the
+     * same integer result.
+     * <li>It is not required that if two objects are unequal according to the
+     * equals(java.lang.Object) method, then calling the hashCode method on each
+     * of the two objects must produce distinct integer results. However, the
+     * programmer should be aware that producing distinct integer results for
+     * unequal objects may improve the performance of hash tables.
+     * </ul>
+     * 
+     * As much as is reasonably practical, the hashCode method defined by class
+     * Object does return distinct integers for distinct objects.
+     * 
+     * @return A hash code value for this object.
+     */
+    @Override
+    public int hashCode() {
+        return this.toString().hashCode();
     }
 
     /**
