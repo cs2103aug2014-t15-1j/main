@@ -206,6 +206,13 @@ public class TestParser {
         cmd = Parser.parse("add S:e:N:homework staRt:E:S:eNd: 23/04/2014")
                 .toString();
         assertEquals("Add: no-spaces, mixed caps", result, cmd);
+        
+        // Add without name
+        result = "\n[[ CMD-ADD: ]]" + "\nname: null" + "\ndue: "
+                 + "\nstart: " + "\nend: 23/04/2014" + "\ntags: []";
+        cmd = Parser.parse("add staRt:E:S:eNd: 23/04/2014")
+                .toString();
+        assertEquals("Add: no name", result, cmd);
 
         System.out.println("...success!");
     }

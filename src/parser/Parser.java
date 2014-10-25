@@ -57,7 +57,7 @@ public class Parser {
 
     // ========== MAIN PARSE METHOD ==========//
 
-    public static Command parse(String input) {
+    public static Command parse(String input) throws IllegalArgumentException {
         assert (input != null);
 
         // The Parser will analyse the input word by word
@@ -463,7 +463,8 @@ public class Parser {
         for (int i = 1; i < commandParams.length; i++) {
             String currWord = commandParams[i];
             String currWordLC = currWord.toLowerCase();
-
+            
+            // TODO: case for two deletes?
             if (isAddParamName(currWord) || currWordLC.equals("delete:")) {
                 prevField = currField;
                 currField = getParamName(currWord);
