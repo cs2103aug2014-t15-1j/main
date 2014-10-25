@@ -17,7 +17,6 @@ public class CommandEdit extends Command {
     private DateTime start = new DateTime();
     private DateTime end = new DateTime();
     private String delete = "";
-    
     private List<String> tags = new ArrayList<String>();
     
     private static final String PARAM_ID = "id";

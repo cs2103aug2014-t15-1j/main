@@ -33,5 +33,6 @@ public enum CommandType {
 	UNDO,
 	REDO,
 	EXIT,
+	RESET,
 	ERROR;
 }

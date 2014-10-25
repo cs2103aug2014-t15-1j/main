@@ -120,7 +120,7 @@ public class Processor extends Observable {
 	 * @param String
      * @return Result
      */
-	public Result processInput(String input) {
+	public Result processInput(String input) throws IllegalArgumentException {
 		Command cmd = Parser.parse(input);
 		return processCommand(cmd);
 	}
@@ -164,7 +164,7 @@ public class Processor extends Observable {
 		return result;
 	}
 
-	private boolean hasModifiedTaskList(Command cmd) {
+	private boolean hasModifiedData(Command cmd) {
 	    switch (cmd.getType()) {
     	    case ADD:
             case DELETE:
@@ -185,14 +185,14 @@ public class Processor extends Observable {
      * @param cmd
      */
 	private void updateCommandHistory(Command cmd) {
-		if (hasModifiedTaskList(cmd)) {
+		if (hasModifiedData(cmd)) {
 				forwardCommandHistory.clear();
 				backwardCommandHistory.push(cmd);
 		}
 	}
 
 	private void updateUIPanelWindow(Command cmd) {
-	    if (hasModifiedTaskList(cmd)) {
+	    if (hasModifiedData(cmd)) {
 	        updateFloatingAndTimedTasks();
             setChanged();
             notifyObservers(); //Calls update of the side panel class

@@ -11,6 +11,9 @@ import database.Task;
 import java.util.ArrayList;
 import java.util.List;
 
+// Create CommandEdit
+// Compare with my Result Object
+
 public class ProcessorTest {
 	
 	public static Processor TestProcessor = Processor.getInstance();

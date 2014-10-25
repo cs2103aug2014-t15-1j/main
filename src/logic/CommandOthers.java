@@ -63,6 +63,8 @@ public class CommandOthers extends Command {
                 return executeUndo();
             case EXIT:
                 return new Result(null, true, getType(), ResultType.TASK);
+            case RESET:
+                return new Result(null, true, getType(), true, ResultType.TASK);
             default:
                 return new Result(null, false, getType(), ResultType.TASK);
         }
