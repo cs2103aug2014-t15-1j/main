@@ -313,7 +313,7 @@ public class DataFile {
             task.setEnd(end);
         }
         if (tags != null) {
-            task.addTags(tags);
+            task.setTags(tags);
         }
 
         return updateFile();

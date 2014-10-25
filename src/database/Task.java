@@ -227,7 +227,8 @@ public class Task implements Comparable<Task> {
      * @param tags
      *            List of tags to append to existing list of tags.
      */
-    public void addTags(List<String> tags) {
+    public void setTags(List<String> tags) {
+        this.tags.clear();
         this.tags.addAll(tags);
     }
 

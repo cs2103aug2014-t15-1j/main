@@ -4,3 +4,4 @@
 *.log
 Processor.log
 Processor.log
+*.lck
