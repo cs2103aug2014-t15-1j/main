@@ -10,11 +10,11 @@ import database.Task;
 public class CommandRestore extends Command {
 
     // Restore types [get("rangeType"); returns "all" | "id"]
-    protected String rangeType;
+    protected String rangeType = "";
 
     // Restore type data [get("id"); returns string]
-    protected String id;
-    protected CommandDelete cmdDelete;
+    protected String id = "";
+    protected CommandDelete cmdDelete = null;
     
     public CommandRestore(List<TaskParam> content) {
         this(content, false);

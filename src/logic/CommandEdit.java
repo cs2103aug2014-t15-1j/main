@@ -11,12 +11,12 @@ import database.Task;
 
 public class CommandEdit extends Command {
     
-    private String id;
-    private String name;
+    private String id = "";
+    private String name = "";
     private DateTime due = new DateTime();
     private DateTime start = new DateTime();
     private DateTime end = new DateTime();
-    private String delete;
+    private String delete = "";
     
     private List<String> tags = new ArrayList<String>();
     
@@ -138,7 +138,7 @@ public class CommandEdit extends Command {
             if (delete != null) {
                 switch (delete) {
                     case "name":
-                        name = "";
+                        name = null;
                         break;
                     case "due":
                         due = null;

@@ -11,14 +11,14 @@ import database.Task;
 public class CommandTodo extends Command {
 
     // Todo types [get("rangeType"); returns "last" | "id"]
-    private String rangeType;
+    private String rangeType = "";
 
     // "id" data [get("id"); returns string]
-    private String id;
+    private String id = "";
 
-    private DateTime dateTime;
+    private DateTime dateTime = new DateTime();
     
-    private CommandDone cmdDone;
+    private CommandDone cmdDone = null;
 
     public CommandTodo(List<TaskParam> content) {
         this(content, false);

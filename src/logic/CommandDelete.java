@@ -20,12 +20,12 @@ import database.Task;
 public class CommandDelete extends Command {
 
     // Delete types
-    private String rangeType;
+    private String rangeType = "";
 
     // Delete type data [get("id")]
-    private String id;
+    private String id = "";
 
-    private CommandRestore cmdRestore;
+    private CommandRestore cmdRestore = null;
     
     public CommandDelete(List<TaskParam> content) {
         this(content, false);

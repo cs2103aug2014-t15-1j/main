@@ -12,10 +12,10 @@ import database.Task;
 public class CommandDisplay extends Command {
 
     // Restore types [get("rangeType"); returns "all" | "id" | "done"]
-    private String rangeType;
+    private String rangeType = "";
 
     // Restore type data [get("id"); returns string]
-    private String id;
+    private String id = "";
 
     public CommandDisplay(List<TaskParam> content) {
         if (content.isEmpty()) {

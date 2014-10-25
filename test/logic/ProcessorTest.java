@@ -145,6 +145,9 @@ public class ProcessorTest {
         Result r14 =TestProcessor.processInput("undo");
         Result r15 = TestProcessor.processInput("redo");
         assertTrue(equalsObj(r15.getTasks().get(0), testTask11));
+        
+        //Test Edit of Delete:
+        
 	}
 
 	@Test

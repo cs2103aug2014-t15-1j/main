@@ -12,7 +12,7 @@ import database.Task;
 
 public class CommandAdd extends Command {
     
-    private String name;
+    private String name = "";
     private DateTime due = new DateTime();
     private DateTime start = new DateTime();
     private DateTime end = new DateTime();

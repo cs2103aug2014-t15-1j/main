@@ -12,13 +12,13 @@ import database.Task;
 public class CommandDone extends Command {
 
     // Done types [get("rangeType"); returns "all" | "id" | "date"]
-    private String rangeType;
+    private String rangeType = "";
 
-    private DateTime dateTime;
+    private DateTime dateTime = new DateTime();
     // Done data [get("id"), get("date"); returns string]
-    private String id;
+    private String id = "";
 
-    private CommandTodo cmdTodo;
+    private CommandTodo cmdTodo = null;
     
     public CommandDone(List<TaskParam> content) {
         this(content, false);

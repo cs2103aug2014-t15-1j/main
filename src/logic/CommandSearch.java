@@ -14,7 +14,7 @@ public class CommandSearch extends Command {
     // TODO: ASSUME PARSER IS AN IDIOT
     private List<String> tags = new ArrayList<String>();
     private List<String> keywords = new ArrayList<String>();
-    private String date;
+    private String date = "";
 
     public CommandSearch(List<TaskParam> content) {
         assert (!content.isEmpty());

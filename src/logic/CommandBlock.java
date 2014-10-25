@@ -14,8 +14,8 @@ public class CommandBlock extends Command {
 
     // Block dates range [get("start"), get("end"); returns date]
     // If it's only 1 day, start = end
-    private DateTime start;
-    private DateTime end;
+    private DateTime start = new DateTime();
+    private DateTime end = new DateTime();
     
     public CommandBlock(List<TaskParam> content) {
         this(content, false);
