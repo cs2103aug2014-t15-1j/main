@@ -16,6 +16,10 @@ public class ResultGenerator {
     }
 
     public String sendInput(String input) {
+        if (input.trim().isEmpty()) {
+            return "";
+        }
+
         Result result = processor.processInput(input);
         assert (result != null);
         return processResult(result, input);
@@ -121,18 +125,23 @@ public class ResultGenerator {
                 cheat();
                 return feedbackMessage(outputs, "Edited %1$s");
             case DISPLAY:
-                updateInterface(outputs, false);
+
+                if (result.needsConfirmation()) {
+                    return "This will erase all data, PERMANENTLY.  Key 'y' to continue or 'n' to abort";
+                }
+                cheat();
                 if (outputs.size() == 0) {
                     return "No tasks to show.";
                 }
                 return feedbackMessageMultiResults(outputs,
                                                    "%1$s task(s) found.");
-                // case :
-                // cheat();
-                // if (result.needsConfirmation()) {
-                // return
-                // "This will erase all data, PERMANENTLY.  Key 'y' to continue or 'n' to abort";
-                // }
+                /**
+                 * case SHOW: cheat(); if (result.needsConfirmation()) { return
+                 * "This will erase all data, PERMANENTLY.  Key 'y' to continue or 'n' to abort"
+                 * ; } updateInterface(outputs, false); if (outputs.size() == 0)
+                 * { return "No tasks to show."; } return
+                 * feedbackMessageMultiResults(outputs, "%1$s task(s) found.");
+                 **/
             case SEARCH:
                 updateInterface(outputs, false);
                 return feedbackMessageMultiResults(outputs,

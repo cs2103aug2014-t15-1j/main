@@ -64,7 +64,7 @@ public class SetUp {
     private static final int COL_WIDTH = 175;
     private static final int COL_WIDTH_ID = 50;
 
-    private static SetUp setUp;
+    protected static SetUp setUp;
     private Shell shell;
     private Composite mainInterface;
     private Composite sidePane;
@@ -203,6 +203,8 @@ public class SetUp {
         mainInterface.setLayout(layout);
         GridData gridData = new GridData(GridData.FILL_BOTH);
         mainInterface.setLayoutData(gridData);
+        Color white = shell.getDisplay().getSystemColor(SWT.COLOR_WHITE);
+        mainInterface.setBackground(white);
 
         tabFolder = new TabFolder(mainInterface, SWT.BORDER);
         tabFolder.setLayoutData(new GridData(GridData.FILL_BOTH));
@@ -260,7 +262,7 @@ public class SetUp {
         Table table = tableViewer.getTable();
         table.setLinesVisible(true);
         table.setHeaderVisible(true);
-        table.setEnabled(false);
+        table.setEnabled(true);
 
     }
 
@@ -273,33 +275,34 @@ public class SetUp {
             @Override
             public String getText(Object element) {
 
-                if (element instanceof Task) {
-                    return "";
+                if (element instanceof BlockDate) {
+
+                    BlockDate date = (BlockDate) element;
+                    assert (date != null);
+                    String startDate = date.getStartDate();
+                    if (startDate == null) {
+                        return CELL_EMPTY;
+                    }
+                    return startDate;
                 }
-                BlockDate date = (BlockDate) element;
-                assert (date != null);
-                String startDate = date.getStartDate();
-                if (startDate == null) {
-                    return CELL_EMPTY;
-                }
-                return startDate;
+                return "";
             }
         });
         column = setColumnHeader(HEADER_DATE_START_TIME, COL_WIDTH);
         column.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
-                if (element instanceof Task) {
-                    return "";
-                }
+                if (element instanceof BlockDate) {
 
-                BlockDate date = (BlockDate) element;
-                assert (date != null);
-                String startTime = date.getStartTime();
-                if (startTime == null) {
-                    return CELL_EMPTY;
+                    BlockDate date = (BlockDate) element;
+                    assert (date != null);
+                    String startTime = date.getStartTime();
+                    if (startTime == null) {
+                        return CELL_EMPTY;
+                    }
+                    return startTime;
                 }
-                return startTime;
+                return "";
             }
         });
 
@@ -307,17 +310,17 @@ public class SetUp {
         column.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
-                if (element instanceof Task) {
-                    return "";
-                }
 
-                BlockDate date = (BlockDate) element;
-                assert (date != null);
-                String endDate = date.getEndDate();
-                if (endDate == null) {
-                    return CELL_EMPTY;
+                if (element instanceof BlockDate) {
+                    BlockDate date = (BlockDate) element;
+                    assert (date != null);
+                    String endDate = date.getEndDate();
+                    if (endDate == null) {
+                        return CELL_EMPTY;
+                    }
+                    return endDate;
                 }
-                return endDate;
+                return "";
             }
         });
 
@@ -325,17 +328,17 @@ public class SetUp {
         column.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
-                if (element instanceof Task) {
-                    return "";
-                }
+                if (element instanceof BlockDate) {
 
-                BlockDate date = (BlockDate) element;
-                assert (date != null);
-                String endTime = date.getEndTime();
-                if (endTime == null) {
-                    return CELL_EMPTY;
+                    BlockDate date = (BlockDate) element;
+                    assert (date != null);
+                    String endTime = date.getEndTime();
+                    if (endTime == null) {
+                        return CELL_EMPTY;
+                    }
+                    return endTime;
                 }
-                return endTime;
+                return "";
             }
         });
 
@@ -359,7 +362,7 @@ public class SetUp {
         Table table = tableViewer.getTable();
         table.setLinesVisible(true);
         table.setHeaderVisible(true);
-        table.setEnabled(false);
+        table.setEnabled(true);
     }
 
     private void setUpTaskTableColumns() {
@@ -367,25 +370,30 @@ public class SetUp {
         column.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
-
-                Task task = (Task) element;
-                assert (task != null);
-                String id = task.getId() + "";
-                return id;
+                if (element instanceof Task) {
+                    Task task = (Task) element;
+                    assert (task != null);
+                    String id = task.getId() + "";
+                    return id;
+                }
+                return "";
             }
         });
         column = setColumnHeader(HEADER_NAME_NAME, COL_WIDTH);
         column.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
-                // set Name: max 40 characters
-                Task task = (Task) element;
-                String name = task.getName();
-                assert (task != null);
-                if (name == null || name.isEmpty() || name.equals("null")) {
-                    return "";
+                if (element instanceof Task) {
+                    // set Name: max 40 characters
+                    Task task = (Task) element;
+                    String name = task.getName();
+                    assert (task != null);
+                    if (name == null || name.isEmpty() || name.equals("null")) {
+                        return "";
+                    }
+                    return task.getName();
                 }
-                return task.getName();
+                return "";
             }
         });
 
@@ -393,14 +401,17 @@ public class SetUp {
         column.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
-                Task task = (Task) element;
-                assert (task != null);
-                DateTime Due = task.getDue();
+                if (element instanceof Task) {
+                    Task task = (Task) element;
+                    assert (task != null);
+                    DateTime Due = task.getDue();
 
-                if (Due == null) {
-                    return CELL_EMPTY;
+                    if (Due == null) {
+                        return CELL_EMPTY;
+                    }
+                    return Due.toString();
                 }
-                return Due.toString();
+                return "";
             }
         });
 
@@ -408,14 +419,17 @@ public class SetUp {
         column.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
-                Task task = (Task) element;
-                assert (task != null);
-                DateTime Start = task.getStart();
-                if (Start == null) {
-                    return CELL_EMPTY;
-                }
+                if (element instanceof Task) {
+                    Task task = (Task) element;
+                    assert (task != null);
+                    DateTime Start = task.getStart();
+                    if (Start == null) {
+                        return CELL_EMPTY;
+                    }
 
-                return Start.toString();
+                    return Start.toString();
+                }
+                return "";
             }
         });
 
@@ -423,13 +437,16 @@ public class SetUp {
         column.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
-                Task task = (Task) element;
-                assert (task != null);
-                DateTime End = task.getEnd();
-                if (End == null) {
-                    return CELL_EMPTY;
+                if (element instanceof Task) {
+                    Task task = (Task) element;
+                    assert (task != null);
+                    DateTime End = task.getEnd();
+                    if (End == null) {
+                        return CELL_EMPTY;
+                    }
+                    return End.toString();
                 }
-                return End.toString();
+                return "";
             }
         });
 
@@ -437,36 +454,43 @@ public class SetUp {
         column.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
-                Task task = (Task) element;
-                assert (task != null);
-                List<String> tags = task.getTags();
-                String tag = "";
+                if (element instanceof Task) {
+                    Task task = (Task) element;
+                    assert (task != null);
+                    List<String> tags = task.getTags();
+                    String tag = "";
 
-                if (tags == null || tags.isEmpty()) {
-                    return CELL_EMPTY;
+                    if (tags == null || tags.isEmpty()) {
+                        return CELL_EMPTY;
+                    }
+                    for (int index = 0; index < tags.size(); index++) {
+                        tag = tag + tags.get(index);
+                    }
+                    return tag;
                 }
-                for (int index = 0; index < tags.size(); index++) {
-                    tag = tag + tags.get(index);
-                }
-                return tag;
+                return "";
             }
+
         });
 
         column = setColumnHeader(HEADER_NAME_STATUS, COL_WIDTH);
         column.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
-                Task task = (Task) element;
-                assert (task != null);
-                String Status;
-                if (task.isDeleted()) {
-                    Status = PARA_STATUS_DELETED;
-                } else if (task.isDone()) {
-                    Status = PARA_STATUS_DONE;
-                } else {
-                    Status = PARA_STATUS_TODO;
+                if (element instanceof Task) {
+                    Task task = (Task) element;
+                    assert (task != null);
+                    String Status;
+                    if (task.isDeleted()) {
+                        Status = PARA_STATUS_DELETED;
+                    } else if (task.isDone()) {
+                        Status = PARA_STATUS_DONE;
+                    } else {
+                        Status = PARA_STATUS_TODO;
+                    }
+                    return Status;
                 }
-                return Status;
+                return "";
             }
         });
 
