@@ -1,5 +1,6 @@
 package gui;
 
+import java.util.Date;
 import java.util.List;
 
 import org.eclipse.jface.resource.FontRegistry;
@@ -253,7 +254,8 @@ public class SetUp {
         tableTitle.setEnabled(false);
         tableTitle.setFont(registry.get("title"));
 
-        dateViewer = new TableViewer(tabFolder, SWT.MULTI | SWT.BORDER);
+        dateViewer = new TableViewer(tabFolder, SWT.MULTI | SWT.BORDER |
+                                                SWT.FULL_SELECTION);
 
         dateViewer.setContentProvider(new ArrayContentProvider());
         dateViewer.setLabelProvider(new LabelProvider());
@@ -353,7 +355,8 @@ public class SetUp {
         tableTitle.setEnabled(false);
         tableTitle.setFont(registry.get("title"));
 
-        tableViewer = new TableViewer(tabFolder, SWT.MULTI | SWT.BORDER);
+        tableViewer = new TableViewer(tabFolder, SWT.MULTI | SWT.BORDER |
+                                                 SWT.FULL_SELECTION);
 
         tableViewer.setContentProvider(new ArrayContentProvider());
         tableViewer.setLabelProvider(new LabelProvider());
@@ -579,7 +582,11 @@ public class SetUp {
         todaysDate = new StyledText(sidePane, SWT.READ_ONLY | SWT.SINGLE |
                                               SWT.RIGHT_TO_LEFT);
         todaysDate.setFont(registry.get("list headers"));
-        todaysDate.setText("today's date");
+
+        // get date
+        Date date = new Date();
+
+        todaysDate.setText(date.toString());
 
     }
 }

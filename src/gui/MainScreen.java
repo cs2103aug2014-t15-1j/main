@@ -67,7 +67,6 @@ public class MainScreen {
             readUserInput(setUpScreen);
         } catch (Exception e) {
             String message = e.getMessage();
-            System.out.println(message);
             setUpScreen.getFeedBack().setText(message);
         }
         shell.pack();
@@ -135,6 +134,8 @@ public class MainScreen {
                     commandLine.setText("");
                     askConfrim = false;
 
+                } else if (input.trim().isEmpty()) {
+                    // do nothing;
                 } else {
                     // try{
                     output = resultGenerator.sendInput(input);
