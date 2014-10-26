@@ -68,6 +68,7 @@ public class MainScreen {
         } catch (Exception e) {
             String message = e.getMessage();
             setUpScreen.getFeedBack().setText(message);
+            readUserInput(setUpScreen);
         }
         shell.pack();
         shell.open();
@@ -137,25 +138,27 @@ public class MainScreen {
                 } else if (input.trim().isEmpty()) {
                     // do nothing;
                 } else {
-                    // try{
-                    output = resultGenerator.sendInput(input);
+                    try {
+                        output = resultGenerator.sendInput(input);
 
-                    // output = commandLine.getText();
-                    if (output.equals(CODE_EXIT)) {
-                        exitProgram();
-                    } else if (output.equals(ASK_CONFIRM_DELETE)) {
-                        feedback.setText(ASK_CONFIRM_DELETE);
-                        askConfrim = true;
-                        commandLine.setText("");
+                        // output = commandLine.getText();
+                        if (output.equals(CODE_EXIT)) {
+                            exitProgram();
+                        } else if (output.equals(ASK_CONFIRM_DELETE)) {
+                            feedback.setText(ASK_CONFIRM_DELETE);
+                            askConfrim = true;
+                            commandLine.setText("");
 
-                    } else {
-                        feedback.setText(output);
-                        commandLine.setText("");
+                        } else {
+                            feedback.setText(output);
+                            commandLine.setText("");
 
-                        // }
-                        // }catch (Exception error) {
-                        // error.getMessage();
-                        // System.out.println("I am an exception error in main screen.java");
+                        }
+                    } catch (Exception error) {
+
+                        String message = error.getMessage();
+                        feedback.setText(message);
+                        // readUserInput(setUpScreen);
                     }
                 }
             }

@@ -1,5 +1,6 @@
 package gui;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -62,8 +63,12 @@ public class SetUp {
 
     private static final String CELL_EMPTY = "empty";
 
+    private static final String WELCOME_MESSAGE = "Welcome.";
+
     private static final int COL_WIDTH = 175;
     private static final int COL_WIDTH_ID = 50;
+    protected static final int TEXT_MARGIN = 3;
+    protected static final int COL_COUNT = 6;
 
     protected static SetUp setUp;
     private Shell shell;
@@ -163,8 +168,8 @@ public class SetUp {
         formatRegistry();
         setUpProgramLabel();
         setUpMainInterface();
+        setUpTableComposite();
         setUpSidePane();
-        setUpFeedbackAndInput();
     }
 
     private void formatRegistry() {
@@ -204,22 +209,6 @@ public class SetUp {
         mainInterface.setLayout(layout);
         GridData gridData = new GridData(GridData.FILL_BOTH);
         mainInterface.setLayoutData(gridData);
-        Color white = shell.getDisplay().getSystemColor(SWT.COLOR_WHITE);
-        mainInterface.setBackground(white);
-
-        tabFolder = new TabFolder(mainInterface, SWT.BORDER);
-        tabFolder.setLayoutData(new GridData(GridData.FILL_BOTH));
-
-        taskTable = new TabItem(tabFolder, SWT.BORDER);
-        taskTable.setText("Tasks");
-        setUpTaskTable();
-        taskTable.setControl(tableViewer.getTable());
-
-        dateTable = new TabItem(tabFolder, SWT.NONE);
-        dateTable.setText("Blocked Dates");
-        setUpDateTable();
-        dateTable.setControl(dateViewer.getTable());
-
     }
 
     private void setUpSidePane() {
@@ -231,13 +220,26 @@ public class SetUp {
         sidePane.setSize(MIN_WIDTH_SIDE_PANE, MIN_HEIGHT_SIDE_PANE);
     }
 
-    private void setUpFeedbackAndInput() {
-        feedbackAndInput = new Composite(this.shell, SWT.NONE);
+    private void setUpTableComposite() {
+        Composite tableComp = new Composite(this.mainInterface, SWT.NONE);
         GridLayout layout = new GridLayout();
-        layout.numColumns = NUM_COLS_COMPOSITE;
-        feedbackAndInput.setLayout(layout);
-        GridData gridData = new GridData(GridData.FILL_BOTH);
-        feedbackAndInput.setLayoutData(gridData);
+        tableComp.setLayout(layout);
+        tableComp.setLayoutData(new GridData(GridData.FILL_BOTH));
+        Color white = shell.getDisplay().getSystemColor(SWT.COLOR_WHITE);
+        tableComp.setBackground(white);
+
+        tabFolder = new TabFolder(tableComp, SWT.BORDER);
+        tabFolder.setLayoutData(new GridData(GridData.FILL_BOTH));
+
+        taskTable = new TabItem(tabFolder, SWT.BORDER);
+        taskTable.setText("Tasks");
+        setUpTaskTable();
+        taskTable.setControl(tableViewer.getTable());
+
+        dateTable = new TabItem(tabFolder, SWT.NONE);
+        dateTable.setText("Blocked Dates");
+        setUpDateTable();
+        dateTable.setControl(dateViewer.getTable());
     }
 
     private void setUpWidgets() {
@@ -272,7 +274,7 @@ public class SetUp {
     private void setUpDateTableColumns() {
 
         TableViewerColumn column = setColumnHeader(HEADER_DATE_START_DATE,
-                                                   COL_WIDTH);
+                                                   COL_WIDTH, dateViewer);
         column.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
@@ -290,7 +292,8 @@ public class SetUp {
                 return "";
             }
         });
-        column = setColumnHeader(HEADER_DATE_START_TIME, COL_WIDTH);
+
+        column = setColumnHeader(HEADER_DATE_START_TIME, COL_WIDTH, dateViewer);
         column.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
@@ -308,7 +311,7 @@ public class SetUp {
             }
         });
 
-        column = setColumnHeader(HEADER_DATE_END_DATE, COL_WIDTH);
+        column = setColumnHeader(HEADER_DATE_END_DATE, COL_WIDTH, dateViewer);
         column.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
@@ -326,7 +329,7 @@ public class SetUp {
             }
         });
 
-        column = setColumnHeader(HEADER_DATE_END_TIME, COL_WIDTH);
+        column = setColumnHeader(HEADER_DATE_END_TIME, COL_WIDTH, dateViewer);
         column.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
@@ -369,7 +372,8 @@ public class SetUp {
     }
 
     private void setUpTaskTableColumns() {
-        TableViewerColumn column = setColumnHeader(HEADER_NAME_ID, COL_WIDTH_ID);
+        TableViewerColumn column = setColumnHeader(HEADER_NAME_ID,
+                                                   COL_WIDTH_ID, tableViewer);
         column.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
@@ -382,7 +386,7 @@ public class SetUp {
                 return "";
             }
         });
-        column = setColumnHeader(HEADER_NAME_NAME, COL_WIDTH);
+        column = setColumnHeader(HEADER_NAME_NAME, COL_WIDTH, tableViewer);
         column.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
@@ -400,7 +404,7 @@ public class SetUp {
             }
         });
 
-        column = setColumnHeader(HEADER_NAME_DUE, COL_WIDTH);
+        column = setColumnHeader(HEADER_NAME_DUE, COL_WIDTH, tableViewer);
         column.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
@@ -418,7 +422,7 @@ public class SetUp {
             }
         });
 
-        column = setColumnHeader(HEADER_NAME_START, COL_WIDTH);
+        column = setColumnHeader(HEADER_NAME_START, COL_WIDTH, tableViewer);
         column.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
@@ -436,7 +440,7 @@ public class SetUp {
             }
         });
 
-        column = setColumnHeader(HEADER_NAME_END, COL_WIDTH);
+        column = setColumnHeader(HEADER_NAME_END, COL_WIDTH, tableViewer);
         column.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
@@ -453,7 +457,7 @@ public class SetUp {
             }
         });
 
-        column = setColumnHeader(HEADER_NAME_TAGS, COL_WIDTH);
+        column = setColumnHeader(HEADER_NAME_TAGS, COL_WIDTH, tableViewer);
         column.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
@@ -476,7 +480,7 @@ public class SetUp {
 
         });
 
-        column = setColumnHeader(HEADER_NAME_STATUS, COL_WIDTH);
+        column = setColumnHeader(HEADER_NAME_STATUS, COL_WIDTH, tableViewer);
         column.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
@@ -499,11 +503,72 @@ public class SetUp {
 
         Table table = tableViewer.getTable();
         table.setLayoutData(new GridData(GridData.FILL_BOTH));
-
+        // setWrap(table);
     }
 
-    private TableViewerColumn setColumnHeader(String headerName, int colWidth) {
-        TableViewerColumn columnViewer = new TableViewerColumn(tableViewer,
+    // private void setWrap(Table table) {
+    // Listener listener = new Listener() {
+    // @Override
+    // public void handleEvent(Event event) {
+    // switch (event.type) {
+    // get text, get num of lines, times height by that much, print
+    // case SWT.MeasureItem: {
+    // TableItem item = (TableItem) event.item;
+    // String text = getText(item, event.index);
+    // item.setText(text);
+    // Point size = event.gc.textExtent(text);
+    // event.width = size.x / event.width + 1;
+    // event.height = size.y * 2;
+    // break;
+    // }
+    // case SWT.EraseItem: {
+    // event.detail &= ~SWT.FOREGROUND;
+    // break;
+    // }
+    // case SWT.PaintItem: {
+    // TableItem item = (TableItem) event.item;
+    // String text = item.getText(event.index);
+    // event.gc.drawText(text, event.x, event.y, true);
+    // break;
+    // }
+    // }
+    // }
+    // String getText(TableItem item, int column) {
+    // String text = item.getText(column);
+    // if (column != 0) {
+    // int index = table.indexOf(item);
+    // int size = text.length();
+    // String start = "";
+    // String end = text;
+    // int startIndex = 6;
+    // int endIndex = size - 1;
+    // while (end.length() > 5) {
+    // start = start + end.substring(0, 5) + "\nnew line";
+    // end = end.substring(startIndex, endIndex);
+    // endIndex = end.length() - 1;
+    // }
+    // text = end;
+    // if ((index + column) % 3 == 1) {
+    // text += "\nnew line";
+    // }
+    // if ((index + column) % 3 == 2) {
+    // text += "\nnew line\nnew line";
+    // }
+    // }
+    // return text;
+    // }
+    // };
+    // table.addListener(SWT.MeasureItem, listener);
+    // table.addListener(SWT.PaintItem, listener);
+    // table.addListener(SWT.EraseItem, listener);
+    // for (int i = 0; i < COL_COUNT; i++) {
+    // table.getColumn(i).pack();
+    // }
+    // table.pack();
+    // }
+    private TableViewerColumn setColumnHeader(String headerName, int colWidth,
+                                              TableViewer viewer) {
+        TableViewerColumn columnViewer = new TableViewerColumn(viewer,
                 SWT.CENTER);
         TableColumn column = columnViewer.getColumn();
         column.setText(headerName);
@@ -514,8 +579,8 @@ public class SetUp {
     }
 
     private void setUpFeedBack() {
-        feedback = new StyledText(feedbackAndInput, SWT.MULTI);
-        feedback.setText("");
+        feedback = new StyledText(mainInterface, SWT.MULTI);
+        feedback.setText(WELCOME_MESSAGE);
         GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
         feedback.setLayoutData(gridData);
         feedback.setFont(registry.get("feedback"));
@@ -525,7 +590,7 @@ public class SetUp {
     }
 
     private void setUpCommandLine() {
-        commandLine = new Text(feedbackAndInput, SWT.SINGLE | SWT.BORDER_DOT);
+        commandLine = new Text(mainInterface, SWT.SINGLE | SWT.BORDER_DOT);
         GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
         commandLine.setLayoutData(gridData);
         commandLine.setText(MESSAGE_TYPE_HERE);
@@ -580,13 +645,15 @@ public class SetUp {
     private void setUpDate() {
 
         todaysDate = new StyledText(sidePane, SWT.READ_ONLY | SWT.SINGLE |
-                                              SWT.RIGHT_TO_LEFT);
+                                              SWT.RIGHT_TO_LEFT | SWT.BOLD);
         todaysDate.setFont(registry.get("list headers"));
 
-        // get date
+        todaysDate.setSize(MIN_WIDTH_SCREEN, 1);
         Date date = new Date();
-
-        todaysDate.setText(date.toString());
+        String now = new SimpleDateFormat("EEE MMM d, yyyy").format(date);
+        todaysDate.setText(now);
+        Color white = shell.getDisplay().getSystemColor(SWT.COLOR_WHITE);
+        this.todaysDate.setForeground(white);
 
     }
 }

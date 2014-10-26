@@ -29,6 +29,7 @@ public class ResultGenerator {
         input = input.toLowerCase();
         if (input.equals("y") || input.equals("yes")) {
             Processor.reset();
+            cheat();
             return true;
         }
 
@@ -125,11 +126,10 @@ public class ResultGenerator {
                 cheat();
                 return feedbackMessage(outputs, "Edited %1$s");
             case DISPLAY:
-
                 if (result.needsConfirmation()) {
                     return "This will erase all data, PERMANENTLY.  Key 'y' to continue or 'n' to abort";
                 }
-                cheat();
+                updateInterface(outputs, false);
                 if (outputs.size() == 0) {
                     return "No tasks to show.";
                 }
