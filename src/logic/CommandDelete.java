@@ -38,24 +38,28 @@ public class CommandDelete extends Command {
         } else {
             this.type = CommandType.DELETE;
 
-            for (TaskParam param : content) {
-                switch (param.getName()) {
-                    case "rangeType":
-                        this.rangeType = param.getField();
-                        break;
-
-                    case "id":
-                        this.id = param.getField();
-                        break;
-
-                    default:
-                        this.type = CommandType.ERROR;
-                        this.error = "Delete constructor parameter error";
-                }
+            for (TaskParam param :  content) {
+                constructUsingParam(param);
             }
             if (!isComplement) {
-                initialiseComplementCommand(content);
+                initialiseComplementCommand((List<TaskParam>) content);
             }
+        }
+    }
+
+    private void constructUsingParam(TaskParam param) {
+        switch (param.getName()) {
+            case "rangeType":
+                this.rangeType = param.getField();
+                break;
+
+            case "id":
+                this.id = param.getField();
+                break;
+
+            default:
+                this.type = CommandType.ERROR;
+                this.error = "Delete constructor parameter error";
         }
     }
 
@@ -94,7 +98,9 @@ public class CommandDelete extends Command {
      */
     @Override
     protected Result execute(boolean userInput) {
-        Processor.getLogger().info("Executing 'Delete' Command...");
+        if (Processor.ENABLE_LOGGING) {
+            Processor.getLogger().info("Executing 'Delete' Command...");
+        }
         Processor processor = Processor.getInstance();
         List<Task> list = new ArrayList<Task>();
         boolean success = false;

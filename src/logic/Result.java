@@ -106,4 +106,9 @@ public class Result {
 	public void setCommandType(CommandType cmdType) {
 		this.cmdType = cmdType;
 	}
+	
+	@Override
+	public String toString() {
+	    return outputs + "[" + success + "][" + cmdType + "][" + confirmation + "][" +  resultType + "]";
+	}
 }

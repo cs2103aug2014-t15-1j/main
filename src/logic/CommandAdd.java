@@ -26,37 +26,40 @@ public class CommandAdd extends Command {
 
     public CommandAdd(List<TaskParam> content) {
         this.type = CommandType.ADD;
-        
         for (TaskParam param : content) {
-            switch (param.getName()){
-                case "name":
-                case "n":
-                    this.name = param.getField();
-                    break;
-                    
-                case "due":
-                case "d":
-                    this.due = DateParser.parseToDateTime(param.getField());
-                    break;
-                    
-                case "start":
-                case "s":
-                    this.start = DateParser.parseToDateTime(param.getField());
-                    break;
-                    
-                case "end":
-                case "e":
-                    this.end = DateParser.parseToDateTime(param.getField());
-                    break;
-                    
-                case "tag":
-                    // NOTE: possible change to string (tags = tags.concat())
-                    this.tags.add(param.getField());
-                    break;
-                    
-                default:
-                    System.out.println("Error in adding Add parameters");    
-            }
+            constructUsingParam(param);
+        }
+    }
+
+    private void constructUsingParam(TaskParam param) {
+        switch (param.getName()){
+            case "name":
+            case "n":
+                this.name = param.getField();
+                break;
+                
+            case "due":
+            case "d":
+                this.due = DateParser.parseToDateTime(param.getField());
+                break;
+                
+            case "start":
+            case "s":
+                this.start = DateParser.parseToDateTime(param.getField());
+                break;
+                
+            case "end":
+            case "e":
+                this.end = DateParser.parseToDateTime(param.getField());
+                break;
+                
+            case "tag":
+                // NOTE: possible change to string (tags = tags.concat())
+                this.tags.add(param.getField());
+                break;
+                
+            default:
+                System.out.println("Error in adding Add parameters");    
         }
     }
     
@@ -110,7 +113,9 @@ public class CommandAdd extends Command {
     protected Result execute(boolean userInput) {
         boolean success = false;
         List<Task> list = new ArrayList<Task>();
-        Processor.getLogger().info("Executing 'Add' Command...");
+        if (Processor.ENABLE_LOGGING) {
+            Processor.getLogger().info("Executing 'Add' Command...");
+        }
         boolean confirmation = true;
         if (!isBlocked()) {
             Task newTask = new Task(name, due, start, end, tags);

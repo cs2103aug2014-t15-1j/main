@@ -28,23 +28,27 @@ public class CommandRestore extends Command {
             this.type = CommandType.RESTORE;
 
             for (TaskParam param : content) {
-                switch (param.getName()) {
-                    case "rangeType":
-                        this.rangeType = param.getField();
-                        break;
-
-                    case "id":
-                        this.id = param.getField();
-                        break;
-
-                    default:
-                        this.type = CommandType.ERROR;
-                        this.error = "Restore constructor parameter error";
-                }
+                constructUsingParam(param);
             }
             if (!isComplement) {
                 initialiseComplementCommand(content);
             }
+        }
+    }
+
+    private void constructUsingParam(TaskParam param) {
+        switch (param.getName()) {
+            case "rangeType":
+                this.rangeType = param.getField();
+                break;
+
+            case "id":
+                this.id = param.getField();
+                break;
+
+            default:
+                this.type = CommandType.ERROR;
+                this.error = "Restore constructor parameter error";
         }
     }
     
@@ -83,7 +87,9 @@ public class CommandRestore extends Command {
      */
     @Override
     protected Result execute(boolean userInput) {
-        Processor.getLogger().info("Executing 'Restore' Command...");
+        if (Processor.ENABLE_LOGGING) {
+            Processor.getLogger().info("Executing 'Restore' Command...");
+        }
         Processor processor = Processor.getInstance();
         List<Task> list = new ArrayList<Task>();
         boolean success = false;

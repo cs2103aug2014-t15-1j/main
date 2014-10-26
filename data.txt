@@ -1,10 +1,6 @@
-c due:  start:  end:  #todo
-c due:  start:  end:  #todo
-c due:  start:  end:  #todo
-dfj due:  start:  end:  #todo
-task due:  start:  end:  #todo
-c due:  start:  end:  #todo
-c due:  start:  end:  #todo
-command due:  start:  end:  #todo
-command due:  start:  end:  #todo
-c due:  start:  end:  #todo
+Do CS2103 Homework due:  start:  end:  #cshomework #todo
+Do CS2103 Homework due:  start:  end:  #cshomework #todo
+Do CS2103 Homework due:  start:  end:  #cshomework #todo
+Do CS2103 Homework due:  start:  end:  #todo
+Do CS2103 Homework due:  start:  end:  #todo
+Do CS2103 Homework due:  start:  end:  #todo

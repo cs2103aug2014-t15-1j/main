@@ -1,5 +1,7 @@
 package logic;
 
+import gui.TaskStub;
+
 import java.util.List;
 import java.util.ArrayList;
 
@@ -28,45 +30,49 @@ public class CommandEdit extends Command {
 
     public CommandEdit(List<TaskParam> content) {
         this.type = CommandType.EDIT;
-        
+
         for (TaskParam param : content) {
-            switch (param.getName()){
-                case "id":
-                    this.id = param.getField();
-                    break;
-                    
-                case "name":
-                case "n":
-                    this.name = param.getField();
-                    break;
-                    
-                case "due":
-                case "d":
-                    this.due = DateParser.parseToDateTime(param.getField());
-                    break;
-                    
-                case "start":
-                case "s":
-                    this.start = DateParser.parseToDateTime(param.getField());
-                    break;
-                    
-                case "end":
-                case "e":
-                    this.end = DateParser.parseToDateTime(param.getField());
-                    break;
-                    
-                case "tag":
-                    // NOTE: possible change to string (tags = tags.concat())
-                    this.tags.add(param.getField());
-                    break;
-                    
-                case "delete":
-                    this.delete = param.getField();
-                    break;
-                    
-                default:
-                    System.out.println("EDITor, we have a problem.");    
-            }
+            constructUsingParam(param);
+        }
+    }
+
+    private void constructUsingParam(TaskParam param) {
+        switch (param.getName()){
+            case "id":
+                this.id = param.getField();
+                break;
+                
+            case "name":
+            case "n":
+                this.name = param.getField();
+                break;
+                
+            case "due":
+            case "d":
+                this.due = DateParser.parseToDateTime(param.getField());
+                break;
+                
+            case "start":
+            case "s":
+                this.start = DateParser.parseToDateTime(param.getField());
+                break;
+                
+            case "end":
+            case "e":
+                this.end = DateParser.parseToDateTime(param.getField());
+                break;
+                
+            case "tag":
+                // NOTE: possible change to string (tags = tags.concat())
+                this.tags.add(param.getField());
+                break;
+                
+            case "delete":
+                this.delete = param.getField();
+                break;
+                
+            default:
+                System.out.println("EDITor, we have a problem.");    
         }
     }
     
@@ -124,7 +130,9 @@ public class CommandEdit extends Command {
      */
     @Override
     protected Result execute(boolean userInput) {
-        Processor.getLogger().info("Executing 'Edit' Command...");
+        if (Processor.ENABLE_LOGGING) {
+            Processor.getLogger().info("Executing 'Edit' Command...");
+        }
         Processor processor = Processor.getInstance();
         List<Task> list = new ArrayList<Task>();
         boolean success = false;
@@ -166,7 +174,9 @@ public class CommandEdit extends Command {
         try {
             taskId = Integer.parseInt(id);
         } catch (Exception e) {
-            Processor.getLogger().warning("Invalid Task Id!");
+            if (Processor.ENABLE_LOGGING) {
+                Processor.getLogger().warning("Invalid Task Id!");
+            }
         }
         return taskId;
     }

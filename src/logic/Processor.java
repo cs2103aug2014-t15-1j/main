@@ -28,7 +28,8 @@ import database.Task;
 
 public class Processor extends Observable {
     
-    private final static boolean ENABLE_LOGGING = false;
+    protected final static boolean ENABLE_LOGGING = false;
+    protected static boolean IS_UNIT_TEST = false;
     
     /** Instance of Processor */
     private static Processor processor;
@@ -76,8 +77,16 @@ public class Processor extends Observable {
 	private Stack<String> inputStringForwardHistory;
 	
 	/** Default Constructor for Processor */
-	private Processor() {
-	    file = new DataFile();
+    private Processor() {
+        this(IS_UNIT_TEST);
+    }
+    
+	private Processor(boolean isTest) {
+	    if (isTest) {
+	        file = new DataFileStub();
+	    } else {
+	        file = new DataFile();
+	    }
 	    backwardCommandHistory = new Stack<Command>();
 	    forwardCommandHistory = new Stack<Command>();
 	    backwardSearchListHistory = new Stack<List<Task>>();
@@ -172,7 +181,9 @@ public class Processor extends Observable {
 
 		if (result.isSuccess() && !result.needsConfirmation() && userInput) {
 			updateCommandHistory(cmd);
-			log.info(result.getCommandType() + " Command executed successfully");
+			if (ENABLE_LOGGING) {
+			    log.info(result.getCommandType() + " Command executed successfully");
+			}
 		}
 		updateUIPanelWindow(cmd);
 		return result;
@@ -194,7 +205,9 @@ public class Processor extends Observable {
 	        updateFloatingAndTimedTasks();
             setChanged();
             notifyObservers(); //Calls update of the side panel class
-            log.info("Updated side panel.");
+            if (ENABLE_LOGGING) {
+                log.info("Updated side panel.");
+            }
 	    }
 	}
 	
@@ -208,8 +221,6 @@ public class Processor extends Observable {
             case UNBLOCK:
             case DONE:
             case TODO:
-            case UNDO:
-            case REDO:
                 return true;
             default:
                 return false;
@@ -241,23 +252,31 @@ public class Processor extends Observable {
     }
 	
 	public List<Task> fetchTimedTasks() {
-        log.info("Fetching Timed Tasks");
+	    if (ENABLE_LOGGING) {
+	        log.info("Fetching Timed Tasks");
+	    }
         return Collections.unmodifiableList(timedTasks);
 	}
 	
 	public List<Task> fetchFloatingTasks() {
-	    log.info("Fetching Floating Tasks");
+	    if (ENABLE_LOGGING) {
+	        log.info("Fetching Floating Tasks");
+	    }
 	    return Collections.unmodifiableList(floatingTasks);
 	}
 	
 	public List<Task> fetchToDoTasks() {
-        log.info("Fetching Todo Tasks");
+	    if (ENABLE_LOGGING) {
+	        log.info("Fetching Todo Tasks");
+	    }
         return file.getToDoTasks();
     }
     
 	
 	public List<BlockDate> fetchBlockedDate() {
-        log.info("Fetching Blocked Dates");
+	    if (ENABLE_LOGGING) {
+	        log.info("Fetching Blocked Dates");
+	    }
         return Collections.unmodifiableList(blockedDateList);
     }
 	

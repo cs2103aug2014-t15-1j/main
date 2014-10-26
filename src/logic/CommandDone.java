@@ -32,26 +32,30 @@ public class CommandDone extends Command {
             this.type = CommandType.DONE;
 
             for (TaskParam param : content) {
-                switch (param.getName()) {
-                    case "rangeType":
-                        this.rangeType = param.getField();
-                        break;
-
-                    case "id":
-                        this.id = param.getField();
-                        break;
-                    
-                    case "date": ;
-                        assert (DateParser.isValidDate(param.getField())) : "Invalid date for done";
-                        this.dateTime = new DateTime(param.getField(), "");
-                        break;
-                        
-                    default:
-                        this.type = CommandType.ERROR;
-                        this.error = "Todo constructor parameter error";
-                }
+                constructUsingParam(param);
             }
             initialiseComplementCommand(content);
+        }
+    }
+
+    private void constructUsingParam(TaskParam param) {
+        switch (param.getName()) {
+            case "rangeType":
+                this.rangeType = param.getField();
+                break;
+
+            case "id":
+                this.id = param.getField();
+                break;
+            
+            case "date": ;
+                assert (DateParser.isValidDate(param.getField())) : "Invalid date for done";
+                this.dateTime = new DateTime(param.getField(), "");
+                break;
+                
+            default:
+                this.type = CommandType.ERROR;
+                this.error = "Todo constructor parameter error";
         }
     }
 
@@ -93,7 +97,9 @@ public class CommandDone extends Command {
      */
     @Override
     protected Result execute(boolean userInput) {
-        Processor.getLogger().info("Executing 'Done' Command...");
+        if (Processor.ENABLE_LOGGING) {
+            Processor.getLogger().info("Executing 'Done' Command...");
+        }
         List<Task> list = new ArrayList<Task>();
         boolean success = false;
         switch (rangeType) {

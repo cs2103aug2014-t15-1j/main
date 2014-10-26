@@ -71,7 +71,9 @@ public class CommandOthers extends Command {
     }
     
     protected Result executeUndo() {
-        Processor.getLogger().info("Executing 'Undo' Command...");
+        if (Processor.ENABLE_LOGGING) {
+            Processor.getLogger().info("Executing 'Undo' Command...");
+        }
         Processor processor = Processor.getInstance();
         Result r = new Result(null, false, CommandType.UNDO, null);
         if (!processor.getBackwardCommandHistory().isEmpty()) {
@@ -102,6 +104,9 @@ public class CommandOthers extends Command {
      * @return true/false on whether operation is performed
      */
     protected Result executeRedo() {
+        if (Processor.ENABLE_LOGGING) {
+            Processor.getLogger().info("Executing 'Redo' Command...");
+        }
         Processor processor = Processor.getInstance();
         if (!processor.getForwardCommandHistory().isEmpty()) {
             Command forwardCommand = processor.getForwardCommandHistory().pop();

@@ -17,6 +17,9 @@ public class CommandBlock extends Command {
     private DateTime start = new DateTime();
     private DateTime end = new DateTime();
     
+    public CommandBlock() {
+    }
+    
     public CommandBlock(List<TaskParam> content) {
         this(content, false);
     }
@@ -29,20 +32,24 @@ public class CommandBlock extends Command {
             this.type = CommandType.BLOCK;
 
             for (TaskParam param : content) {
-                switch (param.getName()) {
-                    case "start":
-                        this.start = DateParser.parseToDateTime(param.getField());
-                        break;
-
-                    case "end":
-                        this.end = DateParser.parseToDateTime(param.getField());
-                        break;
-
-                    default:
-                        this.type = CommandType.ERROR;
-                        this.error = "Block constructor parameter error";
-                }
+                constructUsingParam(param);
             }
+        }
+    }
+
+    private void constructUsingParam(TaskParam param) {
+        switch (param.getName()) {
+            case "start":
+                this.start = DateParser.parseToDateTime(param.getField());
+                break;
+
+            case "end":
+                this.end = DateParser.parseToDateTime(param.getField());
+                break;
+
+            default:
+                this.type = CommandType.ERROR;
+                this.error = "Block constructor parameter error";
         }
     }
 
@@ -78,7 +85,9 @@ public class CommandBlock extends Command {
      */
     @Override
     protected Result execute(boolean userInput) {
-        Processor.getLogger().info("Executing 'Block' Command...");
+        if (Processor.ENABLE_LOGGING) {
+            Processor.getLogger().info("Executing 'Block' Command...");
+        }
         Processor processor = Processor.getInstance();
         List<BlockDate> blockRange = processor.getBlockedDates();
         BlockDate currBlock = new BlockDate(start, end);

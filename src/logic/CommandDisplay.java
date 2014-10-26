@@ -24,20 +24,24 @@ public class CommandDisplay extends Command {
             this.type = CommandType.DISPLAY;
 
             for (TaskParam param : content) {
-                switch (param.getName()) {
-                    case "rangeType":
-                        this.rangeType = param.getField();
-                        break;
-
-                    case "id":
-                        this.id = param.getField();
-                        break;
-
-                    default:
-                        this.type = CommandType.ERROR;
-                        this.error = "Restore constructor parameter error";
-                }
+                constructUsingParam(param);
             }
+        }
+    }
+
+    private void constructUsingParam(TaskParam param) {
+        switch (param.getName()) {
+            case "rangeType":
+                this.rangeType = param.getField();
+                break;
+
+            case "id":
+                this.id = param.getField();
+                break;
+
+            default:
+                this.type = CommandType.ERROR;
+                this.error = "Restore constructor parameter error";
         }
     }
 
@@ -73,7 +77,9 @@ public class CommandDisplay extends Command {
     @Override
     @SuppressWarnings({ "unchecked", "rawtypes" })
     protected Result execute(boolean userInput) {
-        Processor.getLogger().info("Executing 'Display' Command...");
+        if (Processor.ENABLE_LOGGING) {
+            Processor.getLogger().info("Executing 'Display' Command...");
+        }
         Processor processor = Processor.getInstance();
         List list = new ArrayList();
         boolean success = true;

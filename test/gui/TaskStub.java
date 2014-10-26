@@ -35,6 +35,16 @@ public class TaskStub extends Task {
         setTags(tags);
     }
 
+    public TaskStub(Task existingTask) {
+        super(existingTask);
+        this.ID = existingTask.getId();
+        this.name = existingTask.getName();
+        this.due = existingTask.getDue();
+        this.start = existingTask.getStart();
+        this.end = existingTask.getEnd();
+        this.deleted = existingTask.isDeleted();
+        this.done = existingTask.isDone();
+    }
     /*** ACCESSORS ***/
 
     public static int getNewId() {

@@ -16,6 +16,9 @@ public class CommandUnblock extends Command {
 
     private CommandBlock cmdBlock;
     
+    public CommandUnblock() {
+    }
+    
     public CommandUnblock(List<TaskParam> content) {
         this(content, false);
     }
@@ -27,17 +30,21 @@ public class CommandUnblock extends Command {
         } else {
             this.type = CommandType.UNBLOCK;
 
-            for (TaskParam param : content) {
-                switch (param.getName()) {
-                    case "id":
-                        this.id = param.getField();
-                        break;
-
-                    default:
-                        this.type = CommandType.ERROR;
-                        this.error = "Unblock constructor parameter error";
-                }
+            for (TaskParam param : (List<TaskParam>) content) {
+                constructUsingParam(param);
             }
+        }
+    }
+
+    private void constructUsingParam(TaskParam param) {
+        switch (param.getName()) {
+            case "id":
+                this.id = param.getField();
+                break;
+
+            default:
+                this.type = CommandType.ERROR;
+                this.error = "Unblock constructor parameter error";
         }
     }
     
@@ -82,7 +89,9 @@ public class CommandUnblock extends Command {
      */
     @Override
     protected Result execute(boolean userInput) {
-        Processor.getLogger().info("Executing 'Unblock' Command...");
+        if (Processor.ENABLE_LOGGING) {
+            Processor.getLogger().info("Executing 'Unblock' Command...");
+        }
         Processor processor = Processor.getInstance();
         List<BlockDate> blockRange = processor.getBlockedDates();
         boolean success = false;

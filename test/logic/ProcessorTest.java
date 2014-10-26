@@ -140,7 +140,6 @@ public class ProcessorTest {
         
         //Test Edit Tags
         testTags.add("#homework");
-        System.out.println(testTags);
         TestProcessor.processInput("edit 1 #homework");
         TestProcessor.processInput("undo");
         Result r15 = TestProcessor.processInput("redo");

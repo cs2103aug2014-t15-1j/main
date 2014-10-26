@@ -32,23 +32,27 @@ public class CommandTodo extends Command {
             this.type = CommandType.TODO;
 
             for (TaskParam param : content) {
-                switch (param.getName()) {
-                    case "rangeType":
-                        this.rangeType = param.getField();
-                        break;
-
-                    case "id":
-                        this.id = param.getField();
-                        break;
-
-                    default:
-                        this.type = CommandType.ERROR;
-                        this.error = "Todo constructor parameter error";
-                }
+                constructUsingParam(param);
             }
             if (!isComplement) {
                 initialiseComplementCommand(content);
             }
+        }
+    }
+
+    private void constructUsingParam(TaskParam param) {
+        switch (param.getName()) {
+            case "rangeType":
+                this.rangeType = param.getField();
+                break;
+
+            case "id":
+                this.id = param.getField();
+                break;
+
+            default:
+                this.type = CommandType.ERROR;
+                this.error = "Todo constructor parameter error";
         }
     }
 
@@ -89,17 +93,26 @@ public class CommandTodo extends Command {
      */
     @Override
     protected Result execute(boolean userInput) {
-        Processor.getLogger().info("Executing 'Todo' Command...");
+        if (Processor.ENABLE_LOGGING) {
+            Processor.getLogger().info("Executing 'Todo' Command...");
+        }
         Processor processor = Processor.getInstance();
         List<Task> list = new ArrayList<Task>();
         boolean success = false;
         
-        int taskId = Integer.parseInt(id);
-        Task existingTask = processor.getFile().getTask(taskId);
-        success = processor.getFile().toDoTask(existingTask);
-        if (success) {
-            list.add(existingTask);
+        try {
+            int taskId = Integer.parseInt(id);
+            Task existingTask = processor.getFile().getTask(taskId);
+            success = processor.getFile().toDoTask(existingTask);
+            if (success) {
+                list.add(existingTask);
+            }
+        } catch (NumberFormatException e) {
+            if (Processor.ENABLE_LOGGING) {
+                Processor.getLogger().warning("Error parsing Integer!");
+            }
         }
+        
         return new Result(list, success, getType(), ResultType.TASK);
     }
     

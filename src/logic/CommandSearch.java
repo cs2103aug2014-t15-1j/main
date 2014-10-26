@@ -21,23 +21,27 @@ public class CommandSearch extends Command {
         this.type = CommandType.SEARCH;
 
         for (TaskParam param : content) {
-            switch (param.getName()) {
-                case "date":
-                    this.date = param.getField();
-                    break;
-                    
-                case "tag":
-                    this.tags.add(param.getField());
-                    break;
+            constructUsingParam(param);
+        }
+    }
 
-                case "word":
-                    this.keywords.add(param.getField());
-                    break;
+    private void constructUsingParam(TaskParam param) {
+        switch (param.getName()) {
+            case "date":
+                this.date = param.getField();
+                break;
+                
+            case "tag":
+                this.tags.add(param.getField());
+                break;
 
-                default:
-                    this.type = CommandType.ERROR;
-                    this.error = "Search constructor parameter error";
-            }
+            case "word":
+                this.keywords.add(param.getField());
+                break;
+
+            default:
+                this.type = CommandType.ERROR;
+                this.error = "Search constructor parameter error";
         }
     }
 
@@ -81,7 +85,9 @@ public class CommandSearch extends Command {
      */
     @Override
     protected Result execute(boolean userInput) {
-        Processor.getLogger().info("Executing 'Search' Command...");
+        if (Processor.ENABLE_LOGGING) {
+            Processor.getLogger().info("Executing 'Search' Command...");
+        }
         Processor.getInstance().initialiseNewSearchList();
         searchUsingDateAndKeyAndTags(date, keywords, tags);
         return new Result(Processor.getInstance().getLastSearch(), true, getType(), ResultType.TASK);
