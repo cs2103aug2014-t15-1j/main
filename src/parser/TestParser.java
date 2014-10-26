@@ -60,21 +60,20 @@ public class TestParser {
         String result;
         String task;
 
+        // Test full input
         task = tempTaskToString(Parser
-                .parseToTask("nAme: do Due: #cs2103 wed namE: homework M: late "
-                             + "start: priority: due: 9am eNd: now name: quickly #done\n"));
-        result = "\n[[ Task ]]" + "\nName: do homework M: late quickly"
-                 + "\nDue: null" + "\nStart: null" + "\nEnd: null"
-                 + "\nTags: [#cs2103]" + "\nDoneness: #done";
+                .parseToTask("do homework ### due: 23/04/2014 0300 start: 20/04/2014 end: 21/04/2014 1800 #cs2103 #todo status: done\n"));
+        result = "\n[[ Task ]]" + "\nName: do homework"
+                 + "\nDue: 23/04/2014 0300" + "\nStart: 20/04/2014"
+                 + "\nEnd: 21/04/2014 1800" + "\nTags: [#cs2103, #todo]"
+                 + "\nStatus: done";
         assertEquals(result, task);
 
+        // Test "empty" input
         task = tempTaskToString(Parser
-                .parseToTask("nAme: do Due: #cs2103 namE: homework M: late "
-                             + "start: 23/04/2014 0300 due: 24/04/2014 eNd: 23/04/2014 0500 name: quickly #done\n"));
-        result = "\n[[ Task ]]" + "\nName: do homework M: late quickly"
-                 + "\nDue: 24/04/2014" + "\nStart: 23/04/2014 0300"
-                 + "\nEnd: 23/04/2014 0500" + "\nTags: [#cs2103]"
-                 + "\nDoneness: #done";
+                .parseToTask("### due: start: end: status: \n"));
+        result = "\n[[ Task ]]" + "\nName: " + "\nDue: " + "\nStart: "
+                 + "\nEnd: " + "\nTags: []" + "\nStatus: todo";
         assertEquals(result, task);
 
         System.out.println("...success!");
@@ -87,8 +86,8 @@ public class TestParser {
         fullInfo += "\nStart: " + task.getStart();
         fullInfo += "\nEnd: " + task.getEnd();
         fullInfo += "\nTags: " + task.getTags();
-        fullInfo += "\nDoneness: ";
-        fullInfo += task.isDone() ? "#done" : "#todo";
+        fullInfo += "\nStatus: ";
+        fullInfo += task.isDone() ? "done" : "todo";
 
         return fullInfo;
     }
@@ -206,12 +205,11 @@ public class TestParser {
         cmd = Parser.parse("add S:e:N:homework staRt:E:S:eNd: 23/04/2014")
                 .toString();
         assertEquals("Add: no-spaces, mixed caps", result, cmd);
-        
+
         // Add without name
-        result = "\n[[ CMD-ADD: ]]" + "\nname: null" + "\ndue: "
-                 + "\nstart: " + "\nend: 23/04/2014" + "\ntags: []";
-        cmd = Parser.parse("add staRt:E:S:eNd: 23/04/2014")
-                .toString();
+        result = "\n[[ CMD-ADD: ]]" + "\nname: null" + "\ndue: " + "\nstart: "
+                 + "\nend: 23/04/2014" + "\ntags: []";
+        cmd = Parser.parse("add staRt:E:S:eNd: 23/04/2014").toString();
         assertEquals("Add: no name", result, cmd);
 
         System.out.println("...success!");

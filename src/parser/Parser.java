@@ -21,10 +21,10 @@ import database.BlockDate;
 import database.DateTime;
 import database.Task;
 
-
 // TODO: Class description with reason why it's static
 public class Parser {
 
+    private static final int ADD_DATE_PARAM_NUM = 3;
     private static final String TYPE_ALL = "all";
     private static final String TYPE_HELP = "help";
     private static final String TYPE_ADD = "add";
@@ -547,15 +547,13 @@ public class Parser {
         List<TaskParam> addFields = new ArrayList<TaskParam>();
 
         String currWord;
-/*        for (int j = 0; j < commandParams.length; j++) {
-            currWord = commandParams[j];
-            if (isAddParamName(currWord)) {
-                currField = currWord;
-            } else {
-                
-            }
-        }
-*/
+        /*
+         * for (int j = 0; j < commandParams.length; j++) { currWord =
+         * commandParams[j]; if (isAddParamName(currWord)) { currField =
+         * currWord; } else {
+         * 
+         * } }
+         */
         for (int i = 0; i < commandParams.length; i++) {
             currWord = commandParams[i];
             if (containsParamName(currWord)) {
@@ -824,57 +822,67 @@ public class Parser {
     // ========== TASK PARSING METHODS ==========//
     public static Task parseToTask(String text) {
         String[] textItems = text.trim().split(" ");
-        String[] param = new String[] { "", "", "", "" };
+        String[] param = new String[] { "", "", "", "", "" };
         List<String> tags = new ArrayList<String>();
 
-        String currField = "name";
+        int fieldIndex = 0;
         boolean isDone = false;
+        boolean breakPointMet = false;
 
         for (int i = 0; i < textItems.length; i++) {
             String currWord = textItems[i];
             String currWordLC = currWord.toLowerCase();
-            if (isAddParamName(currWord)) {
-                currField = getParamName(currWord.toLowerCase());
-            } else if (hasValidHashTag(currWord)) {
-                if (currWordLC.equals("#todo")) {
-                    isDone = false;
-                } else if (currWordLC.equals("#done")) {
-                    isDone = true;
+            if (!breakPointMet) {
+                if (currWord.equals("###")) {
+                    breakPointMet = true;
                 } else {
-                    tags.add(currWord);
+                    if (param[fieldIndex].isEmpty() || currWord.isEmpty()) {
+                        param[fieldIndex] = param[fieldIndex].concat(currWord);
+                    } else {
+                        param[fieldIndex] = param[fieldIndex].concat(" " +
+                                                                     currWord);
+                    }
                 }
             } else {
-                int pIndex = getParamIndex(currField);
-                // NOTE: currWord.isEmpty() is to make sure the parser does not
-                // add " " for each empty string
-                // TODO: check other cases for this.
-                if (param[pIndex].isEmpty() || currWord.isEmpty()) {
-                    param[pIndex] = param[pIndex].concat(currWord);
+                if (currWordLC.equals("due:") || currWordLC.equals("start:") ||
+                    currWordLC.equals("end:") || currWordLC.equals("status:")) {
+                    fieldIndex++;
+                } else if (hasValidHashTag(currWord)) {
+                    tags.add(currWord);
                 } else {
-                    param[pIndex] = param[pIndex].concat(" " + currWord);
+                    // NOTE: currWord.isEmpty() is to make sure the parser does
+                    // not add " " for each empty string
+                    // TODO: check other cases for this.
+                    if (param[fieldIndex].isEmpty() || currWord.isEmpty()) {
+                        param[fieldIndex] = param[fieldIndex].concat(currWord);
+                    } else {
+                        param[fieldIndex] = param[fieldIndex].concat(" " +
+                                                                     currWord);
+                    }
                 }
             }
         }
-
-        // Assign proper names and check if date values are null or invalid
-        DateTime[] dateTimes = new DateTime[3];
-
-        for (int i = 1; i <= 3; i++) {
-            try {
-                if (param[i].equals("null")) {
-                    dateTimes[i - 1] = new DateTime();
-                } else {
-                    dateTimes[i - 1] = DateParser.parseToDateTime(param[i]);
-                }
-            } catch (IllegalArgumentException e) {
-                // Will be reached if user keyed in invalid date
-                dateTimes[i - 1] = null;
-                System.out.println("Invalid date input detected!");
-            }
+        
+        // Convert param inputs 
+        String name = param[0];
+        if (param[4].equalsIgnoreCase("done")) {
+            isDone = true;
         }
+        
+        // Convert date/time inputs into DateTime objects
+        DateTime[] dateTimes = new DateTime[ADD_DATE_PARAM_NUM];
 
         // TODO: REORGANISE
-        String name = param[0];
+        // Indexes are assigned by 1 (due), 2 (start) 3 (end)
+        for (int i = 1; i <= ADD_DATE_PARAM_NUM; i++) {
+            if (param[i].isEmpty()) {
+                dateTimes[i - 1] = new DateTime();
+            } else {
+                assert (DateParser.isValidDateTime(param[i]));
+                dateTimes[i - 1] = DateParser.parseToDateTime(param[i]);
+            }
+        }
+
         DateTime due = dateTimes[0];
         DateTime start = dateTimes[1];
         DateTime end = dateTimes[2];

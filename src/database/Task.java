@@ -97,19 +97,6 @@ public class Task implements Comparable<Task> {
     @Override
     public String toString() {
         String tempString = "";
-        tempString += name + " ";
-        tempString += "due: " + due.toString() + " ";
-        tempString += "start: " + start.toString() + " ";
-        tempString += "end: " + end.toString() + " ";
-        tempString += concatanateTags();
-        tempString += done ? "#done" : "#todo";
-
-        return tempString;
-    }
-
-    /* TODO issue #126
-    public String toString() {
-        String tempString = "";
         tempString += name + " ### ";
         tempString += "due: " + due.toString() + " ";
         tempString += "start: " + start.toString() + " ";
@@ -118,7 +105,7 @@ public class Task implements Comparable<Task> {
         tempString += "status: " + (done ? "done" : "todo");
 
         return tempString;
-    }*/
+    }
 
     /**
      * Stores searchable Task attributes in a single String. To be processed by
