@@ -579,7 +579,7 @@ public class SetUp {
         Display display = shell.getDisplay();
         Label upcomingTask = new Label(sidePane, SWT.SINGLE);
 
-        Image upcomingHeader = new Image(display, ".\\images\\UpcomingTask.png");
+        Image upcomingHeader = new Image(display, MainScreen.class.getClassLoader().getResourceAsStream("resource/UpcomingTask.png"));
         upcomingTask.setImage(upcomingHeader);
         GridData centeredGridData = new GridData(SWT.CENTER, SWT.FILL, true,
                 true);
@@ -603,7 +603,7 @@ public class SetUp {
     private void setUpFloatingTaskList() {
         Display display = shell.getDisplay();
         Label floatingTask = new Label(sidePane, SWT.SINGLE);
-        Image floatingHeader = new Image(display, ".\\images\\Someday.png");
+        Image floatingHeader = new Image(display, MainScreen.class.getClassLoader().getResourceAsStream("resource/Someday.png"));
         floatingTask.setImage(floatingHeader);
         GridData centeredGridData = new GridData(SWT.CENTER, SWT.FILL, true,
                 true);

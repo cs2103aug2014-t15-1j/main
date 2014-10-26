@@ -54,7 +54,9 @@ public class MainScreen {
      */
     public static void main(String[] args) {
         Display display = new Display();
-        Image background = new Image(display, ".\\images\\mainbg.png");
+        
+        Image background = new Image(display, MainScreen.class.getClassLoader().getResourceAsStream("resource/mainbg.png"));
+        //new Image(display, ".\\images\\mainbg.png");
         Shell shell = new Shell(display);
         ImageData imageData = background.getImageData();
         imageData = imageData.scaledTo(shell.getSize().x, shell.getSize().y);
