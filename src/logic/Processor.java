@@ -69,6 +69,12 @@ public class Processor extends Observable {
 	/** Logger for monitoring purposes */
 	private static final Logger log = Logger.getLogger(Processor.class.getName());
 	
+    /** Stores input string for 'up' key **/
+    private Stack<String> inputStringBackwardHistory;
+    
+	/** Stores input string for 'down' key **/
+	private Stack<String> inputStringForwardHistory;
+	
 	/** Default Constructor for Processor */
 	private Processor() {
 	    file = new DataFile();
@@ -82,7 +88,10 @@ public class Processor extends Observable {
 	    timedTasks = new ArrayList<Task>();
 	    blockedDateList = new ArrayList<BlockDate>();
 	    deletedBlockedDateList = new Stack<BlockDate>();
+	    inputStringBackwardHistory = new Stack<String>();
+	    inputStringForwardHistory = new Stack<String>();
 	    initialiseLogger();
+	    updateFloatingAndTimedTasks();
 	}
 	
 	/** 
@@ -121,7 +130,11 @@ public class Processor extends Observable {
      * @return Result
      */
 	public Result processInput(String input) throws IllegalArgumentException {
-		Command cmd = Parser.parse(input);
+	    for (String strInput : inputStringForwardHistory) {
+            inputStringBackwardHistory.push(strInput);
+        }
+	    inputStringBackwardHistory.push(input);
+	    Command cmd = Parser.parse(input);
 		assert cmd != null;
 		return processCommand(cmd);
 	}
@@ -159,26 +172,10 @@ public class Processor extends Observable {
 
 		if (result.isSuccess() && !result.needsConfirmation() && userInput) {
 			updateCommandHistory(cmd);
-			updateUIPanelWindow(cmd);
 			log.info(result.getCommandType() + " Command executed successfully");
 		}
+		updateUIPanelWindow(cmd);
 		return result;
-	}
-
-	private boolean hasModifiedData(Command cmd) {
-	    switch (cmd.getType()) {
-    	    case ADD:
-            case DELETE:
-            case EDIT:
-            case RESTORE:
-            case BLOCK:
-            case UNBLOCK:
-            case DONE:
-            case TODO:
-                return true;
-            default:
-                return false;
-	    }
 	}
 	
 	/** 
@@ -201,6 +198,24 @@ public class Processor extends Observable {
 	    }
 	}
 	
+	private boolean hasModifiedData(Command cmd) {
+        switch (cmd.getType()) {
+            case ADD:
+            case DELETE:
+            case EDIT:
+            case RESTORE:
+            case BLOCK:
+            case UNBLOCK:
+            case DONE:
+            case TODO:
+            case UNDO:
+            case REDO:
+                return true;
+            default:
+                return false;
+        }
+    }
+    
 	private void updateFloatingAndTimedTasks() {
 	    clearPanelTaskList();
 	    for (Task task : file.getToDoTasks()) {
@@ -235,9 +250,33 @@ public class Processor extends Observable {
 	    return Collections.unmodifiableList(floatingTasks);
 	}
 	
+	public List<Task> fetchToDoTasks() {
+        log.info("Fetching Todo Tasks");
+        return file.getToDoTasks();
+    }
+    
+	
 	public List<BlockDate> fetchBlockedDate() {
         log.info("Fetching Blocked Dates");
         return Collections.unmodifiableList(blockedDateList);
+    }
+	
+	public String fetchInputUpKey() {
+	    String output = "";
+	    if (!inputStringBackwardHistory.isEmpty()) {
+	        output = inputStringBackwardHistory.pop();
+	        inputStringForwardHistory.push(output);
+	    }
+	    return output;
+    }
+	
+	public String fetchInputDownKey() {
+	    String output = "";
+        if (!inputStringForwardHistory.isEmpty()) {
+            output = inputStringForwardHistory.pop();
+            inputStringBackwardHistory.push(output);
+        }
+        return output;
     }
 	
 	protected DataFile getFile() {

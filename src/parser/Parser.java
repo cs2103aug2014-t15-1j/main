@@ -302,7 +302,7 @@ public class Parser {
         DateTime dateTime2 = new DateTime(secondDateStr, secondTimeStr);
         TaskParam startTp;
         TaskParam endTp;
-        if (dateTime1.isEarlierThan(dateTime2) || dateTime1.equalsTo(dateTime2)) {
+        if (dateTime1.isEarlierThan(dateTime2) || dateTime1.equals(dateTime2)) {
             startTp = new TaskParam("start", dateTime1.toString());
             endTp = new TaskParam("end", dateTime2.toString());
             // Fill in empty times
