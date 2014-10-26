@@ -3,6 +3,8 @@ package gui;
 import java.util.Date;
 import java.util.List;
 
+import logic.Processor;
+
 import org.eclipse.jface.resource.FontRegistry;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -11,8 +13,11 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -63,7 +68,8 @@ public class SetUp {
     private static final String CELL_EMPTY = "empty";
 
     private static final int COL_WIDTH = 175;
-    private static final int COL_WIDTH_ID = 50;
+    private static final int COL_WIDTH_DATE = 100;
+    private static final int COL_WIDTH_ID = 30;
 
     protected static SetUp setUp;
     private Shell shell;
@@ -400,7 +406,7 @@ public class SetUp {
             }
         });
 
-        column = setColumnHeader(HEADER_NAME_DUE, COL_WIDTH);
+        column = setColumnHeader(HEADER_NAME_DUE, COL_WIDTH_DATE);
         column.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
@@ -418,7 +424,7 @@ public class SetUp {
             }
         });
 
-        column = setColumnHeader(HEADER_NAME_START, COL_WIDTH);
+        column = setColumnHeader(HEADER_NAME_START, COL_WIDTH_DATE);
         column.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
@@ -436,7 +442,7 @@ public class SetUp {
             }
         });
 
-        column = setColumnHeader(HEADER_NAME_END, COL_WIDTH);
+        column = setColumnHeader(HEADER_NAME_END, COL_WIDTH_DATE);
         column.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
@@ -535,11 +541,33 @@ public class SetUp {
         this.commandLine.setBackground(black);
         this.commandLine.setForeground(white);
         commandLine.setFont(registry.get("type box"));
+        
+        commandLine.addKeyListener(new KeyAdapter() {
+            public void keyPressed(KeyEvent e) {
+                if (e.keyCode == SWT.ARROW_UP || e.keyCode == SWT.ARROW_DOWN) {
+                    String output = "";
+                    switch (e.keyCode) {
+                        case SWT.ARROW_UP:
+                            output = Processor.getInstance().fetchInputUpKey();
+                            break;
+                        case SWT.ARROW_DOWN:
+                            output = Processor.getInstance().fetchInputDownKey();
+                            break;
+                    }
+                    commandLine.setText(output);
+                }
+            }
+        });
     }
 
     private void setUpUpcomingTaskList() {
+        Display display = shell.getDisplay();
         Label upcomingTask = new Label(sidePane, SWT.SINGLE);
         upcomingTask.setText("Upcoming Task");
+        Image upcomingHeader = new Image(display, ".\\images\\UpcomingTask.png");
+        upcomingTask.setImage(upcomingHeader);
+        GridData centeredGridData = new GridData(SWT.CENTER, SWT.FILL, true, true);
+        upcomingTask.setLayoutData(centeredGridData);
 
         upcomingTasksList = new StyledText(sidePane, SWT.MULTI | SWT.READ_ONLY |
                                                      SWT.LEFT_TO_RIGHT);
@@ -550,7 +578,6 @@ public class SetUp {
         upcomingTasksList.setLayoutData(gridData);
         upcomingTasksList.setWordWrap(true);
 
-        Display display = shell.getDisplay();
         Color white = display.getSystemColor(SWT.COLOR_WHITE);
         upcomingTasksList.setBackground(white);
         upcomingTasksList.setEnabled(true);
@@ -558,9 +585,13 @@ public class SetUp {
     }
 
     private void setUpFloatingTaskList() {
+        Display display = shell.getDisplay();
         Label floatingTask = new Label(sidePane, SWT.SINGLE);
-        floatingTask.setText("Someday");
-
+        Image floatingHeader = new Image(display, ".\\images\\Someday.png");
+        floatingTask.setImage(floatingHeader);
+        GridData centeredGridData = new GridData(SWT.CENTER, SWT.FILL, true, true);
+        floatingTask.setLayoutData(centeredGridData);
+        
         floatingTasksList = new StyledText(sidePane, SWT.MULTI | SWT.READ_ONLY |
                                                      SWT.LEFT_TO_RIGHT);
         floatingTasksList.setFont(registry.get("list headers"));
@@ -570,7 +601,6 @@ public class SetUp {
         floatingTasksList.setEnabled(false);
         floatingTasksList.setWordWrap(true);
 
-        Display display = shell.getDisplay();
         Color white = display.getSystemColor(SWT.COLOR_WHITE);
         floatingTasksList.setBackground(white);
         floatingTasksList.setEnabled(true);

@@ -19,10 +19,16 @@ public class ResultGenerator {
         if (input.trim().isEmpty()) {
             return "";
         }
-
-        Result result = processor.processInput(input);
-        assert (result != null);
-        return processResult(result, input);
+        
+        Result result = null;
+        try {
+            result = processor.processInput(input);
+            assert (result != null);
+            return processResult(result, input);
+        } catch (IllegalArgumentException e) {
+            return e.getMessage();
+        }
+            
     }
 
     public boolean processDeleteAll(String input) {
@@ -110,26 +116,25 @@ public class ResultGenerator {
 
         switch (result.getCommandType()) {
             case ADD:
-                cheat();
+                refreshTodoTable();
                 if (result.needsConfirmation()) {
                     return "Unable to add task. Task coincides with a blocked date. Key 'y' to override date or 'n' to abort";
                 }
                 return feedbackMessage(outputs, "Added %1$s");
             case DELETE:
-                cheat();
+                refreshTodoTable();
                 if (result.needsConfirmation()) {
                     return "This will erase all data, PERMANENTLY.  Key 'y' to continue or 'n' to abort";
                 }
                 return feedbackMessage(outputs, "Deleted %1$s");
             case EDIT:
-                cheat();
+                refreshTodoTable();
                 return feedbackMessage(outputs, "Edited %1$s");
             case DISPLAY:
-
                 if (result.needsConfirmation()) {
                     return "This will erase all data, PERMANENTLY.  Key 'y' to continue or 'n' to abort";
                 }
-                cheat();
+                refreshTodoTable();
                 if (outputs.size() == 0) {
                     return "No tasks to show.";
                 }
@@ -147,16 +152,16 @@ public class ResultGenerator {
                 return feedbackMessageMultiResults(outputs,
                                                    "Found %1$s match(es).");
             case TODO:
-                cheat();
+                refreshTodoTable();
                 return feedbackMessage(outputs, "Marked %1$s as todo.");
             case DONE:
-                cheat();
+                refreshTodoTable();
                 return feedbackMessage(outputs, "Marked %1$s as done.");
             case UNDO:
-                cheat();
+                refreshTodoTable();
                 return "Command Undone.";
             case REDO:
-                cheat();
+                refreshTodoTable();
                 return "Command Redone.";
             case EXIT:
                 return "exit";
@@ -198,9 +203,9 @@ public class ResultGenerator {
     }
 
     // to be removed
-    private void cheat() {
-        Result result = processor.processInput("display");
-        List<Task> outputs = result.getTasks();
+    private void refreshTodoTable() {
+        //Result result = processor.processInput("display");
+        List<Task> outputs = processor.fetchToDoTasks();
         if (outputs.size() == 0) {
             return;
         }

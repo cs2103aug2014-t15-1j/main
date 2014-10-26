@@ -5,7 +5,6 @@ import java.util.List;
 
 import logic.Result.ResultType;
 import parser.TaskParam;
-import database.Task;
 
 // TODO: MERGE with delete? VERY similar.
 
@@ -92,9 +91,7 @@ public class CommandDisplay extends Command {
                 resultType = ResultType.BLOCKDATE;
                 break;
             case "all":
-                for (Task t: processor.getFile().getToDoTasks()) {
-                    list.add(t);
-                }
+                list = processor.getFile().getToDoTasks();
                 break;
             default:
                 success = false;

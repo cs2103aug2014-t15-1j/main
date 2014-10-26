@@ -135,9 +135,9 @@ public class CommandSearch extends Command {
     }
     
     
-    //Obsolete Codes below, due to changing of conditions for Search Command
+    /*Obsolete Codes below, due to changing of conditions for Search Command
     
-    /* Performs search using date */
+    /* Performs search using date
     private void searchUsingDate(String date) {
         List<Task> toDoTasks = Processor.getInstance().getFile().getToDoTasks();
         for (Task t: toDoTasks) {
@@ -151,7 +151,6 @@ public class CommandSearch extends Command {
      * Performs search using Keywords or Tags 
      * Tries to find if tags is present first before searching for keywords
      * 
-     */
     private void searchUsingKeyOrTags(List<String> keywords, List<String> tags) {
         /*List<Task> toDoTasks = Processor.getInstance().getFile().getToDoTasks();
         for (Task task: toDoTasks) {       
@@ -159,11 +158,10 @@ public class CommandSearch extends Command {
             if (!found) {
                 found = containsKeyword(task, keywords);
             }
-        }*/
-        
+        }
     }
     
-    /** Checks if a Task is tagged under a tag in a List of tags*/
+    /** Checks if a Task is tagged under a tag in a List of tags
     private boolean isTagged(Task task, List<String> tags) {
         for (String tag: tags) {
             for (String taskTag : task.getTags()) {
@@ -176,7 +174,7 @@ public class CommandSearch extends Command {
         return false;
     }
     
-    /** Checks if a Task contains a certain keyword in the List of keywords */
+    /** Checks if a Task contains a certain keyword in the List of keywords
     private boolean containsKeyword(Task task, List<String> keywords) {
         for (String key: keywords) {
             if (task.getName().toLowerCase().contains(key.toLowerCase())) {
@@ -185,5 +183,5 @@ public class CommandSearch extends Command {
             }
         }
         return false;
-    }
+    }*/
 }

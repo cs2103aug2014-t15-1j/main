@@ -2,8 +2,12 @@ package gui;
 
 import java.util.Stack;
 
+import logic.Processor;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.widgets.Display;
@@ -69,6 +73,7 @@ public class MainScreen {
             String message = e.getMessage();
             setUpScreen.getFeedBack().setText(message);
         }
+        setUpScreen.getCommandLine().setFocus();
         shell.pack();
         shell.open();
 
@@ -89,19 +94,6 @@ public class MainScreen {
             public void handleEvent(Event event) {
                 switch (event.type) {
                     case SWT.KeyDown:
-                        commandLine.setText("");
-                        commandLine.removeListener(SWT.KeyDown, this);
-                        break;
-                }
-            }
-
-        });
-
-        commandLine.addListener(SWT.MouseDown, new Listener() {
-            @Override
-            public void handleEvent(Event event) {
-                switch (event.type) {
-                    case SWT.MouseDown:
                         commandLine.setText("");
                         commandLine.removeListener(SWT.KeyDown, this);
                         break;
