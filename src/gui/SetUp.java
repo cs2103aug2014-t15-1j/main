@@ -44,7 +44,7 @@ public class SetUp {
 
     private static final int NUM_COLS_SCREEN = 2;
     private static final int NUM_COLS_COMPOSITE = 1;
-    private static final int MIN_WIDTH_SCREEN = 1800;
+    private static final int MIN_WIDTH_SCREEN = 2100;
     private static final int MIN_HEIGHT_SCREEN = 1500;
     private static final int MIN_WIDTH_SIDE_PANE = 1500;
     private static final int MIN_HEIGHT_SIDE_PANE = 1300;
@@ -70,12 +70,17 @@ public class SetUp {
 
     private static final String WELCOME_MESSAGE = "Welcome.";
 
-    private static final int COL_WIDTH = 175;
+    private static final int COL_WIDTH = 500;
 
     private static final int COL_WIDTH_ID = 50;
     protected static final int TEXT_MARGIN = 3;
     protected static final int COL_COUNT = 6;
-    private static final int COL_WIDTH_DATE = 100;
+    private static final int COL_WIDTH_DATE = 150;
+    private static final int COL_WIDTH_STATUS = 100;
+
+    // private static final int COL_NAME = 1;
+    // private static final int COL_TAGS = 4;
+    // private static final int STRING_SIZE = 10;
 
     protected static SetUp setUp;
     private Shell shell;
@@ -394,6 +399,7 @@ public class SetUp {
             }
         });
         column = setColumnHeader(HEADER_NAME_NAME, COL_WIDTH, tableViewer);
+
         column.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
@@ -448,7 +454,7 @@ public class SetUp {
             }
         });
 
-        column = setColumnHeader(HEADER_NAME_END, COL_WIDTH, tableViewer);
+        column = setColumnHeader(HEADER_NAME_END, COL_WIDTH_DATE, tableViewer);
         column.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
@@ -488,7 +494,8 @@ public class SetUp {
 
         });
 
-        column = setColumnHeader(HEADER_NAME_STATUS, COL_WIDTH, tableViewer);
+        column = setColumnHeader(HEADER_NAME_STATUS, COL_WIDTH_STATUS,
+                                 tableViewer);
         column.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
@@ -511,69 +518,8 @@ public class SetUp {
 
         Table table = tableViewer.getTable();
         table.setLayoutData(new GridData(GridData.FILL_BOTH));
-        // setWrap(table);
     }
 
-    // private void setWrap(Table table) {
-    // Listener listener = new Listener() {
-    // @Override
-    // public void handleEvent(Event event) {
-    // switch (event.type) {
-    // get text, get num of lines, times height by that much, print
-    // case SWT.MeasureItem: {
-    // TableItem item = (TableItem) event.item;
-    // String text = getText(item, event.index);
-    // item.setText(text);
-    // Point size = event.gc.textExtent(text);
-    // event.width = size.x / event.width + 1;
-    // event.height = size.y * 2;
-    // break;
-    // }
-    // case SWT.EraseItem: {
-    // event.detail &= ~SWT.FOREGROUND;
-    // break;
-    // }
-    // case SWT.PaintItem: {
-    // TableItem item = (TableItem) event.item;
-    // String text = item.getText(event.index);
-    // event.gc.drawText(text, event.x, event.y, true);
-    // break;
-    // }
-    // }
-    // }
-    // String getText(TableItem item, int column) {
-    // String text = item.getText(column);
-    // if (column != 0) {
-    // int index = table.indexOf(item);
-    // int size = text.length();
-    // String start = "";
-    // String end = text;
-    // int startIndex = 6;
-    // int endIndex = size - 1;
-    // while (end.length() > 5) {
-    // start = start + end.substring(0, 5) + "\nnew line";
-    // end = end.substring(startIndex, endIndex);
-    // endIndex = end.length() - 1;
-    // }
-    // text = end;
-    // if ((index + column) % 3 == 1) {
-    // text += "\nnew line";
-    // }
-    // if ((index + column) % 3 == 2) {
-    // text += "\nnew line\nnew line";
-    // }
-    // }
-    // return text;
-    // }
-    // };
-    // table.addListener(SWT.MeasureItem, listener);
-    // table.addListener(SWT.PaintItem, listener);
-    // table.addListener(SWT.EraseItem, listener);
-    // for (int i = 0; i < COL_COUNT; i++) {
-    // table.getColumn(i).pack();
-    // }
-    // table.pack();
-    // }
     private TableViewerColumn setColumnHeader(String headerName, int colWidth,
                                               TableViewer viewer) {
         TableViewerColumn columnViewer = new TableViewerColumn(viewer,
@@ -606,6 +552,7 @@ public class SetUp {
         Color black = display.getSystemColor(SWT.COLOR_BLACK);
         Color white = display.getSystemColor(SWT.COLOR_WHITE);
         this.commandLine.setBackground(black);
+
         this.commandLine.setForeground(white);
         commandLine.setFont(registry.get("type box"));
 
@@ -631,7 +578,7 @@ public class SetUp {
     private void setUpUpcomingTaskList() {
         Display display = shell.getDisplay();
         Label upcomingTask = new Label(sidePane, SWT.SINGLE);
-        upcomingTask.setText("Upcoming Task");
+
         Image upcomingHeader = new Image(display, ".\\images\\UpcomingTask.png");
         upcomingTask.setImage(upcomingHeader);
         GridData centeredGridData = new GridData(SWT.CENTER, SWT.FILL, true,
