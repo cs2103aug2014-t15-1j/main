@@ -10,7 +10,7 @@ import database.Task;
 /**
  * This Command stores the delete type and if applicable, an id value.
  * 
- * Delete type: get("rangeType") [Values: "all", "search", "done", "id" ].
+ * Delete type: get("rangeType") [Values: "all", "search", "id" ].
  * 
  * Delete id: get("id") [Value: string that can be parsed as int].
  * 
@@ -19,12 +19,12 @@ import database.Task;
  */
 public class CommandDelete extends Command {
 
-    // Delete types
+    /* RangeType: "id", "search", "id" */
     private String rangeType = "";
 
-    // Delete type data [get("id")]
     private String id = "";
 
+    /* Complement Command object of this Command Object */
     private CommandRestore cmdRestore = null;
     
     public CommandDelete(List<TaskParam> content) {

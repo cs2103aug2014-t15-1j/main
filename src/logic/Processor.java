@@ -15,7 +15,8 @@ import database.BlockDate;
 import database.DataFile;
 import database.Task;
 
-/* This class handles inputs from UI and interacts with other components for the
+/**
+ * This class handles inputs from UI and interacts with other components for the
  * necessary operations. It is dependent on DataFile for operations related to 
  * the management of storage of Task. It is also dependent on Parser to decipher
  * user input.
@@ -73,6 +74,8 @@ public class Processor extends Observable {
     /** Stores input string for 'up' key **/
     private Stack<String> inputStringBackwardHistory;
     
+    private String currentInputString;
+    
 	/** Stores input string for 'down' key **/
 	private Stack<String> inputStringForwardHistory;
 	
@@ -99,11 +102,25 @@ public class Processor extends Observable {
 	    deletedBlockedDateList = new Stack<BlockDate>();
 	    inputStringBackwardHistory = new Stack<String>();
 	    inputStringForwardHistory = new Stack<String>();
+	    currentInputString = "";
 	    initialiseLogger();
 	    updateFloatingAndTimedTasks();
 	}
 	
-	/** 
+	private static void initialiseLogger() {
+        if (ENABLE_LOGGING) {
+    	    try {
+    	        FileHandler fh = new FileHandler("Processor.log", true);  
+    	        Formatter format = new LogFormatter();
+    	        fh.setFormatter(format);
+    	        log.addHandler(fh);
+    	    } catch (Exception e) {
+    	        e.printStackTrace();
+    	    }
+        }
+    }
+
+    /** 
 	 * This method returns an instance of Processor
      * @return Instance of Processor
      */
@@ -120,33 +137,27 @@ public class Processor extends Observable {
 	    return processor;
 	}
 	
-	private static void initialiseLogger() {
-	    if (ENABLE_LOGGING) {
-    	    try {
-    	        FileHandler fh = new FileHandler("Processor.log", true);  
-    	        Formatter format = new LogFormatter();
-    	        fh.setFormatter(format);
-    	        log.addHandler(fh);
-    	    } catch (Exception e) {
-    	        e.printStackTrace();
-    	    }
-	    }
-	}
-	
 	/**
 	 * This methods processes the input by the user 
 	 * @param String
      * @return Result
      */
 	public Result processInput(String input) throws IllegalArgumentException {
-	    for (String strInput : inputStringForwardHistory) {
-            inputStringBackwardHistory.push(strInput);
-        }
-	    inputStringBackwardHistory.push(input);
+	    updateInputHistory(input);
 	    Command cmd = Parser.parse(input);
 		assert cmd != null;
 		return processCommand(cmd);
 	}
+
+    private void updateInputHistory(String input) {
+        for (String strInput : inputStringForwardHistory) {
+	        if (!strInput.isEmpty()) {
+	            inputStringBackwardHistory.push(strInput);
+	        }
+        }
+	    inputStringForwardHistory.clear();
+	    inputStringBackwardHistory.push(input);
+    }
 	
 	/**
 	 * Overloaded by method processCommand(Command, boolean)
@@ -281,21 +292,19 @@ public class Processor extends Observable {
     }
 	
 	public String fetchInputUpKey() {
-	    String output = "";
 	    if (!inputStringBackwardHistory.isEmpty()) {
-	        output = inputStringBackwardHistory.pop();
-	        inputStringForwardHistory.push(output);
+	        inputStringForwardHistory.push(currentInputString);
+            currentInputString = inputStringBackwardHistory.pop();
 	    }
-	    return output;
+	    return currentInputString;
     }
 	
 	public String fetchInputDownKey() {
-	    String output = "";
         if (!inputStringForwardHistory.isEmpty()) {
-            output = inputStringForwardHistory.pop();
-            inputStringBackwardHistory.push(output);
+            inputStringBackwardHistory.push(currentInputString);
+            currentInputString = inputStringForwardHistory.pop();
         }
-        return output;
+        return currentInputString;
     }
 	
 	protected DataFile getFile() {

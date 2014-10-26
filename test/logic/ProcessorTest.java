@@ -11,8 +11,11 @@ import database.Task;
 import java.util.ArrayList;
 import java.util.List;
 
-// Create CommandEdit
-// Compare with my Result Object
+/** 
+ * Integrated Testing for Processor Class
+ * 
+ * @author Ter Yao Xiang
+ */
 
 public class ProcessorTest {
 	

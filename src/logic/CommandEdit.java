@@ -1,7 +1,5 @@
 package logic;
 
-import gui.TaskStub;
-
 import java.util.List;
 import java.util.ArrayList;
 

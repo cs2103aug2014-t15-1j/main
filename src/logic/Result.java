@@ -28,8 +28,8 @@ public class Result {
     private boolean confirmation;
     private ResultType resultType;
     
-    /** There are currently 2 ResultType that can be retrieved from Result
-     *  The output can be accessed via {@link getTasks()} or {@link getBlockedDates}
+    /** There are currently 2 ResultType that can be retrieved from Result. <br>
+     *  The output can be accessed via {@link getTasks()} or {@link getBlockedDates()}
      *  
      *  @author Yao Xiang
      */

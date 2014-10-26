@@ -10,8 +10,15 @@ import database.BlockDate;
 import database.DateTime;
 import database.Task;
 
+/**
+ * This Command performs the Addition of new Tasks
+ * 
+ * @author Yao Xiang
+ *
+ */
 public class CommandAdd extends Command {
     
+    //Parameters available for CommandAdd
     private String name = "";
     private DateTime due = new DateTime();
     private DateTime start = new DateTime();
@@ -102,8 +109,6 @@ public class CommandAdd extends Command {
         return result;
     }
 
-
-    
     /** 
      * Executes 'add' operation of a task<br>
      * This method adds a new Task to the Todo List
@@ -147,7 +152,11 @@ public class CommandAdd extends Command {
         return blocked;
     }
     
-    /** Undo the 'Add' Command */
+    /** 
+     * Executes complement for 'add' operation of a task<br>
+     * This method deletes the newly added Task to the Todo List
+     * @return Result
+     */
     @Override
     protected Result executeComplement() {
         Processor processor = Processor.getInstance();

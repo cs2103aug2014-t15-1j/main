@@ -6,14 +6,12 @@ import java.util.List;
 import logic.Result.ResultType;
 import parser.TaskParam;
 
-// TODO: MERGE with delete? VERY similar.
-
 public class CommandDisplay extends Command {
 
-    // Restore types [get("rangeType"); returns "all" | "id" | "done"]
+    /* Restore types - "all","id" */
     private String rangeType = "";
 
-    // Restore type data [get("id"); returns string]
+    /* Restore type data [get("id"); returns string] */
     private String id = "";
 
     public CommandDisplay(List<TaskParam> content) {
