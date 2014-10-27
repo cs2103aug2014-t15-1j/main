@@ -190,7 +190,6 @@ public class Processor extends Observable {
 			return new Result(null, false, CommandType.ERROR, ResultType.TASK);
 		}
 		Result result = cmd.execute(userInput);
-
 		if (result.isSuccess() && !result.needsConfirmation() && userInput) {
 			updateCommandHistory(cmd);
 			if (ENABLE_LOGGING) {
@@ -240,7 +239,7 @@ public class Processor extends Observable {
 	private void updateFloatingAndTimedTasks() {
 	    clearPanelTaskList();
 	    for (Task task : file.getToDoTasks()) {
-	        if (task.getDue().isEmpty() && task.getEnd().isEmpty()) {
+	        if (task.getStart().isEmpty()) {
 	            floatingTasks.add(task);
 	        } else {
 	            timedTasks.add(task);
@@ -265,6 +264,7 @@ public class Processor extends Observable {
 	    if (ENABLE_LOGGING) {
 	        log.info("Fetching Timed Tasks");
 	    }
+        Collections.sort(timedTasks);
         return Collections.unmodifiableList(timedTasks);
 	}
 	
@@ -272,6 +272,7 @@ public class Processor extends Observable {
 	    if (ENABLE_LOGGING) {
 	        log.info("Fetching Floating Tasks");
 	    }
+	    Collections.sort(floatingTasks);
 	    return Collections.unmodifiableList(floatingTasks);
 	}
 	

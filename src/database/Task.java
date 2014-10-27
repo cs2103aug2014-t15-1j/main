@@ -1,5 +1,6 @@
 package database;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -13,7 +14,7 @@ import java.util.ArrayList;
  * 
  */
 
-public class Task implements Comparable<Task> {
+public class Task implements Comparable<Task>, Comparator<Task> {
 
     /**
      * Unique ID for each new Task object. Increments at new Task instantiation.
@@ -86,6 +87,10 @@ public class Task implements Comparable<Task> {
         this.tags.addAll(task.getTags());
         this.deleted = task.isDeleted();
         this.done = task.isDone();
+    }
+
+    public Task() {
+        this.ID = 0;
     }
 
     /**
@@ -348,5 +353,16 @@ public class Task implements Comparable<Task> {
 
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;
+    }
+
+    @Override
+    public int compare(Task task, Task otherTask) {
+        if (task.getId() < otherTask.getId()) {
+            return -1;
+        } else if (task.getId() > otherTask.getId()) {
+            return 1;
+        } else {
+            return 0;
+        }
     }
 }

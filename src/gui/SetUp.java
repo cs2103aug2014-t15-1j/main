@@ -76,10 +76,10 @@ public class SetUp {
     private static final int COL_WIDTH = 350;
 
     // NOTE: 50 is able to fit ID, two digit numbers, "."
-    private static final int COL_WIDTH_ID = 50;
+    private static final int COL_WIDTH_ID = 30;
 
     // NOTE:250 is able to fit both date and time
-    private static final int COL_WIDTH_DATE = 250;
+    private static final int COL_WIDTH_DATE = 120;
 
     // NOTE: 150 is just right for all statuses
     private static final int COL_WIDTH_STATUS = 150;
