@@ -64,10 +64,11 @@ public class MainScreen {
         shell.setBackgroundMode(SWT.INHERIT_FORCE);
         shell.setBackground(display.getSystemColor(SWT.COLOR_CYAN));
         // Things to do at startUp: Display all To do Tasks
-
+        
         SetUp setUpScreen = SetUp.getInstance(shell);
         resultGenerator.start();
-        new TaskTableUI();
+        
+        new TaskListUI();
         removeText(setUpScreen);
         try {
             readUserInput(setUpScreen);

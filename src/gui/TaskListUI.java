@@ -1,65 +1,27 @@
 package gui;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
 import logic.Processor;
 
 import org.eclipse.swt.custom.StyledText;
 
-import database.DateTime;
 import database.Task;
 
 /*
  * This class updates the TaskList Interface whenever a change is made. 
  */
-public class TaskListUI {
+public class TaskListUI implements Observer {
     private static final String DOT_AND_SPACE = ". ";
     private static final String LINE_SEPARATOR = System
             .getProperty("line.separator");
 
     public TaskListUI() {
-        update();
+        populatesData();
     }
-
-    public TaskListUI(List<Task> tasks) {
-        update(tasks);
-    }
-
-    private void update(List<Task> tasks) {
-        StyledText upcomingTasksList = getUpcomingList();
-        StyledText floatingTasksList = getFloatingList();
-        List<Task> upcomingTasks = getUpcomingTasks(tasks);
-        List<Task> floatingTasks = getFloatingTasks(tasks);
-        String upcomingList = getStringList(upcomingTasks, false); // to
-        // implement:
-        // overdue
-        // tasks
-        // in
-        // red
-
-        String floatingList = getStringList(floatingTasks, true);
-        upcomingTasksList.setText(upcomingList);
-        floatingTasksList.setText(floatingList);
-    }
-
-    private void update() {
-        StyledText upcomingTasksList = getUpcomingList();
-        StyledText floatingTasksList = getFloatingList();
-        List<Task> upcomingTasks = getUpcomingTasks();
-        List<Task> floatingTasks = getFloatingTasks();
-        String upcomingList = getStringList(upcomingTasks, false); // to
-        // implement:
-        // overdue
-        // tasks
-        // in
-        // red
-
-        String floatingList = getStringList(floatingTasks, true);
-        upcomingTasksList.setText(upcomingList);
-        floatingTasksList.setText(floatingList);
-    }
-
+    
     private StyledText getUpcomingList() {
         SetUp setUp = SetUp.getInstance();
         StyledText taskList = setUp.getUpcomingTasksList();
@@ -73,52 +35,15 @@ public class TaskListUI {
     }
 
     private List<Task> getUpcomingTasks() {
-
         Processor processor = Processor.getInstance();
         List<Task> tasks = processor.fetchTimedTasks();
         return tasks;
-    }
-
-    /**
-     * Sorts through the tasks list returned by ResultGenerator
-     * 
-     * @return upcomingTasksList tasks with dates
-     */
-    private List<Task> getUpcomingTasks(List<Task> tasks) {
-        int size = tasks.size();
-        List<Task> upcomingTasks = new ArrayList<Task>();
-        for (int index = 0; index < size; index++) {
-            Task task = tasks.get(index);
-            if (!isEmpty(task.getDue()) || !isEmpty(task.getStart()) ||
-                !isEmpty(task.getEnd())) {
-                upcomingTasks.add(task);
-            }
-        }
-        return upcomingTasks;
     }
 
     private List<Task> getFloatingTasks() {
         Processor processor = Processor.getInstance();
         List<Task> tasks = processor.fetchFloatingTasks();
         return tasks;
-    }
-
-    /**
-     * Sorts through the tasks list returned by ResultGenerator
-     * 
-     * @return floatingTasksList tasks without dates
-     */
-    private List<Task> getFloatingTasks(List<Task> tasks) {
-        int size = tasks.size();
-        List<Task> floatingTasks = new ArrayList<Task>();
-        for (int index = 0; index < size; index++) {
-            Task task = tasks.get(index);
-            if (isEmpty(task.getDue()) && isEmpty(task.getStart()) &&
-                isEmpty(task.getEnd())) {
-                floatingTasks.add(task);
-            }
-        }
-        return floatingTasks;
     }
 
     private String getStringList(List<Task> tasks, boolean isFloating) {
@@ -173,13 +98,22 @@ public class TaskListUI {
         return true;
     }
 
-    private boolean isEmpty(DateTime dateTime) {
-        if (dateTime.getDate().equals("") && dateTime.getDay() == 0 &&
-            dateTime.getMonth() == 0 && dateTime.getTime().equals("") &&
-            dateTime.getYear() == 0) {
-            return true;
-        }
-
-        return false;
+    @Override
+    public void update(Observable o, Object arg) {
+        populatesData();
+    }
+    
+    public void populatesData() {
+        List<Task> upcomingTasks = getUpcomingTasks();
+        List<Task> floatingTasks = getFloatingTasks();
+        StyledText upcomingTasksList = getUpcomingList();
+        StyledText floatingTasksList = getFloatingList();
+        
+        String upcomingList = getStringList(upcomingTasks, false); 
+        String floatingList = getStringList(floatingTasks, true);
+        // to implement overdue tasks in red
+       
+        upcomingTasksList.setText(upcomingList);
+        floatingTasksList.setText(floatingList);
     }
 }

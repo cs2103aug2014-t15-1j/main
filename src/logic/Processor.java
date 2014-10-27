@@ -13,6 +13,7 @@ import logic.Result.ResultType;
 import parser.Parser;
 import database.BlockDate;
 import database.DataFile;
+import database.DateTime;
 import database.Task;
 
 /**
@@ -196,7 +197,7 @@ public class Processor extends Observable {
 			    log.info(result.getCommandType() + " Command executed successfully");
 			}
 		}
-		updateUIPanelWindow(cmd);
+		updateUIPaneWindow();
 		return result;
 	}
 	
@@ -211,15 +212,13 @@ public class Processor extends Observable {
 		}
 	}
 
-	private void updateUIPanelWindow(Command cmd) {
-	    if (hasModifiedData(cmd)) {
-	        updateFloatingAndTimedTasks();
-            setChanged();
-            notifyObservers(); //Calls update of the side panel class
-            if (ENABLE_LOGGING) {
-                log.info("Updated side panel.");
-            }
-	    }
+	private void updateUIPaneWindow() {
+	    updateFloatingAndTimedTasks();
+        setChanged();
+        notifyObservers(); //Calls update of the side panel class
+        if (ENABLE_LOGGING) {
+            log.info("Updated side panel.");
+        }
 	}
 	
 	private boolean hasModifiedData(Command cmd) {
@@ -241,7 +240,7 @@ public class Processor extends Observable {
 	private void updateFloatingAndTimedTasks() {
 	    clearPanelTaskList();
 	    for (Task task : file.getToDoTasks()) {
-	        if (task.getDue() == null && task.getEnd() == null) {
+	        if (task.getDue().isEmpty() && task.getEnd().isEmpty()) {
 	            floatingTasks.add(task);
 	        } else {
 	            timedTasks.add(task);

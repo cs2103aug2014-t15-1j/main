@@ -23,15 +23,15 @@ public class ProcessorTest {
 	private static DateTime testTime = new DateTime("10/10/2012" ,"1010");
 	private static List<String> testTags = new ArrayList<String>();
 	
-	private static Task testTask1 = new Task("Do CS2103 Homework", null, null, null, testTags);
-	private static Task testTask2 = new Task(null, testTime, null, null, new ArrayList<String>());
-	private static Task testTask3 = new Task(null, null, testTime, null, new ArrayList<String>());
-	private static Task testTask4 = new Task(null, null, null, testTime, new ArrayList<String>());
-	private static Task testTask5 = new Task(null, null, null, null, testTags);
+	private static Task testTask1 = new Task("Do CS2103 Homework", new DateTime(), new DateTime(), new DateTime(), testTags);
+	private static Task testTask2 = new Task("", testTime, new DateTime(), new DateTime(), new ArrayList<String>());
+	private static Task testTask3 = new Task("", new DateTime(), testTime, null, new ArrayList<String>());
+	private static Task testTask4 = new Task("", new DateTime(), new DateTime(), testTime, new ArrayList<String>());
+	private static Task testTask5 = new Task("", new DateTime(), new DateTime(), new DateTime(), testTags);
 	private static Task testTask6 = new Task("Do CS2103 Homework", testTime, testTime, testTime, testTags);
-	private static Task testTask7 = new Task("Do EE2020 Homework", null, null, null, new ArrayList<String>());
-	private static Task testTask8 = new Task("Do EE2020 Homework", testTime, null, null,  new ArrayList<String>());
-    private static Task testTask9 = new Task("Do EE2020 Homework", testTime, testTime, null, new ArrayList<String>());
+	private static Task testTask7 = new Task("Do EE2020 Homework", new DateTime(), new DateTime(), new DateTime(), new ArrayList<String>());
+	private static Task testTask8 = new Task("Do EE2020 Homework", testTime, new DateTime(), new DateTime(),  new ArrayList<String>());
+    private static Task testTask9 = new Task("Do EE2020 Homework", testTime, testTime, new DateTime(), new ArrayList<String>());
     private static Task testTask10 = new Task("Do EE2020 Homework", testTime, testTime, testTime, new ArrayList<String>());
     private static Task testTask11 = new Task("Do EE2020 Homework", testTime, testTime, testTime, testTags);
 

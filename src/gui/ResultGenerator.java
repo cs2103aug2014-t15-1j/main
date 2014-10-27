@@ -13,6 +13,7 @@ public class ResultGenerator {
 
     public void start() {
         processor = Processor.getInstance();
+        processor.addObserver(new TaskListUI());
     }
 
     public String sendInput(String input) {
@@ -40,11 +41,6 @@ public class ResultGenerator {
         }
 
         return false;
-    }
-
-    @SuppressWarnings("rawtypes")
-    public void updateInterface(List tasks, boolean isDateType) {
-        new UpdateUI(tasks, isDateType);
     }
 
     public String processResult(Result result, String input) {
@@ -91,7 +87,6 @@ public class ResultGenerator {
                 return "Command Undone.";
 
             case DISPLAY:
-                updateInterface(dates, true);
                 return feedbackMessageMultiResults(dates,
                                                    "Showing %1$s blocks.");
             case ERROR:
@@ -135,7 +130,6 @@ public class ResultGenerator {
                 if (result.needsConfirmation()) {
                     return "This will erase all data, PERMANENTLY.  Key 'y' to continue or 'n' to abort";
                 }
-                updateInterface(outputs, false);
 
                 if (outputs.size() == 0) {
                     return "No tasks to show.";
@@ -150,7 +144,6 @@ public class ResultGenerator {
                  * feedbackMessageMultiResults(outputs, "%1$s task(s) found.");
                  **/
             case SEARCH:
-                updateInterface(outputs, false);
                 return feedbackMessageMultiResults(outputs,
                                                    "Found %1$s match(es).");
             case TODO:
@@ -211,7 +204,5 @@ public class ResultGenerator {
         if (outputs.size() == 0) {
             return;
         }
-        updateInterface(outputs, false);
-
     }
 }

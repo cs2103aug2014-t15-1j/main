@@ -121,14 +121,14 @@ public class CommandAdd extends Command {
         if (Processor.ENABLE_LOGGING) {
             Processor.getLogger().info("Executing 'Add' Command...");
         }
-        boolean confirmation = true;
-        if (!isBlocked()) {
+        boolean blockConfirmation = isBlocked();
+        if (!blockConfirmation) {
             Task newTask = new Task(name, due, start, end, tags);
             success = Processor.getInstance().getFile().addNewTask(newTask);
             list.add(newTask);
-            confirmation = false;
+            blockConfirmation = false;
         }
-        return new Result(list, success, getType(), confirmation, ResultType.TASK);
+        return new Result(list, success, getType(), blockConfirmation, ResultType.TASK);
     }
     
     /**
