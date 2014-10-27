@@ -94,7 +94,7 @@ public class ResultGenerator {
                 return "Command Undone.";
 
             case DISPLAY:
-                dateTable.update(dates);
+                refreshBlockTable();
                 return feedbackMessageMultiResults(dates,
                                                    "Showing %1$s blocks.");
             case SEARCH:
