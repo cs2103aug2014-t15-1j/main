@@ -96,7 +96,7 @@ public class CommandSearch extends Command {
     private void searchUsingDateAndKeyAndTags(String date, List<String> keywords, List<String> tags) {
         int criteriaCount = getCriteriaCount(date, keywords, tags);
         if (criteriaCount > 0) {
-            List<Task> allTasks = Processor.getInstance().getFile().getToDoTasks();
+            List<Task> allTasks = Processor.getInstance().getFile().getAllTasks();
             for (Task task : allTasks) {
                 int found = criteriaCount;
                 if (date != "") {

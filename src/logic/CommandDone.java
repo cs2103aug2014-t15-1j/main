@@ -132,11 +132,13 @@ public class CommandDone extends Command {
         Processor processor = Processor.getInstance();
         boolean success = false;
         for (Task task : processor.getFile().getToDoTasks()) {
-            if  (task.getDue().equals(this.dateTime)) {
-                task.setDone(true);
+            if (task.getDue().getDate().equals(this.dateTime.getDate())) {
                 list.add(task);
                 success = true;
             }
+        }
+        for (Task task : list) {
+            processor.getFile().doneTask(task);
         }
         return success;
     }
