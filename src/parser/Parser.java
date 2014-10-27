@@ -57,6 +57,8 @@ public class Parser {
                                                    TYPE_UNBLOCK, TYPE_DONE,
                                                    TYPE_TODO, TYPE_UNDO,
                                                    TYPE_REDO, TYPE_EXIT };
+    private static final String[] DATE_PARAM_LIST = { "due", "by", "start",
+                                                     "from", "end", "to" };
 
     // ========== MAIN PARSE METHOD ==========//
 
@@ -543,58 +545,69 @@ public class Parser {
     }
 
     private static Command parseAdd(String[] commandParams) {
-        String currField = "name";
-        String currFieldLC = currField.toLowerCase();
+        String currFieldOrig = "name";
+        String currField = "";
         List<TaskParam> addFields = new ArrayList<TaskParam>();
         ArrayList<String> availParams = generateAddParamList();
 
         String currWord;
-        String currWordLC;
         boolean currHasDate = false;
         boolean currHasTime = false;
 
         for (int j = 0; j < commandParams.length; j++) {
             currWord = commandParams[j];
-            currWordLC = currWord.toLowerCase();
             if (hasValidHashTag(currWord)) {
+                // No matter the current field, collect hashtags first
                 addFields.add(new TaskParam("tag", currWord));
-            } else if (availParams.contains(currWordLC)) {
-                if (isDateParam(currFieldLC) && !currHasDate && !currHasTime) {
-                    TaskParam currParam = getTaskParam(addFields, "name");
-                    currParam.addToField(currField);
+            } else if (currField.equals(getDateParamEquiv(currWord)) &&
+                       !currWord.isEmpty() && !currHasDate && !currHasTime) {
+                // If parameters are repeated, add the first to name
+                addToFieldParam(addFields, "name", currFieldOrig);
+            } else if (availParams.contains(getDateParamEquiv(currWord))) {
+                // If the current word is an available parameter name
+                if (isDateParam(currField) && !currHasDate && !currHasTime) {
+                    // If the last parameter was not filled, it was not a parameter
+                    addToFieldParam(addFields, "name", currFieldOrig);
+                    availParams.add(currField);
                 }
-                currField = currWord;
-                currFieldLC = currWordLC;
+                // Reassign currField values
+                currField = getDateParamEquiv(currWord);
+                // Save the original word (with capitalisation)
+                currFieldOrig = currWord;
+                // Remove availability 
+                availParams.remove(currField);
+                // Reset hasDate/Time values
                 currHasDate = false;
                 currHasTime = false;
-            } else if (isDateParam(currFieldLC) && !currWord.isEmpty()) {
+            } else if (isDateParam(currField) && !currWord.isEmpty()) {
+                // If currently a date parameter and string is not ""
                 if (!currHasDate && DateParser.isValidDate(currWord)) {
-                    TaskParam currParam = getTaskParam(addFields, currFieldLC);
-                    currParam.addToField(currWord);
+                    addToFieldParam(addFields, currField, currWord);
                     currHasDate = true;
                 } else if (!currHasTime && DateParser.isValidTime(currWord)) {
-                    TaskParam currParam = getTaskParam(addFields, currFieldLC);
-                    currParam.addToField(currWord);
+                    addToFieldParam(addFields, currField, currWord);
                     currHasTime = true;
                 } else {
+                    // If not a valid date/time, reset fields
+                    // Add the parameter name to "name" if no date/time
+                    // was assigned.
                     TaskParam nameParam = getTaskParam(addFields, "name");
                     if (!currHasDate && !currHasTime) {
-                        nameParam.addToField(currField);
-                    } else {
-                        availParams.remove(currWordLC);
+                        nameParam.addToField(currFieldOrig);
+                        availParams.add(currField);
                     }
                     nameParam.addToField(currWord);
-                    currFieldLC = "name";
+                    currField = "";
+                    currFieldOrig = "";
                 }
             } else {
-                TaskParam nameParam = getTaskParam(addFields, "name");
-                nameParam.addToField(currWord);
+                addToFieldParam(addFields, "name", currWord);
             }
         }
-        
-        if (currFieldLC != "name" && !currHasDate && !currHasTime) {
-            TaskParam nameParam = getTaskParam(addFields, "name");
-            nameParam.addToField(currField);
+
+        // catches if the last word was a parameter
+        if (isDateParam(currField) && !currHasDate && !currHasTime) {
+            addToFieldParam(addFields, "name", currFieldOrig);
         }
 
         removeDuplicates(addFields);
@@ -603,9 +616,32 @@ public class Parser {
         return new CommandAdd(addFields);
     }
 
+    private static String getDateParamEquiv(String word) {
+        String wordLC = word.toLowerCase();
+        switch (wordLC) {
+            case "by":
+                return "due";
+
+            case "from":
+                return "start";
+
+            case "to":
+                return "end";
+        }
+
+        return wordLC;
+    }
+
     private static boolean isDateParam(String word) {
         String wordLC = word.toLowerCase();
-        return wordLC.equals("due") || wordLC.equals("start") || wordLC.equals("end");
+
+        for (String p : DATE_PARAM_LIST) {
+            if (p.equals(wordLC)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private static ArrayList<String> generateAddParamList() {
@@ -880,7 +916,6 @@ public class Parser {
                 } else {
                     // NOTE: currWord.isEmpty() is to make sure the parser does
                     // not add " " for each empty string
-                    // TODO: check other cases for this.
                     if (param[fieldIndex].isEmpty() || currWord.isEmpty()) {
                         param[fieldIndex] = param[fieldIndex].concat(currWord);
                     } else {

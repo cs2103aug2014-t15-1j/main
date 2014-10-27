@@ -169,14 +169,14 @@ public class TestParser {
         assertEquals("Add: simple, end param", result, cmd);
 
         // Full Add with repeated parameters and consecutive parameters
-        result = "\n[[ CMD-ADD: ]]" + "\nname: do start # wed homework "
-                 + "late due now quickly due thurs" + "\ndue: 29/10/2014"
+        result = "\n[[ CMD-ADD: ]]" + "\nname: do start up research # due from "
+                 + "start 29/10/2014 due soon. do quickly due thurs" + "\ndue: 29/10/2014"
                  + "\nstart: 27/10/2014 0900" + "\nend: 28/10/2014"
                  + "\ntags: [#cs2103, #work]";
         cmd = Parser
-                .parse("       add       do start #cs2103 #         wed homework    late "
-                               + "due START      27/10/2014        0900 end   28/10/2014 "
-                               + "now quickly due thurs due  29/10/2014 #work\n")
+                .parse("  add   do start #cs2103  up research # due from from  27/10/2014  0900 "
+                               + "start 29/10/2014  due end  28/10/2014 "
+                               + "soon. do quickly due thurs due  29/10/2014 #work\n")
                 .toString();
         assertEquals("Add: full, repeated params, consecutive param", result,
                      cmd);
