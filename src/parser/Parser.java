@@ -528,7 +528,7 @@ public class Parser {
     }
 
     private static Command parseHelp(String[] commandParams) {
-        String helpField = null;
+        String helpField = "";
 
         // TODO: change CommandHelp to process "invalid" as Command.ERROR?
         if (commandParams.length > 0) {

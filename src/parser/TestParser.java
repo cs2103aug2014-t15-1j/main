@@ -21,20 +21,8 @@ public class TestParser {
         String result;
         String cmd;
 
-        // No proper command
-        result = "\n[[ CMD-OTHERS ]]" + "\ncmd-type: ERROR"
-                 + "\ncmd-info: Error in initial command parsing";
-        cmd = Parser.parse("that homework it's #cs2103").toString();
-        assertEquals(result, cmd);
-
-        // Empty input
-        result = "\n[[ CMD-OTHERS ]]" + "\ncmd-type: ERROR"
-                 + "\ncmd-info: Error in initial command parsing";
-        cmd = Parser.parse("").toString();
-        assertEquals(result, cmd);
-
         // Valid command with spaces in front
-        result = "\n[[ CMD-HELP: ]]" + "\nfield: null";
+        result = "\n[[ CMD-HELP: ]]" + "\nfield: ";
         cmd = Parser.parse("              help").toString();
         assertEquals("Help: empty", result, cmd);
 
@@ -42,7 +30,7 @@ public class TestParser {
     }
 
     @Test(expected = AssertionError.class)
-    public void failGeneral() {
+    public void failCommandNull() {
         System.out.println("\n>> Failing general inputs with a null...");
 
         Parser.parse(null);
@@ -50,6 +38,24 @@ public class TestParser {
         System.out.println("...success!");
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void failCommandInvalid() {
+        System.out.println("\n>> Failing general inputs with random words...");
+
+        Parser.parse("that homework it's #cs2103");
+
+        System.out.println("...success!");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void failCommandEmpty() {
+        System.out.println("\n>> Failing general inputs with empty string...");
+
+        Parser.parse("").toString();
+
+        System.out.println("...success!");
+    }
+    
     @Test
     public void testParseToTask() {
         System.out.println("\n>> Testing parseToTask()...");
@@ -99,7 +105,7 @@ public class TestParser {
         Command testEdit = Parser
                 .parse("edit 3 cs2103 delete: name name nil name name n: todo homework delete: name name #cs2103");
         assertEquals("get:type", "EDIT", testEdit.getType().toString());
-        assertEquals("get:error", null, testEdit.getError());
+        assertEquals("get:error", "", testEdit.getError());
         assertEquals("get:name", "cs2103 nil todo homework",
                      testEdit.get("name"));
         assertEquals("get:delete", "name", testEdit.get("delete"));
@@ -116,7 +122,7 @@ public class TestParser {
         String cmd;
 
         // Empty Help
-        result = "\n[[ CMD-HELP: ]]" + "\nfield: null";
+        result = "\n[[ CMD-HELP: ]]" + "\nfield: ";
         cmd = Parser.parse("help").toString();
         assertEquals("Help: empty", result, cmd);
 
@@ -213,15 +219,15 @@ public class TestParser {
 
         // Edit with only id
         // TODO: Shouldn't this be invalid?
-        result = "\n[[ CMD-EDIT: ]]" + "\nid: 1" + "\nname: null" + "\ndue: "
-                 + "\nstart: " + "\nend: " + "\ntags: []" + "\ndelete: null";
+        result = "\n[[ CMD-EDIT: ]]" + "\nid: 1" + "\nname: " + "\ndue: "
+                 + "\nstart: " + "\nend: " + "\ntags: []" + "\ndelete: ";
         cmd = Parser.parse("edit 1").toString();
         assertEquals("Edit: id only", result, cmd);
 
         // Simple Edit
         result = "\n[[ CMD-EDIT: ]]" + "\nid: 2" + "\nname: do homework"
                  + "\ndue: 23/04/2014" + "\nstart: " + "\nend: " + "\ntags: []"
-                 + "\ndelete: null";
+                 + "\ndelete: ";
         cmd = Parser.parse("edit 2 do homework due: 23/04/2014").toString();
         assertEquals("Edit: simple", result, cmd);
 
@@ -303,17 +309,17 @@ public class TestParser {
         assertEquals("Delete: invalid", result, cmd);
 
         // Delete all tasks
-        result = "\n[[ CMD-Delete: ]]" + "\nrangeType: all" + "\nid: null";
+        result = "\n[[ CMD-Delete: ]]" + "\nrangeType: all" + "\nid: ";
         cmd = Parser.parse("delete all").toString();
         assertEquals("Delete: all", result, cmd);
 
         // Delete searched tasks
-        result = "\n[[ CMD-Delete: ]]" + "\nrangeType: search" + "\nid: null";
+        result = "\n[[ CMD-Delete: ]]" + "\nrangeType: search" + "\nid: ";
         cmd = Parser.parse("delete search").toString();
         assertEquals("Delete: search", result, cmd);
 
         // Delete done tasks
-        result = "\n[[ CMD-Delete: ]]" + "\nrangeType: done" + "\nid: null";
+        result = "\n[[ CMD-Delete: ]]" + "\nrangeType: done" + "\nid: ";
         cmd = Parser.parse("delete done").toString();
         assertEquals("Delete: done", result, cmd);
 
@@ -323,7 +329,7 @@ public class TestParser {
         assertEquals("Delete: id", result, cmd);
 
         // Delete with mixed caps
-        result = "\n[[ CMD-Delete: ]]" + "\nrangeType: done" + "\nid: null";
+        result = "\n[[ CMD-Delete: ]]" + "\nrangeType: done" + "\nid: ";
         cmd = Parser.parse("deLEte dONe").toString();
         assertEquals("Delete: mixed caps (done)", result, cmd);
 
@@ -365,32 +371,32 @@ public class TestParser {
         String cmd;
 
         // Empty display (displays todo tasks)
-        result = "\n[[ CMD-DISPLAY: ]]" + "\nrangeType: all" + "\nid: null";
+        result = "\n[[ CMD-DISPLAY: ]]" + "\nrangeType: all" + "\nid: ";
         cmd = Parser.parse("display").toString();
         assertEquals("Display: empty", result, cmd);
 
         // Empty display with spaces
-        result = "\n[[ CMD-DISPLAY: ]]" + "\nrangeType: all" + "\nid: null";
+        result = "\n[[ CMD-DISPLAY: ]]" + "\nrangeType: all" + "\nid: ";
         cmd = Parser.parse("display           ").toString();
         assertEquals("Display: empty, spaces", result, cmd);
 
         // Display block
-        result = "\n[[ CMD-DISPLAY: ]]" + "\nrangeType: block" + "\nid: null";
+        result = "\n[[ CMD-DISPLAY: ]]" + "\nrangeType: block" + "\nid: ";
         cmd = Parser.parse("display block").toString();
         assertEquals("Display: block", result, cmd);
 
         // Display block with spaces
-        result = "\n[[ CMD-DISPLAY: ]]" + "\nrangeType: block" + "\nid: null";
+        result = "\n[[ CMD-DISPLAY: ]]" + "\nrangeType: block" + "\nid: ";
         cmd = Parser.parse("display block     ").toString();
         assertEquals("Display: block, spaces", result, cmd);
 
         // Display block with words after
-        result = "\n[[ CMD-DISPLAY: ]]" + "\nrangeType: block" + "\nid: null";
+        result = "\n[[ CMD-DISPLAY: ]]" + "\nrangeType: block" + "\nid: ";
         cmd = Parser.parse("display block a b c").toString();
         assertEquals("Display: block, extra rangeTypes", result, cmd);
 
         // Display block with words mixed caps
-        result = "\n[[ CMD-DISPLAY: ]]" + "\nrangeType: block" + "\nid: null";
+        result = "\n[[ CMD-DISPLAY: ]]" + "\nrangeType: block" + "\nid: ";
         cmd = Parser.parse("diSpLAy bloCk").toString();
         assertEquals("Display: block, mixed caps", result, cmd);
 
@@ -464,19 +470,19 @@ public class TestParser {
         assertEquals("Done: empty, spaces", result, cmd);
 
         // Done all, extra spaces
-        result = "\n[[ CMD-DONE: ]]" + "\nrangeType: all" + "\nid: null"
-                 + "\ndateTime: null";
+        result = "\n[[ CMD-DONE: ]]" + "\nrangeType: all" + "\nid: "
+                 + "\ndateTime: ";
         cmd = Parser.parse("done all   ").toString();
         assertEquals("Done: all, spaces", result, cmd);
 
         // Done by id, extra words after
         result = "\n[[ CMD-DONE: ]]" + "\nrangeType: id" + "\nid: 2"
-                 + "\ndateTime: null";
+                 + "\ndateTime: ";
         cmd = Parser.parse("done 2 hurrah").toString();
         assertEquals("Done: id, extra words", result, cmd);
 
         // Done by date
-        result = "\n[[ CMD-DONE: ]]" + "\nrangeType: date" + "\nid: null"
+        result = "\n[[ CMD-DONE: ]]" + "\nrangeType: date" + "\nid: "
                  + "\ndateTime: 23/04/2014";
         cmd = Parser.parse("done 23/04/2014").toString();
         assertEquals("Done: date", result, cmd);
@@ -516,7 +522,7 @@ public class TestParser {
         assertEquals("Todo: id, extra", result, cmd);
 
         // Todo last
-        result = "\n[[ CMD-TODO: ]]" + "\nrangeType: last" + "\nid: null";
+        result = "\n[[ CMD-TODO: ]]" + "\nrangeType: last" + "\nid: ";
         cmd = Parser.parse("todo last").toString();
         assertEquals("Todo: last", result, cmd);
 
@@ -745,17 +751,17 @@ public class TestParser {
         String cmd;
 
         // Undo: caps, spaces
-        result = "\n[[ CMD-OTHERS ]]" + "\ncmd-type: UNDO" + "\ncmd-info: null";
+        result = "\n[[ CMD-OTHERS ]]" + "\ncmd-type: UNDO" + "\ncmd-info: ";
         cmd = Parser.parse("uNDo      ").toString();
         assertEquals("Undo: mixed caps, spaces", result, cmd);
 
         // Redo: caps, spaces
-        result = "\n[[ CMD-OTHERS ]]" + "\ncmd-type: REDO" + "\ncmd-info: null";
+        result = "\n[[ CMD-OTHERS ]]" + "\ncmd-type: REDO" + "\ncmd-info: ";
         cmd = Parser.parse("rEdO      ").toString();
         assertEquals("Redo: mixed caps, spaces", result, cmd);
 
         // Exit: caps, spacesUNBLOCK
-        result = "\n[[ CMD-OTHERS ]]" + "\ncmd-type: EXIT" + "\ncmd-info: null";
+        result = "\n[[ CMD-OTHERS ]]" + "\ncmd-type: EXIT" + "\ncmd-info: ";
         cmd = Parser.parse("exIT      ").toString();
         assertEquals("Exit: mixed caps, spaces", result, cmd);
 

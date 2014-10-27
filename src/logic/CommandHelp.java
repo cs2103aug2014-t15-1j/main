@@ -3,7 +3,7 @@ package logic;
 public class CommandHelp extends Command {
     
     // help fields: "all" or "<command>" or "invalid"
-    private String field;
+    private String field = "";
 
     public CommandHelp(String content) {
         this.type = CommandType.HELP;
