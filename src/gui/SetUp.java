@@ -7,6 +7,8 @@ import java.util.List;
 import logic.Processor;
 
 import org.eclipse.jface.resource.FontRegistry;
+import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -18,7 +20,6 @@ import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.FontData;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
@@ -52,7 +53,7 @@ public class SetUp {
     // NOTE: Limit below 1024x768
     private static final int MIN_WIDTH_SCREEN = 800;
     private static final int MIN_HEIGHT_SCREEN = 384;
-    private static final int MIN_WIDTH_SIDE_PANE = MIN_WIDTH_SCREEN / 3;
+    private static final int MIN_WIDTH_SIDE_PANE = MIN_WIDTH_SCREEN / 2;
     private static final int MIN_HEIGHT_SIDE_PANE = MIN_HEIGHT_SCREEN;
 
     private static final String HEADER_NAME_ID = "Id";
@@ -79,14 +80,16 @@ public class SetUp {
     // NOTE: 350 is able to fit up to 20 chars
     private static final int COL_WIDTH = 100;
 
-    // NOTE: 50 is able to fit ID, two digit numbers, "."
+    // NOTE: 50 is able to fit ID, two digit numbers, "." - XX.
     private static final int COL_WIDTH_ID = 30;
 
-    // NOTE:250 is able to fit both date and time
+    // NOTE:250 is able to fit both date and time - DD/MM/YYYY HHMM
     private static final int COL_WIDTH_DATE = 120;
 
-    // NOTE: 150 is just right for all statuses
+    // NOTE: 150 is just right for all statuses - To Do, Done, Deleted
     private static final int COL_WIDTH_STATUS = 150;
+
+    private static final int COL_WIDTH_DATE_TABLE = 175;
 
     protected static SetUp setUp;
     private Shell shell;
@@ -106,7 +109,8 @@ public class SetUp {
     private StyledText floatingTasksList;
     private StyledText todaysDate;
 
-    private FontRegistry registry;
+    private FontRegistry fontRegistry;
+    private ImageRegistry imageRegistry;
 
     private SetUp(Shell shell) {
         this.shell = shell;
@@ -136,6 +140,10 @@ public class SetUp {
      */
     public static SetUp getInstance() {
         return setUp;
+    }
+
+    public Shell getShell() {
+        return shell;
     }
 
     public StyledText getFeedBack() {
@@ -173,36 +181,63 @@ public class SetUp {
     }
 
     private void setUpShell() {
-        // shell.setImage(icon);
         GridLayout layout = new GridLayout();
         layout.numColumns = NUM_COLS_SCREEN;
         this.shell.setLayout(layout);
-        // this.shell.setSize(MIN_WIDTH_SCREEN, MIN_HEIGHT_SCREEN);
         this.shell.setText(PROGRAM_NAME);
     }
 
     private void setUpComposites() {
-        formatRegistry();
+        formatFontRegistry();
+        formatImageRegistry();
         setUpProgramLabel();
         setUpMainInterface();
         setUpTableComposite();
         setUpSidePane();
     }
 
-    private void formatRegistry() {
+    private void formatFontRegistry() {
 
-        this.registry = new FontRegistry(shell.getDisplay());
+        fontRegistry = new FontRegistry(shell.getDisplay());
         FontData font = new FontData("New Courier", 11, SWT.NORMAL);
         FontData[] fontData = new FontData[] { font };
-        registry.put("type box", fontData);
+        fontRegistry.put("type box", fontData);
         fontData = new FontData[] { new FontData("Arial", 11, SWT.NORMAL) };
-        registry.put("feedback", fontData);
+        fontRegistry.put("feedback", fontData);
         fontData = new FontData[] { new FontData("Times New Roman", 11,
                 SWT.NORMAL) };
-        registry.put("list headers", fontData);
+        fontRegistry.put("list headers", fontData);
         fontData = new FontData[] { new FontData("Arial", 10,
                 SWT.BOLD | SWT.UNDERLINE_SINGLE) };
-        registry.put("title", fontData);
+        fontRegistry.put("title", fontData);
+        fontData = new FontData[] { new FontData("Calibri", 10, SWT.NONE) };
+        fontRegistry.put("table", fontData);
+
+    }
+
+    private void formatImageRegistry() {
+
+        imageRegistry = new ImageRegistry(shell.getDisplay());
+
+        ImageDescriptor id = ImageDescriptor
+                .createFromFile(SetUp.class, "/resource/mainbg.png");
+        imageRegistry.put("main", id);
+
+        id = ImageDescriptor.createFromFile(SetUp.class,
+                                            "/resource/resultBg.png");
+        imageRegistry.put("result", id);
+
+        id = ImageDescriptor.createFromFile(SetUp.class,
+                                            "/resource/sidepanelbg.png");
+        imageRegistry.put("sidepane", id);
+
+        id = ImageDescriptor.createFromFile(SetUp.class,
+                                            "/resource/Someday.png");
+        imageRegistry.put("someday", id);
+        id = ImageDescriptor.createFromFile(SetUp.class,
+                                            "/resource/UpcomingTask.png");
+        imageRegistry.put("upcoming", id);
+
     }
 
     private void setUpProgramLabel() {
@@ -234,7 +269,9 @@ public class SetUp {
         sidePaneLayout.numColumns = 1;
         sidePane.setLayout(sidePaneLayout);
         sidePane.setLayoutData(new GridData(GridData.FILL_VERTICAL));
-        sidePane.setSize(MIN_WIDTH_SIDE_PANE, MIN_HEIGHT_SIDE_PANE);
+        int shellWidth = shell.getSize().x;
+
+        sidePane.setSize(shellWidth / 3, MIN_HEIGHT_SIDE_PANE);
     }
 
     private void setUpTableComposite() {
@@ -271,7 +308,7 @@ public class SetUp {
         StyledText tableTitle = new StyledText(tabFolder, SWT.READ_ONLY);
         tableTitle.setText("Dates Blocked:");
         tableTitle.setEnabled(false);
-        tableTitle.setFont(registry.get("title"));
+        tableTitle.setFont(fontRegistry.get("title"));
 
         dateViewer = new TableViewer(tabFolder, SWT.MULTI | SWT.BORDER |
                                                 SWT.FULL_SELECTION);
@@ -284,7 +321,7 @@ public class SetUp {
         table.setLinesVisible(true);
         table.setHeaderVisible(true);
         table.setEnabled(true);
-
+        table.setFont(fontRegistry.get("table"));
     }
 
     // to refactor method
@@ -310,7 +347,7 @@ public class SetUp {
             }
         });
 
-        column = setColumnHeader(HEADER_DATE_START_TIME, COL_WIDTH_DATE,
+        column = setColumnHeader(HEADER_DATE_START_TIME, COL_WIDTH_DATE_TABLE,
                                  dateViewer);
         column.setLabelProvider(new ColumnLabelProvider() {
             @Override
@@ -329,7 +366,7 @@ public class SetUp {
             }
         });
 
-        column = setColumnHeader(HEADER_DATE_END_DATE, COL_WIDTH_DATE,
+        column = setColumnHeader(HEADER_DATE_END_DATE, COL_WIDTH_DATE_TABLE,
                                  dateViewer);
         column.setLabelProvider(new ColumnLabelProvider() {
             @Override
@@ -348,7 +385,7 @@ public class SetUp {
             }
         });
 
-        column = setColumnHeader(HEADER_DATE_END_TIME, COL_WIDTH_DATE,
+        column = setColumnHeader(HEADER_DATE_END_TIME, COL_WIDTH_DATE_TABLE,
                                  dateViewer);
         column.setLabelProvider(new ColumnLabelProvider() {
             @Override
@@ -376,7 +413,7 @@ public class SetUp {
         StyledText tableTitle = new StyledText(tabFolder, SWT.READ_ONLY);
         tableTitle.setText("Results:");
         tableTitle.setEnabled(false);
-        tableTitle.setFont(registry.get("title"));
+        tableTitle.setFont(fontRegistry.get("title"));
 
         tableViewer = new TableViewer(tabFolder, SWT.MULTI | SWT.BORDER |
                                                  SWT.FULL_SELECTION);
@@ -389,6 +426,7 @@ public class SetUp {
         table.setLinesVisible(true);
         table.setHeaderVisible(true);
         table.setEnabled(true);
+        table.setFont(fontRegistry.get("table"));
     }
 
     private void setUpTaskTableColumns() {
@@ -595,7 +633,7 @@ public class SetUp {
         feedback.setText(WELCOME_MESSAGE);
         GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
         feedback.setLayoutData(gridData);
-        feedback.setFont(registry.get("feedback"));
+        feedback.setFont(fontRegistry.get("feedback"));
         Color white = shell.getDisplay().getSystemColor(SWT.COLOR_WHITE);
         this.feedback.setForeground(white);
         feedback.setEnabled(false);
@@ -612,7 +650,7 @@ public class SetUp {
         this.commandLine.setBackground(black);
 
         this.commandLine.setForeground(white);
-        commandLine.setFont(registry.get("type box"));
+        commandLine.setFont(fontRegistry.get("type box"));
 
         commandLine.addKeyListener(new KeyAdapter() {
             public void keyPressed(KeyEvent e) {
@@ -637,10 +675,7 @@ public class SetUp {
         Display display = shell.getDisplay();
         Label upcomingTask = new Label(sidePane, SWT.SINGLE);
 
-        Image upcomingHeader = new Image(display, MainScreen.class
-                .getClassLoader()
-                .getResourceAsStream("resource/UpcomingTask.png"));
-        upcomingTask.setImage(upcomingHeader);
+        upcomingTask.setImage(imageRegistry.get("upcoming"));
         GridData centeredGridData = new GridData(SWT.CENTER, SWT.FILL, true,
                 true);
         upcomingTask.setLayoutData(centeredGridData);
@@ -648,7 +683,7 @@ public class SetUp {
         upcomingTasksList = new StyledText(sidePane, SWT.MULTI | SWT.READ_ONLY |
                                                      SWT.LEFT_TO_RIGHT);
 
-        upcomingTasksList.setFont(registry.get("list headers"));
+        upcomingTasksList.setFont(fontRegistry.get("list headers"));
         GridData gridData = new GridData(GridData.FILL_BOTH);
         gridData.heightHint = 250;
         upcomingTasksList.setLayoutData(gridData);
@@ -657,22 +692,20 @@ public class SetUp {
         Color white = display.getSystemColor(SWT.COLOR_WHITE);
         upcomingTasksList.setBackground(white);
         upcomingTasksList.setEnabled(true);
-        upcomingTasksList.setFont(registry.get("list headers"));
+        upcomingTasksList.setFont(fontRegistry.get("table"));
     }
 
     private void setUpFloatingTaskList() {
         Display display = shell.getDisplay();
         Label floatingTask = new Label(sidePane, SWT.SINGLE);
-        Image floatingHeader = new Image(display, MainScreen.class
-                .getClassLoader().getResourceAsStream("resource/Someday.png"));
-        floatingTask.setImage(floatingHeader);
+        floatingTask.setImage(imageRegistry.get("someday"));
         GridData centeredGridData = new GridData(SWT.CENTER, SWT.FILL, true,
                 true);
         floatingTask.setLayoutData(centeredGridData);
 
         floatingTasksList = new StyledText(sidePane, SWT.MULTI | SWT.READ_ONLY |
                                                      SWT.LEFT_TO_RIGHT);
-        floatingTasksList.setFont(registry.get("list headers"));
+        floatingTasksList.setFont(fontRegistry.get("list headers"));
         GridData gridData = new GridData(GridData.FILL_BOTH);
         gridData.heightHint = 250;
         floatingTasksList.setLayoutData(gridData);
@@ -682,14 +715,14 @@ public class SetUp {
         Color white = display.getSystemColor(SWT.COLOR_WHITE);
         floatingTasksList.setBackground(white);
         floatingTasksList.setEnabled(true);
-        floatingTasksList.setFont(registry.get("list headers"));
+        floatingTasksList.setFont(fontRegistry.get("table"));
     }
 
     private void setUpDate() {
 
         todaysDate = new StyledText(sidePane, SWT.READ_ONLY | SWT.SINGLE |
                                               SWT.RIGHT_TO_LEFT | SWT.BOLD);
-        todaysDate.setFont(registry.get("list headers"));
+        todaysDate.setFont(fontRegistry.get("list headers"));
 
         todaysDate.setSize(MIN_WIDTH_SCREEN, 1);
         Date date = new Date();

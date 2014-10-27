@@ -21,7 +21,7 @@ public class TaskListUI implements Observer {
     public TaskListUI() {
         populatesData();
     }
-    
+
     private StyledText getUpcomingList() {
         SetUp setUp = SetUp.getInstance();
         StyledText taskList = setUp.getUpcomingTasksList();
@@ -66,10 +66,21 @@ public class TaskListUI implements Observer {
             Task currentTask = tasks.get(index);
             String iD = currentTask.getId() + "";
             String name = currentTask.getName();
+            String due = currentTask.getDue().toString();
+            String start = currentTask.getStart().toString();
+
             if (name == null || name.isEmpty() || name.equals("null")) {
                 name = "";
             }
-            list = list + iD + DOT_AND_SPACE + name + LINE_SEPARATOR;
+            if (!due.isEmpty()) {
+                list = list + iD + DOT_AND_SPACE + name + LINE_SEPARATOR +
+                       "Due: " + due + LINE_SEPARATOR;
+            } else {
+                list = list + iD + DOT_AND_SPACE + name + LINE_SEPARATOR +
+                       "Start: " + start + LINE_SEPARATOR;
+            }
+
+            list += LINE_SEPARATOR;
         }
 
         return list;
@@ -102,17 +113,17 @@ public class TaskListUI implements Observer {
     public void update(Observable o, Object arg) {
         populatesData();
     }
-    
+
     public void populatesData() {
         List<Task> upcomingTasks = getUpcomingTasks();
         List<Task> floatingTasks = getFloatingTasks();
         StyledText upcomingTasksList = getUpcomingList();
         StyledText floatingTasksList = getFloatingList();
-        
-        String upcomingList = getStringList(upcomingTasks, false); 
+
+        String upcomingList = getStringList(upcomingTasks, false);
         String floatingList = getStringList(floatingTasks, true);
         // to implement overdue tasks in red
-       
+
         upcomingTasksList.setText(upcomingList);
         floatingTasksList.setText(floatingList);
     }

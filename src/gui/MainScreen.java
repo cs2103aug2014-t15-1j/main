@@ -1,9 +1,9 @@
 package gui;
 
-import java.util.Stack;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.widgets.Display;
@@ -38,8 +38,6 @@ public class MainScreen {
     private static boolean askConfrim = false;
 
     private static ResultGenerator resultGenerator = new ResultGenerator();
-    private static Stack<String> forwardHistoryOfInputs = new Stack<String>();
-    private static Stack<String> backwardHistoryOfInputs = new Stack<String>();
 
     /**
      * The entire HayStack program runs from this function. It sets up the
@@ -53,20 +51,30 @@ public class MainScreen {
 
         Image background = new Image(display, MainScreen.class.getClassLoader()
                 .getResourceAsStream("resource/mainbg.png"));
-        // new Image(display, ".\\images\\mainbg.png");
+
         Shell shell = new Shell(display);
+
+        shell.setImage(new Image(display, MainScreen.class.getClassLoader()
+                .getResourceAsStream("resource/Icon.gif")));
         ImageData imageData = background.getImageData();
         imageData = imageData.scaledTo(shell.getSize().x, shell.getSize().y);
         shell.setBackgroundImage(background);
         shell.setBackgroundMode(SWT.INHERIT_FORCE);
-
-        // Things to do at startUp: Display all To do Tasks
 
         SetUp setUpScreen = SetUp.getInstance(shell);
         resultGenerator.start();
 
         new TaskListUI();
         removeText(setUpScreen);
+
+        shell.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent event) {
+                if (((event.stateMask & SWT.F1) == SWT.F1)) {
+                    new HelpDialog(shell);
+                }
+            }
+        });
         try {
             readUserInput(setUpScreen);
         } catch (Exception e) {
@@ -107,12 +115,12 @@ public class MainScreen {
     private static void readUserInput(final SetUp screen) {
 
         final Text commandLine = screen.getCommandLine();
+        final StyledText feedback = screen.getFeedBack();
 
         commandLine.addListener(SWT.DefaultSelection, new Listener() {
             @Override
             public void handleEvent(Event event) {
 
-                final StyledText feedback = screen.getFeedBack();
                 String input = commandLine.getText();
                 String output = "";
                 if (askConfrim) {
@@ -140,8 +148,12 @@ public class MainScreen {
                             feedback.setText(ASK_CONFIRM_DELETE);
                             askConfrim = true;
                             commandLine.setText("");
+                        } else if (output.equals("Help")) {
+                            SetUp setUp = SetUp.getInstance();
+                            new HelpDialog(setUp.getShell());
 
                         } else {
+
                             feedback.setText(output);
                             commandLine.setText("");
 
@@ -150,7 +162,6 @@ public class MainScreen {
 
                         String message = error.getMessage();
                         feedback.setText(message);
-                        // readUserInput(setUpScreen);
                     }
                 }
             }

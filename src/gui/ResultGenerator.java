@@ -2,6 +2,7 @@ package gui;
 
 import java.util.List;
 
+import logic.CommandType;
 import logic.Processor;
 import logic.Result;
 import database.BlockDate;
@@ -49,19 +50,33 @@ public class ResultGenerator {
     public String processResult(Result result, String input) {
 
         if (result.isSuccess()) {
+
+            if (isHelp(result)) {
+                return "Help";
+            }
+
             switch (result.getResultType()) {
                 case BLOCKDATE:
                     return processDateBasedResult(result);
                 case TASK:
                     return processTaskBasedResult(result);
                 default:
-                    // HELP -- open dialog; press key to close note: cmdType is
+                    //
                     // Display
                     // ERROR?
             }
 
         }
         return String.format("Not able to process '%1$s'", input);
+    }
+
+    private boolean isHelp(Result result) {
+        if (result.getResultType() == null &&
+            result.getCommandType().equals(CommandType.HELP)) {
+            return true;
+        }
+
+        return false;
     }
 
     private String processDateBasedResult(Result result) {
