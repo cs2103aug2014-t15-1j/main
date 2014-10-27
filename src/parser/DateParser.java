@@ -226,6 +226,36 @@ public class DateParser {
     }
 
     /**
+     * Checks if the input <code>String</code> is a valid time. This method
+     * assumes the 24HR time format, i.e. 0000-2359.
+     * 
+     * <p>
+     * <i> The input should be an integer String. </i>
+     * 
+     * @param timeStr
+     *            A <code>String</code> containing only an integer of the format
+     *            <code>HHmm</code>
+     */
+    public static boolean isValidTime(String timeStr) {
+        try {
+            String hoursStr = timeStr.substring(0, 2);
+            String minStr = timeStr.substring(2, 4);
+    
+            int hoursInt = Integer.parseInt(hoursStr);
+            int minInt = Integer.parseInt(minStr);
+    
+            boolean isValidHH = hoursInt >= 0 && hoursInt < 24;
+            boolean isValidMM = minInt >= 0 && minInt < 60;
+    
+            return isValidHH && isValidMM;
+        } catch (IndexOutOfBoundsException e) {
+            return false;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    /**
      * Checks if the input <code>String</code> is in the accepted date format
      * <code>dd/MM/yyyy</code>.
      */
@@ -355,36 +385,6 @@ public class DateParser {
         return yearNum >= 1819;
     }
 
-    /**
-     * Checks if the input <code>String</code> is a valid time. This method
-     * assumes the 24HR time format, i.e. 0000-2359.
-     * 
-     * <p>
-     * <i> The input should be an integer String. </i>
-     * 
-     * @param timeStr
-     *            A <code>String</code> containing only an integer of the format
-     *            <code>HHmm</code>
-     */
-    public static boolean isValidTime(String timeStr) {
-        try {
-            String hoursStr = timeStr.substring(0, 2);
-            String minStr = timeStr.substring(2, 4);
-
-            int hoursInt = Integer.parseInt(hoursStr);
-            int minInt = Integer.parseInt(minStr);
-
-            boolean isValidHH = hoursInt >= 0 && hoursInt < 24;
-            boolean isValidMM = minInt >= 0 && minInt < 60;
-
-            return isValidHH && isValidMM;
-        } catch (IndexOutOfBoundsException e) {
-            return false;
-        } catch (NumberFormatException e) {
-            return false;
-        }
-    }
-
     public static void main(String args[]) {
         // TODO: extract to test case
         System.out.println("//LEAPYEAR:");
@@ -461,5 +461,69 @@ public class DateParser {
         dt = new DateTime("23/04/2014", "0000");
         dt2 = new DateTime("23/04/2014", "2359");
         System.out.println("dt<dt2: " + dt.compareTo(dt2));
+    }
+
+    /**
+
+     */
+    public static boolean containsDate(String str) {
+        String[] strFields = str.split(" ");
+    
+        for (int i = 0; i < strFields.length; i++) {
+            if (isValidDate(strFields[i])) {
+                return true;
+            }
+        }
+    
+        return false;
+    }
+    
+    /**
+     * 
+     * @param str
+     * @return
+     */
+    public static String getFirstDate(String str) {
+        String[] strFields = str.split(" ");
+    
+        for (int i = 0; i < strFields.length; i++) {
+            if (isValidDate(strFields[i])) {
+                return strFields[i];
+            }
+        }
+    
+        return null;
+    }
+    
+    /**
+
+     */
+    public static boolean containsTime(String str) {
+        String[] strFields = str.split(" ");
+    
+        for (int i = 0; i < strFields.length; i++) {
+            if (isValidTime(strFields[i])) {
+                return true;
+            }
+        }
+    
+        return false;
+    }
+    
+    /**
+     * 
+     * @param str
+     * @return
+     */
+    public static String getFirstTime(String str) {
+        String[] strFields = str.split(" ");
+    
+        for (int i = 0; i < strFields.length; i++) {
+            if (isValidTime(strFields[i])) {
+                return strFields[i];
+            }
+        }
+    
+        return null;
     }
 }

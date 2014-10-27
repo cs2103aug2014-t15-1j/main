@@ -610,6 +610,35 @@ public class Parser {
             addToFieldParam(addFields, "name", currFieldOrig);
         }
 
+        // Check for input time with missing date
+        TaskParam startTP = getTaskParam(addFields, "start");
+        TaskParam endTP = getTaskParam(addFields, "end");
+        String startStr = startTP.getField();
+        String endStr = endTP.getField();
+        if (DateParser.containsTime(startStr) && !DateParser.containsDate(startStr)) {
+            if (DateParser.containsDate(endStr)) {
+                String endDate = DateParser.getFirstDate(endStr);
+                startTP.addToField(endDate);
+            } else {
+                String currDate = DateParser.getCurrDateStr();
+                startTP.addToField(currDate);
+                if (DateParser.containsTime(endStr)) {
+                    endTP.addToField(currDate);
+                }
+            }
+        } else if (DateParser.containsTime(endStr) && !DateParser.containsDate(endStr)) {
+            if (DateParser.containsDate(startStr)) {
+                String startDate = DateParser.getFirstDate(startStr);
+                endTP.addToField(startDate);
+            } else {
+                String currDate = DateParser.getCurrDateStr();
+                endTP.addToField(currDate);
+                if (DateParser.containsTime(startStr)) {
+                    endTP.addToField(currDate);
+                }
+            }
+        }
+        
         removeDuplicates(addFields);
         checkStartEndOrder(addFields);
 
