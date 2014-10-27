@@ -10,10 +10,12 @@ import database.Task;
 public class ResultGenerator {
 
     private static Processor processor;
+    private static TaskTableUI taskTable = new TaskTableUI();
 
     public void start() {
         processor = Processor.getInstance();
         processor.addObserver(new TaskListUI());
+        refreshTodoTable();
     }
 
     public String sendInput(String input) {
@@ -134,6 +136,7 @@ public class ResultGenerator {
                 if (outputs.size() == 0) {
                     return "No tasks to show.";
                 }
+                taskTable.update(outputs);
                 return feedbackMessageMultiResults(outputs,
                                                    "%1$s task(s) found.");
                 /**
@@ -144,6 +147,7 @@ public class ResultGenerator {
                  * feedbackMessageMultiResults(outputs, "%1$s task(s) found.");
                  **/
             case SEARCH:
+                taskTable.update(outputs);
                 return feedbackMessageMultiResults(outputs,
                                                    "Found %1$s match(es).");
             case TODO:
@@ -199,10 +203,10 @@ public class ResultGenerator {
 
     // to be removed
     private void refreshTodoTable() {
-        // Result result = processor.processInput("display");
         List<Task> outputs = processor.fetchToDoTasks();
         if (outputs.size() == 0) {
             return;
         }
+        taskTable.update(outputs);
     }
 }
