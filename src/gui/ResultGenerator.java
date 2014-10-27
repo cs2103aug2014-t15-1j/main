@@ -11,6 +11,7 @@ public class ResultGenerator {
 
     private static Processor processor;
     private static TaskTableUI taskTable = new TaskTableUI();
+    private static DateTableUI dateTable = new DateTableUI();
 
     public void start() {
         processor = Processor.getInstance();
@@ -76,21 +77,29 @@ public class ResultGenerator {
         // check for confirmation
             case BLOCK:
                 if (result.needsConfirmation()) {
-                    return "Unable to block date. Date coincides with another blocked date or task. Key 'y' to override date or 'n' to abort";
+                    return "Unable to block date. Date coincides with another blocked date or task.";
                 }
+                refreshBlockTable();
                 return "BLOCKED: " + feedbackSingleBlock(dates);
             case UNBLOCK:
+                refreshBlockTable();
                 return "UNBLOCKED: " + feedbackSingleBlock(dates);
 
             case REDO:
+                refreshBlockTable();
                 return "Command Redone.";
 
             case UNDO:
+                refreshBlockTable();
                 return "Command Undone.";
 
             case DISPLAY:
+                dateTable.update(dates);
                 return feedbackMessageMultiResults(dates,
                                                    "Showing %1$s blocks.");
+            case SEARCH:
+                dateTable.update(dates);
+                return feedbackMessageMultiResults(dates, "Found %1$s results.");
             case ERROR:
                 return "Not able to fully process command";
 
@@ -116,7 +125,7 @@ public class ResultGenerator {
             case ADD:
                 refreshTodoTable();
                 if (result.needsConfirmation()) {
-                    return "Unable to add task. Task coincides with a blocked date. Key 'y' to override date or 'n' to abort";
+                    return "Unable to add task. Task coincides with a blocked date.";
                 }
                 return feedbackMessage(outputs, "Added %1$s");
             case DELETE:
@@ -129,9 +138,6 @@ public class ResultGenerator {
                 refreshTodoTable();
                 return feedbackMessage(outputs, "Edited %1$s");
             case DISPLAY:
-                if (result.needsConfirmation()) {
-                    return "This will erase all data, PERMANENTLY.  Key 'y' to continue or 'n' to abort";
-                }
 
                 if (outputs.size() == 0) {
                     return "No tasks to show.";
@@ -139,13 +145,6 @@ public class ResultGenerator {
                 taskTable.update(outputs);
                 return feedbackMessageMultiResults(outputs,
                                                    "%1$s task(s) found.");
-                /**
-                 * case SHOW: cheat(); if (result.needsConfirmation()) { return
-                 * "This will erase all data, PERMANENTLY.  Key 'y' to continue or 'n' to abort"
-                 * ; } updateInterface(outputs, false); if (outputs.size() == 0)
-                 * { return "No tasks to show."; } return
-                 * feedbackMessageMultiResults(outputs, "%1$s task(s) found.");
-                 **/
             case SEARCH:
                 taskTable.update(outputs);
                 return feedbackMessageMultiResults(outputs,
@@ -201,12 +200,19 @@ public class ResultGenerator {
                parameter.equals("null");
     }
 
-    // to be removed
     private void refreshTodoTable() {
-        List<Task> outputs = processor.fetchToDoTasks();
-        if (outputs.size() == 0) {
+        List<Task> tasks = processor.fetchToDoTasks();
+        if (tasks.size() == 0) {
             return;
         }
-        taskTable.update(outputs);
+        taskTable.update(tasks);
+    }
+
+    private void refreshBlockTable() {
+        List<BlockDate> dates = processor.fetchBlockedDate();
+        if (dates.size() == 0) {
+            return;
+        }
+        dateTable.update(dates);
     }
 }

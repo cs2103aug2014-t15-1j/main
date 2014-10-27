@@ -9,15 +9,9 @@ import database.BlockDate;
 
 public class DateTableUI {
 
-    public DateTableUI(List<BlockDate> dates) {
-        update(dates);
-    }
-
-    private void update(List<BlockDate> dates) {
+    public void update(List<BlockDate> dates) {
         TableViewer table = getTable();
-        Object[] datesArray = dates.toArray();
-        table.setInput(datesArray);
-        table.refresh();
+        table.setInput(dates);
         setFocus();
     }
 

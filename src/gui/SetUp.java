@@ -44,10 +44,12 @@ public class SetUp {
 
     private static final int NUM_COLS_SCREEN = 2;
     private static final int NUM_COLS_COMPOSITE = 1;
-    private static final int MIN_WIDTH_SCREEN = 2100;
-    private static final int MIN_HEIGHT_SCREEN = 1500;
-    private static final int MIN_WIDTH_SIDE_PANE = 1500;
-    private static final int MIN_HEIGHT_SIDE_PANE = 1300;
+
+    // NOTE: Limit below 1024x768
+    private static final int MIN_WIDTH_SCREEN = 800;
+    private static final int MIN_HEIGHT_SCREEN = 384;
+    private static final int MIN_WIDTH_SIDE_PANE = MIN_WIDTH_SCREEN / 3;
+    private static final int MIN_HEIGHT_SIDE_PANE = MIN_HEIGHT_SCREEN;
 
     private static final String HEADER_NAME_ID = "Id";
     private static final String HEADER_NAME_NAME = "Name";
@@ -70,23 +72,22 @@ public class SetUp {
 
     private static final String WELCOME_MESSAGE = "Welcome.";
 
-    private static final int COL_WIDTH = 500;
+    // NOTE: 350 is able to fit up to 20 chars
+    private static final int COL_WIDTH = 350;
 
+    // NOTE: 50 is able to fit ID, two digit numbers, "."
     private static final int COL_WIDTH_ID = 50;
-    protected static final int TEXT_MARGIN = 3;
-    protected static final int COL_COUNT = 6;
-    private static final int COL_WIDTH_DATE = 150;
-    private static final int COL_WIDTH_STATUS = 100;
 
-    // private static final int COL_NAME = 1;
-    // private static final int COL_TAGS = 4;
-    // private static final int STRING_SIZE = 10;
+    // NOTE:250 is able to fit both date and time
+    private static final int COL_WIDTH_DATE = 250;
+
+    // NOTE: 150 is just right for all statuses
+    private static final int COL_WIDTH_STATUS = 150;
 
     protected static SetUp setUp;
     private Shell shell;
     private Composite mainInterface;
     private Composite sidePane;
-    private Composite feedbackAndInput;
 
     private TabFolder tabFolder;
     private TabItem taskTable;
@@ -393,7 +394,7 @@ public class SetUp {
                     Task task = (Task) element;
                     assert (task != null);
                     String id = task.getId() + "";
-                    return id;
+                    return id + ".";
                 }
                 return "";
             }
@@ -579,7 +580,9 @@ public class SetUp {
         Display display = shell.getDisplay();
         Label upcomingTask = new Label(sidePane, SWT.SINGLE);
 
-        Image upcomingHeader = new Image(display, MainScreen.class.getClassLoader().getResourceAsStream("resource/UpcomingTask.png"));
+        Image upcomingHeader = new Image(display, MainScreen.class
+                .getClassLoader()
+                .getResourceAsStream("resource/UpcomingTask.png"));
         upcomingTask.setImage(upcomingHeader);
         GridData centeredGridData = new GridData(SWT.CENTER, SWT.FILL, true,
                 true);
@@ -603,7 +606,8 @@ public class SetUp {
     private void setUpFloatingTaskList() {
         Display display = shell.getDisplay();
         Label floatingTask = new Label(sidePane, SWT.SINGLE);
-        Image floatingHeader = new Image(display, MainScreen.class.getClassLoader().getResourceAsStream("resource/Someday.png"));
+        Image floatingHeader = new Image(display, MainScreen.class
+                .getClassLoader().getResourceAsStream("resource/Someday.png"));
         floatingTask.setImage(floatingHeader);
         GridData centeredGridData = new GridData(SWT.CENTER, SWT.FILL, true,
                 true);

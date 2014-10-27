@@ -2,12 +2,8 @@ package gui;
 
 import java.util.Stack;
 
-import logic.Processor;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.events.KeyAdapter;
-import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.widgets.Display;
@@ -54,20 +50,21 @@ public class MainScreen {
      */
     public static void main(String[] args) {
         Display display = new Display();
-        
-        Image background = new Image(display, MainScreen.class.getClassLoader().getResourceAsStream("resource/mainbg.png"));
-        //new Image(display, ".\\images\\mainbg.png");
+
+        Image background = new Image(display, MainScreen.class.getClassLoader()
+                .getResourceAsStream("resource/mainbg.png"));
+        // new Image(display, ".\\images\\mainbg.png");
         Shell shell = new Shell(display);
         ImageData imageData = background.getImageData();
         imageData = imageData.scaledTo(shell.getSize().x, shell.getSize().y);
         shell.setBackgroundImage(background);
         shell.setBackgroundMode(SWT.INHERIT_FORCE);
-        shell.setBackground(display.getSystemColor(SWT.COLOR_CYAN));
+
         // Things to do at startUp: Display all To do Tasks
-        
+
         SetUp setUpScreen = SetUp.getInstance(shell);
         resultGenerator.start();
-        
+
         new TaskListUI();
         removeText(setUpScreen);
         try {
