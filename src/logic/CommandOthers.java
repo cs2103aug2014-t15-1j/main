@@ -32,6 +32,10 @@ public class CommandOthers extends Command {
             case "undo":
                 this.type = CommandType.UNDO;
                 break;
+                
+            case "reset":
+                this.type = CommandType.RESET;
+                break;
 
             default:
                 this.type = CommandType.ERROR;

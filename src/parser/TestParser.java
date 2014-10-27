@@ -764,6 +764,11 @@ public class TestParser {
         result = "\n[[ CMD-OTHERS ]]" + "\ncmd-type: EXIT" + "\ncmd-info: ";
         cmd = Parser.parse("exIT      ").toString();
         assertEquals("Exit: mixed caps, spaces", result, cmd);
+        
+        // Reset
+        result = "\n[[ CMD-OTHERS ]]" + "\ncmd-type: RESET" + "\ncmd-info: ";
+        cmd = Parser.parse("reset").toString();
+        assertEquals("Reset: simple", result, cmd);
 
         System.out.println("...success!");
     }
