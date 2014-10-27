@@ -239,10 +239,10 @@ public class Processor extends Observable {
 	private void updateFloatingAndTimedTasks() {
 	    clearPanelTaskList();
 	    for (Task task : file.getToDoTasks()) {
-	        if (task.getStart().isEmpty()) {
-	            floatingTasks.add(task);
-	        } else {
+	        if (!task.getDue().isEmpty()) {
 	            timedTasks.add(task);
+	        } else {
+	            floatingTasks.add(task);
 	        }
 	    }
 	}
