@@ -112,6 +112,10 @@ public class DateTime implements Comparable<DateTime> {
         this.time = dateTime.time;
     }
 
+    public boolean isEmpty() {
+        return date.isEmpty() && time.isEmpty();
+    }
+    
     /**
      * Returns a String object representing this DateTime's value.
      * 
@@ -121,7 +125,7 @@ public class DateTime implements Comparable<DateTime> {
      */
     @Override
     public String toString() {
-        if (date.isEmpty() && time.isEmpty()) {
+        if (this.isEmpty()) {
             return "";
         } else if (date.isEmpty()) {
             return time;
