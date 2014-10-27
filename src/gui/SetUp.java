@@ -276,7 +276,7 @@ public class SetUp {
         dateViewer.setLabelProvider(new LabelProvider());
         setUpDateTableColumns();
 
-        Table table = tableViewer.getTable();
+        Table table = dateViewer.getTable();
         table.setLinesVisible(true);
         table.setHeaderVisible(true);
         table.setEnabled(true);
