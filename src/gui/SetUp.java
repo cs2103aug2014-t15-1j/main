@@ -19,15 +19,11 @@ import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
@@ -77,7 +73,7 @@ public class SetUp {
     private static final String WELCOME_MESSAGE = "Welcome.";
 
     // NOTE: 350 is able to fit up to 20 chars
-    private static final int COL_WIDTH = 100;
+    private static final int COL_WIDTH = 350;
 
     // NOTE: 50 is able to fit ID, two digit numbers, "."
     private static final int COL_WIDTH_ID = 50;
@@ -177,7 +173,7 @@ public class SetUp {
         GridLayout layout = new GridLayout();
         layout.numColumns = NUM_COLS_SCREEN;
         this.shell.setLayout(layout);
-        // this.shell.setSize(MIN_WIDTH_SCREEN, MIN_HEIGHT_SCREEN);
+        this.shell.setSize(MIN_WIDTH_SCREEN, MIN_HEIGHT_SCREEN);
         this.shell.setText(PROGRAM_NAME);
     }
 
@@ -291,7 +287,7 @@ public class SetUp {
     private void setUpDateTableColumns() {
 
         TableViewerColumn column = setColumnHeader(HEADER_DATE_START_DATE,
-                                                   COL_WIDTH_DATE, dateViewer);
+                                                   COL_WIDTH, dateViewer);
         column.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
@@ -310,8 +306,7 @@ public class SetUp {
             }
         });
 
-        column = setColumnHeader(HEADER_DATE_START_TIME, COL_WIDTH_DATE,
-                                 dateViewer);
+        column = setColumnHeader(HEADER_DATE_START_TIME, COL_WIDTH, dateViewer);
         column.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
@@ -329,8 +324,7 @@ public class SetUp {
             }
         });
 
-        column = setColumnHeader(HEADER_DATE_END_DATE, COL_WIDTH_DATE,
-                                 dateViewer);
+        column = setColumnHeader(HEADER_DATE_END_DATE, COL_WIDTH, dateViewer);
         column.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
@@ -348,8 +342,7 @@ public class SetUp {
             }
         });
 
-        column = setColumnHeader(HEADER_DATE_END_TIME, COL_WIDTH_DATE,
-                                 dateViewer);
+        column = setColumnHeader(HEADER_DATE_END_TIME, COL_WIDTH, dateViewer);
         column.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
@@ -526,56 +519,6 @@ public class SetUp {
 
         Table table = tableViewer.getTable();
         table.setLayoutData(new GridData(GridData.FILL_BOTH));
-        shell.addListener(SWT.RESIZE, new Listener() {
-
-            @Override
-            public void handleEvent(Event event) {
-                switch (event.type) {
-                    case SWT.RESIZE:
-                        resizeCol(tableViewer);
-                        break;
-
-                    default:
-                        break;
-                }
-            }
-
-            private void resizeCol(TableViewer viewer) {
-                Table table = viewer.getTable();
-                int totalColWidth = 0;
-
-                for (int index = 0; index < table.getColumnCount() - 1; index++) {
-                    totalColWidth = table.getColumn(index).getWidth();
-                }
-
-                TableColumn nameCol = table.getColumn(1);
-                TableColumn tagsCol = table.getColumn(5);
-
-                TableColumn lastCol = table.getColumn(table.getColumnCount() - 1);
-                lastCol.pack();
-                nameCol.pack();
-                tagsCol.pack();
-
-                Rectangle tableArea = table.getClientArea();
-
-                Point size = table.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-                int width = tableArea.width - 2 * table.getBorderWidth() -
-                            tabFolder.getBorderWidth();
-
-                if (size.y > tableArea.height + table.getHeaderHeight()) {
-                    Point vertScrollWidth = table.getVerticalBar().getSize();
-                    width = width - vertScrollWidth.x;
-                }
-
-                if (totalColWidth < tableArea.width) {
-                    nameCol.setWidth((width - totalColWidth) / 4);
-                    tagsCol.setWidth((width - totalColWidth) / 4);
-                }
-
-            }
-
-        });
-
     }
 
     private TableViewerColumn setColumnHeader(String headerName, int colWidth,
