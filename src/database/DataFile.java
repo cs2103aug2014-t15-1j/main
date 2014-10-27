@@ -43,6 +43,12 @@ public class DataFile {
      */
     private static List<Task> allTasks = new ArrayList<Task>();
 
+    /** Contains undeleted blocked dates. */
+    private static List<BlockDate> allBlockDates = new ArrayList<BlockDate>();
+
+    /** Contains deleted blocked dates. */
+    private static List<BlockDate> deletedBlockDates = new ArrayList<BlockDate>();
+
     /**
      * Default constructor.
      * 
@@ -134,6 +140,28 @@ public class DataFile {
     }
 
     /**
+     * Returns an unmodifiable view of the list of all undeleted blocked dates.
+     * Attempts to modify the returned list, whether direct or via its iterator,
+     * result in an UnsupportedOperationException.
+     * 
+     * @return Unmodifiable view of the specified list.
+     */
+    public List<BlockDate> getAllBlockDates() {
+        return Collections.unmodifiableList(allBlockDates);
+    }
+
+    /**
+     * Returns an unmodifiable view of the list of deleted blocked dates.
+     * Attempts to modify the returned list, whether direct or via its iterator,
+     * result in an UnsupportedOperationException.
+     * 
+     * @return Unmodifiable view of the specified list.
+     */
+    public List<BlockDate> getDeletedBlockDates() {
+        return Collections.unmodifiableList(deletedBlockDates);
+    }
+
+    /**
      * Given id, returns Task object. Includes to-do, done, and deleted tasks.
      * 
      * @param id
@@ -158,6 +186,25 @@ public class DataFile {
         for (Task task : tasks) {
             if (task.getId() == id) {
                 return task;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Given id, returns BlockDate object from specified task list.
+     * 
+     * @param blockDates
+     *            The BlockDate list to search from.
+     * @param id
+     *            The BlockDate's unique ID.
+     * @return BlockDate object of matching ID, or null if it is not in the
+     *         list.
+     */
+    private BlockDate searchBlockDateById(List<BlockDate> blockDates, int id) {
+        for (BlockDate bD : blockDates) {
+            if (bD.getId() == id) {
+                return bD;
             }
         }
         return null;
@@ -507,10 +554,13 @@ public class DataFile {
      */
     public boolean wipeFile() {
         Task.wipeAllTasks();
+        BlockDate.wipeAllBlockDates();
         allTasks.clear();
         toDoTasks.clear();
         doneTasks.clear();
         deletedTasks.clear();
+        allBlockDates.clear();
+        deletedBlockDates.clear();
 
         return updateFile();
     }
@@ -616,6 +666,155 @@ public class DataFile {
         }
         doneTasks.add(task);
         toDoTasks.remove(task);
+        return updateFile();
+    }
+
+    /**
+     * Adds a new BlockDate to lists and file. Populates relevant list, and
+     * updates file with new information.
+     * 
+     * @param bD
+     *            New BlockDate object to be written to file.
+     * @return True, if successfully written to file.
+     */
+    public boolean addNewBD(BlockDate bD) {
+        allBlockDates.add(bD);
+        return updateFile();
+    }
+
+    /**
+     * Deletes BlockDate object based on the ID provided in argument. Updates
+     * BlockDate lists and file.
+     * 
+     * Overloaded function.
+     * 
+     * @param id
+     *            The ID of the BlockDate object to delete.
+     * @return True, if file has been successfully updated with deletion.
+     */
+    public boolean deleteBD(int id) {
+        BlockDate bD = searchBlockDateById(allBlockDates, id);
+        return deleteBDByObject(bD);
+    }
+
+    /**
+     * Deletes BlockDate object provided in argument. Updates BlockDate lists
+     * and file.
+     * 
+     * Overloaded function.
+     * 
+     * @param bD
+     *            The BlockDate object to delete.
+     * @return True, if file has been successfully updated with deletion.
+     */
+    public boolean deleteBD(BlockDate bD) {
+        return deleteBDByObject(bD);
+    }
+
+    /**
+     * Deletes object provided in argument. Removes object from allBlockDates
+     * list, adds to deletedBlockDates list, and updates file.
+     * 
+     * @param bD
+     *            The BlockDate object to delete.
+     * @return True, if file has been successfully updated with deletion.
+     */
+    private boolean deleteBDByObject(BlockDate bD) {
+        allBlockDates.remove(bD);
+        deletedBlockDates.add(bD);
+        return updateFile();
+    }
+
+    /**
+     * Restores BlockDate object based on the ID provided in argument. Updates
+     * BlockDate lists and file.
+     * 
+     * Overloaded function.
+     * 
+     * @param id
+     *            The ID of the BlockDate object to restore.
+     * @return True, if file has been successfully updated with restoration.
+     */
+    public boolean restoreBD(int id) {
+        BlockDate bD = searchBlockDateById(deletedBlockDates, id);
+        return restoreBDByObject(bD);
+    }
+
+    /**
+     * Restores BlockDate object provided in argument. Updates BlockDate lists
+     * and file.
+     * 
+     * Overloaded function.
+     * 
+     * @param bD
+     *            The BlockDate object to restore.
+     * @return True, if file has been successfully updated with restoration.
+     */
+    public boolean restoreBD(BlockDate bD) {
+        return restoreBDByObject(bD);
+    }
+
+    /**
+     * Restores object provided in argument. Removes object from
+     * deletedBlockDates list, adds to allBlockDates list, and updates file.
+     * 
+     * @param bD
+     *            The BlockDate object to restore.
+     * @return True, if file has been successfully updated with restoration.
+     */
+    private boolean restoreBDByObject(BlockDate bD) {
+        deletedBlockDates.remove(bD);
+        allBlockDates.add(bD);
+        return updateFile();
+    }
+    
+    /**
+     * Permanently deletes BlockDate object provided in argument. Cannot be undone.
+     * Used when undoing add commands. Decrements BlockDate ID counter. Updates BlockDate 
+     * lists and file.
+     * 
+     * Overloaded function.
+     * 
+     * @param task
+     *            The BlockDate object to permanently delete.
+     * @return True, if file has been successfully updated with wipe.
+     */
+    public boolean wipeBD(BlockDate bD) {
+        return wipeBDByObject(bD);
+    }
+
+    /**
+     * Permanently deletes BlockDate object based on the ID provided in argument.
+     * Cannot be undone. Used when undoing add commands. Decrements BlockDate ID
+     * counter. Updates BlockDate lists and file.
+     * 
+     * Overloaded function.
+     * 
+     * @param id
+     *            The ID of the BlockDate object to permanently delete.
+     * @return True, if file has been successfully updated with wipe.
+     */
+    public boolean wipeBD(int id) {
+        BlockDate bD = searchBlockDateById(allBlockDates, id);
+        return wipeBDByObject(bD);
+    }
+
+    /**
+     * Permanently deletes BlockDate object provided in argument. Cannot be undone.
+     * Used when undoing add commands. Decrements BlockDate ID counter. Removes
+     * object from all lists, and updates file.
+     * 
+     * @param task
+     *            The BlockDate object to permanently delete.
+     * @return True, if file has been successfully updated with wipe.
+     */
+    private boolean wipeBDByObject(BlockDate bD) {
+        if (bD == null) {
+            return false; // Invalid ID
+        }
+
+        allBlockDates.remove(bD);
+        bD.wipeBlockDate();
         return updateFile();
     }
 }

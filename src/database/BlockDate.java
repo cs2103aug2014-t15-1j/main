@@ -10,11 +10,21 @@ package database;
 
 public class BlockDate implements Comparable<BlockDate> {
 
+    /**
+     * Unique ID for each new Task object. Increments at new Task instantiation.
+     * Cannot decrement unless undoing a new Task creation.
+     */
+    private static int newId = 1;
+
+    /** ID is set at object instantiation. */
+    private final int ID;
+
     private DateTime start;
     private DateTime end;
 
     /** Default constructor. Initialized with default DateTime objects. */
     public BlockDate() {
+        ID = newId++;
         start = new DateTime();
         end = new DateTime();
     }
@@ -28,6 +38,7 @@ public class BlockDate implements Comparable<BlockDate> {
      *            When blocked time period ends.
      */
     public BlockDate(DateTime start, DateTime end) {
+        ID = newId++;
         this.start = new DateTime(start);
         this.end = new DateTime(end);
     }
@@ -142,6 +153,22 @@ public class BlockDate implements Comparable<BlockDate> {
         System.out.println(this.getStart().compareTo(blockDate.getStart()));
         System.out.println(this.getEnd().compareTo(blockDate.getEnd()));
         return contains;
+    }
+
+    // TODO rename?
+    /** Reduces ID counter when BlockDate object is to be wiped. */
+    public void wipeBlockDate() {
+        newId--;
+    }
+
+    // TODO rename?
+    /** Resets ID counter when all BlockDate objects are wiped. */
+    public static void wipeAllBlockDates() {
+        newId = 1;
+    }
+
+    public int getId() {
+        return ID;
     }
 
     public DateTime getStart() {
