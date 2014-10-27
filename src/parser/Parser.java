@@ -592,7 +592,7 @@ public class Parser {
             }
         }
         
-        if (currFieldLC != "name") {
+        if (currFieldLC != "name" && !currHasDate && !currHasTime) {
             TaskParam nameParam = getTaskParam(addFields, "name");
             nameParam.addToField(currField);
         }

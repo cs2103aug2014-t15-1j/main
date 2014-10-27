@@ -164,31 +164,30 @@ public class TestParser {
 
         // Full Add with repeated parameters and consecutive parameters
         result = "\n[[ CMD-ADD: ]]" + "\nname: do start # wed homework "
-                 + "late due now quickly due thurs" + "\ndue: "
-                 + "\nstart: 27/10/2014 0900" + "\nend: 28/10/2014" + "\ntags: [#cs2103]";
+                 + "late due now quickly due thurs" + "\ndue: 29/10/2014"
+                 + "\nstart: 27/10/2014 0900" + "\nend: 28/10/2014"
+                 + "\ntags: [#cs2103, #work]";
         cmd = Parser
                 .parse("       add       do start #cs2103 #         wed homework    late "
-                               + "due START      27/10/2014        0900 end   28/10/2014 now quickly due thurs\n")
+                               + "due START      27/10/2014        0900 end   28/10/2014 "
+                               + "now quickly due thurs due  29/10/2014 #work\n")
                 .toString();
         assertEquals("Add: full, repeated params, consecutive param", result,
                      cmd);
-/*
-        // Full Add with shorthand
-        result = "\n[[ CMD-ADD: ]]" + "\nname: do homework"
-                 + "\ndue: 24/04/2014" + "\nstart: 22/04/2014"
-                 + "\nend: 23/04/2014" + "\ntags: [#cs2103]";
-        cmd = Parser.parse("add do s: #cs2103 23/04/2014 n: homework "
-                                   + "d: 24/04/2014 e: 22/04/2014\n")
-                .toString();
-        assertEquals("Add: full, shorthand", result, cmd);
-
-        // Add parameters typed without spaces after colons
-        result = "\n[[ CMD-ADD: ]]" + "\nname: homework" + "\ndue: "
-                 + "\nstart: " + "\nend: 23/04/2014" + "\ntags: []";
-        cmd = Parser.parse("add name:homework start:end:start:end:23/04/2014")
-                .toString();
-        assertEquals("Add: no-spaces", result, cmd);
-*/
+        /*
+         * // Full Add with shorthand result = "\n[[ CMD-ADD: ]]" +
+         * "\nname: do homework" + "\ndue: 24/04/2014" + "\nstart: 22/04/2014" +
+         * "\nend: 23/04/2014" + "\ntags: [#cs2103]"; cmd =
+         * Parser.parse("add do s: #cs2103 23/04/2014 n: homework " +
+         * "d: 24/04/2014 e: 22/04/2014\n") .toString();
+         * assertEquals("Add: full, shorthand", result, cmd);
+         * 
+         * // Add parameters typed without spaces after colons result =
+         * "\n[[ CMD-ADD: ]]" + "\nname: homework" + "\ndue: " + "\nstart: " +
+         * "\nend: 23/04/2014" + "\ntags: []"; cmd =
+         * Parser.parse("add name:homework start:end:start:end:23/04/2014")
+         * .toString(); assertEquals("Add: no-spaces", result, cmd);
+         */
 
         System.out.println("...success!");
     }
