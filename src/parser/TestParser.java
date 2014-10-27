@@ -150,28 +150,29 @@ public class TestParser {
         String cmd;
 
         // Empty Add
-        result = "\n[[ CMD-ADD: ]]" + "\nname: null" + "\ndue: " + "\nstart: "
+        result = "\n[[ CMD-ADD: ]]" + "\nname: " + "\ndue: " + "\nstart: "
                  + "\nend: " + "\ntags: []";
         cmd = Parser.parse("add").toString();
         assertEquals("Add: empty", result, cmd);
 
         // Basic Add ending with a parameter
-        result = "\n[[ CMD-ADD: ]]" + "\nname: do homework it's cs2103"
+        result = "\n[[ CMD-ADD: ]]" + "\nname: do homework it's cs2103 end"
                  + "\ndue: " + "\nstart: " + "\nend: " + "\ntags: [#cs2103]";
-        cmd = Parser.parse("add do homework it's #cs2103 cs2103 end:")
+        cmd = Parser.parse("add do homework it's #cs2103 cs2103 end")
                 .toString();
         assertEquals("Add: simple, end param", result, cmd);
 
         // Full Add with repeated parameters and consecutive parameters
-        result = "\n[[ CMD-ADD: ]]" + "\nname: do homework late quickly"
-                 + "\ndue: " + "\nstart: " + "\nend: " + "\ntags: [#cs2103]";
+        result = "\n[[ CMD-ADD: ]]" + "\nname: do start # wed homework "
+                 + "late due now quickly due thurs" + "\ndue: "
+                 + "\nstart: 27/10/2014 0900" + "\nend: 28/10/2014" + "\ntags: [#cs2103]";
         cmd = Parser
-                .parse("add name: do start: #cs2103 wed name: homework late "
-                               + "due: start: 0900 end: now name: quickly due: thurs\n")
+                .parse("       add       do start #cs2103 #         wed homework    late "
+                               + "due START      27/10/2014        0900 end   28/10/2014 now quickly due thurs\n")
                 .toString();
         assertEquals("Add: full, repeated params, consecutive param", result,
                      cmd);
-
+/*
         // Full Add with shorthand
         result = "\n[[ CMD-ADD: ]]" + "\nname: do homework"
                  + "\ndue: 24/04/2014" + "\nstart: 22/04/2014"
@@ -187,30 +188,7 @@ public class TestParser {
         cmd = Parser.parse("add name:homework start:end:start:end:23/04/2014")
                 .toString();
         assertEquals("Add: no-spaces", result, cmd);
-
-        // Full Add with mixed capitals for parameters
-        result = "\n[[ CMD-ADD: ]]" + "\nname: do homework late quickly"
-                 + "\ndue: 25/04/2014 2359" + "\nstart: 23/04/2014 0300"
-                 + "\nend: 24/04/2014 0400" + "\ntags: [#cs2103]";
-        cmd = Parser
-                .parse("aDD nAMe: do stArt: #cs2103 naMe: homework late "
-                               + "duE: 2359 start: 23/04/2014 0300 end: 0400 24/04/2014 "
-                               + "NAME: quickly D: 25/04/2014\n").toString();
-        assertEquals("Add: full, mixed caps", result, cmd);
-
-        // Add with mixed capitals for no-space parameters and shorthand
-        // And a space after no-space parameters
-        result = "\n[[ CMD-ADD: ]]" + "\nname: homework" + "\ndue: "
-                 + "\nstart: " + "\nend: 23/04/2014" + "\ntags: []";
-        cmd = Parser.parse("add S:e:N:homework staRt:E:S:eNd: 23/04/2014")
-                .toString();
-        assertEquals("Add: no-spaces, mixed caps", result, cmd);
-
-        // Add without name
-        result = "\n[[ CMD-ADD: ]]" + "\nname: null" + "\ndue: " + "\nstart: "
-                 + "\nend: 23/04/2014" + "\ntags: []";
-        cmd = Parser.parse("add staRt:E:S:eNd: 23/04/2014").toString();
-        assertEquals("Add: no name", result, cmd);
+*/
 
         System.out.println("...success!");
     }

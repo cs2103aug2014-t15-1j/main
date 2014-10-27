@@ -544,48 +544,76 @@ public class Parser {
 
     private static Command parseAdd(String[] commandParams) {
         String currField = "name";
+        String currFieldLC = currField.toLowerCase();
         List<TaskParam> addFields = new ArrayList<TaskParam>();
+        ArrayList<String> availParams = generateAddParamList();
 
         String currWord;
-        /*
-         * for (int j = 0; j < commandParams.length; j++) { currWord =
-         * commandParams[j]; if (isAddParamName(currWord)) { currField =
-         * currWord; } else {
-         * 
-         * } }
-         */
-        for (int i = 0; i < commandParams.length; i++) {
-            currWord = commandParams[i];
-            if (containsParamName(currWord)) {
-                // Split up all parameter names
-                String[] wordList = currWord.split(":");
+        String currWordLC;
+        boolean currHasDate = false;
+        boolean currHasTime = false;
 
-                // Get the last valid parameter, and the index in wordList it
-                // corresponds to. EndIndex checks if the last word in wordList
-                // can be a parameter name.
-                int endIndex = getLastPossibleParamIndex(currWord, wordList);
-                currField = getLastValidParamName(wordList, endIndex, currField);
-                int lastValidField = getLastValidParamNameIndex(wordList,
-                                                                endIndex);
-
-                // Add remainder to the current field
-                String toAddToField = mergeWordsAfterIndex(wordList,
-                                                           lastValidField);
-                addToFieldParam(addFields, currField, toAddToField);
-            } else if (isAddParamName(currWord)) {
-                currField = getParamName(currWord);
-            } else if (hasValidHashTag(currWord)) {
-                addTaskParamToField(addFields, "tag", currWord);
+        for (int j = 0; j < commandParams.length; j++) {
+            currWord = commandParams[j];
+            currWordLC = currWord.toLowerCase();
+            if (hasValidHashTag(currWord)) {
+                addFields.add(new TaskParam("tag", currWord));
+            } else if (availParams.contains(currWordLC)) {
+                if (isDateParam(currFieldLC) && !currHasDate && !currHasTime) {
+                    TaskParam currParam = getTaskParam(addFields, "name");
+                    currParam.addToField(currField);
+                }
+                currField = currWord;
+                currFieldLC = currWordLC;
+                currHasDate = false;
+                currHasTime = false;
+            } else if (isDateParam(currFieldLC) && !currWord.isEmpty()) {
+                if (!currHasDate && DateParser.isValidDate(currWord)) {
+                    TaskParam currParam = getTaskParam(addFields, currFieldLC);
+                    currParam.addToField(currWord);
+                    currHasDate = true;
+                } else if (!currHasTime && DateParser.isValidTime(currWord)) {
+                    TaskParam currParam = getTaskParam(addFields, currFieldLC);
+                    currParam.addToField(currWord);
+                    currHasTime = true;
+                } else {
+                    TaskParam nameParam = getTaskParam(addFields, "name");
+                    if (!currHasDate && !currHasTime) {
+                        nameParam.addToField(currField);
+                    } else {
+                        availParams.remove(currWordLC);
+                    }
+                    nameParam.addToField(currWord);
+                    currFieldLC = "name";
+                }
             } else {
-                addToFieldParam(addFields, currField, currWord);
+                TaskParam nameParam = getTaskParam(addFields, "name");
+                nameParam.addToField(currWord);
             }
+        }
+        
+        if (currFieldLC != "name") {
+            TaskParam nameParam = getTaskParam(addFields, "name");
+            nameParam.addToField(currField);
         }
 
         removeDuplicates(addFields);
-        removeInvalidDateTimes(addFields);
         checkStartEndOrder(addFields);
 
         return new CommandAdd(addFields);
+    }
+
+    private static boolean isDateParam(String word) {
+        String wordLC = word.toLowerCase();
+        return wordLC.equals("due") || wordLC.equals("start") || wordLC.equals("end");
+    }
+
+    private static ArrayList<String> generateAddParamList() {
+        ArrayList<String> list = new ArrayList<String>();
+        list.add("due");
+        list.add("start");
+        list.add("end");
+        return list;
     }
 
     /**
@@ -862,13 +890,13 @@ public class Parser {
                 }
             }
         }
-        
-        // Convert param inputs 
+
+        // Convert param inputs
         String name = param[0];
         if (param[4].equalsIgnoreCase("done")) {
             isDone = true;
         }
-        
+
         // Convert date/time inputs into DateTime objects
         DateTime[] dateTimes = new DateTime[ADD_DATE_PARAM_NUM];
 
