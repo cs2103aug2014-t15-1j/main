@@ -134,10 +134,13 @@ public class BlockDate implements Comparable<BlockDate> {
     public boolean contains(BlockDate blockDate) {
         boolean contains = false;
         // Within Range of days
-        if (this.getStart().compareTo(blockDate.getStart()) >= 0 &&
-            this.getEnd().compareTo(blockDate.getEnd()) <= 0) {
+        if (this.getStart().compareTo(blockDate.getStart()) <= 0 &&
+            this.getEnd().compareTo(blockDate.getEnd()) >= 0) {
             contains = true;
         }
+        
+        System.out.println(this.getStart().compareTo(blockDate.getStart()));
+        System.out.println(this.getEnd().compareTo(blockDate.getEnd()));
         return contains;
     }
 

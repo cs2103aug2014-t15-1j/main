@@ -142,9 +142,13 @@ public class CommandAdd extends Command {
         if (due != null || start != null || end != null) {
             Processor processor = Processor.getInstance();
             List<BlockDate> blockDates = processor.getBlockedDates();
-            BlockDate currDate = new BlockDate(start, end);
+            BlockDate currDate = new BlockDate(due, due);
+            BlockDate currDate2 = new BlockDate(start, end);
             for (BlockDate blockDate : blockDates) {
                 if (blockDate.contains(currDate)) {
+                    return true;
+                }
+                if (blockDate.contains(currDate2)) {
                     return true;
                 }
             }

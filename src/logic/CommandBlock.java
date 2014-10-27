@@ -100,6 +100,10 @@ public class CommandBlock extends Command {
                 success = false;
                 outputs.add(blockedDate);
                 break;
+            } else if (currBlock.contains(blockedDate)) {
+                success = false;
+                outputs.add(blockedDate);
+                break;
             }
         }
         
