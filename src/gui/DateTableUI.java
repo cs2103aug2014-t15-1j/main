@@ -21,6 +21,21 @@ public class DateTableUI {
         return viewer;
     }
 
+    public void setTableSection(BlockDate dateToSelect, List<BlockDate> dates) {
+        TableViewer table = getTable();
+        int size = dates.size();
+        int indexToSelect = 0;
+        for (int index = 0; index < size; index++) {
+            BlockDate currDate = dates.get(index);
+            if (currDate.equals(dateToSelect)) {
+                indexToSelect = index;
+                break;
+            }
+        }
+
+        table.getTable().setSelection(indexToSelect);
+    }
+
     private void setFocus() {
         SetUp setUp = SetUp.getInstance();
         CTabFolder tabs = setUp.getTabFolder();

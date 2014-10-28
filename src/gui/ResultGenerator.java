@@ -90,10 +90,12 @@ public class ResultGenerator {
                     return "Unable to block date. Date coincides with another blocked date or task.";
                 }
                 refreshBlockTable();
+                setDateTableSelection(dates);
                 return "BLOCKED: " + feedbackSingleBlock(dates);
 
             case UNBLOCK:
                 refreshBlockTable();
+                setDateTableSelection(dates);
                 return "UNBLOCKED: " + feedbackSingleBlock(dates);
 
             case REDO:
@@ -101,10 +103,12 @@ public class ResultGenerator {
                     return "Unable to redo command. Date coincides with another blocked date or task.";
                 }
                 refreshBlockTable();
+                setDateTableSelection(dates);
                 return "Command Redone.";
 
             case UNDO:
                 refreshBlockTable();
+                setDateTableSelection(dates);
                 return "Command Undone.";
 
             case DISPLAY:
@@ -138,25 +142,36 @@ public class ResultGenerator {
         switch (result.getCommandType()) {
             case ADD:
                 refreshTodoTable();
+                setTaskTableSelection(outputs);
                 if (result.needsConfirmation()) {
                     return "Unable to add task. Task coincides with a blocked date.";
                 }
                 return feedbackMessage(outputs, "Added %1$s");
             case DELETE:
-                refreshTodoTable();
                 if (result.needsConfirmation()) {
                     return "This will erase all data, PERMANENTLY.  Key 'y' to continue or 'n' to abort";
                 }
+                refreshTodoTable();
+                setTaskTableSelection(outputs);
+                return feedbackMessage(outputs, "Deleted %1$s");
+            case RESET:
+                if (result.needsConfirmation()) {
+                    return "This will erase all data, PERMANENTLY.  Key 'y' to continue or 'n' to abort";
+                }
+                refreshTodoTable();
                 return feedbackMessage(outputs, "Deleted %1$s");
             case EDIT:
                 refreshTodoTable();
+                setTaskTableSelection(outputs);
                 return feedbackMessage(outputs, "Edited %1$s");
             case DISPLAY:
-                refreshTodoTable();
                 if (outputs.size() == 0) {
 
                     return "No tasks to show.";
+                } else if (outputs.size() == 1) {
+                    setTaskTableSelection(outputs);
                 }
+                taskTable.update(outputs);
                 return feedbackMessageMultiResults(outputs,
                                                    "%1$s task(s) found.");
             case SEARCH:
@@ -165,16 +180,24 @@ public class ResultGenerator {
                                                    "Found %1$s match(es).");
             case TODO:
                 refreshTodoTable();
+                setTaskTableSelection(outputs);
                 return feedbackMessage(outputs, "Marked %1$s as todo.");
             case DONE:
                 refreshTodoTable();
+                setTaskTableSelection(outputs);
                 return feedbackMessage(outputs, "Marked %1$s as done.");
             case UNDO:
                 refreshTodoTable();
+                setTaskTableSelection(outputs);
                 return "Command Undone.";
             case REDO:
                 refreshTodoTable();
+                setTaskTableSelection(outputs);
                 return "Command Redone.";
+            case RESTORE:
+                refreshTodoTable();
+                setTaskTableSelection(outputs);
+                return feedbackMessage(outputs, "Restored %1$s.");
             case EXIT:
                 return "exit";
             case ERROR:
@@ -222,5 +245,15 @@ public class ResultGenerator {
     private void refreshBlockTable() {
         List<BlockDate> dates = processor.fetchBlockedDate();
         dateTable.update(dates);
+    }
+
+    private void setTaskTableSelection(List<Task> outputs) {
+        List<Task> tasks = processor.fetchToDoTasks();
+        taskTable.setTableSection(outputs.get(0), tasks);
+    }
+
+    private void setDateTableSelection(List<BlockDate> outputs) {
+        List<BlockDate> dates = processor.fetchBlockedDate();
+        dateTable.setTableSection(outputs.get(0), dates);
     }
 }

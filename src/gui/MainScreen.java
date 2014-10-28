@@ -1,9 +1,13 @@
 package gui;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
@@ -60,6 +64,7 @@ public class MainScreen {
         shell.setBackgroundMode(SWT.INHERIT_FORCE);
 
         SetUp setUpScreen = SetUp.getInstance(shell);
+        addWindowListeners(shell, setUpScreen);
         resultGenerator.start();
 
         removeText(setUpScreen);
@@ -84,12 +89,37 @@ public class MainScreen {
         display.dispose();
     }
 
+    private static void addWindowListeners(Shell shell, SetUp screen) {
+        Control[] controls = shell.getChildren();
+
+        for (int index = 0; index < controls.length; index++) {
+            controls[index].addKeyListener(new KeyAdapter() {
+
+                public void keyPressed(KeyEvent event) {
+
+                    if ((event.stateMask & SWT.SHIFT) != 0) {
+                        System.out.println("I am pressing tab");
+                        CTabFolder folder = screen.getTabFolder();
+                        int index = folder.getSelectionIndex();
+                        if (index == 0) {
+                            folder.setSelection(1);
+                        } else if (index == 1) {
+                            folder.setSelection(0);
+                        }
+                    }
+
+                }
+            });
+        }
+    }
+
     private static void removeText(SetUp screen) {
 
         final Text commandLine = screen.getCommandLine();
         commandLine.addListener(SWT.KeyDown, new Listener() {
             @Override
             public void handleEvent(Event event) {
+
                 switch (event.type) {
                     case SWT.KeyDown:
                         commandLine.setText("");
@@ -156,6 +186,8 @@ public class MainScreen {
                             message = "An internal error occurred.";
                         }
                         feedback.setText(message);
+                        // remove this line before final launch
+                        error.printStackTrace();
                     }
                 }
             }

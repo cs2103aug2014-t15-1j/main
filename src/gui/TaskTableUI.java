@@ -45,6 +45,21 @@ public class TaskTableUI {
         return table;
     }
 
+    public void setTableSection(Task taskToSelect, List<Task> tasks) {
+        TableViewer table = getTable();
+        int size = tasks.size();
+        int indexToSelect = 0;
+        for (int index = 0; index < size; index++) {
+            Task currTask = tasks.get(index);
+            if (currTask.equals(taskToSelect)) {
+                indexToSelect = index;
+                break;
+            }
+        }
+
+        table.getTable().setSelection(indexToSelect);
+    }
+
     /**
      * Opens task table tab
      */

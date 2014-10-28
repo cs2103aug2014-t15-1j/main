@@ -6,7 +6,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.layout.RowLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Dialog;
@@ -24,7 +25,7 @@ public class HelpDialog extends Dialog {
     public void open() {
         Shell shell = new Shell(getParent(), SWT.CLOSE | SWT.RESIZE);
 
-        shell.setLayout(new RowLayout(SWT.VERTICAL));
+        shell.setLayout(new GridLayout());
         createContents(shell);
         addCloseListener(shell);
 
@@ -43,6 +44,7 @@ public class HelpDialog extends Dialog {
         Label closeDialogLabel = new Label(parent, SWT.NONE);
         closeDialogLabel.setText("To close press ESC");
 
+        GridData data = new GridData(GridData.FILL_BOTH);
         ImageRegistry imageRegistry = new ImageRegistry(parent.getDisplay());
 
         ImageDescriptor id = ImageDescriptor
@@ -50,8 +52,10 @@ public class HelpDialog extends Dialog {
         imageRegistry.put("help", id);
 
         Image image = imageRegistry.get("help");
+
         Label helpImage = new Label(parent, SWT.NONE);
         helpImage.setImage(image);
+        helpImage.setLayoutData(data);
     }
 
     private void addCloseListener(Shell shell) {
