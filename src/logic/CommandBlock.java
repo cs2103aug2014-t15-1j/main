@@ -119,7 +119,7 @@ public class CommandBlock extends Command {
         BlockDate currBlock = new BlockDate(start, end);
         Processor processor = Processor.getInstance();
         List<BlockDate> blockRange = processor.getFile().getAllBlockDates();
-        boolean success = processor.getFile().deleteBD(currBlock);
+        boolean success = processor.getFile().wipeBD(currBlock);
         return new Result(blockRange, success, CommandType.BLOCK, ResultType.BLOCKDATE);
     }
 }

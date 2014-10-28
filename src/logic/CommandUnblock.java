@@ -113,9 +113,9 @@ public class CommandUnblock extends Command {
         Processor processor = Processor.getInstance();
         List<BlockDate> outputs = new ArrayList<BlockDate>();
         int unblockId = Integer.parseInt(id);
-        processor.getFile().restoreBD(unblockId);
+        success = processor.getFile().restoreBD(unblockId);
         BlockDate blockDate = processor.getFile().getBlockDate(unblockId);
         outputs.add(blockDate);
-        return new Result(outputs, success, CommandType.UNBLOCK, ResultType.BLOCKDATE);
+        return new Result(outputs, success, CommandType.BLOCK, ResultType.BLOCKDATE);
     }
 }
