@@ -116,10 +116,12 @@ public class CommandBlock extends Command {
     
     @Override
     protected Result executeComplement() {
-        BlockDate currBlock = new BlockDate(start, end);
         Processor processor = Processor.getInstance();
-        List<BlockDate> blockRange = processor.getFile().getAllBlockDates();
+        int blockIndex = processor.getFile().getAllBlockDates().size() - 1;
+        BlockDate currBlock = processor.getFile().getAllBlockDates().get(blockIndex);
+        List<BlockDate> outputs = new ArrayList<BlockDate>();
         boolean success = processor.getFile().wipeBD(currBlock);
-        return new Result(blockRange, success, CommandType.BLOCK, ResultType.BLOCKDATE);
+        outputs.add(currBlock);
+        return new Result(outputs, success, CommandType.UNBLOCK, ResultType.BLOCKDATE);
     }
 }

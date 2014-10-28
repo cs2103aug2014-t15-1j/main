@@ -150,8 +150,6 @@ public class BlockDate implements Comparable<BlockDate> {
             contains = true;
         }
         
-        System.out.println(this.getStart().compareTo(blockDate.getStart()));
-        System.out.println(this.getEnd().compareTo(blockDate.getEnd()));
         return contains;
     }
 
