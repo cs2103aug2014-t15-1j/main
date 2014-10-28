@@ -49,7 +49,7 @@ public class HelpDialog extends Dialog {
 
         ImageDescriptor id = ImageDescriptor
                 .createFromFile(HelpDialog.class, "/resource/Helpsheet.jpg");
-        imageRegistry.put("help", id);
+        imageRegistry.put("HelpSheet", id);
 
         Image image = imageRegistry.get("help");
 
