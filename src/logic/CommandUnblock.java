@@ -93,15 +93,15 @@ public class CommandUnblock extends Command {
             Processor.getLogger().info("Executing 'Unblock' Command...");
         }
         Processor processor = Processor.getInstance();
-        List<BlockDate> blockRange = processor.getBlockedDates();
+        List<BlockDate> blockRange = processor.getFile().getAllBlockDates();
         boolean success = false;
-        int unblockId = Integer.parseInt(id) - 1;
+        int unblockId = Integer.parseInt(id);
         List<BlockDate> outputs = new ArrayList<BlockDate>();
         
-        if (unblockId < blockRange.size() && unblockId >= 0) {
-            BlockDate blockedDate = blockRange.remove(unblockId);
-            processor.getDeletedBlockDates().push(blockedDate);
-            outputs.add(blockedDate);
+        if (unblockId <= blockRange.size() && unblockId > 0) {
+            success = processor.getFile().deleteBD(unblockId);
+            //outputs.add(processor.getFile().getDeletedBlockDates().get(unblockId));
+            //Need to add fetch the blockdate and add to outputs
             success = true;
         }
         
@@ -113,16 +113,10 @@ public class CommandUnblock extends Command {
         boolean success = false;
         Processor processor = Processor.getInstance();
         List<BlockDate> outputs = null;
-        List<BlockDate> blockRange = processor.getBlockedDates();
-        
-        if (!processor.getDeletedBlockDates().isEmpty()) {
-            BlockDate blockDate = processor.getDeletedBlockDates().pop();
-            outputs = new ArrayList<BlockDate>();
-            outputs.add(blockDate);
-            success = blockRange.add(blockDate);
-            Collections.sort(blockRange);
-        }
-        
+        int unblockId = Integer.parseInt(id);
+        processor.getFile().restoreBD(unblockId);
+        //outputs.add(processor.getFile().getDeletedBlockDates().get(unblockId));
+        //Need to add fetch the blockdate and add to outputs
         return new Result(outputs, success, CommandType.UNBLOCK, ResultType.BLOCKDATE);
     }
 }

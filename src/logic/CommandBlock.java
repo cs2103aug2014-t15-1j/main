@@ -89,7 +89,7 @@ public class CommandBlock extends Command {
             Processor.getLogger().info("Executing 'Block' Command...");
         }
         Processor processor = Processor.getInstance();
-        List<BlockDate> blockRange = processor.getBlockedDates();
+        List<BlockDate> blockRange = processor.getFile().getAllBlockDates();
         BlockDate currBlock = new BlockDate(start, end);
         boolean success = true;
 
@@ -108,9 +108,8 @@ public class CommandBlock extends Command {
         }
         
         if (success) {
-            blockRange.add(currBlock);
+            processor.getFile().addNewBD(currBlock);
             outputs.add(currBlock);
-            Collections.sort(blockRange);
         }
         
         return new Result(outputs, success, CommandType.BLOCK, ResultType.BLOCKDATE);
@@ -120,8 +119,8 @@ public class CommandBlock extends Command {
     protected Result executeComplement() {
         BlockDate currBlock = new BlockDate(start, end);
         Processor processor = Processor.getInstance();
-        List<BlockDate> blockRange = processor.getBlockedDates();
-        boolean success = blockRange.remove(currBlock);
+        List<BlockDate> blockRange = processor.getFile().getAllBlockDates();
+        boolean success = processor.getFile().deleteBD(currBlock);
         return new Result(blockRange, success, CommandType.BLOCK, ResultType.BLOCKDATE);
     }
 }

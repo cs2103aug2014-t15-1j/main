@@ -13,7 +13,6 @@ import logic.Result.ResultType;
 import parser.Parser;
 import database.BlockDate;
 import database.DataFile;
-import database.DateTime;
 import database.Task;
 
 /**
@@ -54,12 +53,6 @@ public class Processor extends Observable {
 	/** Stores Task objects that are being edited */
 	private Stack<Task> editedTaskHistory;
 	
-	/** Store a List of Blocked Date */
-    private List<BlockDate> blockedDateList;
-	
-    /** Stores a Stack of Deleted Block Date */
-    private Stack<BlockDate> deletedBlockedDateList;
-    
 	/** Last search performed*/
 	private List<Task> lastSearch;
 	
@@ -99,8 +92,6 @@ public class Processor extends Observable {
 	    lastSearch = new ArrayList<Task>();
 	    floatingTasks = new ArrayList<Task>();
 	    timedTasks = new ArrayList<Task>();
-	    blockedDateList = new ArrayList<BlockDate>();
-	    deletedBlockedDateList = new Stack<BlockDate>();
 	    inputStringBackwardHistory = new Stack<String>();
 	    inputStringForwardHistory = new Stack<String>();
 	    currentInputString = "";
@@ -288,7 +279,7 @@ public class Processor extends Observable {
 	    if (ENABLE_LOGGING) {
 	        log.info("Fetching Blocked Dates");
 	    }
-        return Collections.unmodifiableList(blockedDateList);
+        return file.getAllBlockDates();
     }
 	
 	public String fetchInputUpKey() {
@@ -311,14 +302,6 @@ public class Processor extends Observable {
 	    return file;
 	}
 	
-	protected List<BlockDate> getBlockedDates() {
-	    return blockedDateList;
-	}
-	
-	protected Stack<BlockDate> getDeletedBlockDates() {
-        return deletedBlockedDateList;
-    }
-
     protected static Logger getLogger() {
 	    return log;
 	}

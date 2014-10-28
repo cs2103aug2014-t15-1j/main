@@ -65,28 +65,28 @@ public class ProcessorTest {
 	//Test for 'Add' Command & Inclusive of Undo/Redo
 	public void testAdd() throws Exception {
 	    //Add with name
-		Result r1 = TestProcessor.processInput("add n: Do CS2103 Homework");
+		Result r1 = TestProcessor.processInput("add Do CS2103 Homework");
 		assertTrue(equalsObj(testTask1, r1.getTasks().get(0)));
 		TestProcessor.processInput("undo");
         Result r1a = TestProcessor.processInput("redo");
         assertTrue(equalsObj(testTask1, r1a.getTasks().get(0)));
         
 		//Add with due
-        Result r2 = TestProcessor.processInput("add d: 10/10/2012 1010");
+        Result r2 = TestProcessor.processInput("add due 10/10/2012 1010");
         assertTrue(equalsObj(testTask2, r2.getTasks().get(0)));
         TestProcessor.processInput("undo");
         Result r2a = TestProcessor.processInput("redo");
         assertTrue(equalsObj(testTask2, r2a.getTasks().get(0)));
         
         //Add with start
-        Result r3 = TestProcessor.processInput("add s: 10/10/2012 1010");
+        Result r3 = TestProcessor.processInput("add start 10/10/2012 1010");
         assertTrue(equalsObj(testTask3, r3.getTasks().get(0)));
         TestProcessor.processInput("undo");
         Result r3a = TestProcessor.processInput("redo");
         assertTrue(equalsObj(testTask3, r3a.getTasks().get(0)));
         
         //Add with end
-        Result r4 = TestProcessor.processInput("add e: 10/10/2012 1010");
+        Result r4 = TestProcessor.processInput("add end 10/10/2012 1010");
         assertTrue(equalsObj(testTask4, r4.getTasks().get(0)));
         TestProcessor.processInput("undo");
         Result r4a = TestProcessor.processInput("redo");
@@ -101,7 +101,7 @@ public class ProcessorTest {
         assertTrue(equalsObj(testTask5, r5a.getTasks().get(0)));
         
         //All valid parameters
-        Result r6 = TestProcessor.processInput("add n: Do CS2103 Homework d: 10/10/2012 1010 s: 10/10/2012 1010 e: 10/10/2012 1010 #homework");
+        Result r6 = TestProcessor.processInput("add Do CS2103 Homework due 10/10/2012 1010 start 10/10/2012 1010 end 10/10/2012 1010 #homework");
         assertTrue(equalsObj(testTask6, r6.getTasks().get(0)));
         TestProcessor.processInput("undo");
         Result r6a = TestProcessor.processInput("redo");
@@ -110,15 +110,15 @@ public class ProcessorTest {
         //Test undo & redo of Add
         TestProcessor.processInput("undo");
         Result r8 = TestProcessor.processInput("redo");
-        assertTrue(equalsObj(testTask1, r8.getTasks().get(0)));
+        assertTrue(equalsObj(testTask6, r8.getTasks().get(0)));
 	}
 
 	@Test
     //Test for 'Edit' Command
 	public void testEdit() throws Exception {
-	    TestProcessor.processInput("add n: Do CS2103 Homework");
+	    TestProcessor.processInput("add Do CS2103 Homework");
 	    //Edit Name
-		Result r1 = TestProcessor.processInput("edit 1 n: Do EE2020 Homework");
+		Result r1 = TestProcessor.processInput("edit 1 Do EE2020 Homework");
 		assertTrue(equalsObj(r1.getTasks().get(0), testTask7));
 
 		//Test undo & redo of Edit Name
@@ -127,16 +127,16 @@ public class ProcessorTest {
         Result r3 = TestProcessor.processInput("redo");
         assertTrue(equalsObj(r3.getTasks().get(0), testTask7));
         
-        TestProcessor.processInput("edit 1 d: 10/10/2012 1010");
+        TestProcessor.processInput("edit 1 due: 10/10/2012 1010");
         TestProcessor.processInput("undo");
         Result r6 = TestProcessor.processInput("redo");
         assertTrue(equalsObj(r6.getTasks().get(0), testTask8));
-        TestProcessor.processInput("edit 1 s: 10/10/2012 1010");
+        TestProcessor.processInput("edit 1 start: 10/10/2012 1010");
         TestProcessor.processInput("undo");
         Result r9 = TestProcessor.processInput("redo");
         assertTrue(equalsObj(r9.getTasks().get(0), testTask9));
         
-        TestProcessor.processInput("edit 1 e: 10/10/2012 1010");
+        TestProcessor.processInput("edit 1 end: 10/10/2012 1010");
         TestProcessor.processInput("undo");
         Result r12 = TestProcessor.processInput("redo");
         assertTrue(equalsObj(r12.getTasks().get(0), testTask10));
@@ -155,8 +155,8 @@ public class ProcessorTest {
 	@Test
     //Test for 'Delete' Command
 	public void testDelete() throws Exception {
-	    TestProcessor.processInput("add n: Do CS2103 Homework");
-		TestProcessor.processInput("add n: Do EE2020 Homework");
+	    TestProcessor.processInput("add Do CS2103 Homework");
+		TestProcessor.processInput("add Do EE2020 Homework");
 		Result r2 = TestProcessor.processInput("delete 1");
 		assertTrue(equalsObj(r2.getTasks().get(0), testTask1));
 		assertTrue(equalsObj(TestProcessor.getFile().getToDoTasks().get(0), testTask7));
@@ -177,9 +177,9 @@ public class ProcessorTest {
         assertTrue(equalsObj(TestProcessor.getFile().getToDoTasks().get(0), testTask7));
         
         //Test delete search
-        TestProcessor.processInput("add n: Task2");
-        TestProcessor.processInput("add n: Task2");
-        TestProcessor.processInput("add n: Task3");
+        TestProcessor.processInput("add Task2");
+        TestProcessor.processInput("add Task2");
+        TestProcessor.processInput("add Task3");
         TestProcessor.processInput("search task2");
         TestProcessor.processInput("delete search");
         assertTrue(TestProcessor.getFile().getToDoTasks().size() == 2);
@@ -196,7 +196,7 @@ public class ProcessorTest {
 	@Test
     //Test for 'Restore' Command
 	public void testRestore() throws Exception {
-	    TestProcessor.processInput("add n: Do CS2103 Homework");
+	    TestProcessor.processInput("add Do CS2103 Homework");
 		TestProcessor.processInput("delete 1");
 		
 		Result r1 = TestProcessor.processInput("restore 1");
@@ -221,12 +221,12 @@ public class ProcessorTest {
     //Test for 'Display'/'Show' Command
 	public void testDisplay() throws Exception {
 	    //Test display
-		TestProcessor.processInput("add n: Do CS2103 Homework");
+		TestProcessor.processInput("add Do CS2103 Homework");
 		Result r1 = TestProcessor.processInput("display");
 		assertTrue(equalsObj(r1.getTasks().get(0), testTask1));
         assertEquals(r1.getTasks().size(), 1);
         
-        TestProcessor.processInput("add n: Do EE2020 Homework");
+        TestProcessor.processInput("add Do EE2020 Homework");
 		Result r4 = TestProcessor.processInput("display 2");
 		assertTrue(equalsObj(r4.getTasks().get(0), testTask7));
         assertEquals(r4.getTasks().size(), 1);
@@ -239,12 +239,12 @@ public class ProcessorTest {
 	@Test 
     //Test for 'Search' Command
 	public void testSearch() throws Exception {
-	    TestProcessor.processInput("add n: Do CS2103 Homework #cshomework");
-	    TestProcessor.processInput("add n: Do CS2103 Homework #cshomework");
-	    TestProcessor.processInput("add n: Do CS2103 Homework #cshomework");
-	    TestProcessor.processInput("add n: Do CS2103 Homework");
-	    TestProcessor.processInput("add n: Do CS2103 Homework");
-	    TestProcessor.processInput("add n: Do CS2103 Homework");
+	    TestProcessor.processInput("add Do CS2103 Homework #cshomework");
+	    TestProcessor.processInput("add Do CS2103 Homework #cshomework");
+	    TestProcessor.processInput("add Do CS2103 Homework #cshomework");
+	    TestProcessor.processInput("add Do CS2103 Homework");
+	    TestProcessor.processInput("add Do CS2103 Homework");
+	    TestProcessor.processInput("add Do CS2103 Homework");
         
 	    //Test search by tags
 	    Result r6 = TestProcessor.processInput("search #cshomework");
@@ -262,12 +262,12 @@ public class ProcessorTest {
 	@Test
 	//Boundary Test Case: Consecutive undo/redo for delete search
 	public void testDeleteSearchUndoRedo() throws Exception {
-	    TestProcessor.processInput("add n: Task1");
-        TestProcessor.processInput("add n: Task1");
-        TestProcessor.processInput("add n: Task2");
-        TestProcessor.processInput("add n: Task2");
-        TestProcessor.processInput("add n: Task2");
-        TestProcessor.processInput("add n: Task3");
+	    TestProcessor.processInput("add Task1");
+        TestProcessor.processInput("add Task1");
+        TestProcessor.processInput("add Task2");
+        TestProcessor.processInput("add Task2");
+        TestProcessor.processInput("add Task2");
+        TestProcessor.processInput("add Task3");
         
         Result r6 = TestProcessor.processInput("search task2");
         assertTrue(r6.getTasks().size() == 3);
@@ -288,29 +288,29 @@ public class ProcessorTest {
 	@Test
 	public void testBlock() {
 	    TestProcessor.processInput("block 23/04/2012 to 23/05/2014");
-		assertTrue(TestProcessor.getBlockedDates().size() == 1);
+		assertTrue(TestProcessor.fetchBlockedDate().size() == 1);
 	}
 
 	@Test
 	public void testUnblock() {
-        assertTrue(TestProcessor.getBlockedDates().size() == 0);
+        assertTrue(TestProcessor.fetchBlockedDate().size() == 0);
 	    TestProcessor.processInput("block 23/04/2012 to 23/05/2014");
-        assertTrue(TestProcessor.getBlockedDates().size() == 1);
+        assertTrue(TestProcessor.fetchBlockedDate().size() == 1);
         TestProcessor.processInput("unblock 0");
-        assertTrue(TestProcessor.getBlockedDates().size() == 1);
+        assertTrue(TestProcessor.fetchBlockedDate().size() == 1);
         TestProcessor.processInput("unblock -1");
-        assertTrue(TestProcessor.getBlockedDates().size() == 1);
+        assertTrue(TestProcessor.fetchBlockedDate().size() == 1);
         TestProcessor.processInput("unblock 5");
-        assertTrue(TestProcessor.getBlockedDates().size() == 1);
+        assertTrue(TestProcessor.fetchBlockedDate().size() == 1);
         TestProcessor.processInput("unblock 1");
-	    assertTrue(TestProcessor.getBlockedDates().size() == 0);
+	    assertTrue(TestProcessor.fetchBlockedDate().size() == 0);
 	}
 
 	@Test
 	public void testDone() throws Exception {
-	    TestProcessor.processInput("add n: Task1");
-	    TestProcessor.processInput("add n: Task2");
-	    TestProcessor.processInput("add n: Task3");
+	    TestProcessor.processInput("add Task1");
+	    TestProcessor.processInput("add Task2");
+	    TestProcessor.processInput("add Task3");
 	    
 	    //Equivalence Partition
 	    //1. Test done <id>
@@ -340,9 +340,9 @@ public class ProcessorTest {
 
 	@Test
 	public void testTodo() throws Exception {
-	    TestProcessor.processInput("add n: Task1");
-	    TestProcessor.processInput("add n: Task2");
-	    TestProcessor.processInput("add n: Task3");
+	    TestProcessor.processInput("add Task1");
+	    TestProcessor.processInput("add Task2");
+	    TestProcessor.processInput("add Task3");
 	    
 	    //Test todo <id>
         TestProcessor.processInput("done 1");

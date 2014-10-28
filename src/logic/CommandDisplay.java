@@ -91,7 +91,7 @@ public class CommandDisplay extends Command {
                 list = processor.getLastSearch();
                 break;
             case "block":
-                list = processor.getBlockedDates();
+                list = processor.getFile().getAllBlockDates();
                 resultType = ResultType.BLOCKDATE;
                 break;
             case "all":
