@@ -29,7 +29,7 @@ import database.Task;
 
 public class Processor extends Observable {
     
-    protected final static boolean ENABLE_LOGGING = false;
+    protected final static boolean LOGGING_ENABLED = false;
     protected static boolean IS_UNIT_TEST = false;
     
     /** Instance of Processor */
@@ -100,7 +100,7 @@ public class Processor extends Observable {
 	}
 	
 	private static void initialiseLogger() {
-        if (ENABLE_LOGGING) {
+        if (LOGGING_ENABLED) {
     	    try {
     	        FileHandler fh = new FileHandler("Processor.log", true);  
     	        Formatter format = new LogFormatter();
@@ -177,7 +177,7 @@ public class Processor extends Observable {
      */
 	protected Result processCommand(Command cmd, boolean userInput) {
 		if (cmd == null || cmd.getType() == CommandType.ERROR) {
-		    if (ENABLE_LOGGING) {
+		    if (LOGGING_ENABLED) {
 		        log.warning("Error in the input, unable to perform operation.");
 		    }
 		    return new Result(null, false, CommandType.ERROR, ResultType.TASK);
@@ -185,7 +185,7 @@ public class Processor extends Observable {
 		Result result = cmd.execute(userInput);
 		if (result.isSuccess() && !result.needsConfirmation() && userInput) {
 			updateCommandHistory(cmd);
-			if (ENABLE_LOGGING) {
+			if (LOGGING_ENABLED) {
 			    log.info(result.getCommandType() + " Command executed successfully");
 			}
 		}
@@ -208,7 +208,7 @@ public class Processor extends Observable {
 	    updateFloatingAndTimedTasks();
         setChanged();
         notifyObservers(); //Calls update of the side panel class
-        if (ENABLE_LOGGING) {
+        if (LOGGING_ENABLED) {
             log.info("Updated side panel.");
         }
 	}
@@ -254,7 +254,7 @@ public class Processor extends Observable {
     }
 	
 	public List<Task> fetchTimedTasks() {
-	    if (ENABLE_LOGGING) {
+	    if (LOGGING_ENABLED) {
 	        log.info("Fetching Timed Tasks");
 	    }
         Collections.sort(timedTasks);
@@ -262,7 +262,7 @@ public class Processor extends Observable {
 	}
 	
 	public List<Task> fetchFloatingTasks() {
-	    if (ENABLE_LOGGING) {
+	    if (LOGGING_ENABLED) {
 	        log.info("Fetching Floating Tasks");
 	    }
 	    Collections.sort(floatingTasks);
@@ -270,7 +270,7 @@ public class Processor extends Observable {
 	}
 	
 	public List<Task> fetchToDoTasks() {
-	    if (ENABLE_LOGGING) {
+	    if (LOGGING_ENABLED) {
 	        log.info("Fetching Todo Tasks");
 	    }
         return file.getToDoTasks();
@@ -278,7 +278,7 @@ public class Processor extends Observable {
     
 	
 	public List<BlockDate> fetchBlockedDate() {
-	    if (ENABLE_LOGGING) {
+	    if (LOGGING_ENABLED) {
 	        log.info("Fetching Blocked Dates");
 	    }
         return file.getAllBlockDates();

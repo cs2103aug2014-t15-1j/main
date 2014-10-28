@@ -98,7 +98,7 @@ public class CommandTodo extends Command {
      */
     @Override
     protected Result execute(boolean userInput) {
-        if (Processor.ENABLE_LOGGING) {
+        if (Processor.LOGGING_ENABLED) {
             Processor.getLogger().info("Executing 'Todo' Command...");
         }
         
@@ -130,7 +130,7 @@ public class CommandTodo extends Command {
                 list.add(existingTask);
             }
         } catch (NumberFormatException e) {
-            if (Processor.ENABLE_LOGGING) {
+            if (Processor.LOGGING_ENABLED) {
                 Processor.getLogger().warning("Error parsing Integer!");
             }
         }

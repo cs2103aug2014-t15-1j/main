@@ -85,7 +85,7 @@ public class CommandSearch extends Command {
      */
     @Override
     protected Result execute(boolean userInput) {
-        if (Processor.ENABLE_LOGGING) {
+        if (Processor.LOGGING_ENABLED) {
             Processor.getLogger().info("Executing 'Search' Command...");
         }
         Processor.getInstance().initialiseNewSearchList();

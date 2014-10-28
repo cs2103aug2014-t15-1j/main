@@ -127,7 +127,7 @@ public class CommandEdit extends Command {
      */
     @Override
     protected Result execute(boolean userInput) {
-        if (Processor.ENABLE_LOGGING) {
+        if (Processor.LOGGING_ENABLED) {
             Processor.getLogger().info("Executing 'Edit' Command...");
         }
         Processor processor = Processor.getInstance();
@@ -173,7 +173,7 @@ public class CommandEdit extends Command {
         try {
             taskId = Integer.parseInt(id);
         } catch (Exception e) {
-            if (Processor.ENABLE_LOGGING) {
+            if (Processor.LOGGING_ENABLED) {
                 Processor.getLogger().warning("Invalid Task Id!");
             }
         }

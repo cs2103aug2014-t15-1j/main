@@ -127,16 +127,16 @@ public class ProcessorTest {
         Result r3 = TestProcessor.processInput("redo");
         assertTrue(equalsObj(r3.getTasks().get(0), testTask7));
         
-        TestProcessor.processInput("edit 1 due: 10/10/2012 1010");
+        TestProcessor.processInput("edit 1 due 10/10/2012 1010");
         TestProcessor.processInput("undo");
         Result r6 = TestProcessor.processInput("redo");
         assertTrue(equalsObj(r6.getTasks().get(0), testTask8));
-        TestProcessor.processInput("edit 1 start: 10/10/2012 1010");
+        TestProcessor.processInput("edit 1 start 10/10/2012 1010");
         TestProcessor.processInput("undo");
         Result r9 = TestProcessor.processInput("redo");
         assertTrue(equalsObj(r9.getTasks().get(0), testTask9));
         
-        TestProcessor.processInput("edit 1 end: 10/10/2012 1010");
+        TestProcessor.processInput("edit 1 end 10/10/2012 1010");
         TestProcessor.processInput("undo");
         Result r12 = TestProcessor.processInput("redo");
         assertTrue(equalsObj(r12.getTasks().get(0), testTask10));

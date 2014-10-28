@@ -75,7 +75,7 @@ public class CommandOthers extends Command {
     }
     
     protected Result executeUndo() {
-        if (Processor.ENABLE_LOGGING) {
+        if (Processor.LOGGING_ENABLED) {
             Processor.getLogger().info("Executing 'Undo' Command...");
         }
         Processor processor = Processor.getInstance();
@@ -108,7 +108,7 @@ public class CommandOthers extends Command {
      * @return true/false on whether operation is performed
      */
     protected Result executeRedo() {
-        if (Processor.ENABLE_LOGGING) {
+        if (Processor.LOGGING_ENABLED) {
             Processor.getLogger().info("Executing 'Redo' Command...");
         }
         Processor processor = Processor.getInstance();

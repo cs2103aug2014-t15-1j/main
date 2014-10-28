@@ -84,7 +84,7 @@ public class CommandBlock extends Command {
      */
     @Override
     protected Result execute(boolean userInput) {
-        if (Processor.ENABLE_LOGGING) {
+        if (Processor.LOGGING_ENABLED) {
             Processor.getLogger().info("Executing 'Block' Command...");
         }
         Processor processor = Processor.getInstance();

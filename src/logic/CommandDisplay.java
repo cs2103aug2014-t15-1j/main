@@ -75,7 +75,7 @@ public class CommandDisplay extends Command {
     @Override
     @SuppressWarnings({ "unchecked", "rawtypes" })
     protected Result execute(boolean userInput) {
-        if (Processor.ENABLE_LOGGING) {
+        if (Processor.LOGGING_ENABLED) {
             Processor.getLogger().info("Executing 'Display' Command...");
         }
         Processor processor = Processor.getInstance();

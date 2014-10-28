@@ -118,7 +118,7 @@ public class CommandAdd extends Command {
     protected Result execute(boolean userInput) {
         boolean success = false;
         List<Task> list = new ArrayList<Task>();
-        if (Processor.ENABLE_LOGGING) {
+        if (Processor.LOGGING_ENABLED) {
             Processor.getLogger().info("Executing 'Add' Command...");
         }
         boolean blockConfirmation = isBlocked();
