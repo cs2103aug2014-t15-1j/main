@@ -27,6 +27,10 @@ public abstract class Command {
     public List<String> getKeywords() {
         return null;
     }
+    
+    public List<String> getDelete() {
+        return null;
+    }
 
     protected Result execute(boolean userInput) {
         return new Result(null, false, CommandType.ERROR, null);

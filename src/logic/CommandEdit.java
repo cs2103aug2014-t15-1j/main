@@ -16,14 +16,15 @@ public class CommandEdit extends Command {
     private DateTime due = new DateTime();
     private DateTime start = new DateTime();
     private DateTime end = new DateTime();
-    private String delete = "";
     private List<String> tags = new ArrayList<String>();
+    private List<String> delete = new ArrayList<String>();
     
     private static final String PARAM_ID = "id";
     private static final String PARAM_NAME = "name";
     private static final String PARAM_DUE = "due";
     private static final String PARAM_START = "start";
     private static final String PARAM_END = "end";
+    private static final String PARAM_TAG = "tag";
     private static final String PARAM_DEL = "delete";
 
     public CommandEdit(List<TaskParam> content) {
@@ -36,37 +37,32 @@ public class CommandEdit extends Command {
 
     private void constructUsingParam(TaskParam param) {
         switch (param.getName()){
-            case "id":
+            case PARAM_ID:
                 this.id = param.getField();
                 break;
                 
-            case "name":
-            case "n":
+            case PARAM_NAME:
                 this.name = param.getField();
                 break;
                 
-            case "due":
-            case "d":
+            case PARAM_DUE:
                 this.due = DateParser.parseToDateTime(param.getField());
                 break;
                 
-            case "start":
-            case "s":
+            case PARAM_START:
                 this.start = DateParser.parseToDateTime(param.getField());
                 break;
                 
-            case "end":
-            case "e":
+            case PARAM_END:
                 this.end = DateParser.parseToDateTime(param.getField());
                 break;
                 
-            case "tag":
-                // NOTE: possible change to string (tags = tags.concat())
+            case PARAM_TAG:
                 this.tags.add(param.getField());
                 break;
                 
-            case "delete":
-                this.delete = param.getField();
+            case PARAM_DEL:
+                this.delete.add(param.getField());
                 break;
                 
             default:
@@ -92,9 +88,6 @@ public class CommandEdit extends Command {
             case PARAM_END:
                 return this.end.toString();
                 
-            case PARAM_DEL:
-                return this.delete;
-                
             default:
                 System.out.println("Edit get's got a problem!");
                 return null;
@@ -104,6 +97,12 @@ public class CommandEdit extends Command {
     @Override
     public List<String> getTags(){
         return this.tags;
+    }
+    
+    /** Returns delete parameter names (Task fields to delete). */
+    @Override
+    public List<String> getDelete(){
+        return this.delete;
     }
     
     @Override
@@ -141,8 +140,8 @@ public class CommandEdit extends Command {
             Task existingTask = processor.getFile().getTask(taskId);
             if (existingTask != null) {
                 Task oldTask = new Task(existingTask);
-                if (delete != null) {
-                    switch (delete) {
+                for (String d : delete) {
+                    switch (d) {
                         case "name":
                             name = null;
                             break;

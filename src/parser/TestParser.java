@@ -1,7 +1,6 @@
 package parser;
 
 import static org.junit.Assert.*;
-import logic.Command;
 
 import org.junit.Test;
 
@@ -190,14 +189,14 @@ public class TestParser {
         // Edit with only id
         // TODO: Shouldn't this be invalid?
         result = "\n[[ CMD-EDIT: ]]" + "\nid: 1" + "\nname: " + "\ndue: "
-                 + "\nstart: " + "\nend: " + "\ntags: []" + "\ndelete: ";
+                 + "\nstart: " + "\nend: " + "\ntags: []" + "\ndelete: []";
         cmd = Parser.parse("edit 1").toString();
         assertEquals("Edit: id only", result, cmd);
 
         // Simple Edit
         result = "\n[[ CMD-EDIT: ]]" + "\nid: 2" + "\nname: do homework"
                  + "\ndue: 23/04/2014" + "\nstart: " + "\nend: " + "\ntags: []"
-                 + "\ndelete: ";
+                 + "\ndelete: []";
         cmd = Parser.parse("edit 2 do homework due 23/04/2014").toString();
         assertEquals("Edit: simple", result, cmd);
 
@@ -206,7 +205,7 @@ public class TestParser {
                  + "\nname: do homework for CS2103 project"
                  + "\ndue: 23/04/2014" + "\nstart: 22/04/2014 0200"
                  + "\nend: 22/04/2014 1200" + "\ntags: [#CS2103]"
-                 + "\ndelete: end";
+                 + "\ndelete: [end]";
         cmd = Parser
                 .parse(" edIt 3 do  #CS2103 homework due   23/04/2014 start   22/04/2014   1200 "
                                + "for CS2103 delete  end  END  0200   22/04/2014   project")
@@ -217,7 +216,7 @@ public class TestParser {
         // Testing delete parameter
         result = "\n[[ CMD-EDIT: ]]" + "\nid: 4"
                  + "\nname: do homework delete tags by start delete" + "\ndue: "
-                 + "\nstart: " + "\nend: " + "\ntags: []" + "\ndelete: end tags";
+                 + "\nstart: " + "\nend: " + "\ntags: []" + "\ndelete: [end, tags]";
         cmd = Parser.parse("edit 4 do homework delete end delete tags delete tags by start delete")
                 .toString();
         assertEquals("Edit: delete param", result, cmd);

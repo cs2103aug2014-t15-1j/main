@@ -502,7 +502,7 @@ public class Parser {
                 // If the last parameter was a delete
                 if (availDeleteParams.contains(getDateParamEquiv(currWord))) {
                     // If delete has not been filled and the currWord is valid
-                    addToFieldParam(editFields, "delete",
+                    addTaskParamToField(editFields, "delete",
                                     getDateParamEquiv(currWord));
                     currHasDelete = true;
                     availDeleteParams.remove(getDateParamEquiv(currWord));
