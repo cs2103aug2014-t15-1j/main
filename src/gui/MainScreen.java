@@ -5,9 +5,11 @@ import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Monitor;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
@@ -26,7 +28,7 @@ public class MainScreen {
     // use mono-space font
     // one line display
     private static final String ASK_CONFIRM_DELETE = "This will erase all data, PERMANENTLY.  Key 'y' to continue or 'n' to abort";
-    private static final String INVALID_INPUT = "Invalid Input. Type yes or no.";
+    private static final String INVALID_INPUT = "Invalid Input.";
     private static final String SUCCESSFUL_DELETE_ALL = "Erased all data!";
     private static final String UNSUCCESSFUL_DELETE_ALL = "Did not delete anything";
 
@@ -59,6 +61,15 @@ public class MainScreen {
         imageData = imageData.scaledTo(shell.getSize().x, shell.getSize().y);
         shell.setBackgroundImage(background);
         shell.setBackgroundMode(SWT.INHERIT_FORCE);
+
+        Monitor primary = display.getPrimaryMonitor();
+        Rectangle bounds = primary.getBounds();
+        Rectangle rect = shell.getBounds();
+
+        int x = bounds.x + (bounds.width - rect.width) / 2;
+        int y = bounds.y + (bounds.height - rect.height) / 2;
+
+        shell.setLocation(x, y);
 
         SetUp setUpScreen = SetUp.getInstance(shell);
         resultGenerator.start();
@@ -135,8 +146,9 @@ public class MainScreen {
                 String output = "";
                 commandLine.setText("");
                 if (askConfrim) {
-                    while (!isValidDeleteAll(input)) {
+                    if (!isValidDeleteAll(input)) {
                         feedback.setText(INVALID_INPUT);
+
                     }
                     if (resultGenerator.processDeleteAll(input)) {
                         feedback.setText(SUCCESSFUL_DELETE_ALL);
