@@ -9,6 +9,7 @@ import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -28,15 +29,22 @@ public class HelpDialog extends Dialog {
     }
 
     public void open() {
-        Shell shell = new Shell(getParent(), SWT.CLOSE);
+        Shell shell = new Shell(getParent(), SWT.CLOSE | SWT.APPLICATION_MODAL);
 
         shell.setLayout(new GridLayout());
+
         createContents(shell);
         addCloseListener(shell);
+
+        Rectangle mainProgramSize = Display.getCurrent().getPrimaryMonitor()
+                .getBounds();
+        shell.setLocation((mainProgramSize.width - shell.getBounds().width) / 2,
+                          (mainProgramSize.height - shell.getBounds().height) / 2);
 
         shell.pack();
         shell.open();
         Display display = getParent().getDisplay();
+
         while (!shell.isDisposed()) {
             if (!display.readAndDispatch()) {
                 display.sleep();
@@ -83,12 +91,8 @@ public class HelpDialog extends Dialog {
                         System.out.println("closing");
                         shell.close();
                     }
-
                 }
-
             });
-
         }
     }
-
 }
