@@ -20,10 +20,10 @@ public class TestParser {
         String result;
         String cmd;
 
-        // Valid command with spaces in front
-        result = "\n[[ CMD-HELP: ]]" + "\nfield: ";
-        cmd = Parser.parse("              help").toString();
-        assertEquals("Help: empty", result, cmd);
+        // Valid command with spaces in front/behind
+        result = "\n[[ CMD-OTHERS ]]" + "\ncmd-type: HELP" + "\ncmd-info: ";
+        cmd = Parser.parse("    hELp    ").toString();
+        assertEquals("Command: spaces", result, cmd);
 
         System.out.println("...success!");
     }
@@ -95,36 +95,6 @@ public class TestParser {
         fullInfo += task.isDone() ? "done" : "todo";
 
         return fullInfo;
-    }
-
-    @Test
-    public void testCmdHelp() {
-        System.out.println("\n>> Testing Help Command...");
-
-        String result;
-        String cmd;
-
-        // Empty Help
-        result = "\n[[ CMD-HELP: ]]" + "\nfield: ";
-        cmd = Parser.parse("help").toString();
-        assertEquals("Help: empty", result, cmd);
-
-        // Help All
-        result = "\n[[ CMD-HELP: ]]" + "\nfield: all";
-        cmd = Parser.parse("help all").toString();
-        assertEquals("Help: all", result, cmd);
-
-        // Help with command name + mixed caps
-        result = "\n[[ CMD-HELP: ]]" + "\nfield: add";
-        cmd = Parser.parse("hELp adD").toString();
-        assertEquals("Help: command name (add)", result, cmd);
-
-        // Invalid help parameter
-        result = "\n[[ CMD-HELP: ]]" + "\nfield: invalid";
-        cmd = Parser.parse("help me").toString();
-        assertEquals("Help: invalid", result, cmd);
-
-        System.out.println("...success!");
     }
 
     @Test
@@ -700,7 +670,7 @@ public class TestParser {
 
     @Test
     public void testCmdOthers() {
-        System.out.println("\n>> Testing Undo, Redo & Exit Commands...");
+        System.out.println("\n>> Testing Undo, Redo, Help, Reset, Exit Commands...");
 
         String result;
         String cmd;
@@ -724,6 +694,11 @@ public class TestParser {
         result = "\n[[ CMD-OTHERS ]]" + "\ncmd-type: RESET" + "\ncmd-info: ";
         cmd = Parser.parse("reset").toString();
         assertEquals("Reset: simple", result, cmd);
+        
+        // Help: caps, spaces, extra words
+        result = "\n[[ CMD-OTHERS ]]" + "\ncmd-type: HELP" + "\ncmd-info: ";
+        cmd = Parser.parse("  heLP me      ").toString();
+        assertEquals("Help: caps, spaces, extra words", result, cmd);
 
         System.out.println("...success!");
     }
