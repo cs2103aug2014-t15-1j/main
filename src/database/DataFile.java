@@ -189,6 +189,11 @@ public class DataFile {
         Task task = searchTaskById(allTasks, id);
         return task;
     }
+    
+    public BlockDate getBlockDate(int id) {
+        BlockDate bD = searchBlockDateById(allBlockDates, id);
+        return bD;
+    }
 
     /**
      * Given id, returns Task object from specified task list.
