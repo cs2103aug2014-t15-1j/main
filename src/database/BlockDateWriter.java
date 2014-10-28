@@ -45,10 +45,10 @@ public class BlockDateWriter {
      *            Blocked dates to write to file.
      * @return True, if successfully written to file.
      */
-    public boolean write(String allBlockDates) {
+    public boolean write(String allBlockDateInfo) {
         try {
             FileWriter newFile = new FileWriter(file, false);
-            newFile.write(allBlockDates);
+            newFile.write(allBlockDateInfo);
             newFile.close();
             return true;
         } catch (IOException e) {

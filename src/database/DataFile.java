@@ -20,13 +20,21 @@ import java.util.Collections;
 public class DataFile {
 
     /** Name of file to write tasks to. */
-    final private static String FILENAME = "data.txt";
-
+    final private static String FILENAME_TASK = "data_tasks.txt";
+    /** Name of file to write BlackDates to. */
+    final private static String FILENAME_BLOCKDATE = "data_blockdates.txt";
+    
     /** Reads from file containing tasks */
     private TaskReader taskReader;
 
     /** Writes to file containing tasks */
     private TaskWriter taskWriter;
+    
+    /** Reads from file containing BlockDates. */
+    private BlockDateReader blockDateReader;
+
+    /** Writes to file containing BlockDates. */
+    private BlockDateWriter blockDateWriter;
 
     /** Exclusively contains undeleted to-do tasks. */
     private static List<Task> toDoTasks = new ArrayList<Task>();
@@ -58,10 +66,15 @@ public class DataFile {
      * Task objects from file.
      */
     public DataFile() {
-        taskReader = new TaskReader(FILENAME);
-        taskWriter = new TaskWriter(FILENAME);
+        taskReader = new TaskReader(FILENAME_TASK);
+        taskWriter = new TaskWriter(FILENAME_TASK);
+        blockDateReader = new BlockDateReader(FILENAME_BLOCKDATE);
+        blockDateWriter = new BlockDateWriter(FILENAME_BLOCKDATE);
         if (taskReader.fileExists() && allTasks.isEmpty()) {
             populateTaskLists();
+        }
+        if (blockDateReader.fileExists() && allBlockDates.isEmpty()) {
+            populateBlockDateList();
         }
     }
 
@@ -70,7 +83,7 @@ public class DataFile {
      * written to file, hence the deleted task list is not populated.
      * 
      * Benefits from branch prediction because of the order in which tasks are
-     * written to the file. See {@link updateFile()}.
+     * written to the file. See {@link updateTaskFile()}.
      * 
      * @param file
      *            The file to read from.
@@ -86,6 +99,10 @@ public class DataFile {
         }
     }
 
+    private void populateBlockDateList() {
+        allBlockDates.addAll(blockDateReader.read());
+    }
+    
     /**
      * Returns an unmodifiable view of the list of to-do tasks. Attempts to
      * modify the returned list, whether direct or via its iterator, result in
@@ -221,7 +238,7 @@ public class DataFile {
     public boolean addNewTask(Task task) {
         toDoTasks.add(task);
         allTasks.add(task);
-        return updateFile();
+        return updateTaskFile();
     }
 
     /**
@@ -234,10 +251,15 @@ public class DataFile {
      * 
      * @return True, if successfully written to file.
      */
-    private boolean updateFile() {
+    private boolean updateTaskFile() {
         String updatedTaskInfo = getTaskInfo(toDoTasks);
         updatedTaskInfo += getTaskInfo(doneTasks);
-        return writeToFile(updatedTaskInfo);
+        return writeTasksToFile(updatedTaskInfo);
+    }
+    
+    private boolean updateBlockDateFile() {
+        String updatedBlockDateInfo = getBlockDateInfo(allBlockDates);
+        return writeBlockDatesToFile(updatedBlockDateInfo);
     }
 
     /**
@@ -256,6 +278,14 @@ public class DataFile {
         return allTaskInfo;
     }
 
+    private String getBlockDateInfo(List<BlockDate> blockDates) {
+        String allBlockDateInfo = "";
+        for (BlockDate bD : blockDates) {
+            allBlockDateInfo += bD.toString() + "\n"; 
+        }
+        return allBlockDateInfo;
+    }
+    
     /**
      * Writes String containing all to-do and done task info to system file.
      * 
@@ -263,8 +293,12 @@ public class DataFile {
      *            Data of all to-do and done tasks to write to file.
      * @return True, if successfully written to file.
      */
-    private boolean writeToFile(String allTaskInfo) {
+    private boolean writeTasksToFile(String allTaskInfo) {
         return taskWriter.write(allTaskInfo);
+    }
+    
+    private boolean writeBlockDatesToFile(String allBlockDateInfo) {
+        return blockDateWriter.write(allBlockDateInfo);
     }
 
     /**
@@ -379,7 +413,7 @@ public class DataFile {
             task.setTags(tags);
         }
 
-        return updateFile();
+        return updateTaskFile();
     }
 
     /**
@@ -433,7 +467,7 @@ public class DataFile {
         } else {
             toDoTasks.remove(task);
         }
-        return updateFile();
+        return updateTaskFile();
     }
 
     /**
@@ -485,7 +519,7 @@ public class DataFile {
         } else {
             toDoTasks.add(task);
         }
-        return updateFile();
+        return updateTaskFile();
     }
 
     /**
@@ -542,7 +576,7 @@ public class DataFile {
             toDoTasks.remove(task);
         }
         task.wipeTask();
-        return updateFile();
+        return updateTaskFile();
     }
 
     /**
@@ -562,7 +596,7 @@ public class DataFile {
         allBlockDates.clear();
         deletedBlockDates.clear();
 
-        return updateFile();
+        return updateTaskFile() && updateBlockDateFile();
     }
 
     /**
@@ -614,7 +648,7 @@ public class DataFile {
         }
         toDoTasks.add(task);
         doneTasks.remove(task);
-        return updateFile();
+        return updateTaskFile();
     }
 
     /**
@@ -666,7 +700,7 @@ public class DataFile {
         }
         doneTasks.add(task);
         toDoTasks.remove(task);
-        return updateFile();
+        return updateTaskFile();
     }
 
     /**
@@ -679,7 +713,7 @@ public class DataFile {
      */
     public boolean addNewBD(BlockDate bD) {
         allBlockDates.add(bD);
-        return updateFile();
+        return updateBlockDateFile();
     }
 
     /**
@@ -722,7 +756,7 @@ public class DataFile {
     private boolean deleteBDByObject(BlockDate bD) {
         allBlockDates.remove(bD);
         deletedBlockDates.add(bD);
-        return updateFile();
+        return updateBlockDateFile();
     }
 
     /**
@@ -765,7 +799,7 @@ public class DataFile {
     private boolean restoreBDByObject(BlockDate bD) {
         deletedBlockDates.remove(bD);
         allBlockDates.add(bD);
-        return updateFile();
+        return updateBlockDateFile();
     }
     
     /**
@@ -815,6 +849,6 @@ public class DataFile {
 
         allBlockDates.remove(bD);
         bD.wipeBlockDate();
-        return updateFile();
+        return updateBlockDateFile();
     }
 }
