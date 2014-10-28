@@ -40,6 +40,7 @@ public class ResultGenerator {
         input = input.toLowerCase();
         if (input.equals("y") || input.equals("yes")) {
             Processor.reset();
+            start();
             refreshTodoTable();
             return true;
         }

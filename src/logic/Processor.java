@@ -223,6 +223,7 @@ public class Processor extends Observable {
             case UNBLOCK:
             case DONE:
             case TODO:
+            case RESET:
                 return true;
             default:
                 return false;
