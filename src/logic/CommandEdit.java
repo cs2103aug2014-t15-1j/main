@@ -139,29 +139,31 @@ public class CommandEdit extends Command {
         
         if (taskId > 0) {
             Task existingTask = processor.getFile().getTask(taskId);
-            Task oldTask = new Task(existingTask);
-            if (delete != null) {
-                switch (delete) {
-                    case "name":
-                        name = null;
-                        break;
-                    case "due":
-                        due = null;
-                        break;
-                    case "start":
-                        start = null;
-                        break;
-                    case "end":
-                        end = null;
-                        break;
-                    case "tags":
-                        tags = null;
-                        break;
+            if (existingTask != null) {
+                Task oldTask = new Task(existingTask);
+                if (delete != null) {
+                    switch (delete) {
+                        case "name":
+                            name = null;
+                            break;
+                        case "due":
+                            due = null;
+                            break;
+                        case "start":
+                            start = null;
+                            break;
+                        case "end":
+                            end = null;
+                            break;
+                        case "tags":
+                            tags = null;
+                            break;
+                    }
                 }
-            }
-            success = processor.getFile().updateTaskInfo(existingTask, name, due, start, end, tags);
-            if (success) {
-                performUpdate(list, oldTask, existingTask);
+                success = processor.getFile().updateTaskInfo(existingTask, name, due, start, end, tags);
+                if (success) {
+                    performUpdate(list, oldTask, existingTask);
+                }
             }
         }
         return new Result(list, success, getType(), ResultType.TASK);

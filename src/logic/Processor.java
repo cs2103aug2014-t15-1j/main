@@ -177,8 +177,10 @@ public class Processor extends Observable {
      */
 	protected Result processCommand(Command cmd, boolean userInput) {
 		if (cmd == null || cmd.getType() == CommandType.ERROR) {
-		    log.warning("Error in the input, unable to perform operation.");
-			return new Result(null, false, CommandType.ERROR, ResultType.TASK);
+		    if (ENABLE_LOGGING) {
+		        log.warning("Error in the input, unable to perform operation.");
+		    }
+		    return new Result(null, false, CommandType.ERROR, ResultType.TASK);
 		}
 		Result result = cmd.execute(userInput);
 		if (result.isSuccess() && !result.needsConfirmation() && userInput) {

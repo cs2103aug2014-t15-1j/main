@@ -1,7 +1,6 @@
 package logic;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import logic.Result.ResultType;

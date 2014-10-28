@@ -94,6 +94,12 @@ public class CommandDisplay extends Command {
                 list = processor.getFile().getAllBlockDates();
                 resultType = ResultType.BLOCKDATE;
                 break;
+            case "done":
+                list = processor.getFile().getDoneTasks();
+                break;
+            case "deleted":
+                list = processor.getFile().getDeletedTasks();
+                break;
             case "all":
                 list = processor.getFile().getToDoTasks();
                 break;

@@ -1,7 +1,6 @@
 package logic;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import logic.Result.ResultType;
@@ -99,9 +98,9 @@ public class CommandUnblock extends Command {
         List<BlockDate> outputs = new ArrayList<BlockDate>();
         
         if (unblockId <= blockRange.size() && unblockId > 0) {
-            success = processor.getFile().deleteBD(unblockId);
-            //outputs.add(processor.getFile().getDeletedBlockDates().get(unblockId));
-            //Need to add fetch the blockdate and add to outputs
+            BlockDate blockDate = processor.getFile().getBlockDate(unblockId);
+            success = processor.getFile().deleteBD(blockDate);
+            outputs.add(blockDate);
             success = true;
         }
         
@@ -112,11 +111,11 @@ public class CommandUnblock extends Command {
     protected Result executeComplement() {
         boolean success = false;
         Processor processor = Processor.getInstance();
-        List<BlockDate> outputs = null;
+        List<BlockDate> outputs = new ArrayList<BlockDate>();
         int unblockId = Integer.parseInt(id);
         processor.getFile().restoreBD(unblockId);
-        //outputs.add(processor.getFile().getDeletedBlockDates().get(unblockId));
-        //Need to add fetch the blockdate and add to outputs
+        BlockDate blockDate = processor.getFile().getBlockDate(unblockId);
+        outputs.add(blockDate);
         return new Result(outputs, success, CommandType.UNBLOCK, ResultType.BLOCKDATE);
     }
 }

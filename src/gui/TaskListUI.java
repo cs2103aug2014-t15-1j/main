@@ -75,7 +75,7 @@ public class TaskListUI implements Observer {
             upcomingTasks.setText("Nothing to display" + LINE_SEPARATOR);
             return;
         }
-
+        upcomingTasks.setText("");
         int size = tasks.size();
         for (int index = 0; index < size; index++) {
             Task currTask = tasks.get(index);
@@ -85,7 +85,6 @@ public class TaskListUI implements Observer {
             if (name == null || name.isEmpty() || name.equals("null")) {
                 name = "empty name";
             }
-
             upcomingTasks.append(iD + DOT_AND_SPACE + name + LINE_SEPARATOR);
             StyleRange range = new StyleRange();
             if (!due.isEmpty()) {
