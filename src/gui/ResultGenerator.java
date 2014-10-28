@@ -217,9 +217,6 @@ public class ResultGenerator {
 
     private void refreshTodoTable() {
         List<Task> tasks = processor.fetchToDoTasks();
-        if (tasks.size() == 0) {
-            return;
-        }
         taskTable.update(tasks);
     }
 

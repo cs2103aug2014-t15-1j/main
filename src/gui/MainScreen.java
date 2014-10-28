@@ -123,6 +123,7 @@ public class MainScreen {
 
                 String input = commandLine.getText();
                 String output = "";
+                commandLine.setText("");
                 if (askConfrim) {
                     while (!isValidDeleteAll(input)) {
                         feedback.setText(INVALID_INPUT);
@@ -132,7 +133,7 @@ public class MainScreen {
                     } else {
                         feedback.setText(UNSUCCESSFUL_DELETE_ALL);
                     }
-                    commandLine.setText("");
+
                     askConfrim = false;
 
                 } else if (input.trim().isEmpty()) {
@@ -147,17 +148,18 @@ public class MainScreen {
                         } else if (output.equals(ASK_CONFIRM_DELETE)) {
                             feedback.setText(ASK_CONFIRM_DELETE);
                             askConfrim = true;
-                            commandLine.setText("");
+
                         } else if (output.equals("Help")) {
+
                             SetUp setUp = SetUp.getInstance();
                             new HelpDialog(setUp.getShell());
 
                         } else {
 
                             feedback.setText(output);
-                            commandLine.setText("");
 
                         }
+
                     } catch (Exception error) {
 
                         String message = error.getMessage();
