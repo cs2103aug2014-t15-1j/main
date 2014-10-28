@@ -57,8 +57,10 @@ public class Parser {
                                                    TYPE_UNBLOCK, TYPE_DONE,
                                                    TYPE_TODO, TYPE_UNDO,
                                                    TYPE_REDO, TYPE_EXIT };
-    private static final String[] DATE_PARAM_LIST = { "due", "by", "start",
-                                                     "from", "end", "to" };
+    private static final String[] DATE_PARAM_LIST_FULL = { "due", "by",
+                                                          "start", "from",
+                                                          "end", "to" };
+    private static final String[] DATE_PARAM_LIST_SYS = { "due", "start", "end" };
 
     // ========== MAIN PARSE METHOD ==========//
 
@@ -69,10 +71,8 @@ public class Parser {
         String[] commandItems = input.trim().split(" ");
 
         if (commandItems.length > 0) {
-            // First word of command should be command type.
-            // The rest of the words in the String are parameters.
-            String commandType = getCommandWord(commandItems);
-            String[] commandParams = removeCommandWord(commandItems);
+            String commandType = getFirstWord(commandItems);
+            String[] commandParams = removeFirstWord(commandItems);
 
             switch (commandType) {
                 case TYPE_HELP:
@@ -127,7 +127,7 @@ public class Parser {
      *            An array containing a command input split by spaces
      * @return String containing command word in lower-case
      */
-    private static String getCommandWord(String[] commandItems) {
+    private static String getFirstWord(String[] commandItems) {
         return commandItems[0].toLowerCase();
     }
 
@@ -135,7 +135,7 @@ public class Parser {
      * @param commandItems
      * @return
      */
-    private static String[] removeCommandWord(String[] commandItems) {
+    private static String[] removeFirstWord(String[] commandItems) {
         try {
             String[] commandParams = new String[commandItems.length - 1];
             for (int i = 1; i < commandItems.length; i++) {
@@ -175,13 +175,12 @@ public class Parser {
 
         try {
             String firstWord = commandParams[0];
-            String firstWordLC = firstWord.toLowerCase();
 
             if (DateParser.isValidDate(firstWord)) {
                 doneFields.add(new TaskParam("rangeType", "date"));
                 doneFields.add(new TaskParam("date", firstWord));
-            } else if (firstWordLC.equals("all")) {
-                doneFields.add(new TaskParam("rangeType", firstWordLC));
+            } else if (firstWord.equalsIgnoreCase("all")) {
+                doneFields.add(new TaskParam("rangeType", "all"));
             } else if (isInteger(firstWord)) {
                 doneFields.add(new TaskParam("rangeType", "id"));
                 doneFields.add(new TaskParam("id", firstWord));
@@ -447,88 +446,6 @@ public class Parser {
         return new CommandSearch(searchFields);
     }
 
-    private static Command parseEdit(String[] commandParams) {
-        String currField = "name";
-        String prevField = currField;
-        String id;
-        List<TaskParam> editFields = new ArrayList<TaskParam>();
-
-        // Check Edit ID
-        // TODO: Note that currently all non-delete parameters will be thrown to
-        // "name:" if "delete" is the current field. Also, delete has no
-        // shorthand.
-
-        // try saveEditIdToField() catch return CommandOthers
-        if (commandParams.length > 0 && isInteger(commandParams[0])) {
-            id = commandParams[0];
-            editFields.add(new TaskParam("id", id));
-        } else {
-            return new CommandOthers("error", "Invalid id for edit");
-        }
-
-        for (int i = 1; i < commandParams.length; i++) {
-            String currWord = commandParams[i];
-            String currWordLC = currWord.toLowerCase();
-
-            // TODO: case for two deletes?
-            if (isAddParamName(currWord) || currWordLC.equals("delete:")) {
-                prevField = currField;
-                currField = getParamName(currWord);
-            } else if (containsParamName(currWord) ||
-                       containsDeleteParam(currWord)) {
-                String[] wordList = currWord.split(":");
-                int endIndex = getLastPossibleParamIndex(currWord, wordList);
-
-                int lastValidField = 0;
-                // Check only until the second last word
-                // TODO: Check below functionality for Add. (lowercase,
-                // wordlist.length)
-                for (int j = 0; j < endIndex; j++) {
-                    String toCheck = wordList[j].toLowerCase() + ":";
-                    if (isEditParamName(toCheck)) {
-                        prevField = currField;
-                        currField = getParamName(toCheck);
-                        lastValidField = j;
-                    } else {
-                        break;
-                    }
-                }
-
-                String toAddToField = mergeWordsAfterIndex(wordList,
-                                                           lastValidField);
-                addToFieldParam(editFields, currField, toAddToField);
-            } else if (hasValidHashTag(currWord)) {
-                addTaskParamToField(editFields, "tag", currWord);
-            } else if (currField.equals("delete")) {
-                // check if it's a valid delete keyword (ignore otherwise)
-                if (Arrays.asList(TASK_PARAM_LIST).contains(currWordLC)) {
-                    // check for duplicate words (TODO: unnecessary?)
-                    TaskParam deleteParam = getTaskParam(editFields, currField);
-                    if (!deleteParam.getField().contains(currWordLC)) {
-                        deleteParam.addToField(currWordLC);
-                    }
-                } else if (hasValidHashTag(currWord)) {
-                    // What if an edited field is deleted?
-                    // Refactor
-                    TaskParam deleteParam = getTaskParam(editFields, currField);
-                    if (!deleteParam.getField().contains(currWord)) {
-                        deleteParam.addToField(currWord);
-                    }
-                } else {
-                    addToFieldParam(editFields, prevField, currWord);
-                }
-            } else {
-                addToFieldParam(editFields, currField, currWord);
-            }
-        }
-
-        removeDuplicates(editFields);
-        removeInvalidDateTimes(editFields);
-        checkStartEndOrder(editFields);
-
-        return new CommandEdit(editFields);
-    }
-
     private static Command parseHelp(String[] commandParams) {
         String helpField = "";
 
@@ -544,11 +461,158 @@ public class Parser {
         return new CommandHelp(helpField);
     }
 
+    private static Command parseEdit(String[] commandParams) {
+        String currField = "";
+        String currFieldOrig = "";
+        String id;
+        List<TaskParam> editFields = new ArrayList<TaskParam>();
+
+        // try saveEditIdToField() catch return CommandOthers
+        try {
+            id = commandParams[0];
+            Integer.parseInt(id);
+            editFields.add(new TaskParam("id", id));
+        } catch (IndexOutOfBoundsException e) {
+            throw new IllegalArgumentException("No task specified for edit!");
+        } catch (NumberFormatException f) {
+            throw new IllegalArgumentException("Invalid task ID for edit!");
+        }
+
+        ArrayList<String> availDateParams = generateDateParamList();
+        ArrayList<String> availDeleteParams = generateDateParamList();
+        availDeleteParams.add("tags");
+
+        String currWord;
+        boolean currHasDate = false;
+        boolean currHasTime = false;
+        boolean currHasDelete = false;
+
+        for (int j = 1; j < commandParams.length; j++) {
+            currWord = commandParams[j];
+            if (hasValidHashTag(currWord)) {
+                // No matter the current field, collect hashtags first
+                editFields.add(new TaskParam("tag", currWord));
+            } else if ((currField.equals(getDateParamEquiv(currWord)) || currField
+                    .equalsIgnoreCase(currWord)) &&
+                       !currWord.isEmpty() &&
+                       !currHasDate && !currHasTime) {
+                // If parameters are repeated, add the previous one to name
+                addToFieldParam(editFields, "name", currFieldOrig);
+            } else if (currField.equals("delete") && !currWord.isEmpty()) {
+                // If the last parameter was a delete
+                if (availDeleteParams.contains(getDateParamEquiv(currWord))) {
+                    // If delete has not been filled and the currWord is valid
+                    addToFieldParam(editFields, "delete",
+                                    getDateParamEquiv(currWord));
+                    currHasDelete = true;
+                    availDeleteParams.remove(getDateParamEquiv(currWord));
+                } else {
+                    // Else assume delete was not intended as a param
+                    addToFieldParam(editFields, "name", currFieldOrig);
+                    addToFieldParam(editFields, "name", currWord);
+                }
+                // Delete resets after the first non-tag input
+                currField = "";
+                currFieldOrig = "";
+            } else if (availDateParams.contains(getDateParamEquiv(currWord)) ||
+                       currWord.equalsIgnoreCase("delete")) {
+                // If the current word is an available parameter name
+                if (isDateParam(currField) && !currHasDate && !currHasTime) {
+                    // If the last parameter was not filled, it was not a
+                    // parameter
+                    addToFieldParam(editFields, "name", currFieldOrig);
+                    availDateParams.add(currField);
+                }
+                if (currField.equals("delete") && !currHasDelete) {
+                    addToFieldParam(editFields, "name", currFieldOrig);
+                }
+                // Reassign currField values
+                // TODO: rename method to getParamEquiv?
+                currField = getDateParamEquiv(currWord);
+                // Save the original word (with capitalisation)
+                currFieldOrig = currWord;
+                // Remove availability
+                if (isDateParam(currField)) {
+                    availDateParams.remove(currField);
+                }
+                // Reset boolean values
+                currHasDate = false;
+                currHasTime = false;
+                currHasDelete = false;
+            } else if (isDateParam(currField) && !currWord.isEmpty()) {
+                // If currently a date parameter and string is not ""
+                if (!currHasDate && DateParser.isValidDate(currWord)) {
+                    addToFieldParam(editFields, currField, currWord);
+                    currHasDate = true;
+                } else if (!currHasTime && DateParser.isValidTime(currWord)) {
+                    addToFieldParam(editFields, currField, currWord);
+                    currHasTime = true;
+                } else {
+                    // If not a valid date/time, reset fields
+                    // Add the parameter name to "name" if no date/time
+                    // was assigned.
+                    TaskParam nameParam = getTaskParam(editFields, "name");
+                    if (!currHasDate && !currHasTime) {
+                        nameParam.addToField(currFieldOrig);
+                        availDateParams.add(currField);
+                    }
+                    nameParam.addToField(currWord);
+                    currField = "";
+                    currFieldOrig = "";
+                }
+            } else {
+                addToFieldParam(editFields, "name", currWord);
+            }
+        }
+
+        // catches if the last word was a parameter
+        if ((isDateParam(currField) && !currHasDate && !currHasTime) ||
+            (currField.equals("delete") && !currHasDelete)) {
+            addToFieldParam(editFields, "name", currFieldOrig);
+        }
+
+        // Check for input time with missing date
+        TaskParam startTP = getTaskParam(editFields, "start");
+        TaskParam endTP = getTaskParam(editFields, "end");
+        String startStr = startTP.getField();
+        String endStr = endTP.getField();
+        if (DateParser.containsTime(startStr) &&
+            !DateParser.containsDate(startStr)) {
+            if (DateParser.containsDate(endStr)) {
+                String endDate = DateParser.getFirstDate(endStr);
+                startTP.addToField(endDate);
+            } else {
+                String currDate = DateParser.getCurrDateStr();
+                startTP.addToField(currDate);
+                if (DateParser.containsTime(endStr)) {
+                    endTP.addToField(currDate);
+                }
+            }
+        } else if (DateParser.containsTime(endStr) &&
+                   !DateParser.containsDate(endStr)) {
+            if (DateParser.containsDate(startStr)) {
+                String startDate = DateParser.getFirstDate(startStr);
+                endTP.addToField(startDate);
+            } else {
+                String currDate = DateParser.getCurrDateStr();
+                endTP.addToField(currDate);
+                if (DateParser.containsTime(startStr)) {
+                    endTP.addToField(currDate);
+                }
+            }
+        }
+
+        removeDuplicates(editFields);
+        checkStartEndOrder(editFields);
+
+        return new CommandEdit(editFields);
+    }
+
     private static Command parseAdd(String[] commandParams) {
-        String currFieldOrig = "name";
+        String currFieldOrig = "";
         String currField = "";
         List<TaskParam> addFields = new ArrayList<TaskParam>();
-        ArrayList<String> availParams = generateAddParamList();
+        ArrayList<String> availParams = generateDateParamList();
 
         String currWord;
         boolean currHasDate = false;
@@ -561,12 +625,13 @@ public class Parser {
                 addFields.add(new TaskParam("tag", currWord));
             } else if (currField.equals(getDateParamEquiv(currWord)) &&
                        !currWord.isEmpty() && !currHasDate && !currHasTime) {
-                // If parameters are repeated, add the first to name
+                // If parameters are repeated, add the previous one to name
                 addToFieldParam(addFields, "name", currFieldOrig);
             } else if (availParams.contains(getDateParamEquiv(currWord))) {
                 // If the current word is an available parameter name
                 if (isDateParam(currField) && !currHasDate && !currHasTime) {
-                    // If the last parameter was not filled, it was not a parameter
+                    // If the last parameter was not filled, it was not a
+                    // parameter
                     addToFieldParam(addFields, "name", currFieldOrig);
                     availParams.add(currField);
                 }
@@ -574,7 +639,7 @@ public class Parser {
                 currField = getDateParamEquiv(currWord);
                 // Save the original word (with capitalisation)
                 currFieldOrig = currWord;
-                // Remove availability 
+                // Remove availability
                 availParams.remove(currField);
                 // Reset hasDate/Time values
                 currHasDate = false;
@@ -615,7 +680,8 @@ public class Parser {
         TaskParam endTP = getTaskParam(addFields, "end");
         String startStr = startTP.getField();
         String endStr = endTP.getField();
-        if (DateParser.containsTime(startStr) && !DateParser.containsDate(startStr)) {
+        if (DateParser.containsTime(startStr) &&
+            !DateParser.containsDate(startStr)) {
             if (DateParser.containsDate(endStr)) {
                 String endDate = DateParser.getFirstDate(endStr);
                 startTP.addToField(endDate);
@@ -626,7 +692,8 @@ public class Parser {
                     endTP.addToField(currDate);
                 }
             }
-        } else if (DateParser.containsTime(endStr) && !DateParser.containsDate(endStr)) {
+        } else if (DateParser.containsTime(endStr) &&
+                   !DateParser.containsDate(endStr)) {
             if (DateParser.containsDate(startStr)) {
                 String startDate = DateParser.getFirstDate(startStr);
                 endTP.addToField(startDate);
@@ -638,7 +705,7 @@ public class Parser {
                 }
             }
         }
-        
+
         removeDuplicates(addFields);
         checkStartEndOrder(addFields);
 
@@ -662,18 +729,10 @@ public class Parser {
     }
 
     private static boolean isDateParam(String word) {
-        String wordLC = word.toLowerCase();
-
-        for (String p : DATE_PARAM_LIST) {
-            if (p.equals(wordLC)) {
-                return true;
-            }
-        }
-
-        return false;
+        return Arrays.asList(DATE_PARAM_LIST_FULL).contains(word.toLowerCase());
     }
 
-    private static ArrayList<String> generateAddParamList() {
+    private static ArrayList<String> generateDateParamList() {
         ArrayList<String> list = new ArrayList<String>();
         list.add("due");
         list.add("start");

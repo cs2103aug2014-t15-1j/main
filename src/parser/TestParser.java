@@ -51,7 +51,7 @@ public class TestParser {
     public void failCommandEmpty() {
         System.out.println("\n>> Failing general inputs with empty string...");
 
-        Parser.parse("").toString();
+        Parser.parse("");
 
         System.out.println("...success!");
     }
@@ -99,22 +99,6 @@ public class TestParser {
     }
 
     @Test
-    public void testCmdGetter() {
-        System.out.println("\n>> Testing Command Getters...");
-        // Test getters of a Command subclass (Edit)
-        Command testEdit = Parser
-                .parse("edit 3 cs2103 delete: name name nil name name n: todo homework delete: name name #cs2103");
-        assertEquals("get:type", "EDIT", testEdit.getType().toString());
-        assertEquals("get:error", "", testEdit.getError());
-        assertEquals("get:name", "cs2103 nil todo homework",
-                     testEdit.get("name"));
-        assertEquals("get:delete", "name", testEdit.get("delete"));
-        assertEquals("get:tags", "[#cs2103]", testEdit.getTags().toString());
-
-        System.out.println("...success!");
-    }
-
-    @Test
     public void testCmdHelp() {
         System.out.println("\n>> Testing Help Command...");
 
@@ -147,10 +131,6 @@ public class TestParser {
     @Test
     public void testCmdAdd() {
         System.out.println("\n>> Testing Add Command...");
-        // TODO: Change due, start, end test values to proper date/times
-        // TODO: Test date/time cases
-
-        // Ignore Add for now
 
         String result;
         String cmd;
@@ -188,13 +168,13 @@ public class TestParser {
                  "\ntags: []";
         cmd = Parser.parse("add do work from 0300 to 0600\n").toString();
         assertEquals("Add: date filling", result, cmd);
-        
+
         // Testing missing date in start with reordering
-        result = "\n[[ CMD-ADD: ]]" + "\nname: do work" + "\ndue: " +
-                 "\nstart: 29/10/2014 0300" +
-                 "\nend: 29/10/2014 0600" +
-                 "\ntags: []";
-        cmd = Parser.parse("add do work from 29/10/2014 0600 to 0300\n").toString();
+        result = "\n[[ CMD-ADD: ]]" + "\nname: do work" + "\ndue: "
+                 + "\nstart: 29/10/2014 0300" + "\nend: 29/10/2014 0600"
+                 + "\ntags: []";
+        cmd = Parser.parse("add do work from 29/10/2014 0600 to 0300\n")
+                .toString();
         assertEquals("Add: date filling", result, cmd);
 
         System.out.println("...success!");
@@ -207,18 +187,6 @@ public class TestParser {
         String result;
         String cmd;
 
-        // Empty Edit
-        result = "\n[[ CMD-OTHERS ]]" + "\ncmd-type: ERROR"
-                 + "\ncmd-info: Invalid id for edit";
-        cmd = Parser.parse("edit").toString();
-        assertEquals("Edit: empty", result, cmd);
-
-        // Edit with words but no id (invalid)
-        result = "\n[[ CMD-OTHERS ]]" + "\ncmd-type: ERROR"
-                 + "\ncmd-info: Invalid id for edit";
-        cmd = Parser.parse("edit one two").toString();
-        assertEquals("Edit: invalid id", result, cmd);
-
         // Edit with only id
         // TODO: Shouldn't this be invalid?
         result = "\n[[ CMD-EDIT: ]]" + "\nid: 1" + "\nname: " + "\ndue: "
@@ -230,63 +198,49 @@ public class TestParser {
         result = "\n[[ CMD-EDIT: ]]" + "\nid: 2" + "\nname: do homework"
                  + "\ndue: 23/04/2014" + "\nstart: " + "\nend: " + "\ntags: []"
                  + "\ndelete: ";
-        cmd = Parser.parse("edit 2 do homework due: 23/04/2014").toString();
+        cmd = Parser.parse("edit 2 do homework due 23/04/2014").toString();
         assertEquals("Edit: simple", result, cmd);
 
-        // CURRENTLY HAS AN ERROR WITH TIME IN DATETIME
         // Full Edit with repeated parameters and consecutive parameters
         result = "\n[[ CMD-EDIT: ]]" + "\nid: 3"
                  + "\nname: do homework for CS2103 project"
                  + "\ndue: 23/04/2014" + "\nstart: 22/04/2014 0200"
-                 + "\nend: 22/04/2014 0200" + "\ntags: [#CS2103]"
+                 + "\nend: 22/04/2014 1200" + "\ntags: [#CS2103]"
                  + "\ndelete: end";
         cmd = Parser
-                .parse("edit 3 do #CS2103 homework due: 23/04/2014 start: 22/04/2014 0200 "
-                               + "name: end: 22/04/2014 0200 name: for CS2103 delete: end name: project")
+                .parse(" edIt 3 do  #CS2103 homework due   23/04/2014 start   22/04/2014   1200 "
+                               + "for CS2103 delete  end  END  0200   22/04/2014   project")
                 .toString();
         assertEquals("Edit: full, repeated param, consecutive param", result,
                      cmd);
 
-        // Edit with non-delete parameters after delete
+        // Testing delete parameter
         result = "\n[[ CMD-EDIT: ]]" + "\nid: 4"
-                 + "\nname: do homework by tonight" + "\ndue: " + "\nstart: "
-                 + "\nend: " + "\ntags: []" + "\ndelete: end";
-        cmd = Parser.parse("edit 4 do homework delete: end by tonight")
+                 + "\nname: do homework delete tags by start delete" + "\ndue: "
+                 + "\nstart: " + "\nend: " + "\ntags: []" + "\ndelete: end tags";
+        cmd = Parser.parse("edit 4 do homework delete end delete tags delete tags by start delete")
                 .toString();
         assertEquals("Edit: delete param", result, cmd);
 
-        // Full Edit with shorthand
-        result = "\n[[ CMD-EDIT: ]]" + "\nid: 5"
-                 + "\nname: do homework for CS2103 project"
-                 + "\ndue: 23/04/2014" + "\nstart: 22/04/2014"
-                 + "\nend: 22/04/2014" + "\ntags: [#CS2103]" + "\ndelete: end";
-        cmd = Parser
-                .parse("edit 5 do #CS2103 homework d: 23/04/2014 s: 22/04/2014 "
-                               + "n: e: 22/04/2014 n: for CS2103 delete: end n: project")
-                .toString();
-        assertEquals("Edit: full, shorthand", result, cmd);
+        System.out.println("...success!");
+    }
 
-        // Edit parameters typed without spaces after colons
-        result = "\n[[ CMD-EDIT: ]]" + "\nid: 6"
-                 + "\nname: do homework for CS2103 project"
-                 + "\ndue: 23/04/2014" + "\nstart: 22/04/2014"
-                 + "\nend: 22/04/2014" + "\ntags: [#CS2103]" + "\ndelete: name";
-        cmd = Parser
-                .parse("edit 6 do #CS2103 homework d:23/04/2014 s:22/04/2014 "
-                               + "n:e:22/04/2014 n:for CS2103 delete:name n:project")
-                .toString();
-        assertEquals("Edit: no-space", result, cmd);
+    @Test(expected = IllegalArgumentException.class)
+    public void failCmdEditEmpty() {
+        System.out.println("\n>> Failing Edit Command with an empty String...");
 
-        // Full Edit with mixed capitals for parameters
-        result = "\n[[ CMD-EDIT: ]]" + "\nid: 7"
-                 + "\nname: do homework for CS2103 project"
-                 + "\ndue: 23/04/2014" + "\nstart: 22/04/2014"
-                 + "\nend: 22/04/2014" + "\ntags: [#CS2103]" + "\ndelete: end";
-        cmd = Parser
-                .parse("edit 7 do #CS2103 homework dUe: 23/04/2014 stARt: 22/04/2014 "
-                               + "N:E: 22/04/2014 Name:for CS2103 deLEte: end N:project")
-                .toString();
-        assertEquals("Edit: mix caps", result, cmd);
+        // Empty (invalid), mixed caps
+        Parser.parse("eDIt");
+
+        System.out.println("...success!");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void failCmdEditID() {
+        System.out.println("\n>> Failing Edit Command with an invalid ID...");
+
+        // Edit with words but no id
+        Parser.parse("edit one two");
 
         System.out.println("...success!");
     }
@@ -647,7 +601,7 @@ public class TestParser {
                 .println("\n>> Failing Block Command with an empty String...");
 
         // Empty (invalid), mixed caps
-        Parser.parse("bLOck").toString();
+        Parser.parse("bLOck");
 
         System.out.println("...success!");
     }
@@ -657,7 +611,7 @@ public class TestParser {
         System.out.println("\n>> Failing Block Command with just spaces...");
 
         // Spaces
-        Parser.parse("block      ").toString();
+        Parser.parse("block      ");
 
         System.out.println("...success!");
     }
@@ -669,7 +623,7 @@ public class TestParser {
 
         // Invalid input parameter (random word)
         // Valid date after the word does not affect result.
-        Parser.parse("block monday 23/04/2014").toString();
+        Parser.parse("block monday 23/04/2014");
 
         System.out.println("...success!");
     }
@@ -680,7 +634,7 @@ public class TestParser {
                 .println("\n>> Failing Block Command with two dates and no 'to'...");
 
         // Missing 'to'
-        Parser.parse("block 23/04/2014 23/04/2014").toString();
+        Parser.parse("block 23/04/2014 23/04/2014");
 
         System.out.println("...success!");
     }
@@ -691,7 +645,7 @@ public class TestParser {
                 .println("\n>> Failing Block Command with an asterisk in date...");
 
         // Inproper characters
-        Parser.parse("block 23/04/2*14").toString();
+        Parser.parse("block 23/04/2*14");
 
         System.out.println("...success!");
     }
@@ -702,7 +656,7 @@ public class TestParser {
                 .println("\n>> Failing Block Command with a negative year...");
 
         // Inproper characters
-        Parser.parse("block 23/04/-114").toString();
+        Parser.parse("block 23/04/-114");
 
         System.out.println("...success!");
     }
@@ -713,7 +667,7 @@ public class TestParser {
                 .println("\n>> Failing Block Command with a close-to-valid date...");
 
         // Inproper characters
-        Parser.parse("block 23/04/201").toString();
+        Parser.parse("block 23/04/201");
 
         System.out.println("...success!");
     }
@@ -811,8 +765,7 @@ public class TestParser {
         System.out.println("\n>> Failing parseToBlock()...");
 
         // Note: -ea needed to trigger AssertionError
-        System.out
-                .println(Parser.parseToBlock("23/04/2014 0000 to 23/04/2014"));
+        Parser.parseToBlock("23/04/2014 0000 to 23/04/2014");
 
         System.out.println("...success!");
     }
