@@ -15,6 +15,8 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
@@ -30,8 +32,6 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.TabFolder;
-import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
@@ -96,9 +96,9 @@ public class SetUp {
     private Composite mainInterface;
     private Composite sidePane;
 
-    private TabFolder tabFolder;
-    private TabItem taskTable;
-    private TabItem dateTable;
+    private CTabFolder tabFolder;
+    private CTabItem taskTable;
+    private CTabItem dateTable;
 
     private TableViewer tableViewer;
     private TableViewer dateViewer;
@@ -170,7 +170,7 @@ public class SetUp {
         return this.dateViewer;
     }
 
-    public TabFolder getTabFolder() {
+    public CTabFolder getTabFolder() {
         return this.tabFolder;
     }
 
@@ -202,15 +202,22 @@ public class SetUp {
         FontData font = new FontData("New Courier", 11, SWT.NORMAL);
         FontData[] fontData = new FontData[] { font };
         fontRegistry.put("type box", fontData);
+
+        fontData = new FontData[] { new FontData("Impact", 13, SWT.NORMAL) };
+        fontRegistry.put("haystack title", fontData);
+
         fontData = new FontData[] { new FontData("Arial", 11, SWT.NORMAL) };
         fontRegistry.put("feedback", fontData);
+
         fontData = new FontData[] { new FontData("Times New Roman", 11,
                 SWT.NORMAL) };
         fontRegistry.put("list headers", fontData);
+
         fontData = new FontData[] { new FontData("Arial", 10,
                 SWT.BOLD | SWT.UNDERLINE_SINGLE) };
         fontRegistry.put("title", fontData);
-        fontData = new FontData[] { new FontData("Calibri", 10, SWT.NONE) };
+
+        fontData = new FontData[] { new FontData("Tahoma", 10, SWT.NONE) };
         fontRegistry.put("table", fontData);
 
     }
@@ -249,8 +256,11 @@ public class SetUp {
         gridData.horizontalSpan = 2;
         programLabel.setLayoutData(gridData);
 
-        Label title = new Label(programLabel, SWT.SINGLE);
-        title.setText("Haystack");
+        Label title = new Label(programLabel, SWT.SINGLE | SWT.CENTER);
+        title.setText("Hastack");
+        title.setFont(fontRegistry.get("haystack title"));
+        Color color = shell.getDisplay().getSystemColor(SWT.COLOR_BLACK);
+        title.setForeground(color);
 
     }
 
@@ -282,15 +292,15 @@ public class SetUp {
         Color white = shell.getDisplay().getSystemColor(SWT.COLOR_WHITE);
         tableComp.setBackground(white);
 
-        tabFolder = new TabFolder(tableComp, SWT.BORDER);
+        tabFolder = new CTabFolder(tableComp, SWT.BORDER);
         tabFolder.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-        taskTable = new TabItem(tabFolder, SWT.BORDER);
+        taskTable = new CTabItem(tabFolder, SWT.BORDER);
         taskTable.setText("Tasks");
         setUpTaskTable();
         taskTable.setControl(tableViewer.getTable());
 
-        dateTable = new TabItem(tabFolder, SWT.NONE);
+        dateTable = new CTabItem(tabFolder, SWT.NONE);
         dateTable.setText("Blocked Dates");
         setUpDateTable();
         dateTable.setControl(dateViewer.getTable());

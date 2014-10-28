@@ -60,10 +60,6 @@ public class ResultGenerator {
                     return processDateBasedResult(result);
                 case TASK:
                     return processTaskBasedResult(result);
-                default:
-                    //
-                    // Display
-                    // ERROR?
             }
 
         }
@@ -82,25 +78,28 @@ public class ResultGenerator {
     private String processDateBasedResult(Result result) {
         List<BlockDate> dates = result.getBlockedDates(); // get list of dates
         if (dates.size() == 0) {
+            refreshBlockTable();
             return "No dates have been blocked";
         }
 
-        feedbackSingleBlock(dates);
         assert (result.getCommandType() != null);
 
         switch (result.getCommandType()) {
-        // check for confirmation
             case BLOCK:
                 if (result.needsConfirmation()) {
                     return "Unable to block date. Date coincides with another blocked date or task.";
                 }
                 refreshBlockTable();
                 return "BLOCKED: " + feedbackSingleBlock(dates);
+
             case UNBLOCK:
                 refreshBlockTable();
                 return "UNBLOCKED: " + feedbackSingleBlock(dates);
 
             case REDO:
+                if (result.needsConfirmation()) {
+                    return "Unable to redo command. Date coincides with another blocked date or task.";
+                }
                 refreshBlockTable();
                 return "Command Redone.";
 
@@ -153,11 +152,11 @@ public class ResultGenerator {
                 refreshTodoTable();
                 return feedbackMessage(outputs, "Edited %1$s");
             case DISPLAY:
-
+                refreshTodoTable();
                 if (outputs.size() == 0) {
+
                     return "No tasks to show.";
                 }
-                taskTable.update(outputs);
                 return feedbackMessageMultiResults(outputs,
                                                    "%1$s task(s) found.");
             case SEARCH:
@@ -222,9 +221,6 @@ public class ResultGenerator {
 
     private void refreshBlockTable() {
         List<BlockDate> dates = processor.fetchBlockedDate();
-        if (dates.size() == 0) {
-            return;
-        }
         dateTable.update(dates);
     }
 }

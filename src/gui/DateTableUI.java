@@ -3,7 +3,7 @@ package gui;
 import java.util.List;
 
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.swt.widgets.TabFolder;
+import org.eclipse.swt.custom.CTabFolder;
 
 import database.BlockDate;
 
@@ -23,7 +23,7 @@ public class DateTableUI {
 
     private void setFocus() {
         SetUp setUp = SetUp.getInstance();
-        TabFolder tabs = setUp.getTabFolder();
+        CTabFolder tabs = setUp.getTabFolder();
         tabs.setSelection(1);
     }
 

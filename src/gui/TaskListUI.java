@@ -1,13 +1,18 @@
 package gui;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
 import logic.Processor;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
 
+import database.DateTime;
 import database.Task;
 
 /*
@@ -20,6 +25,24 @@ public class TaskListUI implements Observer {
 
     public TaskListUI() {
         populatesData();
+    }
+
+    @Override
+    public void update(Observable o, Object arg) {
+        populatesData();
+    }
+
+    public void populatesData() {
+        List<Task> upcomingTasks = getUpcomingTasks();
+        List<Task> floatingTasks = getFloatingTasks();
+
+        StyledText upcomingTasksList = getUpcomingList();
+        StyledText floatingTasksList = getFloatingList();
+
+        addTasksToUpcomingList(upcomingTasksList, upcomingTasks);
+
+        String floatingList = getStringList(floatingTasks, true);
+        floatingTasksList.setText(floatingList);
     }
 
     private StyledText getUpcomingList() {
@@ -46,6 +69,76 @@ public class TaskListUI implements Observer {
         return tasks;
     }
 
+    private void addTasksToUpcomingList(StyledText upcomingTasks,
+                                        List<Task> tasks) {
+        if (!isValid(tasks)) {
+            upcomingTasks.setText("Nothing to display" + LINE_SEPARATOR);
+            return;
+        }
+
+        int size = tasks.size();
+        for (int index = 0; index < size; index++) {
+            Task currTask = tasks.get(index);
+            String name = currTask.getName();
+            String iD = currTask.getId() + "";
+            DateTime due = currTask.getDue();
+            if (name == null || name.isEmpty() || name.equals("null")) {
+                name = "empty name";
+            }
+
+            upcomingTasks.append(iD + DOT_AND_SPACE + name + LINE_SEPARATOR);
+            StyleRange range = new StyleRange();
+            if (!due.isEmpty()) {
+                String dueString = due.toString();
+                if (isOverDue(due)) {
+                    upcomingTasks.append("Due: " + dueString);
+                    range.start = upcomingTasks.getText().length() -
+                                  dueString.length();
+                    range.length = dueString.length();
+                    range.foreground = upcomingTasks.getDisplay()
+                            .getSystemColor(SWT.COLOR_RED);
+                    upcomingTasks.setStyleRange(range);
+                    upcomingTasks.append(LINE_SEPARATOR);
+                } else {
+                    upcomingTasks.append("Due: " + dueString + LINE_SEPARATOR);
+                }
+            } else {
+                DateTime start = currTask.getStart();
+                String startString = start.toString();
+                if (isOverDue(start)) {
+                    upcomingTasks.append("Start: " + startString +
+                                         LINE_SEPARATOR);
+                    range.start = upcomingTasks.getText().length() -
+                                  startString.length();
+                    range.length = startString.length();
+                    range.foreground = upcomingTasks.getDisplay()
+                            .getSystemColor(SWT.COLOR_RED);
+                    upcomingTasks.setStyleRange(range);
+                    upcomingTasks.append(LINE_SEPARATOR);
+                } else {
+                    upcomingTasks.append("Start: " + startString +
+                                         LINE_SEPARATOR);
+                }
+            }
+        }
+    }
+
+    private boolean isOverDue(DateTime date) {
+        DateTime now = getTodaysDate();
+        if (date.isEarlierThan(now)) {
+            return true;
+        }
+        return false;
+    }
+
+    private DateTime getTodaysDate() {
+        Date date = new Date();
+        String nowDate = new SimpleDateFormat("dd/MM/YYYY").format(date);
+        String nowTime = new SimpleDateFormat("hhmm").format(date);
+        DateTime today = new DateTime(nowDate, nowTime);
+        return today;
+    }
+
     private String getStringList(List<Task> tasks, boolean isFloating) {
         if (!isValid(tasks)) {
             return "Nothing to display" + LINE_SEPARATOR;
@@ -70,7 +163,7 @@ public class TaskListUI implements Observer {
             String start = currentTask.getStart().toString();
 
             if (name == null || name.isEmpty() || name.equals("null")) {
-                name = "";
+                name = "empty name";
             }
             if (!due.isEmpty()) {
                 list = list + iD + DOT_AND_SPACE + name + LINE_SEPARATOR +
@@ -109,22 +202,4 @@ public class TaskListUI implements Observer {
         return true;
     }
 
-    @Override
-    public void update(Observable o, Object arg) {
-        populatesData();
-    }
-
-    public void populatesData() {
-        List<Task> upcomingTasks = getUpcomingTasks();
-        List<Task> floatingTasks = getFloatingTasks();
-        StyledText upcomingTasksList = getUpcomingList();
-        StyledText floatingTasksList = getFloatingList();
-
-        String upcomingList = getStringList(upcomingTasks, false);
-        String floatingList = getStringList(floatingTasks, true);
-        // to implement overdue tasks in red
-
-        upcomingTasksList.setText(upcomingList);
-        floatingTasksList.setText(floatingList);
-    }
 }

@@ -2,8 +2,6 @@ package gui;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.events.KeyAdapter;
-import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.widgets.Display;
@@ -64,17 +62,8 @@ public class MainScreen {
         SetUp setUpScreen = SetUp.getInstance(shell);
         resultGenerator.start();
 
-        new TaskListUI();
         removeText(setUpScreen);
 
-        shell.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent event) {
-                if (((event.stateMask & SWT.F1) == SWT.F1)) {
-                    new HelpDialog(shell);
-                }
-            }
-        });
         try {
             readUserInput(setUpScreen);
         } catch (Exception e) {
@@ -163,6 +152,9 @@ public class MainScreen {
                     } catch (Exception error) {
 
                         String message = error.getMessage();
+                        if (message == null) {
+                            message = "An internal error occurred.";
+                        }
                         feedback.setText(message);
                     }
                 }

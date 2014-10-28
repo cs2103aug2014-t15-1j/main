@@ -16,9 +16,6 @@ import org.eclipse.swt.widgets.Shell;
 
 public class HelpDialog extends Dialog {
 
-    private Image image;
-    private static HelpDialog help;
-
     public HelpDialog(Shell parent) {
         super(parent);
         open();
@@ -58,10 +55,10 @@ public class HelpDialog extends Dialog {
     }
 
     private void addCloseListener(Shell shell) {
-        Control[] widgets = shell.getChildren();
+        Control[] controls = shell.getChildren();
 
-        for (int i = 0; i < widgets.length; i++) {
-            widgets[i].addKeyListener(new KeyAdapter() {
+        for (int index = 0; index < controls.length; index++) {
+            controls[index].addKeyListener(new KeyAdapter() {
 
                 public void keyReleased(KeyEvent event) {
 
