@@ -1,12 +1,14 @@
 package gui;
 
+import java.io.InputStream;
+
 import org.eclipse.jface.resource.FontRegistry;
-import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -17,6 +19,8 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 
 public class HelpDialog extends Dialog {
+
+    Image image;
 
     public HelpDialog(Shell parent) {
         super(parent);
@@ -36,8 +40,11 @@ public class HelpDialog extends Dialog {
         while (!shell.isDisposed()) {
             if (!display.readAndDispatch()) {
                 display.sleep();
+
             }
         }
+
+        image.dispose();
     }
 
     private void createContents(Composite parent) {
@@ -53,13 +60,14 @@ public class HelpDialog extends Dialog {
 
         GridData data = new GridData(GridData.FILL_BOTH);
         label.setData(data);
-        ImageRegistry imageRegistry = new ImageRegistry(parent.getDisplay());
 
-        ImageDescriptor id = ImageDescriptor
-                .createFromFile(HelpDialog.class, "/resource/Helpsheet.jpg");
-        imageRegistry.put("HelpSheet", id);
+        InputStream stream = getClass()
+                .getResourceAsStream("/resource/HelpSheet.jpg");
+        ImageData imageData = new ImageData(stream);
+        image = new Image(parent.getDisplay(), imageData);
+
         Label aLabel = new Label(parent, SWT.NONE);
-        aLabel.setImage(imageRegistry.get("HelpSheet"));
+        aLabel.setImage(image);
         aLabel.setLayoutData(new GridData(GridData.FILL_BOTH));
     }
 
