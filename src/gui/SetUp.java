@@ -337,8 +337,25 @@ public class SetUp {
     // to refactor method
     private void setUpDateTableColumns() {
 
-        TableViewerColumn column = setColumnHeader(HEADER_DATE_START_DATE,
-                                                   COL_WIDTH_DATE, dateViewer);
+        TableViewerColumn column = setColumnHeader(HEADER_NAME_ID,
+                                                   COL_WIDTH_ID, dateViewer);
+        column.setLabelProvider(new ColumnLabelProvider() {
+            @Override
+            public String getText(Object element) {
+
+                if (element instanceof BlockDate) {
+
+                    BlockDate date = (BlockDate) element;
+                    assert (date != null);
+                    String id = date.getId() + "";
+                    return id + ".";
+                }
+                return "";
+            }
+        });
+
+        column = setColumnHeader(HEADER_DATE_START_DATE, COL_WIDTH_DATE,
+                                 dateViewer);
         column.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
@@ -683,7 +700,7 @@ public class SetUp {
 
     private void setUpUpcomingTaskList() {
         Display display = shell.getDisplay();
-        Label upcomingTask = new Label(sidePane, SWT.SINGLE);
+        Label upcomingTask = new Label(sidePane, SWT.NONE);
 
         upcomingTask.setImage(imageRegistry.get("upcoming"));
         GridData centeredGridData = new GridData(SWT.CENTER, SWT.FILL, true,
