@@ -4,12 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import logic.Result.ResultType;
+import parser.DateParser;
 import parser.TaskParam;
 import database.DateTime;
 import database.Task;
 
 public class CommandTodo extends Command {
-
+    
     // Todo types [get("rangeType"); returns "last" | "id"]
     private String rangeType = "";
 
@@ -50,6 +51,10 @@ public class CommandTodo extends Command {
                 this.id = param.getField();
                 break;
 
+            case "date":
+                assert (DateParser.isValidDate(param.getField())) : "Invalid date for done";
+                this.dateTime = new DateTime(param.getField(), "");
+                break;
             default:
                 this.type = CommandType.ERROR;
                 this.error = "Todo constructor parameter error";
@@ -96,10 +101,27 @@ public class CommandTodo extends Command {
         if (Processor.ENABLE_LOGGING) {
             Processor.getLogger().info("Executing 'Todo' Command...");
         }
+        
+        Result result = new Result(null, false, getType(), ResultType.TASK);
+        switch (rangeType) {
+            case "id":
+                    result = todoById();
+                break;
+            case "date":
+                if (!userInput) {
+                    result = todoByDate();
+                }
+                break;
+            default:
+                break;
+        }
+        return result;
+    }
+    
+    Result todoById() {
         Processor processor = Processor.getInstance();
         List<Task> list = new ArrayList<Task>();
         boolean success = false;
-        
         try {
             int taskId = Integer.parseInt(id);
             Task existingTask = processor.getFile().getTask(taskId);
@@ -116,6 +138,18 @@ public class CommandTodo extends Command {
         return new Result(list, success, getType(), ResultType.TASK);
     }
     
+    Result todoByDate() {
+        Processor processor = Processor.getInstance();
+        List<Task> list = new ArrayList<Task>();
+        boolean success = false;
+        for (Task task : CommandDone.fetchLastDoneTasks()) {
+            success = processor.getFile().toDoTask(task);
+            if (success) {
+                list.add(task);
+            }
+        }
+        return new Result(list, success, getType(), ResultType.TASK);
+    }
     /**
      * Executes "done" operation
      * Marks a task as 'done'

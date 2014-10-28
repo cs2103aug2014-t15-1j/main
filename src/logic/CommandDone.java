@@ -11,6 +11,9 @@ import database.Task;
 
 public class CommandDone extends Command {
 
+
+    private static List<Task> lastTasksRange = new ArrayList<Task>();
+    
     // Done types [get("rangeType"); returns "all" | "id" | "date"]
     private String rangeType = "";
 
@@ -138,6 +141,7 @@ public class CommandDone extends Command {
             }
         }
         for (Task task : list) {
+            lastTasksRange.add(task);
             processor.getFile().doneTask(task);
         }
         return success;
@@ -150,6 +154,14 @@ public class CommandDone extends Command {
      */
     @Override
     protected Result executeComplement() {
-        return this.cmdTodo.execute(false);
+        Result result = this.cmdTodo.execute(false);
+        if (result.isSuccess()) {
+            lastTasksRange.clear();
+        }
+        return result;
+    }
+    
+    protected static List<Task> fetchLastDoneTasks() {
+        return lastTasksRange;
     }
 }
