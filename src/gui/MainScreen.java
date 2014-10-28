@@ -77,6 +77,22 @@ public class MainScreen {
             readUserInput(setUpScreen);
         }
         setUpScreen.getCommandLine().setFocus();
+
+        display.addFilter(SWT.KeyDown, new Listener() {
+
+            public void handleEvent(Event event) {
+                if (event.keyCode == SWT.ALT) {
+                    CTabFolder folder = setUpScreen.getTabFolder();
+                    int index = folder.getSelectionIndex();
+                    if (index == 0) {
+                        folder.setSelection(1);
+                    } else {
+                        folder.setSelection(0);
+                    }
+                }
+            }
+        });
+
         shell.pack();
         shell.open();
 
