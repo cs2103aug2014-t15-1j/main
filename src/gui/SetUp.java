@@ -667,6 +667,7 @@ public class SetUp {
                     switch (e.keyCode) {
                         case SWT.ARROW_UP:
                             output = Processor.getInstance().fetchInputUpKey();
+
                             break;
                         case SWT.ARROW_DOWN:
                             output = Processor.getInstance()

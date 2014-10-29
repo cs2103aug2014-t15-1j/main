@@ -53,7 +53,7 @@ public class MainScreen {
         Image background = new Image(display, MainScreen.class.getClassLoader()
                 .getResourceAsStream("resource/mainbg.png"));
 
-        final Shell shell = new Shell(display);
+        Shell shell = new Shell(display);
 
         shell.setImage(new Image(display, MainScreen.class.getClassLoader()
                 .getResourceAsStream("resource/Icon.gif")));
@@ -71,7 +71,7 @@ public class MainScreen {
 
         shell.setLocation(x, y);
 
-        final SetUp setUpScreen = SetUp.getInstance(shell);
+        SetUp setUpScreen = SetUp.getInstance(shell);
         resultGenerator.start();
 
         removeText(setUpScreen);
