@@ -53,14 +53,12 @@ public class SetUp {
     // NOTE: Limit below 1024x768
     private static final int MIN_WIDTH_SCREEN = 800;
     private static final int MIN_HEIGHT_SCREEN = 384;
-    private static final int MIN_WIDTH_SIDE_PANE = MIN_WIDTH_SCREEN / 2;
     private static final int MIN_HEIGHT_SIDE_PANE = MIN_HEIGHT_SCREEN;
 
     private static final String HEADER_NAME_ID = "Id";
     private static final String HEADER_NAME_NAME = "Name";
-    private static final String HEADER_NAME_DUE = "Due";
+    private static final String HEADER_NAME_DUE = "Due/End";
     private static final String HEADER_NAME_START = "Start";
-    private static final String HEADER_NAME_END = "End";
     private static final String HEADER_NAME_TAGS = "Tags";
     private static final String HEADER_NAME_STATUS = "Status";
 
@@ -490,20 +488,23 @@ public class SetUp {
             }
         });
 
-        column = setColumnHeader(HEADER_NAME_DUE, COL_WIDTH_DATE, tableViewer);
-
+        column = setColumnHeader(HEADER_NAME_STATUS, COL_WIDTH_STATUS,
+                                 tableViewer);
         column.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
                 if (element instanceof Task) {
                     Task task = (Task) element;
                     assert (task != null);
-                    DateTime Due = task.getDue();
-
-                    if (Due == null) {
-                        return CELL_EMPTY;
+                    String Status;
+                    if (task.isDeleted()) {
+                        Status = PARA_STATUS_DELETED;
+                    } else if (task.isDone()) {
+                        Status = PARA_STATUS_DONE;
+                    } else {
+                        Status = PARA_STATUS_TODO;
                     }
-                    return Due.toString();
+                    return Status;
                 }
                 return "";
             }
@@ -527,18 +528,20 @@ public class SetUp {
             }
         });
 
-        column = setColumnHeader(HEADER_NAME_END, COL_WIDTH_DATE, tableViewer);
+        column = setColumnHeader(HEADER_NAME_DUE, COL_WIDTH_DATE, tableViewer);
+
         column.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
                 if (element instanceof Task) {
                     Task task = (Task) element;
                     assert (task != null);
-                    DateTime End = task.getEnd();
-                    if (End == null) {
+                    DateTime Due = task.getDue();
+
+                    if (Due == null) {
                         return CELL_EMPTY;
                     }
-                    return End.toString();
+                    return Due.toString();
                 }
                 return "";
             }
@@ -565,28 +568,6 @@ public class SetUp {
                 return "";
             }
 
-        });
-
-        column = setColumnHeader(HEADER_NAME_STATUS, COL_WIDTH_STATUS,
-                                 tableViewer);
-        column.setLabelProvider(new ColumnLabelProvider() {
-            @Override
-            public String getText(Object element) {
-                if (element instanceof Task) {
-                    Task task = (Task) element;
-                    assert (task != null);
-                    String Status;
-                    if (task.isDeleted()) {
-                        Status = PARA_STATUS_DELETED;
-                    } else if (task.isDone()) {
-                        Status = PARA_STATUS_DONE;
-                    } else {
-                        Status = PARA_STATUS_TODO;
-                    }
-                    return Status;
-                }
-                return "";
-            }
         });
 
         Table table = tableViewer.getTable();
