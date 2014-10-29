@@ -1,5 +1,7 @@
 package database;
 
+import java.util.Comparator;
+
 /**
  * The BlockDate class keeps track of the start/end dates and times of a blocked
  * time period.
@@ -8,7 +10,7 @@ package database;
  * 
  */
 
-public class BlockDate implements Comparable<BlockDate> {
+public class BlockDate implements Comparable<BlockDate>, Comparator<BlockDate> {
 
     /**
      * Unique ID for each new Task object. Increments at new Task instantiation.
@@ -57,6 +59,17 @@ public class BlockDate implements Comparable<BlockDate> {
     @Override
     public int compareTo(BlockDate blockDate) {
         return this.getEnd().compareTo(blockDate.getStart());
+    }
+    
+    @Override
+    public int compare(BlockDate blockDate, BlockDate otherBlockDate) {
+        if (blockDate.getId() < blockDate.getId()) {
+            return -1;
+        } else if (blockDate.getId() > blockDate.getId()) {
+            return 1;
+        } else {
+            return 0;
+        }
     }
 
     /**
