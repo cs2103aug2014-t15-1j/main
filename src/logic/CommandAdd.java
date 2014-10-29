@@ -22,6 +22,7 @@ public class CommandAdd extends Command {
     private String name = "";
     private DateTime start = new DateTime();
     private DateTime due = new DateTime();
+    private DateTime completedOn = new DateTime();
     
     private List<String> tags = new ArrayList<String>();
     
@@ -109,7 +110,7 @@ public class CommandAdd extends Command {
         }
         boolean blockConfirmation = isBlocked();
         if (!blockConfirmation) {
-            Task newTask = new Task(name, start, due, null, tags);
+            Task newTask = new Task(name, start, due, completedOn, tags);
             success = Processor.getInstance().getFile().addNewTask(newTask);
             list.add(newTask);
             blockConfirmation = false;

@@ -9,12 +9,10 @@ import database.Task;
 
 public class CommandSearch extends Command {
 
-    // Tags like #done, #deleted, #todo are stored in tags
-    // But the parser ensures only 1 of the above is possible
-    // TODO: ASSUME PARSER IS AN IDIOT
     private List<String> tags = new ArrayList<String>();
     private List<String> keywords = new ArrayList<String>();
     private String date = "";
+    private String status = "todo";
 
     public CommandSearch(List<TaskParam> content) {
         assert (!content.isEmpty());
@@ -27,6 +25,10 @@ public class CommandSearch extends Command {
 
     private void constructUsingParam(TaskParam param) {
         switch (param.getName()) {
+            case "status":
+                this.status = param.getField();
+                break;
+                
             case "date":
                 this.date = param.getField();
                 break;
@@ -50,6 +52,9 @@ public class CommandSearch extends Command {
         switch (field) {
             case "date":
                 return date;
+                
+            case "status":
+                return status;
 
             default:
                 return null;
@@ -70,7 +75,7 @@ public class CommandSearch extends Command {
     @Override
     public String toString() {
         String result = "\n[[ CMD-SEARCH: ]]";
-        result = result.concat("\nCmdType: " + this.type);
+        result = result.concat("\nstatus: " + this.status);
         result = result.concat("\ndate: " + this.date);
         result = result.concat("\ntags: " + this.tags);
         result = result.concat("\nkeywords: " + this.keywords);
@@ -85,6 +90,7 @@ public class CommandSearch extends Command {
      */
     @Override
     protected Result execute(boolean userInput) {
+        // TODO: Search by this.status
         if (Processor.LOGGING_ENABLED) {
             Processor.getLogger().info("Executing 'Search' Command...");
         }

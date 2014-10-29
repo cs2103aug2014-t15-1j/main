@@ -75,7 +75,7 @@ public class TestParser {
 
         // Test "empty" input
         task = tempTaskToString(Parser
-                .parseToTask("### due: start: end: status: \n"));
+                .parseToTask("### start: due: completed: status: \n"));
         result = "\n[[ Task ]]" + "\nName: " + "\nStart: " + "\nDue: "
                  + "\nCompleted: " + "\nTags: []" + "\nStatus: todo";
         assertEquals(result, task);
@@ -156,27 +156,19 @@ public class TestParser {
 
         // Edit with only id
         // TODO: Shouldn't this be invalid?
-        result = "\n[[ CMD-EDIT: ]]" + "\nid: 1" + "\nname: " + "\ndue: "
-                 + "\nstart: " + "\nend: " + "\ntags: []" + "\ndelete: []";
+        result = "\n[[ CMD-EDIT: ]]" + "\nid: 1" + "\nname: " + "\nstart: "
+                 + "\ndue: " + "\ntags: []" + "\ndelete: []";
         cmd = Parser.parse("edit 1").toString();
         assertEquals("Edit: id only", result, cmd);
 
-        // Simple Edit
-        result = "\n[[ CMD-EDIT: ]]" + "\nid: 2" + "\nname: do homework"
-                 + "\ndue: 23/04/2014" + "\nstart: " + "\nend: " + "\ntags: []"
-                 + "\ndelete: []";
-        cmd = Parser.parse("edit 2 do homework due 23/04/2014").toString();
-        assertEquals("Edit: simple", result, cmd);
-
         // Full Edit with repeated parameters and consecutive parameters
         result = "\n[[ CMD-EDIT: ]]" + "\nid: 3"
-                 + "\nname: do homework for CS2103 project"
-                 + "\ndue: 23/04/2014" + "\nstart: 22/04/2014 0200"
-                 + "\nend: 22/04/2014 1200" + "\ntags: [#CS2103]"
-                 + "\ndelete: [end]";
+                 + "\nname: do homework due soon for CS2103 project"
+                 + "\nstart: 22/04/2014 1200" + "\ndue: 23/04/2014"
+                 + "\ntags: [#CS2103]" + "\ndelete: [due, start]";
         cmd = Parser
-                .parse(" edIt 3 do  #CS2103 homework due   23/04/2014 start   22/04/2014   1200 "
-                               + "for CS2103 delete  end  END  0200   22/04/2014   project")
+                .parse(" edIt 3 do  #CS2103 homework due  DUE  23/04/2014  start   22/04/2014   1200 "
+                               + "soon for CS2103 delete  end  delete frOM project")
                 .toString();
         assertEquals("Edit: full, repeated param, consecutive param", result,
                      cmd);
@@ -184,10 +176,10 @@ public class TestParser {
         // Testing delete parameter
         result = "\n[[ CMD-EDIT: ]]" + "\nid: 4"
                  + "\nname: do homework delete tags by start delete"
-                 + "\ndue: " + "\nstart: " + "\nend: " + "\ntags: []"
-                 + "\ndelete: [end, tags]";
+                 + "\nstart: " + "\ndue: " + "\ntags: []"
+                 + "\ndelete: [start, due, tags]";
         cmd = Parser
-                .parse("edit 4 do homework delete end delete tags delete tags by start delete")
+                .parse("edit 4 do homework delete start delete to delete tags delete tags by start delete")
                 .toString();
         assertEquals("Edit: delete param", result, cmd);
 
@@ -360,14 +352,23 @@ public class TestParser {
         String result;
         String cmd;
 
-        // Full search: mixed caps command, date, keywords, tags
-        result = "\n[[ CMD-SEARCH: ]]" + "\nCmdType: SEARCH"
-                 + "\ndate: 23/04/2014" + "\ntags: [#done, #cS2103, #don]"
-                 + "\nkeywords: [23/04/201, homework, late]";
+        // Full search: mixed caps command, status, date, keywords, tags
+        result = "\n[[ CMD-SEARCH: ]]" + "\nstatus: all"
+                 + "\ndate: 23/04/2014" + "\ntags: [#done, #cS2103]"
+                 + "\nkeywords: [done, 23/04/201, homework, late]";
         cmd = Parser
-                .parse("seARch 23/04/2014 23/04/201 homework #done #cS2103 #don #todo late ")
+                .parse("  seARch    ALL  done 23/04/2014 23/04/201 homework #done #cS2103 late ")
                 .toString();
-        assertEquals("Search: full combination", result, cmd);
+        assertEquals("Search: status, full combination", result, cmd);
+        
+        // Search without status
+        result = "\n[[ CMD-SEARCH: ]]" + "\nstatus: todo"
+                 + "\ndate: 23/04/2014" + "\ntags: [#cS2103]"
+                 + "\nkeywords: [homework]";
+        cmd = Parser
+                .parse(" seARch   23/04/2014 homework #cS2103")
+                .toString();
+        assertEquals("Search: no status", result, cmd);
 
         System.out.println("...success!");
     }
@@ -398,18 +399,6 @@ public class TestParser {
         String result;
         String cmd;
 
-        // Empty Done (invalid)
-        result = "\n[[ CMD-OTHERS ]]" + "\ncmd-type: ERROR"
-                 + "\ncmd-info: No arguments for done";
-        cmd = Parser.parse("done").toString();
-        assertEquals("Done: empty", result, cmd);
-
-        // Empty Done + extra spaces
-        result = "\n[[ CMD-OTHERS ]]" + "\ncmd-type: ERROR"
-                 + "\ncmd-info: No arguments for done";
-        cmd = Parser.parse("done      ").toString();
-        assertEquals("Done: empty, spaces", result, cmd);
-
         // Done all, extra spaces
         result = "\n[[ CMD-DONE: ]]" + "\nrangeType: all" + "\nid: "
                  + "\ndateTime: ";
@@ -428,14 +417,28 @@ public class TestParser {
         cmd = Parser.parse("done 23/04/2014").toString();
         assertEquals("Done: date", result, cmd);
 
-        // Invalid parameter
-        result = "\n[[ CMD-OTHERS ]]" + "\ncmd-type: ERROR"
-                 + "\ncmd-info: Invalid argument for done";
-        cmd = Parser.parse("done this").toString();
-        assertEquals("Done: invalid", result, cmd);
-
         System.out.println("...success!");
 
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void failCmdDoneEmpty() {
+        System.out
+                .println("\n>> Failing Done Command with spaces...");
+
+        Parser.parse("done      ");
+
+        System.out.println("...success!");
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void failCmdDoneInvalid() {
+        System.out
+                .println("\n>> Failing Done Command with an invalid parameter...");
+
+        Parser.parse("done this");
+
+        System.out.println("...success!");
     }
 
     @Test
@@ -444,18 +447,6 @@ public class TestParser {
 
         String result;
         String cmd;
-
-        // Empty Todo (invalid), mixed caps, spaces
-        result = "\n[[ CMD-OTHERS ]]" + "\ncmd-type: ERROR"
-                 + "\ncmd-info: No arguments for todo";
-        cmd = Parser.parse("tODo      ").toString();
-        assertEquals("Todo: empty, caps, spaces", result, cmd);
-
-        // Todo invalid parameter
-        result = "\n[[ CMD-OTHERS ]]" + "\ncmd-type: ERROR"
-                 + "\ncmd-info: Invalid argument for todo";
-        cmd = Parser.parse("todo one").toString();
-        assertEquals("Todo: invalid", result, cmd);
 
         // Todo id, extra numbers/words
         result = "\n[[ CMD-TODO: ]]" + "\nrangeType: id" + "\nid: 1";
@@ -466,6 +457,26 @@ public class TestParser {
         result = "\n[[ CMD-TODO: ]]" + "\nrangeType: last" + "\nid: ";
         cmd = Parser.parse("todo last").toString();
         assertEquals("Todo: last", result, cmd);
+
+        System.out.println("...success!");
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void failCmdTodoEmpty() {
+        System.out
+                .println("\n>> Failing Todo Command with spaces...");
+
+        Parser.parse("tODo      ");
+
+        System.out.println("...success!");
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void failCmdTodoInvalid() {
+        System.out
+                .println("\n>> Failing Todo Command with an invalid parameter...");
+
+        Parser.parse("todo one");
 
         System.out.println("...success!");
     }
@@ -664,22 +675,29 @@ public class TestParser {
         String result;
         String cmd;
 
-        // Empty (invalid), mixed caps, spaces
-        result = "\n[[ CMD-OTHERS ]]" + "\ncmd-type: ERROR"
-                 + "\ncmd-info: No arguments for unblock";
-        cmd = Parser.parse("unBLock      ").toString();
-        assertEquals("Unblock: empty, caps, spaces", result, cmd);
-
-        // Invalid parameter
-        result = "\n[[ CMD-OTHERS ]]" + "\ncmd-type: ERROR"
-                 + "\ncmd-info: Invalid argument for unblock";
-        cmd = Parser.parse("unblock one").toString();
-        assertEquals("unblock: invalid", result, cmd);
-
-        // ID, extra numbers/words
+        // ID, extra numbers/words, mixed caps
         result = "\n[[ CMD-UNBLOCK: ]]" + "\nid: 1";
         cmd = Parser.parse("unBLock 1 3 four").toString();
-        assertEquals("Todo: id, extra", result, cmd);
+        assertEquals("Todo: id, extra, caps", result, cmd);
+
+        System.out.println("...success!");
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void failCmdUnblockEmpty() {
+        System.out
+                .println("\n>> Failing Unblock Command with spaces...");
+
+        Parser.parse("unblock      ");
+
+        System.out.println("...success!");
+    }
+    
+    public void failCmdUnblockInvalid() {
+        System.out
+                .println("\n>> Failing Unblock Command with an invalid term...");
+
+        Parser.parse("unblock one");
 
         System.out.println("...success!");
     }

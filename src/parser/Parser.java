@@ -23,7 +23,7 @@ import database.Task;
 // TODO: Class description with reason why it's static
 public class Parser {
 
-    private static final int ADD_DATE_PARAM_NUM = 3;
+    // All possible Command types (in string)
     private static final String TYPE_HELP = "help";
     private static final String TYPE_ADD = "add";
     private static final String TYPE_EDIT = "edit";
@@ -41,17 +41,19 @@ public class Parser {
     private static final String TYPE_EXIT = "exit";
     private static final String TYPE_RESET = "reset";
 
-    // TODO: RENAME MAGIC STRINGS
-    private static final String TYPE_ALL = "all";
-
+    // TODO: REFACTOR MAGIC STRINGS
     // TODO: CONSIDER USING PARAM_FIRST_WORD = 1
-    private static final String[] DATE_PARAM_LIST_FULL = { "due", "by",
-                                                          "start", "from",
-                                                          "end", "to" };
-    private static final String[] DATE_PARAM_LIST_SYS = { "due", "start" };
-    private static final String[] DISPLAY_PARAM_LIST = { "search", "all",
-                                                        "done", "deleted",
-                                                        "block" };
+    private static final int ADD_DATE_PARAM_NUM = 3;
+    private static final String[] STR_ARRAY_EMPTY = new String[0];
+
+    private static final String[] PARAMS_EDIT = { "due", "start", "tags" };
+    private static final String[] PARAMS_DATE = { "due", "start" };
+    private static final String[] PARAMS_DATE_FULL = { "due", "by", "start",
+                                                      "from", "end", "to" };
+    private static final String[] PARAMS_DISPLAY = { "search", "all", "done",
+                                                    "deleted", "block" };
+    private static final String[] PARAMS_DELETE = { "all", "search", "done" };
+    private static final String[] PARAMS_STATUS = { "done", "deleted", "all" };
 
     // ========== MAIN PARSE METHOD ==========//
 
@@ -144,7 +146,7 @@ public class Parser {
             }
             return commandParams;
         } catch (Exception e) {
-            return new String[0];
+            return STR_ARRAY_EMPTY;
         }
     }
 
@@ -340,7 +342,7 @@ public class Parser {
             for (int i = 0; i < commandParams.length; i++) {
                 if (!commandParams[i].isEmpty()) {
                     String firstWord = commandParams[i];
-                    if (isParamOf(DISPLAY_PARAM_LIST, firstWord)) {
+                    if (isParamOf(PARAMS_DISPLAY, firstWord)) {
                         displayFields.add(new TaskParam("rangeType", firstWord
                                 .toLowerCase()));
                     } else if (isInteger(firstWord)) {
@@ -358,16 +360,6 @@ public class Parser {
         return new CommandDisplay(displayFields);
     }
 
-    /**
-     * @param paramList
-     *            TODO
-     * @param word
-     * @return
-     */
-    private static boolean isParamOf(String[] paramList, String word) {
-        return Arrays.asList(paramList).contains(word.toLowerCase());
-    }
-
     private static Command parseDelete(String[] commandParams) {
         List<TaskParam> deleteFields = new ArrayList<TaskParam>();
 
@@ -377,7 +369,7 @@ public class Parser {
                 deleteFields.add(new TaskParam("rangeType", "dates"));
                 deleteFields.add(new TaskParam("start", firstWord));
                 deleteFields.add(new TaskParam("due", firstWord));
-            } else if (isDeleteParamName(firstWord.toLowerCase())) {
+            } else if (isParamOf(PARAMS_DELETE, firstWord)) {
                 deleteFields.add(new TaskParam("rangeType", firstWord
                         .toLowerCase()));
             } else if (isInteger(firstWord)) {
@@ -410,26 +402,36 @@ public class Parser {
                 }
             }
         }
-        
+
         throw new IllegalArgumentException("No arguments for restore");
-        
+
     }
 
     private static Command parseSearch(String[] commandParams) {
         List<TaskParam> searchFields = new ArrayList<TaskParam>();
 
         // TODO: REFACTOR
-        // TODO: MODIFY
         try {
-            if (commandParams.length == 0) {
-                throw new ArrayIndexOutOfBoundsException();
+            // Get index of the first word
+            int firstWordIndex = 0;
+            String firstWord = commandParams[0];
+            while (firstWord.isEmpty() && firstWordIndex < commandParams.length) {
+                firstWordIndex++;
+                firstWord = commandParams[firstWordIndex];
             }
 
-            boolean statusIndicated = false;
+            // Check if the first word is a valid status parameter
+            int startIndex = firstWordIndex;
+            if (isParamOf(PARAMS_STATUS, firstWord)) {
+                addTaskParamToField(searchFields, "status",
+                                    firstWord.toLowerCase());
+                startIndex = firstWordIndex + 1;
+            }
+
+            // Categorise the rest of the string
             boolean dateIndicated = false;
-            for (int i = 0; i < commandParams.length; i++) {
+            for (int i = startIndex; i < commandParams.length; i++) {
                 String currWord = commandParams[i];
-                String currWordLC = currWord.toLowerCase();
                 if (DateParser.isValidDate(currWord)) {
                     if (!dateIndicated) {
                         searchFields.add(new TaskParam("date", currWord));
@@ -439,21 +441,8 @@ public class Parser {
                                 "You can only allowed to search one date at a time!");
                     }
                 } else if (hasValidHashTag(currWord)) {
-                    // TODO: Error Handling for multiple doneness keywords
-                    if (currWordLC.equals("#done") ||
-                        currWordLC.equals("#deleted") ||
-                        currWordLC.equals("#todo")) {
-                        if (!statusIndicated) {
-                            searchFields.add(new TaskParam("tag", currWordLC));
-                            statusIndicated = true;
-                        } else {
-                            System.out
-                                    .println("A done-ness keyword has already been indicated!");
-                        }
-                    } else {
-                        searchFields.add(new TaskParam("tag", currWord));
-                    }
-                } else {
+                    searchFields.add(new TaskParam("tag", currWord));
+                } else if (!currWord.isEmpty()) {
                     searchFields.add(new TaskParam("word", currWord));
                 }
             }
@@ -481,9 +470,8 @@ public class Parser {
             throw new IllegalArgumentException("Invalid task ID for edit!");
         }
 
-        ArrayList<String> availDateParams = generateDateParamList();
-        ArrayList<String> availDeleteParams = generateDateParamList();
-        availDeleteParams.add("tags");
+        ArrayList<String> availDateParams = generateParamArrayList(PARAMS_DATE);
+        ArrayList<String> availDeleteParams = generateParamArrayList(PARAMS_EDIT);
 
         String currWord;
         boolean currHasDate = false;
@@ -520,7 +508,8 @@ public class Parser {
             } else if (availDateParams.contains(getDateParamEquiv(currWord)) ||
                        currWord.equalsIgnoreCase("delete")) {
                 // If the current word is an available parameter name
-                if (isDateParam(currField) && !currHasDate && !currHasTime) {
+                if (isParamOf(PARAMS_DATE_FULL, currField) && !currHasDate &&
+                    !currHasTime) {
                     // If the last parameter was not filled, it was not a
                     // parameter
                     addToFieldParam(editFields, "name", currFieldOrig);
@@ -535,14 +524,15 @@ public class Parser {
                 // Save the original word (with capitalisation)
                 currFieldOrig = currWord;
                 // Remove availability
-                if (isDateParam(currField)) {
+                if (isParamOf(PARAMS_DATE_FULL, currField)) {
                     availDateParams.remove(currField);
                 }
                 // Reset boolean values
                 currHasDate = false;
                 currHasTime = false;
                 currHasDelete = false;
-            } else if (isDateParam(currField) && !currWord.isEmpty()) {
+            } else if (isParamOf(PARAMS_DATE_FULL, currField) &&
+                       !currWord.isEmpty()) {
                 // If currently a date parameter and string is not ""
                 if (!currHasDate && DateParser.isValidDate(currWord)) {
                     addToFieldParam(editFields, currField, currWord);
@@ -569,7 +559,7 @@ public class Parser {
         }
 
         // catches if the last word was a parameter
-        if ((isDateParam(currField) && !currHasDate && !currHasTime) ||
+        if ((isParamOf(PARAMS_DATE_FULL, currField) && !currHasDate && !currHasTime) ||
             (currField.equals("delete") && !currHasDelete)) {
             addToFieldParam(editFields, "name", currFieldOrig);
         }
@@ -615,7 +605,7 @@ public class Parser {
         String currFieldOrig = "";
         String currField = "";
         List<TaskParam> addFields = new ArrayList<TaskParam>();
-        ArrayList<String> availParams = generateDateParamList();
+        ArrayList<String> availParams = generateParamArrayList(PARAMS_DATE);
 
         String currWord;
         boolean currHasDate = false;
@@ -632,7 +622,8 @@ public class Parser {
                 addToFieldParam(addFields, "name", currFieldOrig);
             } else if (availParams.contains(getDateParamEquiv(currWord))) {
                 // If the current word is an available parameter name
-                if (isDateParam(currField) && !currHasDate && !currHasTime) {
+                if (isParamOf(PARAMS_DATE_FULL, currField) && !currHasDate &&
+                    !currHasTime) {
                     // If the last parameter was not filled, it was not a
                     // parameter
                     addToFieldParam(addFields, "name", currFieldOrig);
@@ -647,7 +638,8 @@ public class Parser {
                 // Reset hasDate/Time values
                 currHasDate = false;
                 currHasTime = false;
-            } else if (isDateParam(currField) && !currWord.isEmpty()) {
+            } else if (isParamOf(PARAMS_DATE_FULL, currField) &&
+                       !currWord.isEmpty()) {
                 // If currently a date parameter and string is not ""
                 if (!currHasDate && DateParser.isValidDate(currWord)) {
                     addToFieldParam(addFields, currField, currWord);
@@ -674,7 +666,8 @@ public class Parser {
         }
 
         // catches if the last word was a parameter
-        if (isDateParam(currField) && !currHasDate && !currHasTime) {
+        if (isParamOf(PARAMS_DATE_FULL, currField) && !currHasDate &&
+            !currHasTime) {
             addToFieldParam(addFields, "name", currFieldOrig);
         }
 
@@ -715,6 +708,47 @@ public class Parser {
         return new CommandAdd(addFields);
     }
 
+    private static boolean hasValidHashTag(String word) {
+        return word.startsWith("#") && (word.length() > 1);
+    }
+
+    /**
+     * Checks if input <code>word</code> is a member of input
+     * <code>paramList</code>. This is used within the parser to check whether a
+     * given word is a valid parameter.
+     * 
+     * @param paramList
+     *            A list of valid parameters (to check against).
+     * @param word
+     *            The word to check.
+     * @return <b>true</b> if <code>word</code> is a member of
+     *         <code>paramList</code>.
+     */
+    private static boolean isParamOf(String[] paramList, String word) {
+        return Arrays.asList(paramList).contains(word.toLowerCase());
+    }
+
+    /**
+     * Creates a new, mutable ArrayList of Strings containing the members of the
+     * input String Array.
+     */
+    private static ArrayList<String> generateParamArrayList(String[] paramList) {
+        ArrayList<String> list = new ArrayList<String>();
+
+        for (String p : paramList) {
+            list.add(p);
+        }
+
+        return list;
+    }
+
+    /**
+     * Converts alternative accepted user input for date parameters into
+     * system-accepted ones for consistency in the parser.
+     * <p>
+     * Alternatives for "due": "by", "to", "end". <br>
+     * Alternative for "start": "from".
+     * */
     private static String getDateParamEquiv(String word) {
         String wordLC = word.toLowerCase();
         switch (wordLC) {
@@ -730,15 +764,38 @@ public class Parser {
         return wordLC;
     }
 
-    private static boolean isDateParam(String word) {
-        return Arrays.asList(DATE_PARAM_LIST_FULL).contains(word.toLowerCase());
+    private static TaskParam getTaskParam(List<TaskParam> fields,
+                                          String currField) {
+        // Attempt to get TaskParam named currField from List
+        for (TaskParam tp : fields) {
+            if (tp.getName().equals(currField)) {
+                return tp;
+            }
+        }
+
+        // If not found, create it
+        TaskParam newParam = new TaskParam(currField, "");
+        fields.add(newParam);
+        return newParam;
+
     }
 
-    private static ArrayList<String> generateDateParamList() {
-        ArrayList<String> list = new ArrayList<String>();
-        list.add("due");
-        list.add("start");
-        return list;
+    /**
+     * @param fields
+     */
+    private static void checkStartDueOrder(List<TaskParam> fields) {
+        TaskParam startTP = getTaskParam(fields, "start");
+        TaskParam dueTP = getTaskParam(fields, "due");
+        if (!startTP.getField().isEmpty() && !dueTP.getField().isEmpty()) {
+            DateTime startDT = DateParser.parseToDateTime(startTP.getField());
+            DateTime dueDT = DateParser.parseToDateTime(dueTP.getField());
+            if (startDT.compareTo(dueDT) > 0) {
+                fields.remove(startTP);
+                fields.remove(dueTP);
+                fields.add(new TaskParam("due", startTP.getField()));
+                fields.add(new TaskParam("start", dueTP.getField()));
+            }
+        }
     }
 
     /**
@@ -763,38 +820,6 @@ public class Parser {
         return fields.add(new TaskParam(paramName, paramField));
     }
 
-    /**
-     * @param fields
-     */
-    private static void checkStartDueOrder(List<TaskParam> fields) {
-        TaskParam startTP = getTaskParam(fields, "start");
-        TaskParam dueTP = getTaskParam(fields, "due");
-        if (!startTP.getField().isEmpty() && !dueTP.getField().isEmpty()) {
-            DateTime startDT = DateParser.parseToDateTime(startTP.getField());
-            DateTime dueDT = DateParser.parseToDateTime(dueTP.getField());
-            if (startDT.compareTo(dueDT) > 0) {
-                fields.remove(startTP);
-                fields.remove(dueTP);
-                fields.add(new TaskParam("due", startTP.getField()));
-                fields.add(new TaskParam("start", dueTP.getField()));
-            }
-        }
-    }
-
-    public static boolean isInteger(String str) {
-        try {
-            Integer.parseInt(str);
-            return true;
-        } catch (NumberFormatException e) {
-            return false;
-        }
-    }
-
-    private static boolean isDeleteParamName(String firstWord) {
-        return firstWord.equals("all") || firstWord.equals("search") ||
-               firstWord.equals("done");
-    }
-
     private static <E> void removeDuplicates(List<E> list) {
         List<E> toDelete = new ArrayList<E>();
 
@@ -812,27 +837,30 @@ public class Parser {
         }
     }
 
-    private static TaskParam getTaskParam(List<TaskParam> fields,
-                                          String currField) {
-        // Attempt to get TaskParam named currField from List
-        for (TaskParam tp : fields) {
-            if (tp.getName().equals(currField)) {
-                return tp;
-            }
+    public static boolean isInteger(String str) {
+        try {
+            Integer.parseInt(str);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
         }
-
-        // If not found, create it
-        TaskParam newParam = new TaskParam(currField, "");
-        fields.add(newParam);
-        return newParam;
-
-    }
-
-    private static boolean hasValidHashTag(String word) {
-        return word.startsWith("#") && (word.length() > 1);
     }
 
     // ========== TASK PARSING METHODS ==========//
+    /**
+     * Forms a <code>Task</code> object by parsing a <code>String</code>
+     * containing the stored string literals.
+     * <p>
+     * Note that the input <code>String</code> must be of the given format(below),
+     * contain all four parameters names ("start:" to "status:"), and have
+     * spaces between tags and parameter names. The position of the tags is
+     * flexible as long as it comes after "start:".
+     * 
+     * @param text
+     *            format:
+     *            {@literal "<name> ### start: <date/time> due: <date/time> completed: 
+     * <date/time> <tags> status: <status>"}
+     */
     public static Task parseToTask(String text) {
         String[] textItems = text.trim().split(" ");
         // name, start, due, completed, status
@@ -877,6 +905,7 @@ public class Parser {
                 }
             }
         }
+
         assert (fieldIndex == 4) : "TaskParser is missing parameter names.";
 
         // Convert param inputs
@@ -915,7 +944,7 @@ public class Parser {
      * containing the saved string literals of two <code>DateTime</code> objects
      * (starting and ending dates and times).
      * <p>
-     * Note: the input <code>String</code> must be of the given format(below),
+     * Note that the input <code>String</code> must be of the given format(below),
      * containing two pairs of dates and times, and the word "to" between them.
      * All 5 items must have spaces between them.
      * 
