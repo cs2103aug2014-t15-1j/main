@@ -488,28 +488,6 @@ public class SetUp {
             }
         });
 
-        column = setColumnHeader(HEADER_NAME_STATUS, COL_WIDTH_STATUS,
-                                 tableViewer);
-        column.setLabelProvider(new ColumnLabelProvider() {
-            @Override
-            public String getText(Object element) {
-                if (element instanceof Task) {
-                    Task task = (Task) element;
-                    assert (task != null);
-                    String Status;
-                    if (task.isDeleted()) {
-                        Status = PARA_STATUS_DELETED;
-                    } else if (task.isDone()) {
-                        Status = PARA_STATUS_DONE;
-                    } else {
-                        Status = PARA_STATUS_TODO;
-                    }
-                    return Status;
-                }
-                return "";
-            }
-        });
-
         column = setColumnHeader(HEADER_NAME_START, COL_WIDTH_DATE, tableViewer);
         column.setLabelProvider(new ColumnLabelProvider() {
             @Override
@@ -568,6 +546,29 @@ public class SetUp {
                 return "";
             }
 
+        });
+
+        column = setColumnHeader(HEADER_NAME_STATUS, COL_WIDTH_STATUS,
+                                 tableViewer);
+        column.setLabelProvider(new ColumnLabelProvider() {
+            @Override
+            public String getText(Object element) {
+                if (element instanceof Task) {
+                    Task task = (Task) element;
+                    assert (task != null);
+                    String Status;
+                    if (task.isDeleted()) {
+                        Status = PARA_STATUS_DELETED;
+                    } else if (task.isDone()) {
+                        Status = PARA_STATUS_DONE + " " +
+                                 task.getCompletedOn().toString();
+                    } else {
+                        Status = PARA_STATUS_TODO;
+                    }
+                    return Status;
+                }
+                return "";
+            }
         });
 
         Table table = tableViewer.getTable();
