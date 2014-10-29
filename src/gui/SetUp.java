@@ -595,7 +595,7 @@ public class SetUp {
                 }
 
                 TableColumn nameCol = table.getColumn(1);
-                TableColumn tagsCol = table.getColumn(5);
+                TableColumn tagsCol = table.getColumn(4);
 
                 TableColumn lastCol = table.getColumn(table.getColumnCount() - 1);
                 lastCol.pack();
