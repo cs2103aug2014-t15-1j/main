@@ -70,11 +70,13 @@ public class Task implements Comparable<Task>, Comparator<Task> {
      * @param tags
      *            To aid searching and categorizing. Each tag contains #.
      */
-    public Task(String name, DateTime start, DateTime due, List<String> tags) {
+    public Task(String name, DateTime start, DateTime due,
+            DateTime completedOn, List<String> tags) {
         this.ID = newId++;
         this.name = name;
         this.start = start;
         this.due = due;
+        this.completedOn = completedOn;
         this.tags = tags;
     }
 
