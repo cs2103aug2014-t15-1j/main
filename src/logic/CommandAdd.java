@@ -123,7 +123,7 @@ public class CommandAdd extends Command {
         }
         boolean blockConfirmation = isBlocked();
         if (!blockConfirmation) {
-            Task newTask = new Task(name, due, start, end, tags);
+            Task newTask = new Task(name, due, start, tags);
             success = Processor.getInstance().getFile().addNewTask(newTask);
             list.add(newTask);
             blockConfirmation = false;

@@ -159,7 +159,7 @@ public class CommandEdit extends Command {
                             break;
                     }
                 }
-                success = processor.getFile().updateTaskInfo(existingTask, name, due, start, end, tags);
+                success = processor.getFile().updateTaskInfo(existingTask, name, due, start, tags);
                 if (success) {
                     performUpdate(list, oldTask, existingTask);
                 }
@@ -198,11 +198,10 @@ public class CommandEdit extends Command {
         String taskName = prevTask.getName();
         DateTime taskDue = prevTask.getDue();
         DateTime taskStart = prevTask.getStart();
-        DateTime taskEnd = prevTask.getEnd();
         List<String> taskTags = prevTask.getTags();
         
         tasks.add(prevTask);
-        success = processor.getFile().updateTaskInfo(prevTask.getId(), taskName, taskDue, taskStart, taskEnd, taskTags);
+        success = processor.getFile().updateTaskInfo(prevTask.getId(), taskName, taskDue, taskStart, taskTags);
         return new Result(tasks, success, getType(), ResultType.TASK);
     }
 }
