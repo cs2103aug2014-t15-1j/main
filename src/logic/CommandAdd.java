@@ -22,14 +22,12 @@ public class CommandAdd extends Command {
     private String name = "";
     private DateTime start = new DateTime();
     private DateTime due = new DateTime();
-    private DateTime completedOn = new DateTime();
     
     private List<String> tags = new ArrayList<String>();
     
     private static final String PARAM_NAME = "name";
     private static final String PARAM_DUE = "due";
     private static final String PARAM_START = "start";
-    private static final String PARAM_COMPLETEDON = "end";
 
     public CommandAdd(List<TaskParam> content) {
         this.type = CommandType.ADD;
@@ -41,23 +39,15 @@ public class CommandAdd extends Command {
     private void constructUsingParam(TaskParam param) {
         switch (param.getName()){
             case "name":
-            case "n":
                 this.name = param.getField();
                 break;
                 
             case "start":
-            case "s":
                 this.start = DateParser.parseToDateTime(param.getField());
                 break;
                 
             case "due":
-            case "d":
                 this.due = DateParser.parseToDateTime(param.getField());
-                break;
-                
-            case "end":
-            case "e":
-                this.completedOn = DateParser.parseToDateTime(param.getField());
                 break;
                 
             case "tag":
@@ -82,9 +72,6 @@ public class CommandAdd extends Command {
             case PARAM_DUE:
                 return this.due.toString();
 
-            case PARAM_COMPLETEDON:
-                return this.completedOn.toString();
-                
             default:
                 System.out.println("Add: Get's got a problem!");
                 return null;
@@ -103,7 +90,6 @@ public class CommandAdd extends Command {
         result = result.concat("\n" + "name: " + name);
         result = result.concat("\n" + "start: " + start);
         result = result.concat("\n" + "due: " + due);
-        result = result.concat("\n" + "completedOn: " + completedOn);
         result = result.concat("\n" + "tags: " + tags);
         
         return result;
@@ -123,7 +109,7 @@ public class CommandAdd extends Command {
         }
         boolean blockConfirmation = isBlocked();
         if (!blockConfirmation) {
-            Task newTask = new Task(name, start, due, completedOn, tags);
+            Task newTask = new Task(name, start, due, null, tags);
             success = Processor.getInstance().getFile().addNewTask(newTask);
             list.add(newTask);
             blockConfirmation = false;
@@ -139,16 +125,12 @@ public class CommandAdd extends Command {
      */
     private boolean isBlocked() {
         boolean blocked = false;
-        if (due != null || start != null || completedOn != null) {
+        if (due != null || start != null) {
             Processor processor = Processor.getInstance();
             List<BlockDate> blockDates = processor.getFile().getAllBlockDates();
-            BlockDate currDate = new BlockDate(due, due);
-            BlockDate currDate2 = new BlockDate(start, completedOn);
+            BlockDate currDate = new BlockDate(start, due);
             for (BlockDate blockDate : blockDates) {
                 if (blockDate.contains(currDate)) {
-                    return true;
-                }
-                if (blockDate.contains(currDate2)) {
                     return true;
                 }
             }

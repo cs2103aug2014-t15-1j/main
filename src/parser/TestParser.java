@@ -68,10 +68,9 @@ public class TestParser {
         // Test full input
         task = tempTaskToString(Parser
                 .parseToTask("do homework ### start: 20/04/2014 due: 20/04/2014 0300 completed: 22/04/2014 1800 #cs2103 #todo status: done\n"));
-        result = "\n[[ Task ]]" + "\nName: do homework"
-                  + "\nStart: 20/04/2014"+ "\nDue: 20/04/2014 0300"
-                 + "\nCompleted: 22/04/2014 1800" + "\nTags: [#cs2103, #todo]"
-                 + "\nStatus: done";
+        result = "\n[[ Task ]]" + "\nName: do homework" + "\nStart: 20/04/2014"
+                 + "\nDue: 20/04/2014 0300" + "\nCompleted: 22/04/2014 1800"
+                 + "\nTags: [#cs2103, #todo]" + "\nStatus: done";
         assertEquals(result, task);
 
         // Test "empty" input
@@ -106,13 +105,13 @@ public class TestParser {
 
         // Empty Add
         result = "\n[[ CMD-ADD: ]]" + "\nname: " + "\nstart: " + "\ndue: "
-                 + "\ncompletedOn: " + "\ntags: []";
+                 + "\ntags: []";
         cmd = Parser.parse("add").toString();
         assertEquals("Add: empty", result, cmd);
 
         // Basic Add ending with a parameter
         result = "\n[[ CMD-ADD: ]]" + "\nname: do homework it's cs2103 end"
-                + "\nstart: "+ "\ndue: "  + "\ncompletedOn: " + "\ntags: [#cs2103]";
+                 + "\nstart: " + "\ndue: " + "\ntags: [#cs2103]";
         cmd = Parser.parse("add do homework it's #cs2103 cs2103 end")
                 .toString();
         assertEquals("Add: simple, end param", result, cmd);
@@ -120,31 +119,30 @@ public class TestParser {
         // Full Add
         result = "\n[[ CMD-ADD: ]]"
                  + "\nname: do start up research # due from "
-                 + "start 29/10/2014 due soon. do quickly due thurs"
-                 + "\ndue: 29/10/2014" + "\nstart: 27/10/2014 0900"
-                 + "\nend: 28/10/2014" + "\ntags: [#cs2103, #work]";
-        cmd = Parser
-                .parse("  add   do start #cs2103  up research # due from from  27/10/2014  0900 "
-                               + "start 29/10/2014  due end  28/10/2014 "
-                               + "soon. do quickly due thurs due  29/10/2014 #work\n")
+                 + "start 29/10/2014 soon. do quickly due thurs"
+                 + "\nstart: 27/10/2014 0900" + "\ndue: 29/10/2014"
+                 + "\ntags: [#cs2103, #work]";
+        cmd = Parser.parse("  add   do start #cs2103  up research # "
+                                   + "due from from  27/10/2014  0900 "
+                                   + "start 29/10/2014 soon. do quickly due "
+                                   + "thurs end  29/10/2014 #work\n")
                 .toString();
         assertEquals("Add: full", result, cmd);
 
         // Testing missing date in start and end
-        result = "\n[[ CMD-ADD: ]]" + "\nname: do work" + "\ndue: " +
-                 "\nstart: " + DateParser.getCurrDateStr() + " 0300" +
-                 "\nend: " + DateParser.getCurrDateStr() + " 0600" +
-                 "\ntags: []";
+        result = "\n[[ CMD-ADD: ]]" + "\nname: do work" + "\nstart: " +
+                 DateParser.getCurrDateStr() + " 0300" + "\ndue: " +
+                 DateParser.getCurrDateStr() + " 0600" + "\ntags: []";
         cmd = Parser.parse("add do work from 0300 to 0600\n").toString();
         assertEquals("Add: date filling", result, cmd);
 
         // Testing missing date in start with reordering
-        result = "\n[[ CMD-ADD: ]]" + "\nname: do work" + "\ndue: "
-                 + "\nstart: 29/10/2014 0300" + "\nend: 29/10/2014 0600"
+        result = "\n[[ CMD-ADD: ]]" + "\nname: do work"
+                 + "\nstart: 29/10/2014 0300" + "\ndue: 29/10/2014 0600"
                  + "\ntags: []";
-        cmd = Parser.parse("add do work from 29/10/2014 0600 to 0300\n")
+        cmd = Parser.parse("add do work from 29/10/2014 0600 due 0300\n")
                 .toString();
-        assertEquals("Add: date filling", result, cmd);
+        assertEquals("Add: 1 missing date, reordering", result, cmd);
 
         System.out.println("...success!");
     }
@@ -224,7 +222,7 @@ public class TestParser {
         String cmd;
 
         // Test possible input parameters
-        String[] deleteParams = new String[] {"all", "search", "done" };
+        String[] deleteParams = new String[] { "all", "search", "done" };
 
         for (String p : deleteParams) {
             result = "\n[[ CMD-Delete: ]]" + "\nrangeType: " + p + "\nid: ";
@@ -244,22 +242,21 @@ public class TestParser {
 
         System.out.println("...success!");
     }
-    
+
     @Test(expected = IllegalArgumentException.class)
     public void failCmdDeleteEmpty() {
-        System.out
-                .println("\n>> Failing Delete Command with just spaces...");
-        
+        System.out.println("\n>> Failing Delete Command with just spaces...");
+
         Parser.parse("delete    ");
 
         System.out.println("...success!");
     }
-    
+
     @Test(expected = IllegalArgumentException.class)
     public void failCmdDeleteInvalid() {
         System.out
                 .println("\n>> Failing Delete Command with invalid parameter...");
-        
+
         Parser.parse("delete days");
 
         System.out.println("...success!");
@@ -279,18 +276,17 @@ public class TestParser {
 
         System.out.println("...success!");
     }
-    
+
     @Test(expected = IllegalArgumentException.class)
     public void failCmdRestoreEmpty() {
-        System.out
-                .println("\n>> Failing Restore Command with just spaces...");
+        System.out.println("\n>> Failing Restore Command with just spaces...");
 
         // Empty (invalid), mixed caps
         Parser.parse("restore");
 
         System.out.println("...success!");
     }
-    
+
     @Test(expected = IllegalArgumentException.class)
     public void failCmdRestoreInvalid() {
         System.out
@@ -301,7 +297,6 @@ public class TestParser {
 
         System.out.println("...success!");
     }
-    
 
     @Test
     public void testCmdDisplay() {
@@ -321,14 +316,15 @@ public class TestParser {
         assertEquals("Display: empty, spaces", result, cmd);
 
         // Test possible input parameters
-        String[] displayParams = new String[] {"all", "block", "search", "done", "deleted"};
+        String[] displayParams = new String[] { "all", "block", "search",
+                                               "done", "deleted" };
 
         for (String p : displayParams) {
             result = "\n[[ CMD-DISPLAY: ]]" + "\nrangeType: " + p + "\nid: ";
             cmd = Parser.parse("display " + p).toString();
             assertEquals("Display: parameter", result, cmd);
         }
-       
+
         // Words after, mixed caps, spaces
         result = "\n[[ CMD-DISPLAY: ]]" + "\nrangeType: block" + "\nid: ";
         cmd = Parser.parse("    disPLay    bLOck    a    b   c").toString();
@@ -346,7 +342,7 @@ public class TestParser {
 
         System.out.println("...success!");
     }
-    
+
     @Test(expected = IllegalArgumentException.class)
     public void failCmdDisplayInvalid() {
         System.out
@@ -375,17 +371,16 @@ public class TestParser {
 
         System.out.println("...success!");
     }
-    
+
     @Test(expected = IllegalArgumentException.class)
     public void failCmdSearchEmpty() {
-        System.out
-                .println("\n>> Failing Search Command with just spaces...");
+        System.out.println("\n>> Failing Search Command with just spaces...");
 
         Parser.parse("search      ");
 
         System.out.println("...success!");
     }
-    
+
     @Test(expected = IllegalArgumentException.class)
     public void failCmdSearchDates() {
         System.out

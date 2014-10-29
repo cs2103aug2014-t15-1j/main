@@ -15,7 +15,6 @@ public class CommandEdit extends Command {
     private String name = "";
     private DateTime due = new DateTime();
     private DateTime start = new DateTime();
-    private DateTime completedOn = new DateTime();
     private List<String> tags = new ArrayList<String>();
     private List<String> delete = new ArrayList<String>();
     
@@ -23,7 +22,6 @@ public class CommandEdit extends Command {
     private static final String PARAM_NAME = "name";
     private static final String PARAM_DUE = "due";
     private static final String PARAM_START = "start";
-    private static final String PARAM_COMPLETEDON = "completed";
     private static final String PARAM_TAG = "tag";
     private static final String PARAM_DEL = "delete";
 
@@ -53,10 +51,6 @@ public class CommandEdit extends Command {
                 this.start = DateParser.parseToDateTime(param.getField());
                 break;
                 
-            case PARAM_COMPLETEDON:
-                this.completedOn = DateParser.parseToDateTime(param.getField());
-                break;
-                
             case PARAM_TAG:
                 this.tags.add(param.getField());
                 break;
@@ -84,9 +78,6 @@ public class CommandEdit extends Command {
 
             case PARAM_DUE:
                 return this.due.toString();
-            
-            case PARAM_COMPLETEDON:
-                return this.completedOn.toString();
                 
             default:
                 System.out.println("Edit get's got a problem!");
@@ -113,7 +104,6 @@ public class CommandEdit extends Command {
         result = result.concat("\n" + "name: " + name);
         result = result.concat("\n" + "start: " + start);
         result = result.concat("\n" + "due: " + due);
-        result = result.concat("\n" + "completedOn: " + completedOn);
         result = result.concat("\n" + "tags: " + tags);
         result = result.concat("\n" + "delete: " + delete);
         
@@ -150,9 +140,6 @@ public class CommandEdit extends Command {
                             break;
                         case "start":
                             start = null;
-                            break;
-                        case "completed":
-                            completedOn = null;
                             break;
                         case "tags":
                             tags = null;
