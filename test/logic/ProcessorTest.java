@@ -52,7 +52,7 @@ public class ProcessorTest {
 				equal = false;
 			if (task1.getStart() != null && task2.getStart() != null && !task1.getStart().toString().equals(task2.getStart().toString()))
 				equal = false;
-			if (task1.getEnd() != null && task2.getEnd() != null && !task1.getEnd().toString().equals(task2.getEnd().toString()))
+			if (task1.getCompletedOn() != null && task2.getCompletedOn() != null && !task1.getCompletedOn().toString().equals(task2.getCompletedOn().toString()))
 				equal = false;
 			if (task1.getTags() != null && task2.getTags() != null && !task1.getTags().toString().equals(task2.getTags().toString()))
 				equal = false;

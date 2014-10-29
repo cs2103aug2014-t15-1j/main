@@ -15,7 +15,7 @@ public class CommandEdit extends Command {
     private String name = "";
     private DateTime due = new DateTime();
     private DateTime start = new DateTime();
-    private DateTime end = new DateTime();
+    private DateTime completedOn = new DateTime();
     private List<String> tags = new ArrayList<String>();
     private List<String> delete = new ArrayList<String>();
     
@@ -23,7 +23,7 @@ public class CommandEdit extends Command {
     private static final String PARAM_NAME = "name";
     private static final String PARAM_DUE = "due";
     private static final String PARAM_START = "start";
-    private static final String PARAM_END = "end";
+    private static final String PARAM_COMPLETEDON = "completed";
     private static final String PARAM_TAG = "tag";
     private static final String PARAM_DEL = "delete";
 
@@ -53,8 +53,8 @@ public class CommandEdit extends Command {
                 this.start = DateParser.parseToDateTime(param.getField());
                 break;
                 
-            case PARAM_END:
-                this.end = DateParser.parseToDateTime(param.getField());
+            case PARAM_COMPLETEDON:
+                this.completedOn = DateParser.parseToDateTime(param.getField());
                 break;
                 
             case PARAM_TAG:
@@ -79,14 +79,14 @@ public class CommandEdit extends Command {
             case PARAM_NAME:
                 return this.name;
             
+            case PARAM_START:
+                return this.start.toString();
+
             case PARAM_DUE:
                 return this.due.toString();
             
-            case PARAM_START:
-                return this.start.toString();
-            
-            case PARAM_END:
-                return this.end.toString();
+            case PARAM_COMPLETEDON:
+                return this.completedOn.toString();
                 
             default:
                 System.out.println("Edit get's got a problem!");
@@ -111,9 +111,9 @@ public class CommandEdit extends Command {
         String result = "\n[[ CMD-EDIT: ]]";
         result = result.concat("\n" + "id: " + id);
         result = result.concat("\n" + "name: " + name);
-        result = result.concat("\n" + "due: " + due);
         result = result.concat("\n" + "start: " + start);
-        result = result.concat("\n" + "end: " + end);
+        result = result.concat("\n" + "due: " + due);
+        result = result.concat("\n" + "completedOn: " + completedOn);
         result = result.concat("\n" + "tags: " + tags);
         result = result.concat("\n" + "delete: " + delete);
         
@@ -151,15 +151,15 @@ public class CommandEdit extends Command {
                         case "start":
                             start = null;
                             break;
-                        case "end":
-                            end = null;
+                        case "completed":
+                            completedOn = null;
                             break;
                         case "tags":
                             tags = null;
                             break;
                     }
                 }
-                success = processor.getFile().updateTaskInfo(existingTask, name, due, start, tags);
+                success = processor.getFile().updateTaskInfo(existingTask, name, start, due, tags);
                 if (success) {
                     performUpdate(list, oldTask, existingTask);
                 }
@@ -196,12 +196,12 @@ public class CommandEdit extends Command {
         Task prevTask = processor.getEditedTaskHistory().pop();
         
         String taskName = prevTask.getName();
-        DateTime taskDue = prevTask.getDue();
         DateTime taskStart = prevTask.getStart();
+        DateTime taskDue = prevTask.getDue();
         List<String> taskTags = prevTask.getTags();
         
         tasks.add(prevTask);
-        success = processor.getFile().updateTaskInfo(prevTask.getId(), taskName, taskDue, taskStart, taskTags);
+        success = processor.getFile().updateTaskInfo(prevTask.getId(), taskName, taskStart, taskDue, taskTags);
         return new Result(tasks, success, getType(), ResultType.TASK);
     }
 }

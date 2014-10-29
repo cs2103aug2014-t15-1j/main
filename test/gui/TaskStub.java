@@ -41,7 +41,7 @@ public class TaskStub extends Task {
         this.name = existingTask.getName();
         this.due = existingTask.getDue();
         this.start = existingTask.getStart();
-        this.end = existingTask.getEnd();
+        this.end = existingTask.getCompletedOn();
         this.deleted = existingTask.isDeleted();
         this.done = existingTask.isDone();
     }

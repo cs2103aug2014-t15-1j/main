@@ -6,6 +6,7 @@ import gui.TaskStub;
 import java.util.ArrayList;
 import java.util.List;
 
+import database.BlockDate;
 import database.DataFile;
 import database.DateTime;
 import database.Task;
@@ -51,15 +52,13 @@ public class DataFileStub extends DataFile {
 
     @Override
     public boolean updateTaskInfo(Task task, String name, DateTime due,
-                                  DateTime start, DateTime end,
-                                  List<String> tags) {
+                                  DateTime start, List<String> tags) {
         return true;
     }
 
     @Override
     public boolean updateTaskInfo(int id, String name, DateTime due,
-                                  DateTime start, DateTime end,
-                                  List<String> tags) {
+                                  DateTime start, List<String> tags) {
         return true;
     }
 
@@ -118,4 +117,38 @@ public class DataFileStub extends DataFile {
         return true;
     }
 
+    @Override
+    public boolean addNewBD(BlockDate bD) {
+        return true;
+    }
+
+    @Override
+    public boolean deleteBD(int id) {
+        return true;
+    }
+
+    @Override
+    public boolean deleteBD(BlockDate bD) {
+        return true;
+    }
+
+    @Override
+    public boolean restoreBD(int id) {
+        return true;
+    }
+
+    @Override
+    public boolean restoreBD(BlockDate bD) {
+        return true;
+    }
+
+    @Override
+    public boolean wipeBD(BlockDate bD) {
+        return true;
+    }
+
+    @Override
+    public boolean wipeBD(int id) {
+        return true;
+    }
 }

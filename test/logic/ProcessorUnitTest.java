@@ -23,7 +23,6 @@ public class ProcessorUnitTest {
         TaskParamStub name = new TaskParamStub("name", "Do CS2103 Homework");
         TaskParamStub due = new TaskParamStub("due", "10/10/2014 1200");
         TaskParamStub start = new TaskParamStub("start", "10/10/2014 1200");
-        TaskParamStub end = new TaskParamStub("end", "10/10/2014 1200");
         TaskParamStub tag = new TaskParamStub("tag", "#CS2103");
         List<TaskParam> contents = new ArrayList<TaskParam>();
         
@@ -32,7 +31,6 @@ public class ProcessorUnitTest {
         contents.add(name);
         cmd = new CommandAdd(contents);
         result = cmd.execute(true);
-        String expectedResult = "[Do CS2103 Homework due:  start:  end:  #todo][true][ADD][false][TASK]";
         assertTrue(result.isSuccess());
         
         contents.add(due);
@@ -45,7 +43,6 @@ public class ProcessorUnitTest {
         result = cmd.execute(true);
         assertTrue(result.isSuccess());
         
-        contents.add(end);
         cmd = new CommandAdd(contents);
         result = cmd.execute(true);
         assertTrue(result.isSuccess());
@@ -230,7 +227,7 @@ public class ProcessorUnitTest {
     }
     
     @Test
-    public void testBlockandUnblockCommand() {
+    public void testBlockCommand() {
         //Block
         List<TaskParam> contents = new ArrayList<TaskParam>();
         CommandBlock cmd = new CommandBlock();
@@ -238,11 +235,5 @@ public class ProcessorUnitTest {
         assertTrue(result.isSuccess());
 
         //Unblock
-        contents = new ArrayList<TaskParam>();
-        TaskParamStub id = new TaskParamStub("id", "1");
-        contents.add(id);
-        CommandUnblock cmd2 = new CommandUnblock(contents);
-        result = cmd2.execute(true);
-        assertTrue(result.isSuccess());
     }
 }
