@@ -48,7 +48,10 @@ public class Parser {
     private static final String[] DATE_PARAM_LIST_FULL = { "due", "by",
                                                           "start", "from",
                                                           "end", "to" };
-    private static final String[] DATE_PARAM_LIST_SYS = { "due", "start", "end" };
+    private static final String[] DATE_PARAM_LIST_SYS = { "due", "start" };
+    private static final String[] DISPLAY_PARAM_LIST = { "search", "all",
+                                                        "done", "deleted",
+                                                        "block" };
 
     // ========== MAIN PARSE METHOD ==========//
 
@@ -332,22 +335,37 @@ public class Parser {
         List<TaskParam> displayFields = new ArrayList<TaskParam>();
 
         if (commandParams.length == 0) {
-            displayFields.add(new TaskParam("rangeType", "all"));
+            displayFields.add(new TaskParam("rangeType", "todo"));
         } else {
-            String firstWord = commandParams[0];
-            String firstWordLC = firstWord.toLowerCase();
-            if (firstWordLC.equals("block")) {
-                displayFields.add(new TaskParam("rangeType", firstWordLC));
-            } else if (isInteger(firstWord)) {
-                displayFields.add(new TaskParam("rangeType", "id"));
-                displayFields.add(new TaskParam("id", firstWord));
-            } else {
-                throw new IllegalArgumentException(
-                        "Invalid argument for display");
+            for (int i = 0; i < commandParams.length; i++) {
+                if (!commandParams[i].isEmpty()) {
+                    String firstWord = commandParams[i];
+                    if (isParamOf(DISPLAY_PARAM_LIST, firstWord)) {
+                        displayFields.add(new TaskParam("rangeType", firstWord
+                                .toLowerCase()));
+                    } else if (isInteger(firstWord)) {
+                        displayFields.add(new TaskParam("rangeType", "id"));
+                        displayFields.add(new TaskParam("id", firstWord));
+                    } else {
+                        throw new IllegalArgumentException(
+                                "Invalid argument for display");
+                    }
+                    break;
+                }
             }
         }
 
         return new CommandDisplay(displayFields);
+    }
+
+    /**
+     * @param paramList
+     *            TODO
+     * @param word
+     * @return
+     */
+    private static boolean isParamOf(String[] paramList, String word) {
+        return Arrays.asList(paramList).contains(word.toLowerCase());
     }
 
     private static Command parseDelete(String[] commandParams) {
@@ -356,10 +374,9 @@ public class Parser {
         try {
             String firstWord = commandParams[0];
             if (DateParser.isValidDate(firstWord)) {
-                // TODO: Remove start/end for most Commands
                 deleteFields.add(new TaskParam("rangeType", "dates"));
                 deleteFields.add(new TaskParam("start", firstWord));
-                deleteFields.add(new TaskParam("end", firstWord));
+                deleteFields.add(new TaskParam("due", firstWord));
             } else if (isDeleteParamName(firstWord.toLowerCase())) {
                 deleteFields.add(new TaskParam("rangeType", firstWord
                         .toLowerCase()));
@@ -380,20 +397,22 @@ public class Parser {
     private static Command parseRestore(String[] commandParams) {
         List<TaskParam> restoreFields = new ArrayList<TaskParam>();
 
-        try {
-            String firstWord = commandParams[0];
-            if (isInteger(firstWord)) {
-                restoreFields.add(new TaskParam("rangeType", "id"));
-                restoreFields.add(new TaskParam("id", firstWord));
-            } else {
-                throw new IllegalArgumentException(
-                        "Invalid argument for restore");
+        for (int i = 0; i < commandParams.length; i++) {
+            String word = commandParams[i];
+            if (!word.isEmpty()) {
+                if (isInteger(word)) {
+                    restoreFields.add(new TaskParam("rangeType", "id"));
+                    restoreFields.add(new TaskParam("id", word));
+                    return new CommandRestore(restoreFields);
+                } else {
+                    throw new IllegalArgumentException(
+                            "Invalid argument for restore");
+                }
             }
-        } catch (ArrayIndexOutOfBoundsException e) {
-            throw new IllegalArgumentException("No arguments for restore");
         }
-
-        return new CommandRestore(restoreFields);
+        
+        throw new IllegalArgumentException("No arguments for restore");
+        
     }
 
     private static Command parseSearch(String[] commandParams) {
@@ -557,37 +576,37 @@ public class Parser {
 
         // Check for input time with missing date
         TaskParam startTP = getTaskParam(editFields, "start");
-        TaskParam endTP = getTaskParam(editFields, "end");
+        TaskParam dueTP = getTaskParam(editFields, "due");
         String startStr = startTP.getField();
-        String endStr = endTP.getField();
+        String dueStr = dueTP.getField();
         if (DateParser.containsTime(startStr) &&
             !DateParser.containsDate(startStr)) {
-            if (DateParser.containsDate(endStr)) {
-                String endDate = DateParser.getFirstDate(endStr);
-                startTP.addToField(endDate);
+            if (DateParser.containsDate(dueStr)) {
+                String dueDate = DateParser.getFirstDate(dueStr);
+                startTP.addToField(dueDate);
             } else {
                 String currDate = DateParser.getCurrDateStr();
                 startTP.addToField(currDate);
-                if (DateParser.containsTime(endStr)) {
-                    endTP.addToField(currDate);
+                if (DateParser.containsTime(dueStr)) {
+                    dueTP.addToField(currDate);
                 }
             }
-        } else if (DateParser.containsTime(endStr) &&
-                   !DateParser.containsDate(endStr)) {
+        } else if (DateParser.containsTime(dueStr) &&
+                   !DateParser.containsDate(dueStr)) {
             if (DateParser.containsDate(startStr)) {
                 String startDate = DateParser.getFirstDate(startStr);
-                endTP.addToField(startDate);
+                dueTP.addToField(startDate);
             } else {
                 String currDate = DateParser.getCurrDateStr();
-                endTP.addToField(currDate);
+                dueTP.addToField(currDate);
                 if (DateParser.containsTime(startStr)) {
-                    endTP.addToField(currDate);
+                    dueTP.addToField(currDate);
                 }
             }
         }
 
         removeDuplicates(editFields);
-        checkStartEndOrder(editFields);
+        checkStartDueOrder(editFields);
 
         return new CommandEdit(editFields);
     }
@@ -661,37 +680,37 @@ public class Parser {
 
         // Check for input time with missing date
         TaskParam startTP = getTaskParam(addFields, "start");
-        TaskParam endTP = getTaskParam(addFields, "end");
+        TaskParam dueTP = getTaskParam(addFields, "due");
         String startStr = startTP.getField();
-        String endStr = endTP.getField();
+        String dueStr = dueTP.getField();
         if (DateParser.containsTime(startStr) &&
             !DateParser.containsDate(startStr)) {
-            if (DateParser.containsDate(endStr)) {
-                String endDate = DateParser.getFirstDate(endStr);
-                startTP.addToField(endDate);
+            if (DateParser.containsDate(dueStr)) {
+                String dueDate = DateParser.getFirstDate(dueStr);
+                startTP.addToField(dueDate);
             } else {
                 String currDate = DateParser.getCurrDateStr();
                 startTP.addToField(currDate);
-                if (DateParser.containsTime(endStr)) {
-                    endTP.addToField(currDate);
+                if (DateParser.containsTime(dueStr)) {
+                    dueTP.addToField(currDate);
                 }
             }
-        } else if (DateParser.containsTime(endStr) &&
-                   !DateParser.containsDate(endStr)) {
+        } else if (DateParser.containsTime(dueStr) &&
+                   !DateParser.containsDate(dueStr)) {
             if (DateParser.containsDate(startStr)) {
                 String startDate = DateParser.getFirstDate(startStr);
-                endTP.addToField(startDate);
+                dueTP.addToField(startDate);
             } else {
                 String currDate = DateParser.getCurrDateStr();
-                endTP.addToField(currDate);
+                dueTP.addToField(currDate);
                 if (DateParser.containsTime(startStr)) {
-                    endTP.addToField(currDate);
+                    dueTP.addToField(currDate);
                 }
             }
         }
 
         removeDuplicates(addFields);
-        checkStartEndOrder(addFields);
+        checkStartDueOrder(addFields);
 
         return new CommandAdd(addFields);
     }
@@ -700,13 +719,12 @@ public class Parser {
         String wordLC = word.toLowerCase();
         switch (wordLC) {
             case "by":
+            case "to":
+            case "end":
                 return "due";
 
             case "from":
                 return "start";
-
-            case "to":
-                return "end";
         }
 
         return wordLC;
@@ -720,7 +738,6 @@ public class Parser {
         ArrayList<String> list = new ArrayList<String>();
         list.add("due");
         list.add("start");
-        list.add("end");
         return list;
     }
 
@@ -749,17 +766,17 @@ public class Parser {
     /**
      * @param fields
      */
-    private static void checkStartEndOrder(List<TaskParam> fields) {
+    private static void checkStartDueOrder(List<TaskParam> fields) {
         TaskParam startTP = getTaskParam(fields, "start");
-        TaskParam endTP = getTaskParam(fields, "end");
-        if (!startTP.getField().isEmpty() && !endTP.getField().isEmpty()) {
+        TaskParam dueTP = getTaskParam(fields, "due");
+        if (!startTP.getField().isEmpty() && !dueTP.getField().isEmpty()) {
             DateTime startDT = DateParser.parseToDateTime(startTP.getField());
-            DateTime endDT = DateParser.parseToDateTime(endTP.getField());
-            if (startDT.compareTo(endDT) > 0) {
+            DateTime dueDT = DateParser.parseToDateTime(dueTP.getField());
+            if (startDT.compareTo(dueDT) > 0) {
                 fields.remove(startTP);
-                fields.remove(endTP);
-                fields.add(new TaskParam("end", startTP.getField()));
-                fields.add(new TaskParam("start", endTP.getField()));
+                fields.remove(dueTP);
+                fields.add(new TaskParam("due", startTP.getField()));
+                fields.add(new TaskParam("start", dueTP.getField()));
             }
         }
     }
@@ -818,6 +835,7 @@ public class Parser {
     // ========== TASK PARSING METHODS ==========//
     public static Task parseToTask(String text) {
         String[] textItems = text.trim().split(" ");
+        // name, start, due, completed, status
         String[] param = new String[] { "", "", "", "", "" };
         List<String> tags = new ArrayList<String>();
 
@@ -840,9 +858,11 @@ public class Parser {
                     }
                 }
             } else {
-                if (currWordLC.equals("due:") || currWordLC.equals("start:") ||
-                    currWordLC.equals("end:") || currWordLC.equals("status:")) {
+                if (currWordLC.equals("start:") || currWordLC.equals("due:") ||
+                    currWordLC.equals("completed:") ||
+                    currWordLC.equals("status:")) {
                     fieldIndex++;
+                    assert (fieldIndex < 5) : "Too many parameters for TaskParser!";
                 } else if (hasValidHashTag(currWord)) {
                     tags.add(currWord);
                 } else {
@@ -857,6 +877,7 @@ public class Parser {
                 }
             }
         }
+        assert (fieldIndex == 4) : "TaskParser is missing parameter names.";
 
         // Convert param inputs
         String name = param[0];
@@ -868,7 +889,7 @@ public class Parser {
         DateTime[] dateTimes = new DateTime[ADD_DATE_PARAM_NUM];
 
         // TODO: REORGANISE
-        // Indexes are assigned by 1 (due), 2 (start) 3 (end)
+        // Indexes are assigned by 1 (start), 2 (due) 3 (completed)
         for (int i = 1; i <= ADD_DATE_PARAM_NUM; i++) {
             if (param[i].isEmpty()) {
                 dateTimes[i - 1] = new DateTime();
@@ -878,11 +899,11 @@ public class Parser {
             }
         }
 
-        DateTime due = dateTimes[0];
-        DateTime start = dateTimes[1];
-        DateTime end = dateTimes[2];
+        DateTime start = dateTimes[0];
+        DateTime due = dateTimes[1];
+        DateTime completed = dateTimes[2];
 
-        Task newTask = new Task(name, due, start, end, tags);
+        Task newTask = new Task(name, start, due, completed, tags);
         newTask.setDone(isDone);
         return newTask;
     }
@@ -909,17 +930,17 @@ public class Parser {
 
         String startDate = fields[0];
         String startTime = fields[1];
-        String endDate = fields[3];
-        String endTime = fields[4];
+        String dueDate = fields[3];
+        String dueTime = fields[4];
         assert (DateParser.isValidDate(startDate) && DateParser
                 .isValidTime(startTime)) : "Invalid start DateTime saved";
-        assert (DateParser.isValidDate(endDate) && DateParser
-                .isValidTime(endTime)) : "invalid end DateTime saved";
+        assert (DateParser.isValidDate(dueDate) && DateParser
+                .isValidTime(dueTime)) : "invalid due DateTime saved";
 
         DateTime startDt = new DateTime(startDate, startTime);
-        DateTime endDt = new DateTime(endDate, endTime);
+        DateTime dueDt = new DateTime(dueDate, dueTime);
 
-        return new BlockDate(startDt, endDt);
+        return new BlockDate(startDt, dueDt);
     }
 
 }

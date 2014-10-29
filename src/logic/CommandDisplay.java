@@ -100,8 +100,11 @@ public class CommandDisplay extends Command {
             case "deleted":
                 list = processor.getFile().getDeletedTasks();
                 break;
-            case "all":
+            case "todo":
                 list = processor.getFile().getToDoTasks();
+                break;
+            case "all":
+                list = processor.getFile().getAllTasks();
                 break;
             default:
                 success = false;
