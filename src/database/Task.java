@@ -1,5 +1,8 @@
 package database;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Comparator;
 import java.util.List;
 import java.util.ArrayList;
@@ -28,14 +31,14 @@ public class Task implements Comparable<Task>, Comparator<Task> {
     /** Description of task. */
     private String name = "";
 
-    /** Due date and time, format: DD/MM/YYYY HHMM. */
-    private DateTime due = new DateTime();
-
     /** Scheduled start date and time, format: DD/MM/YYYY HHMM. */
     private DateTime start = new DateTime();
 
-    /** Scheduled end date and time, format: DD/MM/YYYY HHMM. */
-    private DateTime end = new DateTime();
+    /** Scheduled end or due date and time, format: DD/MM/YYYY HHMM. */
+    private DateTime due = new DateTime();
+
+    /** Date and time at which task was marked as done, format: DD/MM/YYYY HHMM. */
+    private DateTime completedOn = new DateTime();
 
     /** Each stored tag contains a # before the word. */
     private List<String> tags = new ArrayList<String>();
@@ -67,13 +70,11 @@ public class Task implements Comparable<Task>, Comparator<Task> {
      * @param tags
      *            To aid searching and categorizing. Each tag contains #.
      */
-    public Task(String name, DateTime due, DateTime start, DateTime end,
-            List<String> tags) {
+    public Task(String name, DateTime start, DateTime due, List<String> tags) {
         this.ID = newId++;
         this.name = name;
-        this.due = due;
         this.start = start;
-        this.end = end;
+        this.due = due;
         this.tags = tags;
     }
 
@@ -86,31 +87,12 @@ public class Task implements Comparable<Task>, Comparator<Task> {
     public Task(Task task) {
         this.ID = task.getId();
         this.name = task.getName();
-        this.due = task.getDue();
         this.start = task.getStart();
-        this.end = task.getEnd();
+        this.due = task.getDue();
+        this.completedOn = task.getCompletedOn();
         this.tags.addAll(task.getTags());
         this.deleted = task.isDeleted();
         this.done = task.isDone();
-    }
-
-    /**
-     * Converts Task object to a single String to write to system file.
-     * Parameter text are added to aid in parsing text when reading from file.
-     * 
-     * @return String to write to system file for storage.
-     */
-    @Override
-    public String toString() {
-        String tempString = "";
-        tempString += name + " ### ";
-        tempString += "due: " + due.toString() + " ";
-        tempString += "start: " + start.toString() + " ";
-        tempString += "end: " + end.toString() + " ";
-        tempString += concatanateTags();
-        tempString += "status: " + (done ? "done" : "todo");
-
-        return tempString;
     }
 
     /**
@@ -121,9 +103,9 @@ public class Task implements Comparable<Task>, Comparator<Task> {
      */
     public String getSummary() {
         String summary = name + " ";
-        summary += due + " ";
         summary += start + " ";
-        summary += end + " ";
+        summary += due + " ";
+        summary += completedOn + " ";
         summary += concatanateTags();
         return summary;
     }
@@ -204,9 +186,9 @@ public class Task implements Comparable<Task>, Comparator<Task> {
         return otherTask.deleted == this.deleted &&
                otherTask.done == this.done &&
                otherTask.name.equals(this.name) &&
-               otherTask.due.equals(this.due) &&
                otherTask.start.equals(this.start) &&
-               otherTask.end.equals(this.end) &&
+               otherTask.due.equals(this.due) &&
+               otherTask.completedOn.equals(this.completedOn) &&
                otherTask.tags.equals(this.tags);
     }
 
@@ -240,6 +222,25 @@ public class Task implements Comparable<Task>, Comparator<Task> {
     @Override
     public int hashCode() {
         return this.toString().hashCode();
+    }
+
+    /**
+     * Converts Task object to a single String to write to system file.
+     * Parameter text are added to aid in parsing text when reading from file.
+     * 
+     * @return String to write to system file for storage.
+     */
+    @Override
+    public String toString() {
+        String tempString = "";
+        tempString += name + " ### ";
+        tempString += "start: " + start.toString() + " ";
+        tempString += "due: " + due.toString() + " ";
+        tempString += "completed: " + completedOn.toString() + " ";
+        tempString += concatanateTags();
+        tempString += "status: " + (done ? "done" : "todo");
+
+        return tempString;
     }
 
     /**
@@ -286,19 +287,6 @@ public class Task implements Comparable<Task>, Comparator<Task> {
         name = "";
     }
 
-    public DateTime getDue() {
-        return due;
-    }
-
-    public void setDue(DateTime due) {
-        this.due = due;
-    }
-
-    /** Resets due date and time to an empty String. */
-    public void resetDue() {
-        due.resetDateTime();
-    }
-
     public DateTime getStart() {
         return start;
     }
@@ -312,17 +300,30 @@ public class Task implements Comparable<Task>, Comparator<Task> {
         start.resetDateTime();
     }
 
-    public DateTime getEnd() {
-        return end;
+    public DateTime getDue() {
+        return due;
     }
 
-    public void setEnd(DateTime end) {
-        this.end = end;
+    public void setDue(DateTime due) {
+        this.due = due;
+    }
+
+    /** Resets due date and time to an empty String. */
+    public void resetDue() {
+        due.resetDateTime();
+    }
+
+    public DateTime getCompletedOn() {
+        return completedOn;
+    }
+
+    private void setCompletedOn(DateTime completedOn) {
+        this.completedOn = completedOn;
     }
 
     /** Resets scheduled end date and time to an empty String. */
-    public void resetEnd() {
-        end.resetDateTime();
+    private void resetCompletedOn() {
+        completedOn.resetDateTime();
     }
 
     public List<String> getTags() {
@@ -357,6 +358,17 @@ public class Task implements Comparable<Task>, Comparator<Task> {
 
     public void setDone(boolean done) {
         this.done = done;
+        if (done) {
+            DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HHmm");
+            Calendar cal = Calendar.getInstance();
+            String currentDateTime = dateFormat.format(cal.getTime());
+            completedOn.setDate(currentDateTime.substring(0, 10));
+            completedOn.setTime(currentDateTime.substring(11));
+            assert completedOn.getDate().matches(DateTime.getDatePattern());
+            assert completedOn.getTime().matches(DateTime.getTimePattern());
+        } else {
+            completedOn.resetDateTime();
+        }
     }
 
     public boolean isDeleted() {

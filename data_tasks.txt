@@ -1,7 +1,7 @@
-Do CS2103 Homework ### due:  start: 27/10/2014 0900 end: 27/10/2014 1800 status: todo
-Code for V0.3 ### due:  start: 27/10/2014 0900 end: 30/10/2014 status: todo
-CS2103 Tutorial ### due: 30/10/2014 1500 start:  end:  #cshomework status: todo
-Lessons ### due:  start: 27/10/2014 1000 end: 27/10/2014 1800 #cs2103 status: todo
-Prep for GEM ### due: 27/10/2014 0300 start:  end:  #homework #gem status: todo
-prep for EE lab ### due:  start: 27/10/2014 1900 end: 27/10/2014 2000 #EE2020 status: todo
-Be Free ### due:  start: 03/12/2014 end:  #hols status: todo
+Do CS2103 Homework ### start: 27/10/2014 0900 due:  completed:  status: todo
+Code for V0.3 ### start: 27/10/2014 0900 due:  completed:  status: todo
+CS2103 Tutorial ### start:  due: 30/10/2014 1500 completed:  #cshomework status: todo
+Lessons ### start: 27/10/2014 1000 due:  completed:  #cs2103 status: todo
+Prep for GEM ### start:  due: 27/10/2014 0300 completed:  #homework #gem status: todo
+prep for EE lab ### start: 27/10/2014 1900 due:  completed:  #EE2020 status: todo
+Be Free ### start: 03/12/2014 due:  completed:  #hols status: todo

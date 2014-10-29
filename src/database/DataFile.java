@@ -23,13 +23,13 @@ public class DataFile {
     final private static String FILENAME_TASK = "data_tasks.txt";
     /** Name of file to write BlackDates to. */
     final private static String FILENAME_BLOCKDATE = "data_blockdates.txt";
-    
+
     /** Reads from file containing tasks */
     private TaskReader taskReader;
 
     /** Writes to file containing tasks */
     private TaskWriter taskWriter;
-    
+
     /** Reads from file containing BlockDates. */
     private BlockDateReader blockDateReader;
 
@@ -102,7 +102,7 @@ public class DataFile {
     private void populateBlockDateList() {
         allBlockDates.addAll(blockDateReader.read());
     }
-    
+
     /**
      * Returns an unmodifiable view of the list of to-do tasks. Attempts to
      * modify the returned list, whether direct or via its iterator, result in
@@ -194,7 +194,7 @@ public class DataFile {
         Task task = searchTaskById(allTasks, id);
         return task;
     }
-    
+
     public BlockDate getBlockDate(int id) {
         BlockDate bD = searchBlockDateById(allBlockDates, id);
         return bD;
@@ -266,7 +266,7 @@ public class DataFile {
         updatedTaskInfo += getTaskInfo(doneTasks);
         return writeTasksToFile(updatedTaskInfo);
     }
-    
+
     private boolean updateBlockDateFile() {
         String updatedBlockDateInfo = getBlockDateInfo(allBlockDates);
         return writeBlockDatesToFile(updatedBlockDateInfo);
@@ -291,11 +291,11 @@ public class DataFile {
     private String getBlockDateInfo(List<BlockDate> blockDates) {
         String allBlockDateInfo = "";
         for (BlockDate bD : blockDates) {
-            allBlockDateInfo += bD.toString() + "\n"; 
+            allBlockDateInfo += bD.toString() + "\n";
         }
         return allBlockDateInfo;
     }
-    
+
     /**
      * Writes String containing all to-do and done task info to system file.
      * 
@@ -306,7 +306,7 @@ public class DataFile {
     private boolean writeTasksToFile(String allTaskInfo) {
         return taskWriter.write(allTaskInfo);
     }
-    
+
     private boolean writeBlockDatesToFile(String allBlockDateInfo) {
         return blockDateWriter.write(allBlockDateInfo);
     }
@@ -332,10 +332,9 @@ public class DataFile {
      *            New tags to append with, if any.
      * @return True, if file has been successfully updated with edit.
      */
-    public boolean updateTaskInfo(Task task, String name, DateTime due,
-                                  DateTime start, DateTime end,
-                                  List<String> tags) {
-        return updateTaskInfoByObject(task, name, due, start, end, tags);
+    public boolean updateTaskInfo(Task task, String name, DateTime start,
+                                  DateTime due, List<String> tags) {
+        return updateTaskInfoByObject(task, name, start, due, tags);
     }
 
     /**
@@ -359,11 +358,10 @@ public class DataFile {
      *            New tags to append with, if any.
      * @return True, if file has been successfully updated with edit.
      */
-    public boolean updateTaskInfo(int id, String name, DateTime due,
-                                  DateTime start, DateTime end,
-                                  List<String> tags) {
+    public boolean updateTaskInfo(int id, String name, DateTime start,
+                                  DateTime due, List<String> tags) {
         Task task = searchTaskById(allTasks, id);
-        return updateTaskInfoByObject(task, name, due, start, end, tags);
+        return updateTaskInfoByObject(task, name, start, due, tags);
     }
 
     /**
@@ -387,8 +385,8 @@ public class DataFile {
      * @return True, if file has been successfully updated.
      */
     private boolean updateTaskInfoByObject(Task task, String name,
-                                           DateTime due, DateTime start,
-                                           DateTime end, List<String> tags) {
+                                           DateTime start, DateTime due,
+                                           List<String> tags) {
         if (task == null) {
             return false; // Invalid ID
         }
@@ -399,22 +397,16 @@ public class DataFile {
             task.setName(name);
         }
 
-        if (due == null) {
-            task.resetDue();
-        } else if (!due.toString().isEmpty()) {
-            task.setDue(due);
-        }
-
         if (start == null) {
             task.resetStart();
         } else if (!start.toString().isEmpty()) {
             task.setStart(start);
         }
 
-        if (end == null) {
-            task.resetEnd();
-        } else if (!end.toString().isEmpty()) {
-            task.setEnd(end);
+        if (due == null) {
+            task.resetDue();
+        } else if (!due.toString().isEmpty()) {
+            task.setDue(due);
         }
 
         if (tags == null) {
@@ -811,11 +803,11 @@ public class DataFile {
         allBlockDates.add(bD);
         return updateBlockDateFile();
     }
-    
+
     /**
-     * Permanently deletes BlockDate object provided in argument. Cannot be undone.
-     * Used when undoing add commands. Decrements BlockDate ID counter. Updates BlockDate 
-     * lists and file.
+     * Permanently deletes BlockDate object provided in argument. Cannot be
+     * undone. Used when undoing add commands. Decrements BlockDate ID counter.
+     * Updates BlockDate lists and file.
      * 
      * Overloaded function.
      * 
@@ -828,9 +820,9 @@ public class DataFile {
     }
 
     /**
-     * Permanently deletes BlockDate object based on the ID provided in argument.
-     * Cannot be undone. Used when undoing add commands. Decrements BlockDate ID
-     * counter. Updates BlockDate lists and file.
+     * Permanently deletes BlockDate object based on the ID provided in
+     * argument. Cannot be undone. Used when undoing add commands. Decrements
+     * BlockDate ID counter. Updates BlockDate lists and file.
      * 
      * Overloaded function.
      * 
@@ -844,9 +836,9 @@ public class DataFile {
     }
 
     /**
-     * Permanently deletes BlockDate object provided in argument. Cannot be undone.
-     * Used when undoing add commands. Decrements BlockDate ID counter. Removes
-     * object from all lists, and updates file.
+     * Permanently deletes BlockDate object provided in argument. Cannot be
+     * undone. Used when undoing add commands. Decrements BlockDate ID counter.
+     * Removes object from all lists, and updates file.
      * 
      * @param task
      *            The BlockDate object to permanently delete.
