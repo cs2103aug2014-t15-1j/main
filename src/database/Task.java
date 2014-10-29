@@ -46,6 +46,11 @@ public class Task implements Comparable<Task>, Comparator<Task> {
     /** Deleted status takes precedence over to-do or done status. */
     private boolean deleted = false;
 
+    /** Default constructor. Empty object. Doesn't increment id count. */
+    public Task() {
+        this.ID = 0;
+    }
+
     /**
      * Constructor.
      * 
@@ -87,10 +92,6 @@ public class Task implements Comparable<Task>, Comparator<Task> {
         this.tags.addAll(task.getTags());
         this.deleted = task.isDeleted();
         this.done = task.isDone();
-    }
-
-    public Task() {
-        this.ID = 0;
     }
 
     /**
@@ -140,6 +141,17 @@ public class Task implements Comparable<Task>, Comparator<Task> {
     @Override
     public int compareTo(Task otherTask) {
         return this.due.compareTo(otherTask.due);
+    }
+
+    @Override
+    public int compare(Task task, Task otherTask) {
+        if (task.getId() < otherTask.getId()) {
+            return -1;
+        } else if (task.getId() > otherTask.getId()) {
+            return 1;
+        } else {
+            return 0;
+        }
     }
 
     /**
@@ -353,16 +365,5 @@ public class Task implements Comparable<Task>, Comparator<Task> {
 
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;
-    }
-
-    @Override
-    public int compare(Task task, Task otherTask) {
-        if (task.getId() < otherTask.getId()) {
-            return -1;
-        } else if (task.getId() > otherTask.getId()) {
-            return 1;
-        } else {
-            return 0;
-        }
     }
 }

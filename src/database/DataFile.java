@@ -113,6 +113,7 @@ public class DataFile {
      * @return Unmodifiable view of the specified list.
      */
     public List<Task> getToDoTasks() {
+        Collections.sort(toDoTasks, new Task());
         return Collections.unmodifiableList(toDoTasks);
     }
 
@@ -126,6 +127,7 @@ public class DataFile {
      * @return Unmodifiable view of the specified list.
      */
     public List<Task> getDoneTasks() {
+        Collections.sort(doneTasks, new Task());
         return Collections.unmodifiableList(doneTasks);
     }
 
@@ -139,6 +141,7 @@ public class DataFile {
      * @return Unmodifiable view of the specified list.
      */
     public List<Task> getDeletedTasks() {
+        Collections.sort(deletedTasks, new Task());
         return Collections.unmodifiableList(deletedTasks);
     }
 
@@ -153,6 +156,7 @@ public class DataFile {
      * @return Unmodifiable view of the specified list.
      */
     public List<Task> getAllTasks() {
+        Collections.sort(allTasks, new Task());
         return Collections.unmodifiableList(allTasks);
     }
 
@@ -164,6 +168,7 @@ public class DataFile {
      * @return Unmodifiable view of the specified list.
      */
     public List<BlockDate> getAllBlockDates() {
+        Collections.sort(allBlockDates, new BlockDate());
         return Collections.unmodifiableList(allBlockDates);
     }
 
