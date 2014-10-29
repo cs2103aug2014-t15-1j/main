@@ -85,7 +85,7 @@ public class SetUp {
     private static final int COL_WIDTH_DATE = 120;
 
     // NOTE: 150 is just right for all statuses - To Do, Done, Deleted
-    private static final int COL_WIDTH_STATUS = 150;
+    private static final int COL_WIDTH_STATUS = 135;
 
     private static final int COL_WIDTH_DATE_TABLE = 175;
 
