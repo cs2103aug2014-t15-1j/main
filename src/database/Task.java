@@ -360,7 +360,7 @@ public class Task implements Comparable<Task>, Comparator<Task> {
 
     public void setDone(boolean done) {
         this.done = done;
-        if (done) {
+        if (done && completedOn.isEmpty()) {
             DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HHmm");
             Calendar cal = Calendar.getInstance();
             String currentDateTime = dateFormat.format(cal.getTime());
@@ -368,7 +368,7 @@ public class Task implements Comparable<Task>, Comparator<Task> {
             completedOn.setTime(currentDateTime.substring(11));
             assert completedOn.getDate().matches(DateTime.getDatePattern());
             assert completedOn.getTime().matches(DateTime.getTimePattern());
-        } else {
+        } else if (!done) {
             completedOn.resetDateTime();
         }
     }
