@@ -13,6 +13,11 @@ package database;
 
 public class DateTime implements Comparable<DateTime> {
 
+    /** Values used in comparison functions. */
+    private final int EARLIER = -1;
+    private final int EQUAL = 0;
+    private final int LATER = 1;
+
     /** Regex to check for empty Strings as valid input. */
     private final static String OR_EMPTY_PATTERN = "|^$";
 
@@ -69,6 +74,8 @@ public class DateTime implements Comparable<DateTime> {
      *            Format: "HHMM" or empty String.
      */
     public DateTime(String date, String time) {
+        assert date != null;
+        assert time != null : "time cannot be null";
         assert date.matches(DATE_PATTERN);
         assert time.matches(TIME_PATTERN);
         this.date = date;
@@ -104,6 +111,7 @@ public class DateTime implements Comparable<DateTime> {
      *            by value from.
      */
     public DateTime(DateTime dateTime) {
+        assert dateTime != null;
         assert dateTime.toString().matches(DATE_TIME_PATTERN);
         this.date = dateTime.date;
         this.day = dateTime.day;
@@ -115,7 +123,7 @@ public class DateTime implements Comparable<DateTime> {
     public boolean isEmpty() {
         return date.isEmpty() && time.isEmpty();
     }
-    
+
     /**
      * Returns a String object representing this DateTime's value.
      * 
@@ -148,10 +156,11 @@ public class DateTime implements Comparable<DateTime> {
      *         <li>-1 if this <DateTime> is earlier.
      *         </ul>
      * 
-     * @author Yeo Zi Xian, Justin
+     * @author Yeo Zi Xian, Justin & Pierce Anderson Fu
      */
     @Override
     public int compareTo(DateTime otherDateTime) {
+        assert otherDateTime != null;
         int day1 = this.day;
         int mth1 = this.month;
         int yr1 = this.year;
@@ -161,39 +170,45 @@ public class DateTime implements Comparable<DateTime> {
 
         // Check year for differences
         if (yr1 < yr2) {
-            return -1;
+            return EARLIER;
         } else if (yr1 > yr2) {
-            return 1;
+            return LATER;
         }
 
         // Then check month for differences
         if (mth1 < mth2) {
-            return -1;
+            return EARLIER;
         } else if (mth1 > mth2) {
-            return 1;
+            return LATER;
         }
 
         // Then check day for differences
         if (day1 < day2) {
-            return -1;
+            return EARLIER;
         } else if (day1 > day2) {
-            return 1;
+            return LATER;
         }
 
-        // If all date comparison fails and time exists
+        // If dates are equal and time exists
         if (!this.time.isEmpty() && !otherDateTime.time.isEmpty()) {
             // Check time for differences
             int time1 = Integer.parseInt(this.time);
             int time2 = Integer.parseInt(otherDateTime.time);
             if (time1 < time2) {
-                return -1;
+                return EARLIER;
             } else if (time1 > time2) {
-                return 1;
+                return LATER;
             }
+        } else if (this.time.isEmpty() && !otherDateTime.time.isEmpty()) {
+            // Treat empty time value as earlier than any other time
+            return EARLIER;
+        } else if (!this.time.isEmpty() && otherDateTime.time.isEmpty()) {
+            // Treat empty time value as earlier than any other time
+            return LATER;
         }
 
         // No differences detected
-        return 0;
+        return EQUAL;
     }
 
     /**
@@ -243,7 +258,7 @@ public class DateTime implements Comparable<DateTime> {
         }
 
         DateTime otherDateTime = (DateTime) obj;
-        return (compareTo(otherDateTime) == 0);
+        return (compareTo(otherDateTime) == EQUAL);
     }
 
     /**
@@ -286,7 +301,8 @@ public class DateTime implements Comparable<DateTime> {
      * @author Yeo Zi Xian, Justin
      */
     public boolean isEarlierThan(DateTime otherDateTime) {
-        return (this.compareTo(otherDateTime) < 0);
+        assert otherDateTime != null;
+        return (this.compareTo(otherDateTime) == EARLIER);
     }
 
     /** @return Date, format: "DD/MM/YYYY" or empty String. */
@@ -299,6 +315,7 @@ public class DateTime implements Comparable<DateTime> {
      *            Format: "DD/MM/YYYY" or empty String.
      */
     public void setDate(String date) {
+        assert date != null;
         assert date.matches(DATE_PATTERN);
         if (date.isEmpty()) {
             resetDate();
@@ -368,7 +385,8 @@ public class DateTime implements Comparable<DateTime> {
      *            Format: "HHMM" or empty String.
      */
     public void setTime(String time) {
-        time.matches(TIME_PATTERN);
+        assert time != null;
+        assert time.matches(TIME_PATTERN);
         this.time = time;
     }
 
