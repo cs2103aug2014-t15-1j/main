@@ -51,7 +51,7 @@ public class Task implements Comparable<Task>, Comparator<Task> {
 
     /** Default constructor. Empty object. Doesn't increment id count. */
     public Task() {
-        this.ID = 0;
+        ID = 0;
     }
 
     /**

@@ -21,14 +21,12 @@ public class BlockDate implements Comparable<BlockDate>, Comparator<BlockDate> {
     /** ID is set at object instantiation. */
     private final int ID;
 
-    private DateTime start;
-    private DateTime end;
+    private DateTime start = new DateTime();
+    private DateTime end = new DateTime();
 
     /** Default constructor. Initialized with default DateTime objects. */
     public BlockDate() {
-        ID = newId++;
-        start = new DateTime();
-        end = new DateTime();
+        ID = 0;
     }
 
     /**
