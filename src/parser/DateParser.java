@@ -1,5 +1,6 @@
 package parser;
 
+import java.util.Arrays;
 import java.util.Calendar;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -8,10 +9,15 @@ import database.DateTime;
 
 public class DateParser {
 
-    private static final int TYPE_TIME_DATE = 4;
-    private static final int TYPE_DATE_TIME = 3;
-    private static final int TYPE_TIME_ONLY = 2;
-    private static final int TYPE_DATE_ONLY = 1;
+    private static final int YEAR_MINIMUM = 1819;
+
+    private static final String TYPE_TIME_DATE = "time-date";
+    private static final String TYPE_DATE_TIME = "date-time";
+    private static final String TYPE_TIME_ONLY = "time-only";
+    private static final String TYPE_DATE_ONLY = "date-only";
+    private static final String TYPE_DATE_TODAY = "today";
+    private static final String TYPE_DATE_TMR = "tomorrow";
+
     /**
      * The date/time format DateParser will use.
      */
@@ -56,6 +62,57 @@ public class DateParser {
         String currDate = getCurrDateTimeStr();
         String[] dateFields = currDate.split(" ");
         return dateFields[0];
+    }
+
+    private static String getTmrDateStr() {
+        String today = getCurrDateStr();
+        String[] dateFields = today.split("/");
+
+        int day = Integer.parseInt(dateFields[0]);
+        int tmr = day + 1;
+        int month = Integer.parseInt(dateFields[1]);
+        int year = Integer.parseInt(dateFields[2]);
+
+        if (!isValidDay(tmr, month, year)) {
+            tmr = 1;
+            month++;
+            if (!isValidMonth(month)) {
+                month = 1;
+                year++;
+            }
+        }
+
+        dateFields = new String[] { toDoubleDigitStr(tmr),
+                                   toDoubleDigitStr(month),
+                                   Integer.toString(year) };
+        String date = dateFields[0] + "/" + dateFields[1] + "/" + dateFields[2];
+        return date;
+    }
+
+    private static String toDoubleDigitStr(int num) {
+        if (num < 10) {
+            return "0" + Integer.toString(num);
+        } else {
+            return Integer.toString(num);
+        }
+    }
+
+    private static String toFourDigitStr(int num) {
+        assert (num >= YEAR_MINIMUM || (num >= 0 && num < 100));
+
+        if (num < 100) {
+            return "20" + Integer.toString(num);
+        } else {
+            return Integer.toString(num);
+        }
+    }
+
+    private static String getCurrYearStr() {
+        String currDate = getCurrDateStr();
+        String[] dateFields = currDate.split("/");
+        assert (dateFields.length == 3);
+        String year = dateFields[2];
+        return year;
     }
 
     /**
@@ -142,27 +199,39 @@ public class DateParser {
             throw new IllegalArgumentException("Invalid input for parseToDate");
         }
 
+        String date = "";
+        String time = "";
+        String[] dateFields;
         switch (getDateType(str)) {
             case TYPE_DATE_ONLY:
-                return new DateTime(str, "");
+                date = formatDate(str);
+                break;
 
             case TYPE_TIME_ONLY:
-                return new DateTime(getCurrDateStr(), str);
+                date = getCurrDateStr();
+                time = str;
+                break;
 
             case TYPE_DATE_TIME:
-                String[] dateFields1 = str.split(" ");
-                assert (dateFields1.length == 2);
-                return new DateTime(dateFields1[0], dateFields1[1]);
+                dateFields = str.split(" ");
+                assert (dateFields.length == 2);
+                date = formatDate(dateFields[0]);
+                time = dateFields[1];
+                break;
 
             case TYPE_TIME_DATE:
-                String[] dateFields2 = str.split(" ");
-                assert (dateFields2.length == 2);
-                return new DateTime(dateFields2[1], dateFields2[0]);
+                dateFields = str.split(" ");
+                assert (dateFields.length == 2);
+                date = formatDate(dateFields[1]);
+                time = dateFields[0];
+                break;
         }
 
-        // Code should not reach this point
-        assert false : "parseToDateTime() failed to catch invalid date type";
-        return null;
+        if (date.isEmpty() && time.isEmpty()) {
+            return new DateTime();
+        } else {
+            return new DateTime(date, time);
+        }
     }
 
     /**
@@ -182,25 +251,71 @@ public class DateParser {
      * @return An integer from 1 to 4 based on which format the input
      *         corresponds to (in the above list).
      */
-    private static int getDateType(String str) {
+    private static String getDateType(String str) {
         assert (isValidDateTime(str)) : "Invalid DateTime for getDateType()!";
-        String[] dateFields = str.split(" ");
-
+        String[] dateFields = str.trim().split(" ");
+    
         // TODO: Magic Strings
-        // TODO: CHANGE INT TO STRING
         if (isSingleItemArray(dateFields)) {
             if (firstItemIsDate(dateFields)) {
-                return 1;
+                return TYPE_DATE_ONLY;
             } else {
-                return 2;
+                return TYPE_TIME_ONLY;
             }
         } else {
             if (firstItemIsDate(dateFields)) {
-                return 3;
+                return TYPE_DATE_TIME;
             } else {
-                return 4;
+                return TYPE_TIME_DATE;
             }
         }
+    }
+
+    private static String formatDate(String str) {
+        String result = str;
+        if (isValidWordDate(str)) {
+            switch (str.toLowerCase()) {
+                case TYPE_DATE_TODAY:
+                    result = getCurrDateStr();
+                    break;
+
+                case TYPE_DATE_TMR:
+                    result = getTmrDateStr();
+                    break;
+            }
+        } else if (isValidNumericalDate(str)) {
+            if (isMissingYear(str)) {
+                result = result + "/" + getCurrYearStr();
+            }
+            String[] dateFieldsStr = new String[3];
+            int[] dateFieldsInt = splitToDateToIntArray(result);
+            dateFieldsStr[0] = toDoubleDigitStr(dateFieldsInt[0]);
+            dateFieldsStr[1] = toDoubleDigitStr(dateFieldsInt[1]);
+            dateFieldsStr[2] = toFourDigitStr(dateFieldsInt[2]);
+            result = dateFieldsStr[0] + "/" + dateFieldsStr[1] + "/" +
+                     dateFieldsStr[2];
+        }
+
+        return result;
+    }
+
+    private static boolean isMissingYear(String str) {
+        String[] dateFields = str.split("/");
+        assert (dateFields.length == 2 || dateFields.length == 3);
+        return dateFields.length == 2;
+    }
+
+    private static int[] splitToDateToIntArray(String str) {
+        assert (isValidNumericalDate(str));
+        String[] strArr = splitDateToStrArray(str);
+        int[] intArr = new int[] { Integer.parseInt(strArr[0]),
+                                  Integer.parseInt(strArr[1]),
+                                  Integer.parseInt(strArr[2]) };
+        return intArr;
+    }
+
+    private static String[] splitDateToStrArray(String str) {
+        return str.split("/");
     }
 
     /**
@@ -233,13 +348,15 @@ public class DateParser {
         try {
             String hoursStr = timeStr.substring(0, 2);
             String minStr = timeStr.substring(2, 4);
-    
+
             int hoursInt = Integer.parseInt(hoursStr);
             int minInt = Integer.parseInt(minStr);
-    
-            boolean isValidHH = (hoursStr.equals("00") || hoursInt > 0) && hoursInt < 24;
-            boolean isValidMM = (minStr.equals("00") || minInt > 0) && minInt < 60;
-    
+
+            boolean isValidHH = (hoursStr.equals("00") || hoursInt > 0) &&
+                                hoursInt < 24;
+            boolean isValidMM = (minStr.equals("00") || minInt > 0) &&
+                                minInt < 60;
+
             return isValidHH && isValidMM;
         } catch (IndexOutOfBoundsException e) {
             return false;
@@ -253,30 +370,51 @@ public class DateParser {
      * <code>dd/MM/yyyy</code>.
      */
     public static boolean isValidDate(String str) {
-        boolean hasTwoSlashes;
-        boolean hasValidCompLengths;
-        boolean hasIntComponents;
-        boolean hasValidIntComp;
+        return isValidWordDate(str) || isValidNumericalDate(str);
+    }
+
+    private static boolean isValidWordDate(String str) {
+        String[] dateWords = { "today", "tomorrow" };
+        return Arrays.asList(dateWords).contains(str.toLowerCase());
+    }
+
+    /**
+     * @param str
+     * @return
+     */
+    private static boolean isValidNumericalDate(String str) {
+        boolean result;
 
         try {
             String[] components = str.split("/");
             String day = components[0];
             String month = components[1];
-            String year = components[2];
-            hasTwoSlashes = (components.length == 3);
-            hasValidCompLengths = (day.length() == 2) &&
-                                  (month.length() == 2) && (year.length() == 4);
-            hasIntComponents = Parser.isInteger(day) &&
-                               Parser.isInteger(month) &&
-                               Parser.isInteger(year);
-            hasValidIntComp = isValidYear(year) && isValidMonth(month) &&
-                              isValidDay(day, month, year);
+            String year; // Needed to calculate leap years
+
+            boolean hasValidCompLengths = false;
+            boolean hasValidIntComp = false;
+
+            if (components.length == 2) {
+                year = getCurrYearStr();
+                hasValidCompLengths = (day.length() >= 1 && day.length() <= 2) &&
+                                      (month.length() >= 1 && month.length() <= 2);
+                hasValidIntComp = isValidMonth(month) &&
+                                  isValidDay(day, month, year);
+            } else if (components.length == 3) {
+                year = components[2];
+                hasValidCompLengths = (day.length() >= 1 && day.length() <= 2) &&
+                                      (month.length() >= 1 && month.length() <= 2) &&
+                                      (year.length() == 2 || year.length() == 4);
+                hasValidIntComp = isValidYear(year) && isValidMonth(month) &&
+                                  isValidDay(day, month, year);
+            }
+
+            result = hasValidCompLengths && hasValidIntComp;
         } catch (Exception e) {
-            return false;
+            result = false;
         }
 
-        return hasTwoSlashes && hasValidCompLengths && hasIntComponents &&
-               hasValidIntComp;
+        return result;
     }
 
     /**
@@ -286,10 +424,14 @@ public class DateParser {
      * calls the overloaded method {@link #isValidDay(int, int, int)}.
      */
     private static boolean isValidDay(String day, String month, String year) {
-        int dayNum = Integer.parseInt(day);
-        int monthNum = Integer.parseInt(month);
-        int yearNum = Integer.parseInt(year);
-        return isValidDay(dayNum, monthNum, yearNum);
+        try {
+            int dayNum = Integer.parseInt(day);
+            int monthNum = Integer.parseInt(month);
+            int yearNum = Integer.parseInt(year);
+            return isValidDay(dayNum, monthNum, yearNum);
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     /**
@@ -306,6 +448,8 @@ public class DateParser {
      *         <code>false</code> otherwise.
      */
     private static boolean isValidDay(int day, int month, int year) {
+        assert isValidYear(Integer.toString(year));
+
         boolean isLeapYear = isLeapYear(year);
 
         switch (month) {
@@ -358,8 +502,17 @@ public class DateParser {
      *            A <code>String</code> containing only an integer.
      */
     private static boolean isValidMonth(String monthStr) {
-        int monthNum = Integer.parseInt(monthStr);
-        return monthNum > 0 && monthNum <= 12;
+        try {
+            int monthNum = Integer.parseInt(monthStr);
+            return isValidMonth(monthNum);
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    // TODO
+    private static boolean isValidMonth(int month) {
+        return month > 0 && month <= 12;
     }
 
     /**
@@ -373,9 +526,19 @@ public class DateParser {
      *            A <code>String</code> containing only an integer.
      */
     private static boolean isValidYear(String yearStr) {
-        int yearNum = Integer.parseInt(yearStr);
-        // TODO: Magic strings in year, month, day
-        return yearNum >= 1819;
+        try {
+            int yearNum = Integer.parseInt(yearStr);
+            // TODO: Magic strings in year, month, day
+            if (yearStr.length() == 4) {
+                return yearNum >= YEAR_MINIMUM;
+            } else if (yearStr.length() == 2) {
+                return (yearNum >= 0 && yearNum < 100);
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     /**
@@ -383,48 +546,49 @@ public class DateParser {
      */
     public static boolean containsDate(String str) {
         String[] strFields = str.split(" ");
-    
+
         for (int i = 0; i < strFields.length; i++) {
             if (isValidDate(strFields[i])) {
                 return true;
             }
         }
-    
+
         return false;
     }
-    
+
     /**
      * 
      * @param str
      * @return
      */
     public static String getFirstDate(String str) {
+        assert containsDate(str) : "this method should be called only after checking if there's a date";
         String[] strFields = str.split(" ");
-    
+
         for (int i = 0; i < strFields.length; i++) {
             if (isValidDate(strFields[i])) {
-                return strFields[i];
+                return formatDate(strFields[i]);
             }
         }
-    
+
         return null;
     }
-    
+
     /**
 
      */
     public static boolean containsTime(String str) {
         String[] strFields = str.split(" ");
-    
+
         for (int i = 0; i < strFields.length; i++) {
             if (isValidTime(strFields[i])) {
                 return true;
             }
         }
-    
+
         return false;
     }
-    
+
     /**
      * 
      * @param str
@@ -432,13 +596,13 @@ public class DateParser {
      */
     public static String getFirstTime(String str) {
         String[] strFields = str.split(" ");
-    
+
         for (int i = 0; i < strFields.length; i++) {
             if (isValidTime(strFields[i])) {
-                return strFields[i];
+                return formatDate(strFields[i]);
             }
         }
-    
+
         return null;
     }
 }

@@ -270,17 +270,7 @@ public class Parser {
             }
         }
 
-        // Save leftover strings
-        // TODO: Check if this is necessary/can be used.
-        // Should be done for add and edit?
-        int lastIndex = index;
-        String leftovers = "";
-        if (lastIndex < commandParams.length) {
-            for (int i = lastIndex; i < commandParams.length; i++) {
-                leftovers = leftovers + " " + commandParams[i];
-            }
-            leftovers = leftovers.trim();
-        }
+
 
         // Check if any fields have been input
         if (!hasFirstDate && !hasFirstTime && !hasSecondDate && !hasSecondTime) {
@@ -301,8 +291,9 @@ public class Parser {
         }
 
         // Check order of date/times; switch if necessary.
-        DateTime dateTime1 = new DateTime(firstDateStr, firstTimeStr);
-        DateTime dateTime2 = new DateTime(secondDateStr, secondTimeStr);
+        // TODO: Check if there's something wrong with this that needs trim().
+        DateTime dateTime1 = DateParser.parseToDateTime((firstDateStr + " " + firstTimeStr).trim());
+        DateTime dateTime2 = DateParser.parseToDateTime((secondDateStr + " " + secondTimeStr).trim());
         TaskParam startTp;
         TaskParam endTp;
         if (dateTime1.isEarlierThan(dateTime2) || dateTime1.equals(dateTime2)) {
