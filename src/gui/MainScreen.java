@@ -248,7 +248,7 @@ public class MainScreen {
         Character firstLetter = input.charAt(0);
         switch (Character.toLowerCase(firstLetter)) {
             case 'a':
-                feedback.setText("add [name] start: [DD/MM/YYYY hhmm] #tag");
+                feedback.setText("add [name] due [DD/MM/YYYY hhmm] start [DD/MM/YYYY hhmm] #tag");
                 return;
             case 'b':
                 feedback.setText("block [DD/MM/YYYY hhmm] to [DD/MM/YYYY hhmm]");
@@ -272,7 +272,7 @@ public class MainScreen {
                     feedback.setText("exit");
                     return;
                 }
-                feedback.setText("edit [id] <parameter>:  [value]");
+                feedback.setText("edit [id] <parameter>  [value]");
                 return;
             case 'h':
                 feedback.setText("help");

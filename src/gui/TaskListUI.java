@@ -1,6 +1,7 @@
 package gui;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Observable;
@@ -60,13 +61,33 @@ public class TaskListUI implements Observer {
     private List<Task> getUpcomingTasks() {
         Processor processor = Processor.getInstance();
         List<Task> tasks = processor.fetchTimedTasks();
+        tasks = getTopTen(tasks);
         return tasks;
     }
 
     private List<Task> getFloatingTasks() {
         Processor processor = Processor.getInstance();
         List<Task> tasks = processor.fetchFloatingTasks();
+        tasks = getTopTen(tasks);
         return tasks;
+    }
+
+    private List<Task> getTopTen(List<Task> tasks) {
+        int size = tasks.size();
+        if (size <= 10) {
+            return tasks;
+        }
+        return shortenList(tasks);
+    }
+
+    private List<Task> shortenList(List<Task> tasks) {
+        int size = tasks.size();
+        List<Task> topTen = new ArrayList<Task>();
+        for (int index = 0; index < 10; index++) {
+            Task currTask = tasks.get(index);
+            topTen.add(index, currTask);
+        }
+        return topTen;
     }
 
     private void addTasksToUpcomingList(StyledText upcomingTasks,
@@ -160,16 +181,18 @@ public class TaskListUI implements Observer {
             String name = currentTask.getName();
             String due = currentTask.getDue().toString();
             String start = currentTask.getStart().toString();
+            String indent = getIndentation(iD);
 
             if (name == null || name.isEmpty() || name.equals("null")) {
                 name = "empty name";
             }
             if (!due.isEmpty()) {
+
                 list = list + iD + DOT_AND_SPACE + name + LINE_SEPARATOR +
-                       "Due: " + due + LINE_SEPARATOR;
+                       indent + "Due: " + due + LINE_SEPARATOR;
             } else {
                 list = list + iD + DOT_AND_SPACE + name + LINE_SEPARATOR +
-                       "Start: " + start + LINE_SEPARATOR;
+                       indent + "Start: " + start + LINE_SEPARATOR;
             }
 
             list += LINE_SEPARATOR;
@@ -192,6 +215,16 @@ public class TaskListUI implements Observer {
         }
 
         return list;
+    }
+
+    private String getIndentation(String iD) {
+        int length = iD.length();
+        int toIndent = length + 1;
+        String indent = " ";
+        for (int index = 0; index < toIndent; index++) {
+            indent = indent + indent;
+        }
+        return indent;
     }
 
     private boolean isValid(List<Task> tasks) {
