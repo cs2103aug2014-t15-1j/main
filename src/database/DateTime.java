@@ -74,10 +74,10 @@ public class DateTime implements Comparable<DateTime> {
      *            Format: "HHMM" or empty String.
      */
     public DateTime(String date, String time) {
-        assert date != null;
-        assert time != null : "time cannot be null";
-        assert date.matches(DATE_PATTERN);
-        assert time.matches(TIME_PATTERN);
+        assert date != null : "date mustn't be null";
+        assert time != null : "time mustn't be null";
+        assert date.matches(DATE_PATTERN) : "date must have correct format and value";
+        assert time.matches(TIME_PATTERN) : "time must have correct format and value";
         this.date = date;
         this.time = time;
         if (!date.isEmpty()) {
@@ -93,11 +93,12 @@ public class DateTime implements Comparable<DateTime> {
      *            Is non-empty String, format: "DD/MM/YYYY".
      */
     private void parseAndSplitDate(String date) {
-        assert date.matches(DATE_PATTERN);
-        assert !date.isEmpty();
-        day = Integer.parseInt(date.substring(0, 2));
-        month = Integer.parseInt(date.substring(3, 5));
-        year = Integer.parseInt(date.substring(6));
+        assert date.matches(DATE_PATTERN) : "date must have right format and value";
+        assert !date.isEmpty() : "date mustn't be empty";
+        String[] splitDate = date.split("/");
+        day = Integer.parseInt(splitDate[0]);
+        month = Integer.parseInt(splitDate[1]);
+        year = Integer.parseInt(splitDate[2]);
     }
 
     /**
@@ -111,8 +112,8 @@ public class DateTime implements Comparable<DateTime> {
      *            by value from.
      */
     public DateTime(DateTime dateTime) {
-        assert dateTime != null;
-        assert dateTime.toString().matches(DATE_TIME_PATTERN);
+        assert dateTime != null : "dateTime mustn't be null";
+        assert dateTime.toString().matches(DATE_TIME_PATTERN) : "dateTime's attributes must have correct format and value";
         this.date = dateTime.date;
         this.day = dateTime.day;
         this.month = dateTime.month;
@@ -160,7 +161,8 @@ public class DateTime implements Comparable<DateTime> {
      */
     @Override
     public int compareTo(DateTime otherDateTime) {
-        assert otherDateTime != null;
+        assert otherDateTime != null : "dateTime mustn't be null";
+        assert otherDateTime.toString().matches(DATE_TIME_PATTERN) : "dateTime's attributes must have correct format and value";
         int day1 = this.day;
         int mth1 = this.month;
         int yr1 = this.year;
@@ -301,7 +303,8 @@ public class DateTime implements Comparable<DateTime> {
      * @author Yeo Zi Xian, Justin
      */
     public boolean isEarlierThan(DateTime otherDateTime) {
-        assert otherDateTime != null;
+        assert otherDateTime != null : "dateTime mustn't be null";
+        assert otherDateTime.toString().matches(DATE_TIME_PATTERN) : "dateTime's attributes must have correct format and value";
         return (this.compareTo(otherDateTime) == EARLIER);
     }
 
@@ -315,8 +318,8 @@ public class DateTime implements Comparable<DateTime> {
      *            Format: "DD/MM/YYYY" or empty String.
      */
     public void setDate(String date) {
-        assert date != null;
-        assert date.matches(DATE_PATTERN);
+        assert date != null : "date mustn't be null";
+        assert date.matches(DATE_PATTERN) : "date must have correct format and value";
         if (date.isEmpty()) {
             resetDate();
         } else {
@@ -385,8 +388,8 @@ public class DateTime implements Comparable<DateTime> {
      *            Format: "HHMM" or empty String.
      */
     public void setTime(String time) {
-        assert time != null;
-        assert time.matches(TIME_PATTERN);
+        assert time != null : "time mustn't be null";
+        assert time.matches(TIME_PATTERN) : "time must have right format and value";
         this.time = time;
     }
 
