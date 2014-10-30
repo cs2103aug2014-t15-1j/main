@@ -255,7 +255,7 @@ public class SetUp {
         programLabel.setLayoutData(gridData);
 
         Label title = new Label(programLabel, SWT.SINGLE | SWT.CENTER);
-        title.setText("Hastack");
+        title.setText("Haystack");
         title.setFont(fontRegistry.get("haystack title"));
         Color color = shell.getDisplay().getSystemColor(SWT.COLOR_BLACK);
         title.setForeground(color);

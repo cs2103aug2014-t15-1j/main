@@ -6,8 +6,6 @@ import java.text.SimpleDateFormat;
 
 import database.DateTime;
 
-// TODO: Reorganise: move all aux (e.g. isInteger()) to Parser, move all specifics out?
-
 public class DateParser {
 
     private static final int TYPE_TIME_DATE = 4;
@@ -19,12 +17,6 @@ public class DateParser {
      */
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat(
             "dd/MM/yyyy HHmm");
-
-    // TODO: For testing; to remove
-    protected static void printDate() {
-        Calendar cal = Calendar.getInstance();
-        System.out.println(DATE_FORMAT.format(cal.getTime()));
-    }
 
     /**
      * Returns the current date and time in a <code>DateTime</code> object.
@@ -195,6 +187,7 @@ public class DateParser {
         String[] dateFields = str.split(" ");
 
         // TODO: Magic Strings
+        // TODO: CHANGE INT TO STRING
         if (isSingleItemArray(dateFields)) {
             if (firstItemIsDate(dateFields)) {
                 return 1;
@@ -244,8 +237,8 @@ public class DateParser {
             int hoursInt = Integer.parseInt(hoursStr);
             int minInt = Integer.parseInt(minStr);
     
-            boolean isValidHH = hoursInt >= 0 && hoursInt < 24;
-            boolean isValidMM = minInt >= 0 && minInt < 60;
+            boolean isValidHH = (hoursStr.equals("00") || hoursInt > 0) && hoursInt < 24;
+            boolean isValidMM = (minStr.equals("00") || minInt > 0) && minInt < 60;
     
             return isValidHH && isValidMM;
         } catch (IndexOutOfBoundsException e) {
@@ -383,84 +376,6 @@ public class DateParser {
         int yearNum = Integer.parseInt(yearStr);
         // TODO: Magic strings in year, month, day
         return yearNum >= 1819;
-    }
-
-    public static void main(String args[]) {
-        // TODO: extract to test case
-        System.out.println("//LEAPYEAR:");
-        System.out.println("2000: " + isLeapYear(2000));
-        System.out.println("2001: " + isLeapYear(2001));
-        System.out.println("2004: " + isLeapYear(2004));
-        System.out.println("2100: " + isLeapYear(2100));
-        System.out.println("2200: " + isLeapYear(2200));
-        System.out.println("2300: " + isLeapYear(2300));
-        System.out.println("2304: " + isLeapYear(2304));
-        System.out.println("2400: " + isLeapYear(2400));
-        // Invalid: System.out.println("-400: " + isLeapYear(-400));
-
-        System.out.println("//TIME:");
-        System.out.println("0000: " + isValidTime("0000"));
-        System.out.println("0001: " + isValidTime("0001"));
-        System.out.println("0100: " + isValidTime("0100"));
-        System.out.println("0060: " + isValidTime("0060"));
-        System.out.println("2400: " + isValidTime("2400"));
-        System.out.println("2359: " + isValidTime("2359"));
-        System.out.println("9999: " + isValidTime("9999"));
-        System.out.println("abc: " + isValidTime("abc"));
-
-        System.out.println("//Getters:");
-        System.out.println("DateTime: " + getCurrDateTime());
-        System.out.println("DateTimeStr: " + getCurrDateTimeStr());
-        System.out.println("Date: " + getCurrDateStr());
-        System.out.println("Time: " + getCurrTimeStr());
-
-        System.out.println("//DateTimeValid:");
-        System.out.println("23/04/2014 " + isValidDateTime("23/04/2014"));
-        System.out.println("2359 " + isValidDateTime("2359"));
-        System.out.println("23/04/2014 2200 " +
-                           isValidDateTime("23/04/2014 2200"));
-        System.out.println("2200 23/04/2014 " +
-                           isValidDateTime("2200 23/04/2014"));
-        System.out.println("2200 29/02/2014 " +
-                           isValidDateTime("2200 29/02/2014"));
-        System.out.println("2200 29/02/2012 " +
-                           isValidDateTime("2200 29/02/2012"));
-        System.out.println("23/04/2014 2400 " +
-                           isValidDateTime("23/04/2014 2400"));
-        System.out.println("23/13/2014 2200 " +
-                           isValidDateTime("23/13/2014 2200"));
-        System.out.println("23/04/2014 asdd " +
-                           isValidDateTime("23/04/2014 asdd"));
-        System.out.println("aaaaaaaaaa 2200 " +
-                           isValidDateTime("aaaaaaaaaa 2200"));
-        System.out.println("aaaaaaaaaa aaaa " +
-                           isValidDateTime("aaaaaaaaaa aaaa"));
-
-        System.out.println("//parseToDate:");
-        System.out.println("23/04/2014: " + parseToDateTime("23/04/2014"));
-        System.out.println("2200: " + parseToDateTime("2200"));
-        System.out.println("23/04/2014 2200: " +
-                           parseToDateTime("23/04/2014 2200"));
-        System.out.println("2200 23/04/2014: " +
-                           parseToDateTime("2200 23/04/2014"));
-        // TODO: test exception
-        // System.out.println("exception: " + parseToDate("aaa"));
-
-        DateTime dt = new DateTime("23/04/2014", "2300");
-        DateTime dt2 = new DateTime("24/04/2014", "2300");
-        System.out.println("dt<dt2: " + dt.compareTo(dt2));
-
-        dt = new DateTime("23/04/2014", "2300");
-        dt2 = new DateTime("23/04/2014", "2300");
-        System.out.println("dt=dt2: " + dt.compareTo(dt2));
-
-        dt = new DateTime("23/04/2014", "2300");
-        dt2 = new DateTime("22/04/2014", "2300");
-        System.out.println("dt>dt2: " + dt.compareTo(dt2));
-
-        dt = new DateTime("23/04/2014", "0000");
-        dt2 = new DateTime("23/04/2014", "2359");
-        System.out.println("dt<dt2: " + dt.compareTo(dt2));
     }
 
     /**
