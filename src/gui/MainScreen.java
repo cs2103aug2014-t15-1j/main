@@ -53,12 +53,10 @@ public class MainScreen {
      */
     public static void main(String[] args) {
         Display display = new Display();
+        final Shell shell = new Shell(display);
 
         Image background = new Image(display, MainScreen.class.getClassLoader()
                 .getResourceAsStream("resource/mainbg.png"));
-
-        final Shell shell = new Shell(display);
-
         shell.setImage(new Image(display, MainScreen.class.getClassLoader()
                 .getResourceAsStream("resource/Icon.gif")));
         ImageData imageData = background.getImageData();
