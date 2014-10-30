@@ -1,22 +1,6 @@
-LAJ skit ### start:  due: 30/10/2014 1800 completed:  #presentation #LAJ #JP3 status: todo
-LAJ workshop ### start:  due: 06/11/2014 completed:  #presentation #LAJ #JP3 status: todo
-Revise lecture 4 ### start:  due:  completed:  #revise #CS2103 status: todo
-Revise lesson 35 ### start:  due:  completed:  #revise #LAJ #JP3 status: todo
-read CLRS ### start:  due:  completed:  #book status: todo
-IS project final submission ### start:  due: 07/11/2014 1200 completed:  #IS1103 status: todo
-Change workshop's last slide ### start:  due: 31/10/2014 completed:  status: todo
-Apply facade pattern to database ### start:  due:  completed:  #cs2103 #haystack status: todo
-tutorial presentation ### start:  due: 31/10/2014 1100 completed:  #EL1101 status: todo
-software demo presentation ### start:  due: 03/11/2014 1200 completed:  #cs2101 status: todo
-software demo meeting ### start: 01/11/2014 due: 01/11/2014 completed:  #cs2101 status: todo
-change to generic type functions ### start:  due:  completed:  #cs2103 #haystack status: todo
-replace battery in clock ### start:  due:  completed:  #adult_lyfe status: todo
-resole shoes ### start:  due:  completed:  #adult_lyfe status: todo
-restock toiletries ### start:  due:  completed:  #adult_lyfe status: todo
-complete teammates quiz ### start:  due: 02/11/2014 2359 completed:  #cs2103 status: todo
-complete ivle quiz ### start:  due: 02/11/2014 2359 completed:  #cs2103 status: todo
-complete tutorial hw ### start:  due: 07/11/2014 1100 completed:  #el1101 status: todo
-donate blood 14/11/2014 ### start:  due:  completed:  #adult_lyfe status: todo
-fix gihub issue 152 ### start:  due:  completed:  #cs2103 #haystack status: todo
-blocked dates should show at start ### start:  due:  completed:  #cs2103 #haystack #bug? status: todo
-week 11 tutorial ### start:  due: 30/10/2014 1500 completed: 30/10/2014 1400 #cs2103 status: done
+Do CS2103 Homework ### start:  due:  completed:  #cshomework status: todo
+Do CS2103 Homework ### start:  due:  completed:  #cshomework status: todo
+Do CS2103 Homework ### start:  due:  completed:  #cshomework status: todo
+Do CS2103 Homework ### start:  due:  completed:  status: todo
+Do CS2103 Homework ### start:  due:  completed:  status: todo
+Do CS2103 Homework ### start:  due:  completed:  status: todo
