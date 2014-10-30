@@ -88,7 +88,6 @@ public class HelpDialog extends Dialog {
                 public void keyReleased(KeyEvent event) {
 
                     if (event.character == SWT.ESC) {
-                        System.out.println("closing");
                         shell.close();
                     }
                 }

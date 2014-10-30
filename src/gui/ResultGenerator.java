@@ -11,12 +11,25 @@ import database.Task;
 public class ResultGenerator {
 
     private static Processor processor;
-    private static TaskTableUI taskTable = new TaskTableUI();
-    private static DateTableUI dateTable = new DateTableUI();
+    private static TaskTableUI taskTable = TaskTableUI.getInstance();
+    private static DateTableUI dateTable = DateTableUI.getInstance();
+    private static ResultGenerator resultGen;
+
+    public static ResultGenerator getInstance() {
+        if (resultGen == null) {
+            resultGen = new ResultGenerator();
+        }
+        return resultGen;
+    }
 
     public void start() {
         processor = Processor.getInstance();
-        processor.addObserver(new TaskListUI());
+        UpcomingTaskList upcommingList = UpcomingTaskList.getInstance();
+        processor.addObserver(upcommingList);
+        upcommingList.initialise();
+        FloatingTaskList floatingList = FloatingTaskList.getInstance();
+        processor.addObserver(floatingList);
+        floatingList.initialise();
         refreshTodoTable();
     }
 
