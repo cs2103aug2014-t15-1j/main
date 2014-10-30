@@ -1,5 +1,6 @@
 package logic;
 
+import gui.BlockDateStub;
 import gui.DateTimeStub;
 import gui.TaskStub;
 
@@ -42,7 +43,11 @@ public class DataFileStub extends DataFile {
 
     @Override
     public Task getTask(int id) {
-        return tasks.get(0);
+        if (id > 0) {
+            return tasks.get(0);
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -125,6 +130,11 @@ public class DataFileStub extends DataFile {
     @Override
     public boolean deleteBD(int id) {
         return true;
+    }
+    
+    @Override
+    public BlockDate getBlockDate(int id) {
+        return new BlockDateStub(new DateTimeStub(), new DateTimeStub());
     }
 
     @Override

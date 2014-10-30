@@ -124,10 +124,12 @@ public class CommandTodo extends Command {
         boolean success = false;
         try {
             int taskId = Integer.parseInt(id);
-            Task existingTask = processor.getFile().getTask(taskId);
-            success = processor.getFile().toDoTask(existingTask);
-            if (success) {
-                list.add(existingTask);
+            Task task = processor.getFile().getTask(taskId);
+            if (task != null) {
+                success = processor.getFile().toDoTask(task);
+                if (success) {
+                    list.add(task);
+                }
             }
         } catch (NumberFormatException e) {
             if (Processor.LOGGING_ENABLED) {

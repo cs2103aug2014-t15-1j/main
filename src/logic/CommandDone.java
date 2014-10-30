@@ -123,10 +123,12 @@ public class CommandDone extends Command {
         Processor processor = Processor.getInstance();
         boolean success = false;
         int taskId = Integer.parseInt(id);
-        Task existingTask = processor.getFile().getTask(taskId);
-        success = processor.getFile().doneTask(existingTask);
-        if (success) {
-            list.add(existingTask);
+        Task task = processor.getFile().getTask(taskId);
+        if (task != null) {
+            success = processor.getFile().doneTask(task);
+            if (success) {
+                list.add(task);
+            }
         }
         return success;
     }

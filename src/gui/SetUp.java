@@ -71,7 +71,8 @@ public class SetUp {
     private static final String PARA_STATUS_TODO = "To do";
     private static final String PARA_STATUS_DONE = "Done";
 
-    private static final String CELL_EMPTY = "empty";
+    private static final String CELL_EMPTY = "<empty>";
+    private static final String CELL_EMPTY_DATE = "<no date>";
 
     private static final String WELCOME_MESSAGE = "Welcome.";
 
@@ -478,6 +479,7 @@ public class SetUp {
                     // set Name: max 40 characters
                     Task task = (Task) element;
                     String name = task.getName();
+
                     assert (task != null);
                     if (name == null || name.isEmpty() || name.equals("null")) {
                         return "";
@@ -497,7 +499,7 @@ public class SetUp {
                     assert (task != null);
                     DateTime Start = task.getStart();
                     if (Start == null) {
-                        return CELL_EMPTY;
+                        return CELL_EMPTY_DATE;
                     }
 
                     return Start.toString();
@@ -517,7 +519,7 @@ public class SetUp {
                     DateTime Due = task.getDue();
 
                     if (Due == null) {
-                        return CELL_EMPTY;
+                        return CELL_EMPTY_DATE;
                     }
                     return Due.toString();
                 }
@@ -536,7 +538,7 @@ public class SetUp {
                     String tag = "";
 
                     if (tags == null || tags.isEmpty()) {
-                        return CELL_EMPTY;
+                        return "";
                     }
                     for (int index = 0; index < tags.size(); index++) {
                         tag = tag + tags.get(index);
@@ -627,8 +629,13 @@ public class SetUp {
 
     private TableViewerColumn setColumnHeader(String headerName, int colWidth,
                                               TableViewer viewer) {
-        TableViewerColumn columnViewer = new TableViewerColumn(viewer,
-                SWT.CENTER);
+
+        TableViewerColumn columnViewer;
+        if (headerName.equals(HEADER_NAME_NAME)) {
+            columnViewer = new TableViewerColumn(viewer, SWT.LEFT);
+        } else {
+            columnViewer = new TableViewerColumn(viewer, SWT.CENTER);
+        }
         TableColumn column = columnViewer.getColumn();
         column.setText(headerName);
         column.setWidth(colWidth);

@@ -1,6 +1,7 @@
 package gui;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Observable;
@@ -41,7 +42,7 @@ public class TaskListUI implements Observer {
 
         addTasksToUpcomingList(upcomingTasksList, upcomingTasks);
 
-        String floatingList = getStringList(floatingTasks, true);
+        String floatingList = getStringList(floatingTasks);
         floatingTasksList.setText(floatingList);
     }
 
@@ -60,13 +61,32 @@ public class TaskListUI implements Observer {
     private List<Task> getUpcomingTasks() {
         Processor processor = Processor.getInstance();
         List<Task> tasks = processor.fetchTimedTasks();
+        tasks = getTopTen(tasks);
         return tasks;
     }
 
     private List<Task> getFloatingTasks() {
         Processor processor = Processor.getInstance();
         List<Task> tasks = processor.fetchFloatingTasks();
+        tasks = getTopTen(tasks);
         return tasks;
+    }
+
+    private List<Task> getTopTen(List<Task> tasks) {
+        int size = tasks.size();
+        if (size <= 10) {
+            return tasks;
+        }
+        return shortenList(tasks);
+    }
+
+    private List<Task> shortenList(List<Task> tasks) {
+        List<Task> topTen = new ArrayList<Task>();
+        for (int index = 0; index < 10; index++) {
+            Task currTask = tasks.get(index);
+            topTen.add(index, currTask);
+        }
+        return topTen;
     }
 
     private void addTasksToUpcomingList(StyledText upcomingTasks,
@@ -82,6 +102,7 @@ public class TaskListUI implements Observer {
             String name = currTask.getName();
             String iD = currTask.getId() + "";
             DateTime due = currTask.getDue();
+            String indentation = getIndentation(iD);
             if (name == null || name.isEmpty() || name.equals("null")) {
                 name = "empty name";
             }
@@ -90,7 +111,7 @@ public class TaskListUI implements Observer {
             if (!due.isEmpty()) {
                 String dueString = due.toString();
                 if (isOverDue(due)) {
-                    upcomingTasks.append("Due: " + dueString);
+                    upcomingTasks.append(indentation + "Due: " + dueString);
                     range.start = upcomingTasks.getText().length() -
                                   dueString.length();
                     range.length = dueString.length();
@@ -99,7 +120,8 @@ public class TaskListUI implements Observer {
                     upcomingTasks.setStyleRange(range);
                     upcomingTasks.append(LINE_SEPARATOR);
                 } else {
-                    upcomingTasks.append("Due: " + dueString + LINE_SEPARATOR);
+                    upcomingTasks.append(indentation + "Due: " + dueString +
+                                         LINE_SEPARATOR);
                 }
             } else {
                 DateTime start = currTask.getStart();
@@ -138,43 +160,13 @@ public class TaskListUI implements Observer {
         return today;
     }
 
-    private String getStringList(List<Task> tasks, boolean isFloating) {
+    private String getStringList(List<Task> tasks) {
         if (!isValid(tasks)) {
             return "Nothing to display" + LINE_SEPARATOR;
         }
         String list = "";
-        if (isFloating) {
-            list = list + changeFloatingListToString(tasks);
-            return list;
-        }
-        list = list + changeTaskListToString(tasks);
-        return list;
-    }
 
-    private String changeTaskListToString(List<Task> tasks) {
-        int size = tasks.size();
-        String list = "";
-        for (int index = 0; index < size; index++) {
-            Task currentTask = tasks.get(index);
-            String iD = currentTask.getId() + "";
-            String name = currentTask.getName();
-            String due = currentTask.getDue().toString();
-            String start = currentTask.getStart().toString();
-
-            if (name == null || name.isEmpty() || name.equals("null")) {
-                name = "empty name";
-            }
-            if (!due.isEmpty()) {
-                list = list + iD + DOT_AND_SPACE + name + LINE_SEPARATOR +
-                       "Due: " + due + LINE_SEPARATOR;
-            } else {
-                list = list + iD + DOT_AND_SPACE + name + LINE_SEPARATOR +
-                       "Start: " + start + LINE_SEPARATOR;
-            }
-
-            list += LINE_SEPARATOR;
-        }
-
+        list = list + changeFloatingListToString(tasks);
         return list;
     }
 
@@ -192,6 +184,16 @@ public class TaskListUI implements Observer {
         }
 
         return list;
+    }
+
+    private String getIndentation(String iD) {
+        int length = iD.length();
+        int toIndent = length;
+        String indent = " ";
+        for (int index = 0; index < toIndent; index++) {
+            indent = indent + indent;
+        }
+        return indent;
     }
 
     private boolean isValid(List<Task> tasks) {
