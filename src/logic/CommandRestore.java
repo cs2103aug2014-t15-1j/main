@@ -113,10 +113,14 @@ public class CommandRestore extends Command {
     private boolean restoreUsingId(List<Task> list) {
         Processor processor = Processor.getInstance();
         int taskId = Integer.parseInt(id);
+        boolean success = false;
         Task task = processor.getFile().getTask(taskId);
-        boolean success = processor.getFile().restoreTask(task);
-        if (success) {
-            list.add(task);
+        
+        if (task != null) {
+            success = processor.getFile().restoreTask(task);
+            if (success) {
+                list.add(task);
+            }
         }
         return success;
     }
