@@ -72,27 +72,31 @@ public class TestDateParser {
     public void testValidDateTime() {
         System.out.println("\n>> Testing isValidDateTime...");
 
-        System.out.println("//DateTimeValid:");
-        System.out.println("23/04/2014 " + DateParser.isValidDateTime("23/04/2014"));
-        System.out.println("2359 " + DateParser.isValidDateTime("2359"));
-        System.out.println("23/04/2014 2200 " +
-                           DateParser.isValidDateTime("23/04/2014 2200"));
-        System.out.println("2200 23/04/2014 " +
-                           DateParser.isValidDateTime("2200 23/04/2014"));
-        System.out.println("2200 29/02/2014 " +
-                           DateParser.isValidDateTime("2200 29/02/2014"));
-        System.out.println("2200 29/02/2012 " +
-                           DateParser.isValidDateTime("2200 29/02/2012"));
-        System.out.println("23/04/2014 2400 " +
-                           DateParser.isValidDateTime("23/04/2014 2400"));
-        System.out.println("23/13/2014 2200 " +
-                           DateParser.isValidDateTime("23/13/2014 2200"));
-        System.out.println("23/04/2014 asdd " +
-                           DateParser.isValidDateTime("23/04/2014 asdd"));
-        System.out.println("aaaaaaaaaa 2200 " +
-                           DateParser.isValidDateTime("aaaaaaaaaa 2200"));
-        System.out.println("aaaaaaaaaa aaaa " +
-                           DateParser.isValidDateTime("aaaaaaaaaa aaaa"));
+        // Date only cases should follow isValidDate
+        assertTrue(DateParser.isValidDateTime("01/01/1819"));
+        assertFalse(DateParser.isValidDateTime("00/01/1819"));
+        // Leap Years
+        assertTrue(DateParser.isValidDateTime("29/02/2012"));
+        assertFalse(DateParser.isValidDateTime("30/02/2012"));
+        assertTrue(DateParser.isValidDateTime("28/02/2011"));
+        assertFalse(DateParser.isValidDateTime("29/02/2011"));
+        // Time only cases should follow isValidTime
+        assertTrue(DateParser.isValidDateTime("2359"));
+        assertFalse(DateParser.isValidDateTime("2400"));
+        // Date-Time order (Valid, invalid date, invalid time)
+        assertTrue(DateParser.isValidDateTime("01/01/1819 0000"));
+        assertFalse(DateParser.isValidDateTime("01/01/1819 000"));
+        assertFalse(DateParser.isValidDateTime("01/00/1819 0000"));
+        assertFalse(DateParser.isValidDateTime("01/01/1819 2400"));
+        // Time-Date order
+        assertTrue(DateParser.isValidDateTime("0000 01/01/1819"));
+        assertFalse(DateParser.isValidDateTime("000 01/01/1819"));
+        assertFalse(DateParser.isValidDateTime("0000 01/00/1819"));
+        assertFalse(DateParser.isValidDateTime("2400 01/01/1819"));
+        // Extreme cases
+        assertFalse(DateParser.isValidDateTime("aaa"));
+        assertFalse(DateParser.isValidDateTime("aaaa 01/01/1819"));
+        assertFalse(DateParser.isValidDateTime("0000 aa/aa/aaaa"));
         
         System.out.println("...success!");
     }
@@ -101,15 +105,63 @@ public class TestDateParser {
     public void testParseToDate() {
         System.out.println("\n>> Testing parseToDate...");
 
-        System.out.println("//DateParser.parseToDate:");
-        System.out.println("23/04/2014: " + DateParser.parseToDateTime("23/04/2014"));
-        System.out.println("2200: " + DateParser.parseToDateTime("2200"));
-        System.out.println("23/04/2014 2200: " +
-                           DateParser.parseToDateTime("23/04/2014 2200"));
-        System.out.println("2200 23/04/2014: " +
-                           DateParser.parseToDateTime("2200 23/04/2014"));
+        String expected;
+        String result;
+        
+        // null
+        expected = "";
+        result = DateParser.parseToDateTime(null).toString();
+        assertEquals(expected, result);
+        // Empty
+        expected = "";
+        result = DateParser.parseToDateTime("").toString();
+        assertEquals(expected, result);
+        // Valid date
+        expected = "01/01/1819";
+        result = DateParser.parseToDateTime("01/01/1819").toString();
+        assertEquals(expected, result);
+        // Valid time
+        expected = DateParser.getCurrDateStr() + " 0000";
+        result = DateParser.parseToDateTime("0000").toString();
+        assertEquals(expected, result);
+        // Valid Date-Time
+        expected = "01/01/1819 2200";
+        result = DateParser.parseToDateTime("01/01/1819 2200").toString();
+        assertEquals(expected, result);
+        // Valid Time-Date
+        expected = "01/01/1819 2200";
+        result = DateParser.parseToDateTime("2200 01/01/1819").toString();
+        assertEquals(expected, result);
+        
         // TODO: test exception
         // System.out.println("exception: " + DateParser.parseToDate("aaa"));
+
+        System.out.println("...success!");
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void failParseInvalid() {
+        System.out.println("\n>> Failing parseToDate with invalid input...");
+
+        DateParser.parseToDateTime("day");
+
+        System.out.println("...success!");
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void failParseInvalidDate() {
+        System.out.println("\n>> Failing parseToDate with invalid date...");
+
+        DateParser.parseToDateTime("23/04/1818");
+
+        System.out.println("...success!");
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void failParseInvalidTime() {
+        System.out.println("\n>> Failing parseToDate with invalid time...");
+
+        DateParser.parseToDateTime("2400");
 
         System.out.println("...success!");
     }

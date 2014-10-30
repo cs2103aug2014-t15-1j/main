@@ -19,7 +19,7 @@ public class TestParser {
 
         String result;
         String cmd;
-
+        
         // Valid command with spaces in front/behind
         result = "\n[[ CMD-OTHERS ]]" + "\ncmd-type: HELP" + "\ncmd-info: ";
         cmd = Parser.parse("    hELp    ").toString();
@@ -33,6 +33,15 @@ public class TestParser {
         System.out.println("\n>> Failing general inputs with a null...");
 
         Parser.parse(null);
+
+        System.out.println("...success!");
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void failCommandSpace() {
+        System.out.println("\n>> Failing general inputs with a space...");
+
+        Parser.parse(" ");
 
         System.out.println("...success!");
     }
@@ -141,6 +150,14 @@ public class TestParser {
                  + "\nstart: 29/10/2014 0300" + "\ndue: 29/10/2014 0600"
                  + "\ntags: []";
         cmd = Parser.parse("add do work from 29/10/2014 0600 due 0300\n")
+                .toString();
+        assertEquals("Add: 1 missing date, reordering", result, cmd);
+        
+        // Debugging
+        result = "\n[[ CMD-ADD: ]]" + "\nname: do work"
+                 + "\nstart: 31/10/2014 0600" + "\ndue: 01/11/2014 0800"
+                 + "\ntags: []";
+        cmd = Parser.parse("add do work from today 0600 to tomorrow 0800\n")
                 .toString();
         assertEquals("Add: 1 missing date, reordering", result, cmd);
 
@@ -651,7 +668,7 @@ public class TestParser {
         System.out
                 .println("\n>> Failing Block Command with a negative year...");
 
-        // Inproper characters
+        // Negative Year should have been caught by parser
         Parser.parse("block 23/04/-114");
 
         System.out.println("...success!");
