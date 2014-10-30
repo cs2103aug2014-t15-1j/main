@@ -92,16 +92,17 @@ public class CommandUnblock extends Command {
             Processor.getLogger().info("Executing 'Unblock' Command...");
         }
         Processor processor = Processor.getInstance();
-        List<BlockDate> blockRange = processor.getFile().getAllBlockDates();
         boolean success = false;
         int unblockId = Integer.parseInt(id);
         List<BlockDate> outputs = new ArrayList<BlockDate>();
         
-        if (unblockId <= blockRange.size() && unblockId > 0) {
+        if (unblockId > 0) {
             BlockDate blockDate = processor.getFile().getBlockDate(unblockId);
-            success = processor.getFile().deleteBD(blockDate);
-            outputs.add(blockDate);
-            success = true;
+            if (blockDate != null) {
+                success = processor.getFile().deleteBD(blockDate);
+                outputs.add(blockDate);
+                success = true;
+            }
         }
         
         return new Result(outputs, success, CommandType.UNBLOCK, ResultType.BLOCKDATE);

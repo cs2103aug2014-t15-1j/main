@@ -25,15 +25,15 @@ public class ProcessorTest {
 	
 	private static Task testTask1 = new Task("Do CS2103 Homework", new DateTime(), new DateTime(), new DateTime(), testTags);
 	private static Task testTask2 = new Task("", testTime, new DateTime(), new DateTime(), new ArrayList<String>());
-	private static Task testTask3 = new Task("", new DateTime(), testTime, null, new ArrayList<String>());
+	private static Task testTask3 = new Task("", new DateTime(), testTime, new DateTime(), new ArrayList<String>());
 	private static Task testTask4 = new Task("", new DateTime(), new DateTime(), testTime, new ArrayList<String>());
 	private static Task testTask5 = new Task("", new DateTime(), new DateTime(), new DateTime(), testTags);
-	private static Task testTask6 = new Task("Do CS2103 Homework", testTime, testTime, testTime, testTags);
+	private static Task testTask6 = new Task("Do CS2103 Homework", testTime, testTime, new DateTime(), testTags);
 	private static Task testTask7 = new Task("Do EE2020 Homework", new DateTime(), new DateTime(), new DateTime(), new ArrayList<String>());
 	private static Task testTask8 = new Task("Do EE2020 Homework", testTime, new DateTime(), new DateTime(),  new ArrayList<String>());
     private static Task testTask9 = new Task("Do EE2020 Homework", testTime, testTime, new DateTime(), new ArrayList<String>());
-    private static Task testTask10 = new Task("Do EE2020 Homework", testTime, testTime, testTime, new ArrayList<String>());
-    private static Task testTask11 = new Task("Do EE2020 Homework", testTime, testTime, testTime, testTags);
+    private static Task testTask10 = new Task("Do EE2020 Homework", testTime, testTime, new DateTime(), new ArrayList<String>());
+    private static Task testTask11 = new Task("Do EE2020 Homework", testTime, testTime, new DateTime(), testTags);
 
 	
 	@Before
@@ -71,26 +71,27 @@ public class ProcessorTest {
         Result r1a = TestProcessor.processInput("redo");
         assertTrue(equalsObj(testTask1, r1a.getTasks().get(0)));
         
-		//Add with due
-        Result r2 = TestProcessor.processInput("add due 10/10/2012 1010");
+        //Add with start
+        Result r2 = TestProcessor.processInput("add start 10/10/2012 1010");
         assertTrue(equalsObj(testTask2, r2.getTasks().get(0)));
         TestProcessor.processInput("undo");
         Result r2a = TestProcessor.processInput("redo");
         assertTrue(equalsObj(testTask2, r2a.getTasks().get(0)));
-        
-        //Add with start
-        Result r3 = TestProcessor.processInput("add start 10/10/2012 1010");
+
+        //Add with due
+        Result r3 = TestProcessor.processInput("add due 10/10/2012 1010");
         assertTrue(equalsObj(testTask3, r3.getTasks().get(0)));
         TestProcessor.processInput("undo");
         Result r3a = TestProcessor.processInput("redo");
         assertTrue(equalsObj(testTask3, r3a.getTasks().get(0)));
         
+        
         //Add with end
         Result r4 = TestProcessor.processInput("add end 10/10/2012 1010");
-        assertTrue(equalsObj(testTask4, r4.getTasks().get(0)));
+        assertTrue(equalsObj(testTask3, r4.getTasks().get(0)));
         TestProcessor.processInput("undo");
         Result r4a = TestProcessor.processInput("redo");
-        assertTrue(equalsObj(testTask4, r4a.getTasks().get(0)));
+        assertTrue(equalsObj(testTask3, r4a.getTasks().get(0)));
         
         //Add with tags
         Result r5 = TestProcessor.processInput("add #homework");
@@ -101,7 +102,7 @@ public class ProcessorTest {
         assertTrue(equalsObj(testTask5, r5a.getTasks().get(0)));
         
         //All valid parameters
-        Result r6 = TestProcessor.processInput("add Do CS2103 Homework due 10/10/2012 1010 start 10/10/2012 1010 end 10/10/2012 1010 #homework");
+        Result r6 = TestProcessor.processInput("add Do CS2103 Homework due 10/10/2012 1010 start 10/10/2012 1010 #homework");
         assertTrue(equalsObj(testTask6, r6.getTasks().get(0)));
         TestProcessor.processInput("undo");
         Result r6a = TestProcessor.processInput("redo");
@@ -127,20 +128,20 @@ public class ProcessorTest {
         Result r3 = TestProcessor.processInput("redo");
         assertTrue(equalsObj(r3.getTasks().get(0), testTask7));
         
-        TestProcessor.processInput("edit 1 due 10/10/2012 1010");
+        TestProcessor.processInput("edit 1 start 10/10/2012 1010");
         TestProcessor.processInput("undo");
         Result r6 = TestProcessor.processInput("redo");
         assertTrue(equalsObj(r6.getTasks().get(0), testTask8));
-        TestProcessor.processInput("edit 1 start 10/10/2012 1010");
+        TestProcessor.processInput("edit 1 due 10/10/2012 1010");
         TestProcessor.processInput("undo");
         Result r9 = TestProcessor.processInput("redo");
         assertTrue(equalsObj(r9.getTasks().get(0), testTask9));
-        
+        /*
         TestProcessor.processInput("edit 1 end 10/10/2012 1010");
         TestProcessor.processInput("undo");
         Result r12 = TestProcessor.processInput("redo");
         assertTrue(equalsObj(r12.getTasks().get(0), testTask10));
-        
+        */
         //Test Edit Tags
         testTags.add("#homework");
         TestProcessor.processInput("edit 1 #homework");
