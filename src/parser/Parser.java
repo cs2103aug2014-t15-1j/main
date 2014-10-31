@@ -25,6 +25,7 @@ public class Parser {
 
     // All possible Command types (in string)
     private static final String TYPE_HELP = "help";
+    private static final String TYPE_GOTTA = "gotta";
     private static final String TYPE_ADD = "add";
     private static final String TYPE_EDIT = "edit";
     private static final String TYPE_DELETE = "delete";
@@ -78,6 +79,7 @@ public class Parser {
 
             switch (commandType) {
                 case TYPE_ADD:
+                case TYPE_GOTTA:
                     return parseAdd(commandParams);
 
                 case TYPE_EDIT:

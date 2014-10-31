@@ -15,7 +15,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Monitor;
 import org.eclipse.swt.widgets.Shell;
 
-public class HayStack {
+public class Haystack {
 
     private static final int NUM_COLS_SCREEN = 2;
     private static final String PROGRAM_NAME = "HayStack";
@@ -64,9 +64,9 @@ public class HayStack {
     private static void setBackGround(Shell parent) {
         Display display = parent.getDisplay();
 
-        Image background = new Image(display, HayStack.class.getClassLoader()
+        Image background = new Image(display, Haystack.class.getClassLoader()
                 .getResourceAsStream("resource/mainbg.png"));
-        parent.setImage(new Image(display, HayStack.class.getClassLoader()
+        parent.setImage(new Image(display, Haystack.class.getClassLoader()
                 .getResourceAsStream("resource/Icon.gif")));
 
         ImageData imageData = background.getImageData();
