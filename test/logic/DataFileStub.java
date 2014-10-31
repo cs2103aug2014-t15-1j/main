@@ -136,6 +136,13 @@ public class DataFileStub extends DataFile {
     public BlockDate getBlockDate(int id) {
         return new BlockDateStub(new DateTimeStub(), new DateTimeStub());
     }
+    
+    @Override
+    public List<BlockDate> getAllBlockDates() {
+        List<BlockDate> outputs = new ArrayList<BlockDate>();
+        outputs.add(new BlockDateStub(new DateTimeStub("13/10/2014", "0000"), new DateTimeStub("13/10/2014", "2359")));
+        return outputs;
+    }
 
     @Override
     public boolean deleteBD(BlockDate bD) {

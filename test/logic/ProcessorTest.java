@@ -26,13 +26,11 @@ public class ProcessorTest {
 	private static Task testTask1 = new Task("Do CS2103 Homework", new DateTime(), new DateTime(), new DateTime(), testTags);
 	private static Task testTask2 = new Task("", testTime, new DateTime(), new DateTime(), new ArrayList<String>());
 	private static Task testTask3 = new Task("", new DateTime(), testTime, new DateTime(), new ArrayList<String>());
-	private static Task testTask4 = new Task("", new DateTime(), new DateTime(), testTime, new ArrayList<String>());
 	private static Task testTask5 = new Task("", new DateTime(), new DateTime(), new DateTime(), testTags);
 	private static Task testTask6 = new Task("Do CS2103 Homework", testTime, testTime, new DateTime(), testTags);
 	private static Task testTask7 = new Task("Do EE2020 Homework", new DateTime(), new DateTime(), new DateTime(), new ArrayList<String>());
 	private static Task testTask8 = new Task("Do EE2020 Homework", testTime, new DateTime(), new DateTime(),  new ArrayList<String>());
     private static Task testTask9 = new Task("Do EE2020 Homework", testTime, testTime, new DateTime(), new ArrayList<String>());
-    private static Task testTask10 = new Task("Do EE2020 Homework", testTime, testTime, new DateTime(), new ArrayList<String>());
     private static Task testTask11 = new Task("Do EE2020 Homework", testTime, testTime, new DateTime(), testTags);
 
 	

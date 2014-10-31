@@ -12,11 +12,6 @@ public class CommandUnblock extends Command {
     // Only one type of unblock search: "id"
     // Use get("id"); returns string
     protected String id;
-
-    private CommandBlock cmdBlock;
-    
-    public CommandUnblock() {
-    }
     
     public CommandUnblock(List<TaskParam> content) {
         this(content, false);
@@ -57,20 +52,6 @@ public class CommandUnblock extends Command {
             default:
                 return null;
         }
-    }
-
-    /**
-     * @return the cmdBlock
-     */
-    public CommandBlock getCmdBlock() {
-        return cmdBlock;
-    }
-
-    /**
-     * @param cmdBlock the cmdBlock to set
-     */
-    public void setCmdBlock(CommandBlock cmdBlock) {
-        this.cmdBlock = cmdBlock;
     }
 
     @Override

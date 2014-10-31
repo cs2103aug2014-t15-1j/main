@@ -181,16 +181,17 @@ public class Processor extends Observable {
 		        log.warning("Error in the input, unable to perform operation.");
 		    }
 		    return new Result(null, false, CommandType.ERROR, ResultType.TASK);
+		} else {
+    		Result result = cmd.execute(userInput);
+    		if (result.isSuccess() && !result.needsConfirmation() && userInput) {
+    			updateCommandHistory(cmd);
+    			if (LOGGING_ENABLED) {
+    			    log.info(result.getCommandType() + " Command executed successfully");
+    			}
+    		}
+    		updateUIPaneWindow();
+    		return result;
 		}
-		Result result = cmd.execute(userInput);
-		if (result.isSuccess() && !result.needsConfirmation() && userInput) {
-			updateCommandHistory(cmd);
-			if (LOGGING_ENABLED) {
-			    log.info(result.getCommandType() + " Command executed successfully");
-			}
-		}
-		updateUIPaneWindow();
-		return result;
 	}
 	
 	/** 

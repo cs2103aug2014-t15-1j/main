@@ -9,7 +9,7 @@ public class TaskParamStub extends TaskParam {
     private String field;
         
     public TaskParamStub(String name, String field) {
-        super(name.trim(), field.trim());
+        super("", "");
         this.name = name.trim();
         this.field = field.trim();
     }

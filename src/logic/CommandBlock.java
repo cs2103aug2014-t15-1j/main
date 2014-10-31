@@ -16,9 +16,6 @@ public class CommandBlock extends Command {
     private DateTime start = new DateTime();
     private DateTime end = new DateTime();
     
-    public CommandBlock() {
-    }
-    
     public CommandBlock(List<TaskParam> content) {
         this(content, false);
     }
@@ -89,17 +86,19 @@ public class CommandBlock extends Command {
         }
         Processor processor = Processor.getInstance();
         List<BlockDate> blockRange = processor.getFile().getAllBlockDates();
-        BlockDate currBlock = new BlockDate(start, end);
         boolean success = true;
-
         List<BlockDate> outputs = new ArrayList<BlockDate>();
         
+        
+        
         for (BlockDate blockedDate : blockRange) {
-            if (blockedDate.contains(currBlock)) {
-                success = false;
-                outputs.add(blockedDate);
-                break;
-            } else if (currBlock.contains(blockedDate)) {
+            if (start.compareTo(blockedDate.getStart()) <= 0 &&
+                    end.compareTo(blockedDate.getEnd()) >= 0) {
+                    success = false;
+                    outputs.add(blockedDate);
+                    break;
+            } else if (blockedDate.getStart().compareTo(start) <= 0 &&
+                    blockedDate.getEnd().compareTo(end) >= 0) {
                 success = false;
                 outputs.add(blockedDate);
                 break;
@@ -107,6 +106,7 @@ public class CommandBlock extends Command {
         }
         
         if (success) {
+            BlockDate currBlock = new BlockDate(start, end);
             processor.getFile().addNewBD(currBlock);
             outputs.add(currBlock);
         }

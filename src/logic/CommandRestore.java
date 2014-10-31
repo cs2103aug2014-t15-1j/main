@@ -130,10 +130,12 @@ public class CommandRestore extends Command {
         try {
             Processor processor = Processor.getInstance();
             List<Task> restoreList = processor.getBackwardSearchListHistory().pop();
-            for (Task t : restoreList) {
-                boolean success = processor.getFile().restoreTask(t);
-                if (success) {
-                    list.add(t);
+            if (restoreList != null) {
+                for (Task t : restoreList) {
+                    boolean success = processor.getFile().restoreTask(t);
+                    if (success) {
+                        list.add(t);
+                    }
                 }
             }
             processor.getForwardSearchListHistory().push(restoreList);

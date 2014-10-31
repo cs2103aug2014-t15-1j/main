@@ -126,13 +126,18 @@ public class CommandAdd extends Command {
      */
     private boolean isBlocked() {
         boolean blocked = false;
-        if (due != null || start != null) {
+        if (!due.isEmpty() || !start.isEmpty()) {
             Processor processor = Processor.getInstance();
             List<BlockDate> blockDates = processor.getFile().getAllBlockDates();
-            BlockDate currDate = new BlockDate(start, due);
             for (BlockDate blockDate : blockDates) {
-                if (blockDate.contains(currDate)) {
-                    return true;
+                //Start && due
+                if (!start.isEmpty() && !due.isEmpty()) {
+                    //return end is before start
+                    return !(due.isEarlierThan(blockDate.getStart()) || !start.isEarlierThan(blockDate.getEnd()));
+                } else if (!start.isEmpty()) {
+                    return !(start.isEarlierThan(blockDate.getStart()) || !start.isEarlierThan(blockDate.getEnd()));
+                } else {
+                    return !(due.isEarlierThan(blockDate.getStart()) || !due.isEarlierThan(blockDate.getEnd()));
                 }
             }
         }

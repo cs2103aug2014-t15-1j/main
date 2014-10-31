@@ -101,9 +101,19 @@ public class CommandSearch extends Command {
     
     private void searchUsingDateAndKeyAndTags(String date, List<String> keywords, List<String> tags) {
         int criteriaCount = getCriteriaCount(date, keywords, tags);
-        if (criteriaCount > 0) {
-            List<Task> allTasks = Processor.getInstance().getFile().getAllTasks();
-            for (Task task : allTasks) {
+        if (criteriaCount >= 0) {
+            List<Task> searchRange = Processor.getInstance().getFile().getToDoTasks();
+            if (status.equals("all")) {
+                searchRange = Processor.getInstance().getFile().getAllTasks();
+            }
+            if (status.equals("done")) {
+                searchRange = Processor.getInstance().getFile().getDoneTasks();
+            }
+            if (status.equals("deleted")) {
+                searchRange = Processor.getInstance().getFile().getDeletedTasks();
+            }
+            
+            for (Task task : searchRange) {
                 int found = criteriaCount;
                 if (date != "") {
                     if (task.getSummary().contains(date)) {
@@ -135,14 +145,18 @@ public class CommandSearch extends Command {
     
     private int getCriteriaCount(String date, List<String> keywords, List<String> tags) {
         int count = 0;
-        if (date != "")
+        if (date != "") {
             count++;
+        }
+        
         if (!keywords.isEmpty()) {
             count++;
         }
+
         if (!tags.isEmpty()) {
             count++;
         }
+
         return count;
     }
     
