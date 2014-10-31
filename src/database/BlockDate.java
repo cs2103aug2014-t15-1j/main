@@ -14,7 +14,7 @@ public class BlockDate implements Comparable<BlockDate>, Comparator<BlockDate> {
 
     /**
      * Unique ID for each new Task object. Increments at new Task instantiation.
-     * Cannot decrement unless undoing a new Task creation.
+     * Decrements when undoing an object creation.
      */
     private static int newId = 1;
 
@@ -24,13 +24,13 @@ public class BlockDate implements Comparable<BlockDate>, Comparator<BlockDate> {
     private DateTime start = new DateTime();
     private DateTime end = new DateTime();
 
-    /** Default constructor. Initialized with default DateTime objects. */
+    /** Default constructor. Object has empty attributes. Does not increment id. */
     public BlockDate() {
         ID = 0;
     }
 
     /**
-     * Constructor.
+     * Constructor. Increments id.
      * 
      * @param start
      *            When blocked time period starts.
@@ -38,6 +38,10 @@ public class BlockDate implements Comparable<BlockDate>, Comparator<BlockDate> {
      *            When blocked time period ends.
      */
     public BlockDate(DateTime start, DateTime end) {
+        assert start != null;
+        assert end != null;
+        assert start.toString().matches(DateTime.getDateTimePattern());
+        assert end.toString().matches(DateTime.getDateTimePattern());
         ID = newId++;
         this.start = new DateTime(start);
         this.end = new DateTime(end);
@@ -51,6 +55,10 @@ public class BlockDate implements Comparable<BlockDate>, Comparator<BlockDate> {
      */
     @Override
     public String toString() {
+        assert start != null;
+        assert end != null;
+        assert start.toString().matches(DateTime.getDateTimePattern());
+        assert end.toString().matches(DateTime.getDateTimePattern());
         return start.toString() + " to " + end.toString();
     }
 
@@ -58,12 +66,12 @@ public class BlockDate implements Comparable<BlockDate>, Comparator<BlockDate> {
     public int compareTo(BlockDate blockDate) {
         return this.getEnd().compareTo(blockDate.getStart());
     }
-    
+
     @Override
     public int compare(BlockDate blockDate, BlockDate otherBlockDate) {
-        if (blockDate.getId() < blockDate.getId()) {
+        if (blockDate.getId() < otherBlockDate.getId()) {
             return -1;
-        } else if (blockDate.getId() > blockDate.getId()) {
+        } else if (blockDate.getId() > otherBlockDate.getId()) {
             return 1;
         } else {
             return 0;
@@ -160,24 +168,22 @@ public class BlockDate implements Comparable<BlockDate>, Comparator<BlockDate> {
             this.getEnd().compareTo(blockDate.getEnd()) >= 0) {
             contains = true;
         }
-        
+
         return contains;
-    }
-
-    // TODO rename?
-    /** Reduces ID counter when BlockDate object is to be wiped. */
-    public void wipeBlockDate() {
-        newId--;
-    }
-
-    // TODO rename?
-    /** Resets ID counter when all BlockDate objects are wiped. */
-    public static void wipeAllBlockDates() {
-        newId = 1;
     }
 
     public int getId() {
         return ID;
+    }
+
+    /** Reduces ID counter by one. */
+    public void decrementId() {
+        --newId;
+    }
+
+    /** Resets ID counter. */
+    public static void resetId() {
+        newId = 1;
     }
 
     public DateTime getStart() {

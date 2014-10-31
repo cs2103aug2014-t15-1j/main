@@ -577,7 +577,7 @@ public class DataFile {
         } else {
             toDoTasks.remove(task);
         }
-        task.wipeTask();
+        task.decrementId();
         return updateTaskFile();
     }
 
@@ -589,8 +589,8 @@ public class DataFile {
      * @return True, if successfully cleared file of data.
      */
     public boolean wipeFile() {
-        Task.wipeAllTasks();
-        BlockDate.wipeAllBlockDates();
+        Task.resetId();
+        BlockDate.resetId();
         allTasks.clear();
         toDoTasks.clear();
         doneTasks.clear();
@@ -850,7 +850,7 @@ public class DataFile {
         }
 
         allBlockDates.remove(bD);
-        bD.wipeBlockDate();
+        bD.decrementId();
         return updateBlockDateFile();
     }
 }

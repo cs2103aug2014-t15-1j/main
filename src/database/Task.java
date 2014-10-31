@@ -21,7 +21,7 @@ public class Task implements Comparable<Task>, Comparator<Task> {
 
     /**
      * Unique ID for each new Task object. Increments at new Task instantiation.
-     * Cannot decrement unless undoing a new Task creation.
+     * Decrements when undoing an object creation.
      */
     private static int newId = 1;
 
@@ -49,7 +49,7 @@ public class Task implements Comparable<Task>, Comparator<Task> {
     /** Deleted status takes precedence over to-do or done status. */
     private boolean deleted = false;
 
-    /** Default constructor. Empty object. Doesn't increment id count. */
+    /** Default constructor. Empty object attributes. Doesn't increment id. */
     public Task() {
         ID = 0;
     }
@@ -260,20 +260,18 @@ public class Task implements Comparable<Task>, Comparator<Task> {
         return concatanatedTags;
     }
 
-    // TODO rename?
-    /** Reduces ID counter when Task object is to be wiped. */
-    public void wipeTask() {
-        newId--;
-    }
-
-    // TODO rename?
-    /** Resets ID counter when all Tasks objects are wiped. */
-    public static void wipeAllTasks() {
-        newId = 1;
-    }
-
     public int getId() {
         return ID;
+    }
+
+    /** Reduces ID counter by one. */
+    public void decrementId() {
+        --newId;
+    }
+
+    /** Resets ID counter. */
+    public static void resetId() {
+        newId = 1;
     }
 
     public String getName() {
