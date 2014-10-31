@@ -201,16 +201,7 @@ public class DateTime implements Comparable<DateTime> {
             } else if (time1 > time2) {
                 return LATER;
             }
-        } 
-        /*
-        else if (this.time.isEmpty() && !otherDateTime.time.isEmpty()) {
-            // Treat empty time value as earlier than any other time
-            return EARLIER;
-        } else if (!this.time.isEmpty() && otherDateTime.time.isEmpty()) {
-            // Treat empty time value as earlier than any other time
-            return LATER;
         }
-        */
 
         // No differences detected
         return EQUAL;

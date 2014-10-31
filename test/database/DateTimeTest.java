@@ -267,7 +267,6 @@ public class DateTimeTest {
      * <li>Equal date values.
      * <li>Equal date but different time values.
      * <li>Equal date and time values.
-     * <li>One has time values, but the other doesn't.
      * </ul>
      */
     @Test
@@ -310,17 +309,6 @@ public class DateTimeTest {
         dT2.setTime(time1);
         assertTrue("First is equal to second", dT1.compareTo(dT2) == 0);
         assertTrue("Second is equal to first", dT2.compareTo(dT1) == 0);
-
-        // Equal date, first without time, second with
-        dT1.resetTime();
-        assertTrue("First is earlier than second", dT1.compareTo(dT2) < 0);
-        assertTrue("Second is later than first", dT2.compareTo(dT1) > 0);
-
-        // Equal date, first with time, second without
-        dT1.setTime(time1);
-        dT2.resetTime();
-        assertTrue("First is later than second", dT1.compareTo(dT2) > 0);
-        assertTrue("Second is earlier than first", dT2.compareTo(dT1) < 0);
     }
 
     /**
