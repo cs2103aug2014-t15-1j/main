@@ -22,7 +22,7 @@ import org.eclipse.swt.widgets.Display;
 import database.DateTime;
 import database.Task;
 
-public class UpcomingTaskList extends Composite implements Observer {
+public class UpcomingTaskList implements Observer {
 
     public static final String LINE_SEPARATOR = System
             .getProperty("line.separator");
@@ -49,7 +49,6 @@ public class UpcomingTaskList extends Composite implements Observer {
     }
 
     private UpcomingTaskList(Composite parent, int style) {
-        super(parent, style);
         buildControls(parent);
     }
 
@@ -68,7 +67,7 @@ public class UpcomingTaskList extends Composite implements Observer {
     }
 
     private void format(StyledText list) {
-        Display display = this.getShell().getDisplay();
+        Display display = list.getShell().getDisplay();
         Color white = display.getSystemColor(SWT.COLOR_WHITE);
         list.setBackground(white);
         list.setEnabled(true);
@@ -179,7 +178,7 @@ public class UpcomingTaskList extends Composite implements Observer {
 
     private void setListLayout(StyledText list) {
         GridData gridData = new GridData(GridData.FILL_BOTH);
-        gridData.heightHint = 250;
+        gridData.heightHint = 500;
         list.setLayoutData(gridData);
         list.setWordWrap(true);
     }
