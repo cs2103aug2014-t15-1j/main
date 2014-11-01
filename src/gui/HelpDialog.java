@@ -70,7 +70,7 @@ public class HelpDialog extends Dialog {
         label.setData(data);
 
         InputStream stream = getClass()
-                .getResourceAsStream("/resource/HelpSheet.jpg");
+                .getResourceAsStream("/resource/Helpsheet.jpg");
         ImageData imageData = new ImageData(stream);
         image = new Image(parent.getDisplay(), imageData);
 
