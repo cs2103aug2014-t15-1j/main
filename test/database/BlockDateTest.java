@@ -1,6 +1,6 @@
 package database;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import org.junit.Test;
 
@@ -14,8 +14,9 @@ import org.junit.Test;
 public class BlockDateTest {
 
     @Test
-    public void testDefaultConstructorHasEmptyAttributes() throws Exception {
+    public void testDefaultConstructorHasEmptyAttributes() {
         BlockDate bD = new BlockDate();
+        assertEquals("Blank ID", 0, bD.getId());
         assertEquals("Empty start date", "", bD.getStartDate());
         assertEquals("Empty start time", "", bD.getStartTime());
         assertEquals("Empty end date", "", bD.getEndDate());
@@ -23,7 +24,7 @@ public class BlockDateTest {
     }
 
     @Test
-    public void testConstructorStoresDateTimeArgs() throws Exception {
+    public void testConstructorStoresDateTimeArgs() {
         DateTime start = new DateTime("11/12/2014", "1111");
         DateTime end = new DateTime("13/12/2014", "2222");
         BlockDate bD = new BlockDate(start, end);
@@ -41,7 +42,82 @@ public class BlockDateTest {
     }
 
     @Test
-    public void testResetStartDate() throws Exception {
+    public void testToString() {
+        DateTime start = new DateTime("11/12/2014", "1111");
+        DateTime end = new DateTime("13/12/2014", "2222");
+        BlockDate bD = new BlockDate(start, end);
+
+        assertEquals("Matches toString pattern",
+                     "11/12/2014 1111 to 13/12/2014 2222", bD.toString());
+    }
+
+    /**
+     * Is this end earlier, equal, later than that start
+     */
+    @Test
+    public void testCompareTo() {
+        DateTime start1 = new DateTime("11/12/2014", "1111");
+        DateTime end1 = new DateTime("13/12/2014", "2222");
+        BlockDate bD1 = new BlockDate(start1, end1);
+
+        DateTime start2 = new DateTime("13/12/2014", "2223");
+        DateTime end2 = new DateTime("13/12/2014", "2359");
+        BlockDate bD2 = new BlockDate(start2, end2);
+
+        assertTrue("First ends before second starts", bD1.compareTo(bD2) < 0);
+
+        bD2.setStartTime("2222");
+        assertTrue("First ends when second starts", bD1.compareTo(bD2) == 0);
+
+        bD2.setStartTime("2221");
+        assertTrue("First ends before second starts", bD1.compareTo(bD2) > 0);
+    }
+
+    /**
+     * compares id, to facilitate sorting by id
+     */
+    @Test
+    public void testCompare() {
+        DateTime start = new DateTime("11/12/2014", "1111");
+        DateTime end = new DateTime("13/12/2014", "2222");
+        BlockDate bD1 = new BlockDate(start, end);
+        BlockDate bD2 = new BlockDate(start, end);
+
+        assertTrue("First ID is smaller than second", bD1.getId() < bD2.getId());
+
+        assertTrue("First ID is smaller than second", bD1.compare(bD1, bD2) < 0);
+        assertTrue("Second ID is later than first", bD1.compare(bD2, bD1) > 0);
+        assertTrue("First ID is equal to self", bD1.compare(bD1, bD1) == 0);
+    }
+
+    /**
+     * Checks if equals function is correct across the following cases:
+     * <ul>
+     * <li>Not equal to non-BlockDate types.
+     * <li>Equals to self.
+     * <li>Equals to another object with equal attribute values.
+     * <li>Not equal to another object with different attribute values.
+     * </ul>
+     */
+    @Test
+    public void testEquals() {
+        DateTime start1 = new DateTime("11/12/2014", "1111");
+        DateTime end1 = new DateTime("13/12/2014", "2222");
+        BlockDate bD1 = new BlockDate(start1, end1);
+        BlockDate bD2 = new BlockDate(start1, end1);
+
+        DateTime start2 = new DateTime("13/12/2014", "2223");
+        DateTime end2 = new DateTime("13/12/2014", "2359");
+        BlockDate bD3 = new BlockDate(start2, end2);
+
+        assertFalse("Different types", bD1.equals(new Task()));
+        assertTrue("Identical to self", bD1.equals(bD1));
+        assertTrue("Equal values", bD1.equals(bD2));
+        assertFalse("Not equal values", bD1.equals(bD3));
+    }
+
+    @Test
+    public void testResetStartDate() {
         DateTime start = new DateTime("11/12/2014", "1111");
         DateTime end = new DateTime("13/12/2014", "2222");
         BlockDate bD = new BlockDate(start, end);
@@ -57,7 +133,7 @@ public class BlockDateTest {
     }
 
     @Test
-    public void testResetStartTime() throws Exception {
+    public void testResetStartTime() {
         DateTime start = new DateTime("11/12/2014", "1111");
         DateTime end = new DateTime("13/12/2014", "2222");
         BlockDate bD = new BlockDate(start, end);
@@ -73,7 +149,7 @@ public class BlockDateTest {
     }
 
     @Test
-    public void testResetStart() throws Exception {
+    public void testResetStart() {
         DateTime start = new DateTime("11/12/2014", "1111");
         DateTime end = new DateTime("13/12/2014", "2222");
         BlockDate bD = new BlockDate(start, end);
@@ -89,7 +165,7 @@ public class BlockDateTest {
     }
 
     @Test
-    public void testResetEnd() throws Exception {
+    public void testResetEnd() {
         DateTime start = new DateTime("11/12/2014", "1111");
         DateTime end = new DateTime("13/12/2014", "2222");
         BlockDate bD = new BlockDate(start, end);
@@ -105,7 +181,7 @@ public class BlockDateTest {
     }
 
     @Test
-    public void testResetEndDate() throws Exception {
+    public void testResetEndDate() {
         DateTime start = new DateTime("11/12/2014", "1111");
         DateTime end = new DateTime("13/12/2014", "2222");
         BlockDate bD = new BlockDate(start, end);
@@ -121,7 +197,7 @@ public class BlockDateTest {
     }
 
     @Test
-    public void testResetEndTime() throws Exception {
+    public void testResetEndTime() {
         DateTime start = new DateTime("11/12/2014", "1111");
         DateTime end = new DateTime("13/12/2014", "2222");
         BlockDate bD = new BlockDate(start, end);
