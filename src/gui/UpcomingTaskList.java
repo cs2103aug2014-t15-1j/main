@@ -60,7 +60,7 @@ public class UpcomingTaskList extends Composite implements Observer {
 
     private void buildList(Composite parent) {
         list = new StyledText(parent, SWT.MULTI | SWT.READ_ONLY |
-                                      SWT.LEFT_TO_RIGHT);
+                                      SWT.LEFT_TO_RIGHT | SWT.V_SCROLL);
 
         list.setFont(registry.get("list headers"));
         setListLayout(list);

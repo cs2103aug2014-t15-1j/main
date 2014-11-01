@@ -1,13 +1,9 @@
 package gui;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import org.eclipse.jface.resource.FontRegistry;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -46,7 +42,6 @@ public class SidePane extends Composite {
         UpcomingTaskList.getInstance(this, this.getStyle());
         buildSomedayLabel();
         FloatingTaskList.getInstance(this, this.getStyle());
-        buildDateLabel();
     }
 
     private void addCalendar() {
@@ -92,27 +87,6 @@ public class SidePane extends Composite {
         GridData centeredGridData = new GridData(SWT.CENTER, SWT.FILL, true,
                 true);
         floatingTask.setLayoutData(centeredGridData);
-    }
-
-    private void buildDateLabel() {
-        StyledText todaysDate = new StyledText(this, SWT.READ_ONLY |
-                                                     SWT.SINGLE | SWT.RIGHT |
-                                                     SWT.BOLD);
-        todaysDate.setFont(fontRegistry.get("list headers"));
-
-        todaysDate.setText(getTodaysDate());
-        todaysDate.setForeground(getTextColour());
-
-    }
-
-    private String getTodaysDate() {
-        Date date = new Date();
-        String now = new SimpleDateFormat("EEE MMM d, yyyy").format(date);
-        return now;
-    }
-
-    private Color getTextColour() {
-        return this.getDisplay().getSystemColor(SWT.COLOR_WHITE);
     }
 
 }
