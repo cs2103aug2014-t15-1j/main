@@ -230,7 +230,7 @@ public class FeedbackAndInput extends Composite {
                     return;
                 } else if (!isOutOfBounds(input, 1) &&
                            Character.toLowerCase(input.charAt(1)) == 'o') {
-                    feedback.setText("done");
+                    feedback.setText("done [id]");
                     return;
                 }
                 feedback.setText("delete [id] ");
