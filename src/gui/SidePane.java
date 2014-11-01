@@ -4,11 +4,13 @@ import org.eclipse.jface.resource.FontRegistry;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DateTime;
+import org.eclipse.swt.widgets.Display;
 
 public class SidePane extends Composite {
 
@@ -45,7 +47,7 @@ public class SidePane extends Composite {
     }
 
     private void addCalendar() {
-        DateTime cal = new DateTime(this, SWT.CALENDAR);
+        new DateTime(this, SWT.CALENDAR);
     }
 
     private void formatRegistry() {
@@ -76,6 +78,7 @@ public class SidePane extends Composite {
         GridData centeredGridData = new GridData(SWT.CENTER, SWT.FILL, true,
                 true);
         upcomingTask.setLayoutData(centeredGridData);
+        // setColor(upcomingTask);
     }
 
     private void buildSomedayLabel() {
@@ -83,10 +86,20 @@ public class SidePane extends Composite {
                                                        SWT.READ_ONLY);
         floatingTask.setText("SOMEDAY");
         floatingTask.setFont(fontRegistry.get("labels"));
+
         // floatingTask.setImage(imageRegistry.get("someday"));
         GridData centeredGridData = new GridData(SWT.CENTER, SWT.FILL, true,
                 true);
         floatingTask.setLayoutData(centeredGridData);
+        // setColor(floatingTask);
+    }
+
+    private void setColor(StyledText text) {
+        Display display = text.getDisplay();
+        Color white = display.getSystemColor(SWT.COLOR_WHITE);
+        Color yellow = display.getSystemColor(SWT.COLOR_YELLOW);
+        text.setForeground(white);
+        text.setBackground(yellow);
     }
 
 }

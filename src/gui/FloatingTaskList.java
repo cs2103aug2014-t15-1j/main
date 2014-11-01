@@ -17,7 +17,7 @@ import org.eclipse.swt.widgets.Composite;
 
 import database.Task;
 
-public class FloatingTaskList extends Composite implements Observer {
+public class FloatingTaskList implements Observer {
 
     private static final String DOT_AND_SPACE = ". ";
     private static final String LINE_SEPARATOR = System
@@ -28,7 +28,6 @@ public class FloatingTaskList extends Composite implements Observer {
     private StyledText list;
 
     private FloatingTaskList(Composite parent, int style) {
-        super(parent, style);
         buildControls(parent);
     }
 
@@ -139,12 +138,13 @@ public class FloatingTaskList extends Composite implements Observer {
 
     private void setLayout() {
         GridData gridData = new GridData(GridData.FILL_BOTH);
-        gridData.heightHint = 250;
+        gridData.heightHint = 150;
         list.setLayoutData(gridData);
+        list.setWordWrap(true);
     }
 
     private void format() {
-        Color white = this.getDisplay().getSystemColor(SWT.COLOR_WHITE);
+        Color white = list.getDisplay().getSystemColor(SWT.COLOR_WHITE);
         list.setBackground(white);
         list.setWordWrap(true);
         list.setEnabled(true);
