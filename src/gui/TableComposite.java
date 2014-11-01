@@ -67,7 +67,7 @@ public class TableComposite extends Composite {
         registry.put("title", fontData);
     }
 
-    private void addListener(CTabFolder folder) {
+    private void addListener(final CTabFolder folder) {
         Display display = folder.getDisplay();
         display.addFilter(SWT.KeyDown, new Listener() {
 

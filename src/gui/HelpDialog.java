@@ -79,7 +79,7 @@ public class HelpDialog extends Dialog {
         aLabel.setLayoutData(new GridData(GridData.FILL_BOTH));
     }
 
-    private void addCloseListener(Shell shell) {
+    private void addCloseListener(final Shell shell) {
         Control[] controls = shell.getChildren();
 
         for (int index = 0; index < controls.length; index++) {
