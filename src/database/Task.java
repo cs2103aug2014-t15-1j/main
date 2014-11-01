@@ -7,6 +7,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.ArrayList;
 
+import parser.DateParser;
+
 /**
  * A Task object contains attributes to store a task's unique ID, description,
  * due date and time, scheduled starting date and time, scheduled ending date
@@ -359,11 +361,7 @@ public class Task implements Comparable<Task>, Comparator<Task> {
     public void setDone(boolean done) {
         this.done = done;
         if (done && completedOn.isEmpty()) {
-            DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HHmm");
-            Calendar cal = Calendar.getInstance();
-            String currentDateTime = dateFormat.format(cal.getTime());
-            completedOn.setDate(currentDateTime.substring(0, 10));
-            completedOn.setTime(currentDateTime.substring(11));
+            completedOn = new DateTime(DateParser.getCurrDateTime());
             assert completedOn.getDate().matches(DateTime.getDatePattern());
             assert completedOn.getTime().matches(DateTime.getTimePattern());
         } else if (!done) {
