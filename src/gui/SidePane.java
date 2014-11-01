@@ -13,7 +13,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DateTime;
-import org.eclipse.swt.widgets.Label;
 
 public class SidePane extends Composite {
 
@@ -68,20 +67,28 @@ public class SidePane extends Composite {
         FontData[] fontData = new FontData[] { new FontData("Times New Roman",
                 14, SWT.NORMAL) };
         fontRegistry.put("list headers", fontData);
+
+        fontData = new FontData[] { new FontData("Courier New", 12, SWT.BOLD) };
+        fontRegistry.put("labels", fontData);
     }
 
     private void buildUpcomingLabel() {
-        Label upcomingTask = new Label(this, SWT.NONE);
-
-        upcomingTask.setImage(imageRegistry.get("upcoming"));
+        StyledText upcomingTask = new StyledText(this, SWT.SINGLE |
+                                                       SWT.READ_ONLY);
+        upcomingTask.setText("UPCOMING");
+        upcomingTask.setFont(fontRegistry.get("labels"));
+        // upcomingTask.setImage(imageRegistry.get("upcoming"));
         GridData centeredGridData = new GridData(SWT.CENTER, SWT.FILL, true,
                 true);
         upcomingTask.setLayoutData(centeredGridData);
     }
 
     private void buildSomedayLabel() {
-        Label floatingTask = new Label(this, SWT.SINGLE);
-        floatingTask.setImage(imageRegistry.get("someday"));
+        StyledText floatingTask = new StyledText(this, SWT.SINGLE |
+                                                       SWT.READ_ONLY);
+        floatingTask.setText("SOMEDAY");
+        floatingTask.setFont(fontRegistry.get("labels"));
+        // floatingTask.setImage(imageRegistry.get("someday"));
         GridData centeredGridData = new GridData(SWT.CENTER, SWT.FILL, true,
                 true);
         floatingTask.setLayoutData(centeredGridData);
