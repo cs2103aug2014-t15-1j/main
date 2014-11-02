@@ -50,9 +50,9 @@ public class TaskTest {
         assertEquals("Same type", type, task.getType());
 
         name = "";
-        start.resetDateTime();
-        due.resetDateTime();
-        completedOn.resetDateTime();
+        start = new DateTime();
+        due = new DateTime();
+        completedOn = new DateTime();
         tags.clear();
         type = TaskType.BLOCK;
 
