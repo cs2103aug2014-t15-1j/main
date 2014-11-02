@@ -61,11 +61,7 @@ public class SidePane extends Composite {
 
     private void formatFontRegistry() {
         fontRegistry = new FontRegistry(this.getDisplay());
-        FontData[] fontData = new FontData[] { new FontData("Times New Roman",
-                14, SWT.NORMAL) };
-        fontRegistry.put("list headers", fontData);
-
-        fontData = new FontData[] { new FontData("Courier New", 12, SWT.BOLD) };
+        FontData[] fontData = new FontData[] { new FontData("Courier New", 12, SWT.BOLD) };
         fontRegistry.put("labels", fontData);
     }
 

@@ -61,11 +61,11 @@ public class FeedbackAndInput extends Composite {
 
     private void formatRegistry() {
         registry = new FontRegistry(this.getDisplay());
-        FontData font = new FontData("New Courier", 11, SWT.NORMAL);
+        FontData font = new FontData("Courier New", 14, SWT.NORMAL);
         FontData[] fontData = new FontData[] { font };
         registry.put("type box", fontData);
 
-        fontData = new FontData[] { new FontData("Arial", 11, SWT.NORMAL) };
+        fontData = new FontData[] { new FontData("Courier New", 11, SWT.NORMAL) };
         registry.put("feedback", fontData);
     }
 

@@ -113,7 +113,7 @@ public class TaskTableUI extends Composite {
 
     private void formatRegistry(Composite parent) {
         registry = new FontRegistry(parent.getDisplay());
-        FontData[] fontData = new FontData[] { new FontData("Tahoma", 10,
+        FontData[] fontData = new FontData[] { new FontData("Courier New", 10,
                 SWT.NONE) };
         registry.put("table", fontData);
     }

@@ -124,9 +124,9 @@ public class FloatingTaskList implements Observer {
     private void formatRegistry(Composite parent) {
 
         registry = new FontRegistry(parent.getDisplay());
-        FontData[] fontData = new FontData[] { new FontData("Times New Roman",
+        FontData[] fontData = new FontData[] { new FontData("Courier New",
                 11, SWT.NORMAL) };
-        registry.put("list headers", fontData);
+        registry.put("list", fontData);
     }
 
     private void buildList(Composite parent) {
@@ -148,7 +148,7 @@ public class FloatingTaskList implements Observer {
         list.setBackground(white);
         list.setWordWrap(true);
         list.setEnabled(true);
-        list.setFont(registry.get("list headers"));
+        list.setFont(registry.get("list"));
     }
 
 }

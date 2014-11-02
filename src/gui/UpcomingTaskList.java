@@ -61,7 +61,7 @@ public class UpcomingTaskList implements Observer {
         list = new StyledText(parent, SWT.MULTI | SWT.READ_ONLY |
                                       SWT.LEFT_TO_RIGHT | SWT.V_SCROLL);
 
-        list.setFont(registry.get("list headers"));
+        list.setFont(registry.get("list"));
         setListLayout(list);
         format(list);
     }
@@ -75,9 +75,9 @@ public class UpcomingTaskList implements Observer {
 
     private void formatRegistry(Composite parent) {
         registry = new FontRegistry(parent.getDisplay());
-        FontData[] fontData = new FontData[] { new FontData("Times New Roman",
+        FontData[] fontData = new FontData[] { new FontData("Courier New",
                 11, SWT.NORMAL) };
-        registry.put("list headers", fontData);
+        registry.put("list", fontData);
     }
 
     private String getIndentation(String iD) {
