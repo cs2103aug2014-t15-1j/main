@@ -71,6 +71,19 @@ public class Task implements Comparable<Task>, Comparator<Task> {
      */
     public Task(String name, DateTime start, DateTime due,
             DateTime completedOn, List<String> tags, TaskType type) {
+        assert name != null;
+        assert start != null;
+        assert start.toString().matches(DateTime.getDateTimePattern());
+        assert due != null;
+        assert due.toString().matches(DateTime.getDateTimePattern());
+        assert completedOn != null;
+        assert completedOn.toString().matches(DateTime.getDateTimePattern());
+        assert tags != null;
+        assert type != null;
+        if (type == TaskType.BLOCK) {
+            assert !start.isEmpty();
+            assert !due.isEmpty();
+        }
         this.ID = newId++;
         this.name = name;
         this.start = start;
@@ -126,21 +139,38 @@ public class Task implements Comparable<Task>, Comparator<Task> {
      */
     @Override
     public int compareTo(Task otherTask) {
-        return this.due.compareTo(otherTask.due);
+        if (type == TaskType.BLOCK) {
+            return this.getDue().compareTo(otherTask.getStart());
+        } else {
+            return this.due.compareTo(otherTask.due);
+        }
     }
 
     /**
-     * Sorting by id.
+     * Sorting by DateTime. If start attribute is not empty, that takes
+     * precedence over due attribute in comparisons.
      */
     @Override
     public int compare(Task task, Task otherTask) {
-        if (task.getId() < otherTask.getId()) {
-            return -1;
-        } else if (task.getId() > otherTask.getId()) {
-            return 1;
-        } else {
-            return 0;
+        DateTime taskDate = task.getDue();
+        DateTime otherTaskDate = otherTask.getDue();
+        if (!task.getStart().isEmpty()) {
+            taskDate = task.getStart();
         }
+        if (!otherTask.getStart().isEmpty()) {
+            otherTaskDate = otherTask.getStart();
+        }
+
+        return taskDate.compareTo(otherTaskDate);
+    }
+
+    public boolean contains(Task otherTask) {
+        // Within Range of days
+        if (this.getStart().compareTo(otherTask.getStart()) <= 0 &&
+            this.getDue().compareTo(otherTask.getDue()) >= 0) {
+            return true;
+        }
+        return false;
     }
 
     /**
