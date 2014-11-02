@@ -207,18 +207,17 @@ public class DateTimeTest {
         date = "";
         time = "";
 
-        // Check that values have been cloned successfully
+        // Check that attributes have been cloned successfully
         assertEquals("Cloned date", dT1.getDate(), dT2.getDate());
         assertEquals("Cloned day", dT1.getDay(), dT2.getDay());
         assertEquals("Cloned month", dT1.getMonth(), dT2.getMonth());
         assertEquals("Cloned year", dT1.getYear(), dT2.getYear());
         assertEquals("Cloned time", dT1.getTime(), dT2.getTime());
 
-        dT1.setDate(date);
-        dT1.setTime(time);
+        dT1.resetDateTime();
         assertTrue("Empty DateTime", dT1.isEmpty());
 
-        // Check that values have been cloned by value
+        // Check that attributes have been cloned by value
         assertEquals("Cloned date by value", "10/11/2014", dT2.getDate());
         assertEquals("Cloned day by value", 10, dT2.getDay());
         assertEquals("Cloned month by value", 11, dT2.getMonth());
@@ -352,7 +351,7 @@ public class DateTimeTest {
     }
 
     /**
-     * Checks if hasCode function follows the following general contracts of
+     * Checks if hashCode function follows the following general contracts of
      * hashCode:
      * <ul>
      * <li>Whenever it is invoked on the same object more than once during an
