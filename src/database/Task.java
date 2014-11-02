@@ -387,6 +387,10 @@ public class Task implements Comparable<Task>, Comparator<Task> {
         return type == TaskType.BLOCK;
     }
 
+    public TaskType getType() {
+        return type;
+    }
+    
     public void setType(TaskType type) {
         this.type = type;
         if (type == TaskType.DONE && completedOn.isEmpty()) {
