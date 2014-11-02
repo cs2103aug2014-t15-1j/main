@@ -1,5 +1,8 @@
 package database;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Comparator;
 import java.util.List;
 import java.util.ArrayList;
@@ -43,9 +46,9 @@ public class Task implements Comparable<Task>, Comparator<Task> {
     private List<String> tags = new ArrayList<String>();
 
     /** Tasks are created as to-do by default. */
-    private TaskType type = TaskType.TODO;
+    private boolean done = false;
 
-    /** Deleted status takes precedence over type. */
+    /** Deleted status takes precedence over to-do or done status. */
     private boolean deleted = false;
 
     /** Default constructor. Empty object attributes. Doesn't increment id. */
@@ -70,20 +73,17 @@ public class Task implements Comparable<Task>, Comparator<Task> {
      *            To aid searching and categorizing. Each tag contains #.
      */
     public Task(String name, DateTime start, DateTime due,
-            DateTime completedOn, List<String> tags, TaskType type) {
+            DateTime completedOn, List<String> tags) {
         this.ID = newId++;
         this.name = name;
         this.start = start;
         this.due = due;
         this.completedOn = completedOn;
         this.tags = tags;
-        this.type = type;
     }
 
     /**
      * Cloning constructor. Does not increment ID counter.
-     * 
-     * TODO replace with overridden Object class' clone function.
      * 
      * @param task
      *            The existing Task object to clone attributes by value from.
@@ -95,7 +95,8 @@ public class Task implements Comparable<Task>, Comparator<Task> {
         this.due = task.getDue();
         this.completedOn = task.getCompletedOn();
         this.tags.addAll(task.getTags());
-        this.type = task.type;
+        this.deleted = task.isDeleted();
+        this.done = task.isDone();
     }
 
     /**
@@ -110,7 +111,6 @@ public class Task implements Comparable<Task>, Comparator<Task> {
         summary += due + " ";
         summary += completedOn + " ";
         summary += concatanateTags();
-        summary += type;
         return summary;
     }
 
@@ -129,9 +129,6 @@ public class Task implements Comparable<Task>, Comparator<Task> {
         return this.due.compareTo(otherTask.due);
     }
 
-    /**
-     * Sorting by id.
-     */
     @Override
     public int compare(Task task, Task otherTask) {
         if (task.getId() < otherTask.getId()) {
@@ -190,10 +187,13 @@ public class Task implements Comparable<Task>, Comparator<Task> {
         }
 
         Task otherTask = (Task) obj;
-        return type.equals(otherTask.type) && name.equals(otherTask.name) &&
-               start.equals(otherTask.start) && due.equals(otherTask.due) &&
-               completedOn.equals(otherTask.completedOn) &&
-               tags.equals(otherTask.tags);
+        return otherTask.deleted == this.deleted &&
+               otherTask.done == this.done &&
+               otherTask.name.equals(this.name) &&
+               otherTask.start.equals(this.start) &&
+               otherTask.due.equals(this.due) &&
+               otherTask.completedOn.equals(this.completedOn) &&
+               otherTask.tags.equals(this.tags);
     }
 
     /**
@@ -242,7 +242,7 @@ public class Task implements Comparable<Task>, Comparator<Task> {
         tempString += "due: " + due.toString() + " ";
         tempString += "completed: " + completedOn.toString() + " ";
         tempString += concatanateTags();
-        tempString += "type: " + type.toString();
+        tempString += "status: " + (done ? "done" : "todo");
 
         return tempString;
     }
@@ -319,6 +319,15 @@ public class Task implements Comparable<Task>, Comparator<Task> {
         return completedOn;
     }
 
+    private void setCompletedOn(DateTime completedOn) {
+        this.completedOn = completedOn;
+    }
+
+    /** Resets scheduled end date and time to an empty String. */
+    private void resetCompletedOn() {
+        completedOn.resetDateTime();
+    }
+
     public List<String> getTags() {
         return tags;
     }
@@ -345,25 +354,17 @@ public class Task implements Comparable<Task>, Comparator<Task> {
         tags.clear();
     }
 
-    public boolean isToDo() {
-        return type == TaskType.TODO;
-    }
-
     public boolean isDone() {
-        return type == TaskType.DONE;
+        return done;
     }
 
-    public boolean isBlock() {
-        return type == TaskType.BLOCK;
-    }
-
-    public void setType(TaskType type) {
-        this.type = type;
-        if (type == TaskType.DONE && completedOn.isEmpty()) {
+    public void setDone(boolean done) {
+        this.done = done;
+        if (done && completedOn.isEmpty()) {
             completedOn = new DateTime(DateParser.getCurrDateTime());
             assert completedOn.getDate().matches(DateTime.getDatePattern());
             assert completedOn.getTime().matches(DateTime.getTimePattern());
-        } else if (type == TaskType.TODO) {
+        } else if (!done) {
             completedOn.resetDateTime();
         }
     }
