@@ -170,14 +170,6 @@ public class DateTime implements Comparable<DateTime> {
         int mth2 = otherDateTime.month;
         int yr2 = otherDateTime.year;
 
-        // Check for default year values, indicating empty date values
-        // Treat empty date values as later than any date value
-        if (yr1 == 0 && yr2 != 0) {
-            return LATER;
-        } else if (yr2 == 0 && yr1 != 0) {
-            return EARLIER;
-        }
-
         // Check year for differences
         if (yr1 < yr2) {
             return EARLIER;
@@ -209,12 +201,6 @@ public class DateTime implements Comparable<DateTime> {
             } else if (time1 > time2) {
                 return LATER;
             }
-        } else if (!this.time.isEmpty()) {
-            // Treat empty time value as later than any other time
-            return EARLIER;
-        } else if (!otherDateTime.time.isEmpty()) {
-            // Treat empty time value as later than any other time
-            return LATER;
         }
 
         // No differences detected
