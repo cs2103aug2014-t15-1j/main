@@ -41,16 +41,16 @@ public class TaskTableUI extends Composite {
     private static final String PARA_STATUS_DONE = "Done";
 
     // NOTE: 350 is able to fit up to 20 chars
-    private static final int COL_WIDTH = 100;
+    private static final int COL_WIDTH = 175;
 
     // NOTE: 50 is able to fit ID, two digit numbers, "." - XX.
-    private static final int COL_WIDTH_ID = 30;
+    private static final int COL_WIDTH_ID = 35;
 
     // NOTE:250 is able to fit both date and time - DD/MM/YYYY HHMM
-    private static final int COL_WIDTH_DATE = 120;
+    private static final int COL_WIDTH_DATE = 150;
 
     // NOTE: 150 is just right for all statuses - To Do, Done, Deleted
-    private static final int COL_WIDTH_STATUS = 135;
+    private static final int COL_WIDTH_STATUS = 175;
 
     private TableViewer tableViewer;
     private CTabFolder folder;
@@ -267,7 +267,7 @@ public class TaskTableUI extends Composite {
             public void handleEvent(Event event) {
                 switch (event.type) {
                     case SWT.RESIZE:
-                        resizeCol();
+                      //  resizeCol();
                         break;
 
                     default:
