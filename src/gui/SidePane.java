@@ -39,6 +39,7 @@ public class SidePane extends Composite {
 
     private void createChildren() {
         formatRegistry();
+        new TimeUI(this);
         addCalendar();
         buildUpcomingLabel();
         UpcomingTaskList.getInstance(this, this.getStyle());
