@@ -64,7 +64,7 @@ public class DateParser {
         return dateFields[0];
     }
 
-    private static String getTmrDateStr() {
+    public static String getTmrDateStr() {
         String today = getCurrDateStr();
         String[] dateFields = today.split("/");
 
