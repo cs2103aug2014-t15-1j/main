@@ -30,6 +30,8 @@ public class ResultGenerator {
         FloatingTaskList floatingList = FloatingTaskList.getInstance();
         processor.addObserver(floatingList);
         floatingList.initialise();
+        FeedbackAndInput feedbackAndInput = FeedbackAndInput.getInstance();
+        processor.addObserver(feedbackAndInput);
         refreshTodoTable();
     }
 

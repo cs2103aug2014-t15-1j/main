@@ -25,7 +25,7 @@ public class MainInterface extends Composite {
 
     private void createContents(Composite parent) {
         new TableComposite(this, this.getStyle());
-        new FeedbackAndInput(this, this.getStyle());
+        FeedbackAndInput.getInstance(this, this.getStyle());
     }
 
 }

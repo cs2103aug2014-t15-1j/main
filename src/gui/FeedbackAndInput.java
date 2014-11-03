@@ -1,5 +1,10 @@
 package gui;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
+
 import logic.Processor;
 
 import org.eclipse.jface.resource.FontRegistry;
@@ -17,7 +22,9 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 
-public class FeedbackAndInput extends Composite {
+import database.BlockDate;
+
+public class FeedbackAndInput extends Composite implements Observer {
 
     private static final String MESSAGE_TYPE_HERE = "Type here";
     private static final String WELCOME_MESSAGE = "Welcome.";
@@ -35,15 +42,34 @@ public class FeedbackAndInput extends Composite {
     private FontRegistry registry;
     private Text commandLine;
     private StyledText feedback;
+    private StyledText blockDateLabel;
     private boolean isReplyToConfrimation = false;
     private static ResultGenerator resultGenerator = ResultGenerator
             .getInstance();
+    private static FeedbackAndInput feedbackAndInput;
 
     public FeedbackAndInput(Composite parent, int style) {
         super(parent, style);
-        this.setToolTipText("I am a composite");
         setLayout(parent);
         buildControls();
+    }
+    
+    public static  FeedbackAndInput getInstance(Composite parent, int style){
+        if(feedbackAndInput == null){
+            feedbackAndInput = new FeedbackAndInput(parent, style);
+        }
+        return feedbackAndInput;
+    }
+    
+    public static  FeedbackAndInput getInstance(){
+        return feedbackAndInput;
+    }
+    
+    
+    
+    @Override
+    public void update(Observable arg0, Object arg1) {
+       blockDateLabel.setText(getDateLabelText());
     }
 
     private void setLayout(Composite parent) {
@@ -54,6 +80,7 @@ public class FeedbackAndInput extends Composite {
 
     private void buildControls() {
         formatRegistry();
+        buildBlockDateUI();
         buildCommandLineUI();
         buildFeedbackUI();
         addListeners();
@@ -67,8 +94,26 @@ public class FeedbackAndInput extends Composite {
 
         fontData = new FontData[] { new FontData("Courier New", 11, SWT.NORMAL) };
         registry.put("feedback", fontData);
+        
+        fontData = new FontData[] { new FontData("Courier New", 9,SWT.BOLD)};
+        registry.put("dates", fontData);
     }
-
+    
+    private void buildBlockDateUI(){
+     blockDateLabel = new StyledText(this, SWT.SINGLE);
+     String topFiveDates = getDateLabelText();
+     
+     GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
+     blockDateLabel.setLayoutData(gridData);
+     
+     blockDateLabel.setFont(registry.get("dates"));
+     Color color = this.getDisplay().getSystemColor(SWT.COLOR_WHITE);
+     
+     blockDateLabel.setForeground(color);
+     
+     blockDateLabel.setText(topFiveDates);
+    }
+    
     private void buildCommandLineUI() {
         commandLine = new Text(this, SWT.SINGLE);
 
@@ -82,16 +127,6 @@ public class FeedbackAndInput extends Composite {
 
     }
 
-    private void formatText(Text commandLine) {
-        Display display = this.getDisplay();
-        Color black = display.getSystemColor(SWT.COLOR_BLACK);
-        Color white = display.getSystemColor(SWT.COLOR_WHITE);
-        commandLine.setBackground(black);
-
-        commandLine.setForeground(white);
-        commandLine.setFont(registry.get("type box"));
-    }
-
     private void buildFeedbackUI() {
         feedback = new StyledText(this, SWT.MULTI);
         feedback.setText(WELCOME_MESSAGE);
@@ -101,10 +136,57 @@ public class FeedbackAndInput extends Composite {
 
         feedback.setFont(registry.get("feedback"));
         Color color = this.getDisplay().getSystemColor(SWT.COLOR_WHITE);
-        feedback.setForeground(color);
+        
         feedback.setEnabled(false);
+        
+        feedback.setForeground(color);
+    }
+    
+
+    private void formatText(Text commandLine) {
+        Display display = this.getDisplay();
+        Color black = display.getSystemColor(SWT.COLOR_BLACK);
+        Color white = display.getSystemColor(SWT.COLOR_WHITE);
+        commandLine.setBackground(black);
+
+        commandLine.setForeground(white);
+        commandLine.setFont(registry.get("type box"));
+    }
+    
+    private String getDateLabelText() {
+        List<BlockDate> dates = getTopFiveBlockedDates();
+        return changeDatesToString(dates);
     }
 
+    private String changeDatesToString(List<BlockDate> dates) {
+       int size = dates.size();
+       String dateString = "";
+       for(int index = 0; index < size; index++){
+           dateString = dateString + "< "+ dates.get(index) + " > ";
+       }
+        return dateString;
+    }
+
+    private List<BlockDate> getTopFiveBlockedDates() {
+       List<BlockDate> dates = getBlockDates();
+        int size = dates.size();
+        if(size < 5 ){
+            return dates;
+        }
+        List<BlockDate> topfiveDates = new ArrayList<BlockDate>();
+        for(int index = 0; index < 5; index++){
+            topfiveDates.add(dates.get(index));
+        }
+        
+        return topfiveDates;
+    }
+
+    private List<BlockDate> getBlockDates() {
+        Processor processor = Processor.getInstance();
+        List<BlockDate> dates =  processor.fetchBlockedDate();
+        return dates;
+    }
+    
     private void addListeners() {
         // This listener will only be activated at the start of the program
         commandLine.addListener(SWT.KeyDown, new Listener() {
