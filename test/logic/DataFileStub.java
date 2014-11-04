@@ -1,16 +1,15 @@
 package logic;
 
-import gui.BlockDateStub;
 import gui.DateTimeStub;
 import gui.TaskStub;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import database.BlockDate;
 import database.DataFile;
 import database.DateTime;
 import database.Task;
+import database.TaskType;
 
 public class DataFileStub extends DataFile {
 
@@ -18,7 +17,7 @@ public class DataFileStub extends DataFile {
     public DataFileStub() {
         tasks = new ArrayList<Task>();
         tasks.add(new TaskStub("name", new DateTimeStub("", ""),
-                               new DateTimeStub("", ""), new DateTimeStub("", ""), new ArrayList<String>()));
+                               new DateTimeStub("", ""), new DateTimeStub("", ""), new ArrayList<String>(), TaskType.TODO));
     }
 
     @Override
@@ -34,6 +33,14 @@ public class DataFileStub extends DataFile {
     @Override
     public List<Task> getDeletedTasks() {
         return tasks;
+    }
+    
+    @Override
+    public List<Task> getBlockTasks() {
+        List<Task> blockTasks = new ArrayList<Task>();
+        blockTasks.add(new TaskStub("name", new DateTimeStub("", ""),
+                               new DateTimeStub("", ""), new DateTimeStub("", ""), new ArrayList<String>(), TaskType.BLOCK));
+        return blockTasks;
     }
 
     @Override
@@ -120,52 +127,5 @@ public class DataFileStub extends DataFile {
     @Override
     public boolean doneTask(int id) {
         return true;
-    }
-
-    @Override
-    public boolean addNewBD(BlockDate bD) {
-        return true;
-    }
-
-    @Override
-    public boolean deleteBD(int id) {
-        return true;
-    }
-    
-    @Override
-    public BlockDate getBlockDate(int id) {
-        return new BlockDateStub(new DateTimeStub(), new DateTimeStub());
-    }
-    
-    @Override
-    public List<BlockDate> getAllBlockDates() {
-        List<BlockDate> outputs = new ArrayList<BlockDate>();
-        outputs.add(new BlockDateStub(new DateTimeStub("13/10/2014", "0000"), new DateTimeStub("13/10/2014", "2359")));
-        return outputs;
-    }
-
-    @Override
-    public boolean deleteBD(BlockDate bD) {
-        return true;
-    }
-
-    @Override
-    public boolean restoreBD(int id) {
-        return true;
-    }
-
-    @Override
-    public boolean restoreBD(BlockDate bD) {
-        return true;
-    }
-
-    @Override
-    public boolean wipeBD(BlockDate bD) {
-        return true;
-    }
-
-    @Override
-    public boolean wipeBD(int id) {
-        return true;
-    }
+    }    
 }

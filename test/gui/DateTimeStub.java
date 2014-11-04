@@ -31,10 +31,10 @@ public class DateTimeStub extends DateTime {
     private String time = "";
 
     public DateTimeStub(String date, String time) {
-        super(date, time);
+        this.date = date;
+        this.time = time;
     }
 
     public DateTimeStub() {
-        super();
     }
 }

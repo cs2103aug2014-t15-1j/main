@@ -6,15 +6,16 @@ import java.util.List;
 import logic.Result.ResultType;
 import parser.DateParser;
 import parser.TaskParam;
-import database.BlockDate;
 import database.DateTime;
+import database.Task;
+import database.TaskType;
 
 public class CommandBlock extends Command {
 
     // Block dates range [get("start"), get("end"); returns date]
     // If it's only 1 day, start = end
     private DateTime start = new DateTime();
-    private DateTime end = new DateTime();
+    private DateTime due = new DateTime();
     
     public CommandBlock(List<TaskParam> content) {
         this(content, false);
@@ -40,7 +41,7 @@ public class CommandBlock extends Command {
                 break;
 
             case "end":
-                this.end = DateParser.parseToDateTime(param.getField());
+                this.due = DateParser.parseToDateTime(param.getField());
                 break;
 
             default:
@@ -57,7 +58,7 @@ public class CommandBlock extends Command {
                 return this.start.toString();
 
             case "end":
-                return this.end.toString();
+                return this.due.toString();
 
             default:
                 return null;
@@ -68,7 +69,7 @@ public class CommandBlock extends Command {
     public String toString() {
         String result = "\n[[ CMD-BLOCK: ]]";
         result = result.concat("\nstart: " + start);
-        result = result.concat("\nend: " + end);
+        result = result.concat("\nend: " + due);
 
         return result;
     }
@@ -85,20 +86,18 @@ public class CommandBlock extends Command {
             Processor.getLogger().info("Executing 'Block' Command...");
         }
         Processor processor = Processor.getInstance();
-        List<BlockDate> blockRange = processor.getFile().getAllBlockDates();
+        List<Task> blockRange = processor.getFile().getBlockTasks();
         boolean success = true;
-        List<BlockDate> outputs = new ArrayList<BlockDate>();
+        List<Task> outputs = new ArrayList<Task>();
         
-        
-        
-        for (BlockDate blockedDate : blockRange) {
+        for (Task blockedDate : blockRange) {
             if (start.compareTo(blockedDate.getStart()) <= 0 &&
-                    end.compareTo(blockedDate.getEnd()) >= 0) {
+                    due.compareTo(blockedDate.getDue()) >= 0) {
                     success = false;
                     outputs.add(blockedDate);
                     break;
             } else if (blockedDate.getStart().compareTo(start) <= 0 &&
-                    blockedDate.getEnd().compareTo(end) >= 0) {
+                    blockedDate.getDue().compareTo(due) >= 0) {
                 success = false;
                 outputs.add(blockedDate);
                 break;
@@ -106,8 +105,8 @@ public class CommandBlock extends Command {
         }
         
         if (success) {
-            BlockDate currBlock = new BlockDate(start, end);
-            processor.getFile().addNewBD(currBlock);
+            Task currBlock = new Task("", start, due, new DateTime(), new ArrayList<String>(), TaskType.BLOCK);
+            processor.getFile().addNewTask(currBlock);
             outputs.add(currBlock);
         }
         
@@ -117,11 +116,15 @@ public class CommandBlock extends Command {
     @Override
     protected Result executeComplement() {
         Processor processor = Processor.getInstance();
-        int blockIndex = processor.getFile().getAllBlockDates().size() - 1;
-        BlockDate currBlock = processor.getFile().getAllBlockDates().get(blockIndex);
-        List<BlockDate> outputs = new ArrayList<BlockDate>();
-        boolean success = processor.getFile().wipeBD(currBlock);
-        outputs.add(currBlock);
+        boolean success = false;
+        List<Task> outputs = new ArrayList<Task>();
+        int blockIndex = processor.getFile().getBlockTasks().size() - 1;
+        if (blockIndex >= 0) {
+            Task currBlock = processor.getFile().getBlockTasks().get(blockIndex);
+            success = processor.getFile().wipeTask(currBlock);
+            outputs.add(currBlock);
+        }
         return new Result(outputs, success, CommandType.UNBLOCK, ResultType.BLOCKDATE);
+        
     }
 }
