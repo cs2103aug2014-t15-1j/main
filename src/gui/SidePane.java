@@ -14,13 +14,22 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Display;
 
+/**
+ * This Composite contains the user interfaces that show additional information about the tasks carried out. 
+ * The children of this Composite include TimeUI, Calendar, UpcomingTaskList, FloatingTaskList
+ * @author Sharon
+ *
+ */
 public class SidePane extends Composite {
 
     private static final int MIN_HEIGHT_SIDE_PANE = 500;
-    private ImageRegistry imageRegistry;
-    private FontRegistry fontRegistry;
     private TimeUI timeLabel;
-
+    
+    /**
+     * Creates the SidePane Composite and its children
+     * @param parent Composite where SidePane composite is located in
+     * @param style Style that SidePane should have
+     */
     public SidePane(Composite parent, int style) {
         super(parent, style);
         setDimensions(parent);
@@ -41,66 +50,15 @@ public class SidePane extends Composite {
     }
 
     private void createChildren() {
-        formatRegistry();
-        timeLabel = new TimeUI(this);
-        Processor.getInstance().addObserver(timeLabel);
+        TimeUI.getInstance(this);
         addCalendar();
-        buildUpcomingLabel();
-        UpcomingTaskList.getInstance(this, this.getStyle());
-        buildSomedayLabel();
-        FloatingTaskList.getInstance(this, this.getStyle());
+        UpcomingTaskList.getInstance(this);
+        FloatingTaskList.getInstance(this);
     }
 
     private void addCalendar() {
         new DateTime(this, SWT.CALENDAR);
     }
-
-    private void formatRegistry() {
-        getImageRegistry();
-        formatFontRegistry();
-    }
-
-    private void getImageRegistry() {
-        imageRegistry = Images.getRegistry();
-    }
-
-    private void formatFontRegistry() {
-        fontRegistry = new FontRegistry(this.getDisplay());
-        FontData[] fontData = new FontData[] { new FontData("Courier New", 12, SWT.BOLD) };
-        fontRegistry.put("labels", fontData);
-    }
-
-    private void buildUpcomingLabel() {
-        StyledText upcomingTask = new StyledText(this, SWT.SINGLE |
-                                                       SWT.READ_ONLY);
-        upcomingTask.setText("UPCOMING");
-        upcomingTask.setFont(fontRegistry.get("labels"));
-        // upcomingTask.setImage(imageRegistry.get("upcoming"));
-        GridData centeredGridData = new GridData(SWT.CENTER, SWT.FILL, true,
-                true);
-        upcomingTask.setLayoutData(centeredGridData);
-        // setColor(upcomingTask);
-    }
-
-    private void buildSomedayLabel() {
-        StyledText floatingTask = new StyledText(this, SWT.SINGLE |
-                                                       SWT.READ_ONLY);
-        floatingTask.setText("SOMEDAY");
-        floatingTask.setFont(fontRegistry.get("labels"));
-
-        // floatingTask.setImage(imageRegistry.get("someday"));
-        GridData centeredGridData = new GridData(SWT.CENTER, SWT.FILL, true,
-                true);
-        floatingTask.setLayoutData(centeredGridData);
-        // setColor(floatingTask);
-    }
-
-    private void setColor(StyledText text) {
-        Display display = text.getDisplay();
-        Color white = display.getSystemColor(SWT.COLOR_WHITE);
-        Color yellow = display.getSystemColor(SWT.COLOR_YELLOW);
-        text.setForeground(white);
-        text.setBackground(yellow);
-    }
+    
 
 }

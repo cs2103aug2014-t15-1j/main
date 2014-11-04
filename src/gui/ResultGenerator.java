@@ -8,6 +8,10 @@ import logic.Result;
 import database.BlockDate;
 import database.Task;
 
+/**
+ * Processes the Result objects returned by logic.Processor to update the graphical user interface accordingly.
+ * @author Sharon, Yao Xiang
+ */
 public class ResultGenerator {
 
     private static Processor processor;
@@ -15,26 +19,31 @@ public class ResultGenerator {
     private static DateTableUI dateTable = DateTableUI.getInstance();
     private static ResultGenerator resultGen;
 
+    /**
+     * Returns an instance of ResultGenerator. Creates an instance if it has not been created
+     * @return instance of ResultGenerator
+     */
     public static ResultGenerator getInstance() {
         if (resultGen == null) {
             resultGen = new ResultGenerator();
         }
         return resultGen;
     }
-
+    
+    /**
+     * Initializes the rest of the application and adds the appropriate user interface to observe logic.Processor
+     */
     public void start() {
-        processor = Processor.getInstance();
-        UpcomingTaskList upcommingList = UpcomingTaskList.getInstance();
-        processor.addObserver(upcommingList);
-        upcommingList.initialise();
-        FloatingTaskList floatingList = FloatingTaskList.getInstance();
-        processor.addObserver(floatingList);
-        floatingList.initialise();
-        FeedbackAndInput feedbackAndInput = FeedbackAndInput.getInstance();
-        processor.addObserver(feedbackAndInput);
+        initialiseAppilcation();
+        addObservers();
         refreshTodoTable();
     }
-
+    
+    /**
+     * Processes the users input and returns the appropriate feedback  message to user
+     * @param input the input entered by the user
+     * @return feedback messages to be displayed to the user
+     */
     public String sendInput(String input) {
         if (input.trim().isEmpty()) {
             return "";
@@ -50,7 +59,13 @@ public class ResultGenerator {
         }
 
     }
-
+    
+    /**
+     * Processes the confirmation input entered by the user. 
+     * If input is 'y' or 'yes', all tasks will be deleted. Otherwise, nothing is deleted
+     * @param input input entered by user
+     * @return true if successfully deleted, false otherwise
+     */
     public boolean processDeleteAll(String input) {
         input = input.toLowerCase();
         if (input.equals("y") || input.equals("yes")) {
@@ -62,7 +77,13 @@ public class ResultGenerator {
 
         return false;
     }
-
+    
+    /**
+     * Processes the Result Object and returns appropriate feedback messages about result object
+     * @param result Contains the details if a command was carried out
+     * @param input input entered by user
+     * @return String containing the feedback messages about the result object
+     */
     public String processResult(Result result, String input) {
 
         if (result.isSuccess()) {
@@ -81,7 +102,24 @@ public class ResultGenerator {
         }
         return String.format("Not able to process '%1$s'", input);
     }
+    
+    private void addObservers() {
+        UpcomingTaskList upcommingList = UpcomingTaskList.getInstance();
+        processor.addObserver(upcommingList);
+        upcommingList.initialise();
+        FloatingTaskList floatingList = FloatingTaskList.getInstance();
+        processor.addObserver(floatingList);
+        floatingList.initialise();
+        BlockLabelUI blockLabelUI = BlockLabelUI.getInstance();
+        processor.addObserver(blockLabelUI);
+        TimeUI timeLabel = TimeUI.getInstance();
+        Processor.getInstance().addObserver(timeLabel);
+    }
 
+    private void initialiseAppilcation() {
+        processor = Processor.getInstance();
+    }
+    
     private boolean isHelp(Result result) {
         if (result.getResultType() == null &&
             result.getCommandType().equals(CommandType.HELP)) {

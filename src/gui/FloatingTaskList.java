@@ -11,12 +11,19 @@ import org.eclipse.jface.resource.FontRegistry;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 
 import database.Task;
 
+/**
+ * The FloatingTaskList is a user interface that shows all of the user's tasks that are without any dates
+ * The Observer interface is implemented, FloatingTaskList observes logic.Processor
+ * The singleton pattern is applied so that any instance of the class refers to the same instance
+ * @author Sharon, Yao Xiang
+ *
+ */
 public class FloatingTaskList implements Observer {
 
     private static final String DOT_AND_SPACE = ". ";
@@ -24,37 +31,103 @@ public class FloatingTaskList implements Observer {
             .getProperty("line.separator");
 
     private static FloatingTaskList floatingTaskList;
-    private FontRegistry registry;
+    private FontRegistry fontRegistry;
     private StyledText list;
 
-    private FloatingTaskList(Composite parent, int style) {
+    /**
+     * Creates the FloatingTaskList and the text shown to the user on startup
+     * @param parent Composite in which the interface is located
+     */
+    private FloatingTaskList(Composite parent) {
         buildControls(parent);
     }
-
-    public static FloatingTaskList getInstance(Composite parent, int style) {
+    
+    /**
+     * Returns an instance of the FloatingTaskList. 
+     * The method creates a new instance of FloatingTaskList, if it does not exist
+     * @param parent Composite where the interface is located
+     * @return an instance of FloatingTaskList 
+     */
+    public static FloatingTaskList getInstance(Composite parent) {
         if (floatingTaskList == null) {
-            floatingTaskList = new FloatingTaskList(parent, style);
+            floatingTaskList = new FloatingTaskList(parent);
         }
         return floatingTaskList;
     }
-
+    
+    /**
+     * Returns an instance of the FloatingTaskList. This method should be called after creating the FloatingTaskList 
+     * interface. Otherwise, an assertion failure will occur
+     * @return an instance of FloatingTaskList
+     */
     public static FloatingTaskList getInstance() {
         assert (floatingTaskList != null);
         return floatingTaskList;
     }
-
+    
+    /**
+     * Initializes the FloatingTaskList interface by setting the text to be shown at startUp. 
+     * This method is to be called at application startup
+     */
     public void initialise() {
         populatesData();
     }
-
+    
+    /**
+     * Updates the list of floating tasks displayed in the FloatingTaskList interface
+     */
     @Override
-    public void update(Observable o, Object arg) {
+    public void update(Observable objectObserved, Object arg) {
         if (arg.equals("updateui") || arg.equals("sidepane")) {
             populatesData();
         }
     }
+    
+    private void buildControls(Composite parent) {
+        getFontRegistry();
+        buildLabel(parent);
+        buildList(parent);
+    }
+    
+    private void getFontRegistry() {
+        fontRegistry = Fonts.getRegistry();
+        }
+    
+    private void buildLabel(Composite parent) {
+        StyledText floatingTask = new StyledText(parent, SWT.SINGLE |
+                                                       SWT.READ_ONLY);
+        floatingTask.setText("SOMEDAY");
+        floatingTask.setFont(fontRegistry.get("list headers"));
 
-    public void populatesData() {
+        // floatingTask.setImage(imageRegistry.get("someday"));
+        GridData centeredGridData = new GridData(SWT.CENTER, SWT.FILL, true,
+                true);
+        floatingTask.setLayoutData(centeredGridData);
+    }
+
+    private void buildList(Composite parent) {
+        list = new StyledText(parent, SWT.MULTI | SWT.READ_ONLY |
+                                      SWT.LEFT_TO_RIGHT | SWT.V_SCROLL);
+        setLayout();
+        format();
+    }
+
+    private void setLayout() {
+        GridData gridData = new GridData(GridData.FILL_BOTH);
+        gridData.heightHint = 150;
+        list.setLayoutData(gridData);
+        list.setWordWrap(true);
+    }
+
+    private void format() {
+        Color white = list.getDisplay().getSystemColor(SWT.COLOR_WHITE);
+        list.setBackground(white);
+        list.setWordWrap(true);
+        list.setEnabled(true);
+        list.setFont(fontRegistry.get("list"));
+    }
+    
+    private void populatesData() {
         List<Task> floatingTasks = getFloatingTasks();
 
         String floatingList = getStringList(floatingTasks);
@@ -116,41 +189,6 @@ public class FloatingTaskList implements Observer {
             return false;
         }
         return true;
-    }
-
-    private void buildControls(Composite parent) {
-        formatRegistry(parent);
-        buildList(parent);
-    }
-
-    private void formatRegistry(Composite parent) {
-
-        registry = new FontRegistry(parent.getDisplay());
-        FontData[] fontData = new FontData[] { new FontData("Courier New",
-                11, SWT.NORMAL) };
-        registry.put("list", fontData);
-    }
-
-    private void buildList(Composite parent) {
-        list = new StyledText(parent, SWT.MULTI | SWT.READ_ONLY |
-                                      SWT.LEFT_TO_RIGHT | SWT.V_SCROLL);
-        setLayout();
-        format();
-    }
-
-    private void setLayout() {
-        GridData gridData = new GridData(GridData.FILL_BOTH);
-        gridData.heightHint = 150;
-        list.setLayoutData(gridData);
-        list.setWordWrap(true);
-    }
-
-    private void format() {
-        Color white = list.getDisplay().getSystemColor(SWT.COLOR_WHITE);
-        list.setBackground(white);
-        list.setWordWrap(true);
-        list.setEnabled(true);
-        list.setFont(registry.get("list"));
     }
 
 }

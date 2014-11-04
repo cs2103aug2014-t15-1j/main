@@ -22,46 +22,100 @@ import org.eclipse.swt.widgets.Display;
 import database.DateTime;
 import database.Task;
 
+/**
+ * The UpcomingTaskList is a user interface which shows all of the user's tasks with due dates. 
+ * The list is arranged by dates. 
+ * The Observer interface is implemented. UpcomingTaskList observes logic.Processor
+ * The singleton pattern is used, so any instance of the class refers to the same instance
+ * @author Sharon, Yao Xiang
+ *
+ */
 public class UpcomingTaskList implements Observer {
 
     public static final String LINE_SEPARATOR = System
             .getProperty("line.separator");
     private static final String DOT_AND_SPACE = ". ";
-    private FontRegistry registry;
+    private FontRegistry fontRegistry;
     private StyledText list;
     private static UpcomingTaskList upcomingTaskList;
 
+    /**
+     * Creates an instance of the UpcomingTaskList
+     * @param parent Composite where UpcomingTaskList is located
+     */
+    private UpcomingTaskList(Composite parent) {
+        buildControls(parent);
+    }
+    
+    /**
+     * Returns an instance of the UpcomingTaskList.
+     * The method creates an instance of the UpcomingTaskList, if it does not exist
+     * @param parent Composite where UpcomingTaskList is located
+     * @return an instance of UpcomingTaskList
+     */
+    public static UpcomingTaskList getInstance(Composite parent) {
+        if (upcomingTaskList == null) {
+            upcomingTaskList = new UpcomingTaskList(parent);
+        }
+        return upcomingTaskList;
+    }
+    
+    /**
+     * Returns an instance of UpcomingTaskList.
+     * This method should only be called after creating a UpcomingTaskList object
+     * Otherwise, an assertion error will occur;
+     * @return an instance of UpcomingTaskList
+     */
     public static UpcomingTaskList getInstance() {
         assert (upcomingTaskList != null);
         return upcomingTaskList;
     }
-
-    public static UpcomingTaskList getInstance(Composite parent, int style) {
-        if (upcomingTaskList == null) {
-            upcomingTaskList = new UpcomingTaskList(parent, style);
-        }
-
-        return upcomingTaskList;
-    }
-
+    
+    /**
+     * Initializes UpcomingTaskList interface by setting the text to be shown at startUp. This method is to 
+     * be called at application startUp.
+     */
     public void initialise() {
         populatesData();
     }
-
-    private UpcomingTaskList(Composite parent, int style) {
-        buildControls(parent);
+    
+    /**
+     * Updates the list of upcoming tasks to be shown in the UpcomingTaskList interface
+     */
+    @Override
+    public void update(Observable objectObserved, Object arg) {
+        if (arg.equals("updateui") || arg.equals("sidepane")) {
+            populatesData();
+        }
     }
 
     private void buildControls(Composite parent) {
-        formatRegistry(parent);
+        getFontRegistry();
+        buildLabel(parent);
         buildList(parent);
     }
+    
 
+    private void getFontRegistry() {
+        fontRegistry = Fonts.getRegistry();
+    }
+    
+    private void buildLabel(Composite parent) {
+        StyledText upcomingTask = new StyledText(parent, SWT.SINGLE |
+                                                       SWT.READ_ONLY);
+        upcomingTask.setText("UPCOMING");
+        upcomingTask.setFont(fontRegistry.get("list headers"));
+        // upcomingTask.setImage(imageRegistry.get("upcoming"));
+        GridData centeredGridData = new GridData(SWT.CENTER, SWT.FILL, true,
+                true);
+        upcomingTask.setLayoutData(centeredGridData);
+    }
+    
     private void buildList(Composite parent) {
         list = new StyledText(parent, SWT.MULTI | SWT.READ_ONLY |
                                       SWT.LEFT_TO_RIGHT | SWT.V_SCROLL);
 
-        list.setFont(registry.get("list"));
+        list.setFont(fontRegistry.get("list"));
         setListLayout(list);
         format(list);
     }
@@ -71,13 +125,6 @@ public class UpcomingTaskList implements Observer {
         Color white = display.getSystemColor(SWT.COLOR_WHITE);
         list.setBackground(white);
         list.setEnabled(true);
-    }
-
-    private void formatRegistry(Composite parent) {
-        registry = new FontRegistry(parent.getDisplay());
-        FontData[] fontData = new FontData[] { new FontData("Courier New",
-                11, SWT.NORMAL) };
-        registry.put("list", fontData);
     }
 
     private String getIndentation(String iD) {
@@ -191,12 +238,5 @@ public class UpcomingTaskList implements Observer {
         }
         return topTen;
     }
-
-    @Override
-    public void update(Observable o, Object arg) {
-        if (arg.equals("updateui") || arg.equals("sidepane")) {
-            populatesData();
-        }
-    }
-
+    
 }

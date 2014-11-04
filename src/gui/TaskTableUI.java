@@ -24,9 +24,16 @@ import org.eclipse.swt.widgets.TableColumn;
 import database.DateTime;
 import database.Task;
 
+/**
+ * TaskTable is a table interface located that is located in a Tab Folder.
+ * This table shows all tasks blocked by the user in a table.
+ * The singleton pattern is used so that only one interface of the table is used.
+ * @author Sharon
+ */
+
 public class TaskTableUI extends Composite {
 
-    private static FontRegistry registry;
+    
     private static final String HEADER_NAME_ID = "Id";
     private static final String HEADER_NAME_NAME = "Name";
     private static final String HEADER_NAME_DUE = "Due/End";
@@ -55,41 +62,65 @@ public class TaskTableUI extends Composite {
     private TableViewer tableViewer;
     private CTabFolder folder;
     private static TaskTableUI taskTableUI;
-
+    private static FontRegistry registry;
+    
+    /**
+     * Creates an instance of the TaskTableUI
+     * @param parent tab folder where the TaskTableUI is located in
+     */
     private TaskTableUI(CTabFolder parent) {
         super(parent, SWT.NULL);
         folder = parent;
         buildControls(parent);
     }
-
-    public static TaskTableUI getInstance() {
-        assert (taskTableUI != null);
-        return taskTableUI;
-    }
-
+    
+    /**
+     * This method returns an instance of TaskTableUI. It should be called to create the TaskTableUI object
+     * @param parent tab folder where the TaskTableUI is located in
+     * @return an instance of TaskTable UI
+     */
     public static TaskTableUI getInstance(CTabFolder parent) {
         if (taskTableUI == null) {
             taskTableUI = new TaskTableUI(parent);
         }
         return taskTableUI;
     }
-
+   
+    /**
+     * This method returns an instance of TaskTableUi. 
+     * It should be called after the TaskTableUI object has been created.
+     * If it is called before the TaskTableUI object is created, an assertion failure will occur
+     * @return
+     */
+    public static TaskTableUI getInstance() {
+        assert (taskTableUI != null);
+        return taskTableUI;
+    }
+    
+    /**
+     * Returns the tableViewer object used to create the table in taskTableUI.
+     */
     public TableViewer getTableViewer() {
         return tableViewer;
     }
-
+    
+    /**
+     * Updates the table interface shown to the user. The TaskTableUI object should be created before calling
+     * this method. Otherwise, an assertion failure will occur.
+     * @param tasks List of tasks to update the table with
+     */
     public void update(List<Task> tasks) {
-        setTasks(tasks);
-    }
-
-    private void setTasks(List<Task> tasks) {
-        // table should have been instantiated before this method
         assert (tableViewer != null);
+        assert (folder != null);
         tableViewer.setInput(tasks);
         folder.setSelection(0);
-
     }
-
+    
+    /**
+     * Selects a specific Task element in the TaskTask
+     * @param taskToSelect task to be selected
+     * @param tasks list of tasks the table contains
+     */
     public void setTableSection(Task taskToSelect, List<Task> tasks) {
         int size = tasks.size();
         int indexToSelect = 0;
@@ -105,17 +136,14 @@ public class TaskTableUI extends Composite {
     }
 
     private void buildControls(Composite parent) {
-        formatRegistry(parent);
+        getRegistry(parent);
         buildLabel(parent);
         buildTable(parent);
 
     }
 
-    private void formatRegistry(Composite parent) {
-        registry = new FontRegistry(parent.getDisplay());
-        FontData[] fontData = new FontData[] { new FontData("Courier New", 10,
-                SWT.NONE) };
-        registry.put("table", fontData);
+    private void getRegistry(Composite parent) {
+        registry = Fonts.getRegistry();
     }
 
     private void buildLabel(Composite parent) {

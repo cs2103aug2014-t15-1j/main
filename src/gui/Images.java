@@ -3,13 +3,21 @@ package gui;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.widgets.Composite;
-
+import org.eclipse.swt.widgets.Shell;
+/**
+ * The Images class adds all file images into a registry to be used by the application
+ * @author Sharon
+ *
+ */
 public class Images {
 
     private static ImageRegistry registry;
-
-    public Images(Composite parent) {
-        registry = new ImageRegistry(parent.getDisplay());
+    
+    /**
+     * Initializes the images registry and adds images into the registry 
+     */
+    public Images(Shell shell) {
+        registry = new ImageRegistry(shell.getDisplay());
         addImagesFromFile();
     }
 

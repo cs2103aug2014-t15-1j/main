@@ -18,9 +18,15 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
 import database.BlockDate;
-
+/**
+ * The DateTableUI is a table interface that is located in the a TabFolder. 
+ * This user interface shows all the dates blocked by the user in a table.
+ * The singleton pattern is used so that only one instance of the interface is used.
+ * @author Sharon
+ *
+ */
 public class DateTableUI extends Composite {
-
+    
     private static final String HEADER_NAME_ID = "Id";
     private static final String HEADER_DATE_START_DATE = "Start Date";
     private static final String HEADER_DATE_START_TIME = "Start Time";
@@ -28,46 +34,73 @@ public class DateTableUI extends Composite {
     private static final String HEADER_DATE_END_TIME = "End Time";
 
     private static final int COL_WIDTH_DATE_TABLE = 175;
-    // NOTE: 50 is able to fit ID, two digit numbers, "." - XX.
     private static final int COL_WIDTH_ID = 30;
-
-    // NOTE:250 is able to fit both date and time - DD/MM/YYYY HHMM
     private static final int COL_WIDTH_DATE = 120;
-
+    
+    // Text to be shown when the element of a table is empty
     private static final String CELL_EMPTY = "<empty>";
 
     private static DateTableUI dateTableUI;
-    FontRegistry registry;
-    CTabFolder folder;
-    TableViewer tableViewer;
+    private FontRegistry registry;
+    private CTabFolder folder;
+    private TableViewer tableViewer;
 
+    /**
+     * Creates an instance of the DateTableUI
+     * @param parent TabFolder where the table is located in
+     */
     private DateTableUI(CTabFolder parent) {
         super(parent, SWT.NULL);
         folder = parent;
         buildControls(parent);
     }
-
+    
+    /**
+     * This method returns an instance of DateTableUI, it creates a new instance if it does not exist.
+     * @param parent this is the TabFolder where the table is to be displayed in
+     * @return DateTableUI instance
+     */
     public static DateTableUI getInstance(CTabFolder parent) {
         if (dateTableUI == null) {
             dateTableUI = new DateTableUI(parent);
         }
         return dateTableUI;
     }
-
+    
+    /**
+     * This method returns an instance of DateTableUI, this method should be called after DateTableUI has been created.
+     * Otherwise, an assertion failure will occur
+     * @return DateTableUI instance
+     */
     public static DateTableUI getInstance() {
         assert (dateTableUI != null);
         return dateTableUI;
     }
-
+    
+    /**
+     * Returns the TableViewer object used to create the table in DateTableUI.
+     */
     public TableViewer getTableViewer() {
         return tableViewer;
     }
-
+    
+    /**
+     * Updates the table interface shown to the user. This method should only be called after the class
+     * has been initialized. Otherwise, an assertion failure will occur.
+     * @param dates list of BlockDates objects which are to be shown to the user
+     */
     public void update(List<BlockDate> dates) {
+        assert(tableViewer!= null);
+        assert(folder!=null);
         tableViewer.setInput(dates);
         folder.setSelection(1);
     }
-
+    
+    /**
+     * Selects a specific BlockDate element in the table
+     * @param dateToSelect the BlockDate object to be selected
+     * @param dates the list of BlockDate elements that the table contains
+     */
     public void setTableSection(BlockDate dateToSelect, List<BlockDate> dates) {
         int size = dates.size();
         int indexToSelect = 0;
@@ -83,20 +116,13 @@ public class DateTableUI extends Composite {
     }
 
     private void buildControls(Composite parent) {
-        formatRegistry(parent);
+        getFontRegistry();
         buildLabel(parent);
         buildTable(parent);
     }
 
-    private void formatRegistry(Composite parent) {
-        registry = new FontRegistry(parent.getDisplay());
-
-        FontData[] fontData = new FontData[] { new FontData("Courier New", 10,
-                SWT.BOLD | SWT.UNDERLINE_SINGLE) };
-        registry.put("title", fontData);
-
-        fontData = new FontData[] { new FontData("Courier New", 10, SWT.NONE) };
-        registry.put("table", fontData);
+    private void getFontRegistry() {
+        registry = Fonts.getRegistry();
     }
 
     private void buildLabel(Composite parent) {
