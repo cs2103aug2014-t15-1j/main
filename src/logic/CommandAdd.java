@@ -18,7 +18,6 @@ import database.Task;
  */
 public class CommandAdd extends Command {
     
-    //Parameters available for CommandAdd
     private String name = "";
     private DateTime start = new DateTime();
     private DateTime due = new DateTime();
@@ -52,7 +51,6 @@ public class CommandAdd extends Command {
                 break;
                 
             case "tag":
-                // NOTE: possible change to string (tags = tags.concat())
                 this.tags.add(param.getField());
                 break;
                 
@@ -84,18 +82,6 @@ public class CommandAdd extends Command {
         return this.tags;
     }
     
-    @Override
-    public String toString() {
-        
-        String result = "\n[[ CMD-ADD: ]]";
-        result = result.concat("\n" + "name: " + name);
-        result = result.concat("\n" + "start: " + start);
-        result = result.concat("\n" + "due: " + due);
-        result = result.concat("\n" + "tags: " + tags);
-        
-        return result;
-    }
-
     /** 
      * Executes 'add' operation of a task<br>
      * This method adds a new Task to the Todo List

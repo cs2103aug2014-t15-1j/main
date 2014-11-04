@@ -1,7 +1,10 @@
 package gui;
 
+import java.util.Calendar;
 import java.util.Observable;
 import java.util.Observer;
+
+import logic.Processor;
 
 import org.eclipse.jface.resource.FontRegistry;
 import org.eclipse.swt.SWT;
@@ -14,7 +17,7 @@ import org.eclipse.swt.widgets.Display;
 
 import parser.DateParser;
 
-public class TimeUI implements Observer{
+public class TimeUI implements Observer {
     
     private StyledText time;
     
@@ -54,10 +57,10 @@ public class TimeUI implements Observer{
     }
 
     @Override
-    public void update(Observable o, Object toSet) {
-        if(toSet instanceof String){
-        String timeToSet = (String) toSet;
-        time.setText(timeToSet);
+    public void update(Observable o, Object arg) {
+        if (arg.equals("clock")){
+            String currTime = Calendar.getInstance().getTime().toString();
+            time.setText(currTime);
         }
     }
 

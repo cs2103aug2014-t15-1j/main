@@ -49,31 +49,6 @@ public class CommandBlock extends Command {
         }
     }
 
-    
-    @Override
-    public String get(String field) {
-        switch (field) {
-            case "start":
-                return this.start.toString();
-
-            case "end":
-                return this.end.toString();
-
-            default:
-                return null;
-        }
-    }
-
-    @Override
-    public String toString() {
-        String result = "\n[[ CMD-BLOCK: ]]";
-        result = result.concat("\nstart: " + start);
-        result = result.concat("\nend: " + end);
-
-        return result;
-    }
-    
-
     /**
      * Executes Block Command
      * @param userInput
@@ -88,8 +63,6 @@ public class CommandBlock extends Command {
         List<BlockDate> blockRange = processor.getFile().getAllBlockDates();
         boolean success = true;
         List<BlockDate> outputs = new ArrayList<BlockDate>();
-        
-        
         
         for (BlockDate blockedDate : blockRange) {
             if (start.compareTo(blockedDate.getStart()) <= 0 &&

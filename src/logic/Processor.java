@@ -1,10 +1,13 @@
 package logic;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Observable;
 import java.util.Stack;
+import java.util.Timer;
 import java.util.logging.FileHandler;
 import java.util.logging.Formatter;
 import java.util.logging.Logger;
@@ -73,6 +76,8 @@ public class Processor extends Observable {
 	/** Stores input string for 'down' key **/
 	private Stack<String> inputStringForwardHistory;
 	
+    private Timer secondsTimer;
+	
 	/** Default Constructor for Processor */
     private Processor() {
         this(IS_UNIT_TEST);
@@ -95,6 +100,10 @@ public class Processor extends Observable {
 	    inputStringBackwardHistory = new Stack<String>();
 	    inputStringForwardHistory = new Stack<String>();
 	    currentInputString = "";
+	    
+	    secondsTimer = new Timer("secondsTimer", true);
+	    secondsTimer.scheduleAtFixedRate(new TaskScheduler(), 0, (long) 1000);
+	    
 	    initialiseLogger();
 	    updateFloatingAndTimedTasks();
 	}
@@ -116,7 +125,7 @@ public class Processor extends Observable {
 	 * This method returns an instance of Processor
      * @return Instance of Processor
      */
-	public static Processor getInstance() {
+	public static synchronized Processor getInstance() {
 	    if (processor == null) {
 	        processor = new Processor();
 	    }
@@ -125,6 +134,7 @@ public class Processor extends Observable {
 	
 	public static Processor reset() {
 	    processor.wipeFile();
+	    processor.getTimer().cancel();
 	    processor = new Processor();
 	    return processor;
 	}
@@ -208,7 +218,7 @@ public class Processor extends Observable {
 	private void updateUIPaneWindow() {
 	    updateFloatingAndTimedTasks();
         setChanged();
-        notifyObservers(); //Calls update of the side panel class
+        notifyObservers("updateui");
         if (LOGGING_ENABLED) {
             log.info("Updated side panel.");
         }
@@ -336,5 +346,9 @@ public class Processor extends Observable {
 	
 	protected void initialiseNewSearchList() {
 	    lastSearch = new ArrayList<Task>();
+	}
+	
+	protected Timer getTimer() {
+	    return secondsTimer;
 	}
 }

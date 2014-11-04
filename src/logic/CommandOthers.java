@@ -53,15 +53,6 @@ public class CommandOthers extends Command {
     }
 
     @Override
-    public String toString() {
-        String result = "\n[[ CMD-OTHERS ]]";
-        result = result.concat("\ncmd-type: " + type);
-        result = result.concat("\ncmd-info: " + error);
-
-        return result;
-    }
-
-    @Override
     protected Result execute(boolean userInput) {
         switch (getType()) {
             case REDO:

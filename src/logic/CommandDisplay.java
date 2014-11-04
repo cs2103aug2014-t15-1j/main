@@ -57,15 +57,6 @@ public class CommandDisplay extends Command {
         }
     }
 
-    @Override
-    public String toString() {
-        String result = "\n[[ CMD-DISPLAY: ]]";
-        result = result.concat("\nrangeType: " + rangeType);
-        result = result.concat("\nid: " + id);
-
-        return result;
-    }
-
     /**
      * Executes "display" operation
      * Allows display, display <id>, display search

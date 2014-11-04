@@ -83,16 +83,6 @@ public class CommandDone extends Command {
         }
     }
 
-    @Override
-    public String toString() {
-        String result = "\n[[ CMD-DONE: ]]";
-        result = result.concat("\nrangeType: " + rangeType);
-        result = result.concat("\nid: " + id);
-        result = result.concat("\ndateTime: " + dateTime);
-
-        return result;
-    }
-
     /**
      * Executes "done" operation
      * Marks a task as 'done'

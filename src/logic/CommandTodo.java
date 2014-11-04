@@ -81,15 +81,6 @@ public class CommandTodo extends Command {
                 return null;
         }
     }
-
-    @Override
-    public String toString() {
-        String result = "\n[[ CMD-TODO: ]]";
-        result = result.concat("\nrangeType: " + rangeType);
-        result = result.concat("\nid: " + id);
-
-        return result;
-    }
     
     /**
      * Executes "todo" operation

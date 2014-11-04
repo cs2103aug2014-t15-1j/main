@@ -72,17 +72,6 @@ public class CommandSearch extends Command {
         return this.keywords;
     }
 
-    @Override
-    public String toString() {
-        String result = "\n[[ CMD-SEARCH: ]]";
-        result = result.concat("\nstatus: " + this.status);
-        result = result.concat("\ndate: " + this.date);
-        result = result.concat("\ntags: " + this.tags);
-        result = result.concat("\nkeywords: " + this.keywords);
-
-        return result;
-    }
-
     /**
      * Executes "search" operation
      * Allows search <date> <key1> <key2> #tag1 #tag2

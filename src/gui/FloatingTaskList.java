@@ -49,7 +49,9 @@ public class FloatingTaskList implements Observer {
 
     @Override
     public void update(Observable o, Object arg) {
-        populatesData();
+        if (arg.equals("updateui") || arg.equals("sidepane")) {
+            populatesData();
+        }
     }
 
     public void populatesData() {

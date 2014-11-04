@@ -1,5 +1,7 @@
 package gui;
 
+import logic.Processor;
+
 import org.eclipse.jface.resource.FontRegistry;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.SWT;
@@ -17,6 +19,7 @@ public class SidePane extends Composite {
     private static final int MIN_HEIGHT_SIDE_PANE = 500;
     private ImageRegistry imageRegistry;
     private FontRegistry fontRegistry;
+    private TimeUI timeLabel;
 
     public SidePane(Composite parent, int style) {
         super(parent, style);
@@ -39,7 +42,8 @@ public class SidePane extends Composite {
 
     private void createChildren() {
         formatRegistry();
-        new TimeUI(this);
+        timeLabel = new TimeUI(this);
+        Processor.getInstance().addObserver(timeLabel);
         addCalendar();
         buildUpcomingLabel();
         UpcomingTaskList.getInstance(this, this.getStyle());

@@ -69,15 +69,6 @@ public class CommandRestore extends Command {
                 return null;
         }
     }
-
-    @Override
-    public String toString() {
-        String result = "\n[[ CMD-RESTORE: ]]";
-        result = result.concat("\nrangeType: " + rangeType);
-        result = result.concat("\nid: " + id);
-
-        return result;
-    }
     
     /**
      * Executes "Restore" operation

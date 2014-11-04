@@ -67,6 +67,8 @@ public class LogicUnitTest {
         // ------ Test path for complement
         result = cmd.executeComplement();
         assertTrue(result.isSuccess());
+        result = cmd.executeComplement();
+        assertTrue(result.isSuccess());
         
         //Test Retrieval of Information
         assertTrue(cmd.get("name").equals("Do CS2103 Homework"));

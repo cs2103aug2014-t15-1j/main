@@ -96,20 +96,6 @@ public class CommandEdit extends Command {
         return this.delete;
     }
     
-    @Override
-    public String toString() {
-        
-        String result = "\n[[ CMD-EDIT: ]]";
-        result = result.concat("\n" + "id: " + id);
-        result = result.concat("\n" + "name: " + name);
-        result = result.concat("\n" + "start: " + start);
-        result = result.concat("\n" + "due: " + due);
-        result = result.concat("\n" + "tags: " + tags);
-        result = result.concat("\n" + "delete: " + delete);
-        
-        return result;
-    }
-    
     /**
      * Executes "edit" operation
      * Allow edit/deletion of parameters of a Task
