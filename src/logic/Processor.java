@@ -1,9 +1,7 @@
 package logic;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Observable;
 import java.util.Stack;
@@ -33,7 +31,10 @@ import database.Task;
 
 public class Processor extends Observable {
     
+    /** Logger for monitoring purposes */
     protected final static boolean LOGGING_ENABLED = false;
+    private static final Logger log = Logger.getLogger(Processor.class.getName());
+    
     protected static boolean IS_UNIT_TEST = false;
     
     /** Instance of Processor */
@@ -66,9 +67,6 @@ public class Processor extends Observable {
 	/** List of Tasks with Due date/time */
 	private List<Task> timedTasks;
 	
-	/** Logger for monitoring purposes */
-	private static final Logger log = Logger.getLogger(Processor.class.getName());
-	
     /** Stores input string for 'up' key **/
     private Stack<String> inputStringBackwardHistory;
     
@@ -90,7 +88,13 @@ public class Processor extends Observable {
 	    } else {
 	        file = new DataFile();
 	    }
-	    backwardCommandHistory = new Stack<Command>();
+	    initialiseProcessor();
+	    initialiseLogger();
+	    updateFloatingAndTimedTasks();
+	}
+
+    private void initialiseProcessor() {
+        backwardCommandHistory = new Stack<Command>();
 	    forwardCommandHistory = new Stack<Command>();
 	    backwardSearchListHistory = new Stack<List<Task>>();
 	    forwardSearchListHistory = new Stack<List<Task>>();
@@ -104,10 +108,7 @@ public class Processor extends Observable {
 	    
 	    secondsTimer = new Timer("secondsTimer", true);
 	    secondsTimer.scheduleAtFixedRate(new TaskScheduler(), 0, (long) 1000);
-	    
-	    initialiseLogger();
-	    updateFloatingAndTimedTasks();
-	}
+    }
 	
 	private static void initialiseLogger() {
         if (LOGGING_ENABLED) {
@@ -124,7 +125,8 @@ public class Processor extends Observable {
 
     /** 
 	 * This method returns an instance of Processor
-     * @return Instance of Processor
+     * @return 
+     *      Instance of Processor
      */
 	public static synchronized Processor getInstance() {
 	    if (processor == null) {
@@ -133,6 +135,14 @@ public class Processor extends Observable {
 	    return processor;
 	}
 	
+	/** 
+     * This method resets the instance of Processor
+     * By resetting the instance of processor, the DataFile is also wiped.
+     * This bring the program back to its initial state.
+     * 
+     * @return
+     *     Instance of Processor
+     */
 	public static Processor reset() {
 	    processor.wipeFile();
 	    processor.getTimer().cancel();
@@ -262,10 +272,22 @@ public class Processor extends Observable {
 	    return file.wipeFile();
 	}
 	
-	public List<Task> getSearchList() {
+	/** 
+	 * This method fetches results from the last search performed.
+	 * 
+	 * @return
+	 *     List{@literal<Task>} - Last search result
+	 */
+	public List<Task> fetchSearchList() {
         return Collections.unmodifiableList(lastSearch);
     }
 	
+	/** 
+     * This method fetches tasks that have due dates
+     * 
+     * @return
+     *     List{@literal<Task>} - Timed tasks
+     */
 	public List<Task> fetchTimedTasks() {
 	    if (LOGGING_ENABLED) {
 	        log.info("Fetching Timed Tasks");
@@ -274,6 +296,12 @@ public class Processor extends Observable {
         return Collections.unmodifiableList(timedTasks);
 	}
 	
+	/** 
+     * This method fetches tasks that have no due dates
+     * 
+     * @return
+     *     List{@literal<Task>} - Timed tasks
+     */
 	public List<Task> fetchFloatingTasks() {
 	    if (LOGGING_ENABLED) {
 	        log.info("Fetching Floating Tasks");
@@ -282,6 +310,12 @@ public class Processor extends Observable {
 	    return Collections.unmodifiableList(floatingTasks);
 	}
 	
+	/** 
+     * This method fetches tasks that have status marked as TODO
+     * 
+     * @return
+     *     List{@literal<Task>} - TODO tasks
+     */
 	public List<Task> fetchToDoTasks() {
 	    if (LOGGING_ENABLED) {
 	        log.info("Fetching Todo Tasks");
@@ -289,7 +323,12 @@ public class Processor extends Observable {
         return file.getToDoTasks();
     }
     
-	
+	/** 
+     * This method fetches tasks that have status marked as BLOCK
+     * 
+     * @return
+     *     List{@literal<Task>} - BLOCK tasks
+     */
 	public List<BlockDate> fetchBlockedDate() {
 	    if (LOGGING_ENABLED) {
 	        log.info("Fetching Blocked Dates");
@@ -297,6 +336,12 @@ public class Processor extends Observable {
         return file.getAllBlockDates();
     }
 	
+	/** 
+     * This method fetches the last command entered if there is one
+     * 
+     * @return
+     *     String - last command centered
+     */
 	public String fetchInputUpKey() {
 	    if (!inputStringBackwardHistory.isEmpty()) {
 	        inputStringForwardHistory.push(currentInputString);
@@ -305,6 +350,12 @@ public class Processor extends Observable {
 	    return currentInputString;
     }
 	
+	/** 
+     * This method fetches the next command entered if there is one
+     * 
+     * @return
+     *     String - next command centered
+     */
 	public String fetchInputDownKey() {
         if (!inputStringForwardHistory.isEmpty()) {
             inputStringBackwardHistory.push(currentInputString);
