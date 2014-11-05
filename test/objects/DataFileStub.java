@@ -1,11 +1,5 @@
-<<<<<<< HEAD:test/objects/DataFileStub.java
-package objects;
-=======
-package logic;
 
-import gui.DateTimeStub;
-import gui.TaskStub;
->>>>>>> wip:test/logic/DataFileStub.java
+package objects;
 
 import java.util.ArrayList;
 import java.util.List;
