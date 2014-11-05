@@ -200,7 +200,13 @@ public class ResultGenerator {
                 return "Command Undone.";
 
             case DISPLAY:
-                refreshTables();
+                if (blockDateTask.size() == 0) {
+
+                    return "Nothing has been blocked.";
+                } else if (blockDateTask.size() == 1) {
+                    setTableSelection(blockDateTask);
+                }
+                updateTables(blockDateTask);
                 return feedbackMessageMultiResults(blockDateTask,
                                                    "Showing %1$s blocks.");
             case SEARCH:
@@ -339,11 +345,10 @@ public class ResultGenerator {
     }
     
     private void updateTables(List<Task> tasks){
-        tableManagement.updateToDoTable(tasks);
+        tableManagement.updateTable(tasks);
     }
     
     private void setTableSelection(List<Task> outputs) {
-        refreshTables();
         tableManagement.setTableSelection(outputs.get(0));
     }
 

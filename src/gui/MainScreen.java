@@ -42,6 +42,7 @@ public class MainScreen {
 
         display.dispose();
         Images.disposeAllImages();
+        Colours.disposeAllColours();
     }
     
     /** 
@@ -84,6 +85,7 @@ public class MainScreen {
 public static void runProgram(Shell shell) {
     Images images = new Images(shell);
     new Fonts(shell);
+    new Colours(shell.getDisplay());
     configureShell(shell, images);
     createContents(shell);
     initialiseProgram();

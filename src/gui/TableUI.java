@@ -252,11 +252,11 @@ public class TableUI{
                     Task task = (Task) element;
                     Display display = Display.getCurrent();
                     if(task.isDeleted()){
-                        return display.getSystemColor(SWT.COLOR_RED);
+                        return Colours.getDeletedColor();
                     }else if(task.isBlock()){
                         return display.getSystemColor(SWT.COLOR_BLUE);
                     }else if(task.isToDo()){
-                        return display.getSystemColor(SWT.COLOR_GREEN);
+                        return Colours.getToDoColor();
                     }else if(task.isDone()){
                         return display.getSystemColor(SWT.COLOR_GRAY);
                     }

@@ -33,6 +33,11 @@ public class TableManagement {
      tables = TableComposite.getTables();
     }
     
+    public void updateTable(List<Task> tasks){
+        Task task = tasks.get(0);
+        getTable(task);
+    }
+    
     public void updateFloatingTaskTable(List<Task> tasks){
         tables.get(INDEX_SOMEDAY).setInput(tasks);
     }
@@ -100,13 +105,13 @@ public class TableManagement {
         DateTime date = task.getDue();
         
         if(task.isToDo()){
-            folder.setSelection(INDEX_TODO);
+            setTableSelection(INDEX_TODO);
             return tables.get(INDEX_TODO);
         }else if(task.isDone()){
-            folder.setSelection(INDEX_DONE);
+            setTableSelection(INDEX_DONE);
             return tables.get(INDEX_DONE);
         }else if(task.isBlock()){
-            folder.setSelection(INDEX_BLOCK);
+            setTableSelection(INDEX_BLOCK);
             return tables.get(INDEX_BLOCK);
         }
         
@@ -119,6 +124,10 @@ public class TableManagement {
         }else{
             return tables.get(INDEX_UPCOMING);
         }
+    }
+
+    private void setTableSelection(int index) {
+        folder.setSelection(index);
     }
     
 
