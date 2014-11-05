@@ -22,12 +22,15 @@ import org.eclipse.swt.widgets.Listener;
  */
 //@author A0118846W
 public class TableComposite extends Composite {
-
-    private static final int NUM_TAB_LABELS = 4;
+// Today, tmr, someday, upcoming, todo, block, done
+    private static final int NUM_TAB_LABELS = 7;
+    private static final String TODO_TABLE_TAB_LABEL = "To Do";
     private static final String TODAY_TABLE_TAB_LABEL = "Today";
-    private static final String UPCOMING_TABLE_TAB_LABEL = "Upcoming";
     private static final String TOMORROW_TABLE_TAB_LABEL = "Tomorrow";
+    private static final String UPCOMING_TABLE_TAB_LABEL = "Upcoming";
     private static final String FLOATING_TABLE_TAB_LABEL = "Someday";
+    private static final String BLOCK_TABLE_TAB_LABEL = "Blocked";
+    private static final String DONE_TABLE_TAB_LABEL = "Done";
     
     private static CTabFolder tabFolder;
     private FontRegistry registry;
@@ -67,6 +70,7 @@ public class TableComposite extends Composite {
     public static List<TableViewer> getTables(){
         return tables;
     }
+    
     private void setColour(Composite parent) {
         Color white = parent.getDisplay().getSystemColor(SWT.COLOR_WHITE);
         this.setBackground(white);
@@ -76,7 +80,13 @@ public class TableComposite extends Composite {
         formatRegistry(parent);
         tabFolder = new CTabFolder(this, SWT.BORDER);
         tabFolder.setLayoutData(new GridData(GridData.FILL_BOTH));
-
+        
+        CTabItem toDoTable = new CTabItem(tabFolder, SWT.NONE);
+        toDoTable.setText(TODO_TABLE_TAB_LABEL);
+        TableViewer toDoTableUI =  new TableUI(tabFolder).getTableViewer();
+        tables.add(toDoTableUI);
+        toDoTable.setControl(toDoTableUI.getTable());
+        
         CTabItem todayTable = new CTabItem(tabFolder, SWT.NONE);
         todayTable.setText(TODAY_TABLE_TAB_LABEL);
         TableViewer todayTableUI =  new TableUI(tabFolder).getTableViewer();
@@ -100,6 +110,18 @@ public class TableComposite extends Composite {
         TableViewer floatingTableUI =  new TableUI(tabFolder).getTableViewer();
         tables.add(floatingTableUI);
         floatingTable.setControl(floatingTableUI.getTable());
+        
+        CTabItem doneTable = new CTabItem(tabFolder, SWT.NONE);
+        doneTable.setText(DONE_TABLE_TAB_LABEL);
+        TableViewer doneTableUI =  new TableUI(tabFolder).getTableViewer();
+        tables.add(doneTableUI);
+        floatingTable.setControl(doneTableUI.getTable());
+        
+        CTabItem blockTable = new CTabItem(tabFolder, SWT.NONE);
+        blockTable.setText(BLOCK_TABLE_TAB_LABEL);
+        TableViewer blockTableUI =  new TableUI(tabFolder).getTableViewer();
+        tables.add(blockTableUI);
+        blockTable.setControl(blockTableUI.getTable());
         
         addListener(tabFolder);
         tabFolder.setSelection(0);

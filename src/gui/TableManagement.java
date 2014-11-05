@@ -17,6 +17,7 @@ import database.DateTime;
 import database.Task;
 
 public class TableManagement {
+   // tabs - Today, tmr, someday, upcoming, todo, block, done
     private static CTabFolder folder; 
     private static List<TableViewer> tables;
     
@@ -26,11 +27,23 @@ public class TableManagement {
      addTableListeners();
     }
     
-    public void update(List<Task> tasks) {
+    public void updateFloatingTaskTable(List<Task> tasks){
+        tables.get(4).setInput(tasks);
+    }
+    
+    public void updateToDoTable(List<Task> tasks){
+        tables.get(0).setInput(tasks);
+    }
+    
+    public void updateBlockTable(List<Task> blockTasks){
+       tables.get(6).setInput(blockTasks);
+    }
+
+    public void updateTimedTable(List<Task> tasks) {
         List<Task> todaysTasks = new ArrayList<Task>();
         List<Task> tomorrowsTasks = new ArrayList<Task>();
         List<Task> upcomingTasks = new ArrayList<Task>();
-        List<Task> floatingTasks = new ArrayList<Task>();
+        List<Task> doneTasks = new ArrayList<Task>();
         
         int size = tasks.size();
         for(int index = 0; index < size; index++){
@@ -39,29 +52,30 @@ public class TableManagement {
                 todaysTasks.add(currTask);
             }else if(isTomorrow(currTask.getDue())){
                 tomorrowsTasks.add(currTask);
-            }else if(isUpcoming(currTask.getDue())){
+            }else{
                 upcomingTasks.add(currTask);
-            } else{
-                floatingTasks.add(currTask);
+            }
+            if(currTask.isDone()){
+                doneTasks.add(currTask);
             }
         }
         
-        tables.get(0).setInput(todaysTasks);
-        tables.get(1).setInput(tomorrowsTasks);
-        tables.get(2).setInput(upcomingTasks);
-        tables.get(3).setInput(floatingTasks);
-        
+        tables.get(1).setInput(todaysTasks);
+        tables.get(2).setInput(tomorrowsTasks);
+        tables.get(3).setInput(upcomingTasks);
+        tables.get(5).setInput(doneTasks);
     }
-    
-    public void setTableSelection(Task taskToSelect, List<Task> tasks){
+
+    public void setTableSelection(Task taskToSelect){
         TableViewer table = getTable(taskToSelect);
-        setElementSelection(taskToSelect, tasks, table);
+        setElementSelection(taskToSelect, null, table);
     }
     
     /**
      * Selects an element in the table. Default selection is the first element
      */
     private void setElementSelection(Task taskToSelect, List<Task> tasks, TableViewer tableViewer) {
+        
         int size = tasks.size();
         int indexToSelect = 0;
         for (int index = 0; index < size; index++) {
@@ -78,17 +92,21 @@ public class TableManagement {
     private TableViewer getTable(Task task){
         DateTime date = task.getDue();
         
-        if(date == null){
-            // floating
-           return tables.get(3);
-        }else if(isToday(date)){
-            //today
+        if(task.isToDo()){
             return tables.get(0);
-        }else if(isTomorrow(date)){
-            // tomorrow
+        }else if(task.isDone()){
+            return tables.get(5);
+        }else if(task.isBlock()){
+            return tables.get(6);
+        }
+        
+        if(task.isFloating()){
+           return tables.get(4);
+        }else if(isToday(date)){
             return tables.get(1);
+        }else if(isTomorrow(date)){
+            return tables.get(2);
         }else{
-            // upcoming
             return tables.get(3);
         }
     }
@@ -123,7 +141,7 @@ public class TableManagement {
         }
         return false;
     }
-
+    
     private boolean isEqualDate(DateTime date, DateTime dateToCompare) {
         return dateToCompare.getDate().equals(date.getDate());
     }
