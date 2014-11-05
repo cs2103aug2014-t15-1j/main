@@ -26,8 +26,8 @@ import database.Task;
 
 
 /**
- * TaskTable is a table interface located that is located in a Tab Folder.
- * This table shows all tasks blocked by the user in a table.
+ * TableUI table interface located that is located in a Tab Folder.
+ * This class is shows the default format of building the table
  * The singleton pattern is used so that only one interface of the table is used.
  */
 //@author A0118846W
@@ -39,6 +39,7 @@ public class TableUI{
     private static final String HEADER_NAME_START = "Start";
     private static final String HEADER_NAME_TAGS = "Tags";
     private static final String HEADER_NAME_STATUS = "Status";
+    private static final String PARA_STATUS_BLOCK = "Blocked Date";
 
     private static final String CELL_EMPTY_DATE = "<no date>";
 
@@ -57,6 +58,7 @@ public class TableUI{
 
     // NOTE: 150 is just right for all statuses - To Do, Done, Deleted
     private static final int COL_WIDTH_STATUS = 175;
+    
 
     private TableViewer tableViewer;
     private CTabFolder folder;
@@ -130,7 +132,7 @@ public class TableUI{
 
         tableViewer.setContentProvider(new ArrayContentProvider());
         tableViewer.setLabelProvider(new LabelProvider());
-        setUpTaskTableColumns(parent);
+        setUpColumns(parent);
 
         Table table = tableViewer.getTable();
         table.setLinesVisible(true);
@@ -139,7 +141,7 @@ public class TableUI{
         table.setFont(registry.get("table"));
     }
 
-    private void setUpTaskTableColumns(Composite parent) {
+    private void setUpColumns(Composite parent) {
         TableViewerColumn column = setColumnHeader(HEADER_NAME_ID, COL_WIDTH_ID);
         column.setLabelProvider(new ColumnLabelProvider() {
             @Override
@@ -248,8 +250,10 @@ public class TableUI{
                     } else if (task.isDone()) {
                         Status = PARA_STATUS_DONE + " " +
                                  task.getCompletedOn().toString();
-                    } else {
+                    } else if(task.isToDo()){
                         Status = PARA_STATUS_TODO;
+                    }else{
+                        Status = PARA_STATUS_BLOCK;
                     }
                     return Status;
                 }

@@ -130,8 +130,6 @@ public class ResultGenerator {
         FloatingTaskList floatingList = FloatingTaskList.getInstance();
         processor.addObserver(floatingList);
         floatingList.initialise();
-        //BlockLabelUI blockLabelUI = BlockLabelUI.getInstance();
-       // processor.addObserver(blockLabelUI);
         TimeUI timeLabel = TimeUI.getInstance();
         Processor.getInstance().addObserver(timeLabel);
     }
@@ -150,8 +148,8 @@ public class ResultGenerator {
     }
 
     private String processDateBasedResult(Result result) {
-        List<Task> dates = result.getBlockedDates(); // get list of dates
-        if (dates.size() == 0) {
+        List<Task> blockDateTask = result.getBlockedDates(); // get list of dates
+        if (blockDateTask.size() == 0) {
             refreshTables();
             return "No dates have been blocked";
         }
@@ -164,34 +162,34 @@ public class ResultGenerator {
                     return "Unable to block date. Date coincides with another blocked date or task.";
                 }
                 refreshTables();
-                setTableSelection(dates);
-                return "BLOCKED: " + feedbackSingleBlock(dates);
+                setTableSelection(blockDateTask);
+                return "BLOCKED: " + feedbackSingleBlock(blockDateTask);
 
             case UNBLOCK:
                 refreshTables();
-                setTableSelection(dates);
-                return "UNBLOCKED: " + feedbackSingleBlock(dates);
+                setTableSelection(blockDateTask);
+                return "UNBLOCKED: " + feedbackSingleBlock(blockDateTask);
 
             case REDO:
                 if (result.needsConfirmation()) {
                     return "Unable to redo command. Date coincides with another blocked date or task.";
                 }
                 refreshTables();
-                setTableSelection(dates);
+                setTableSelection(blockDateTask);
                 return "Command Redone.";
 
             case UNDO:
                 refreshTables();
-                setTableSelection(dates);
+                setTableSelection(blockDateTask);
                 return "Command Undone.";
 
             case DISPLAY:
                 refreshTables();
-                return feedbackMessageMultiResults(dates,
+                return feedbackMessageMultiResults(blockDateTask,
                                                    "Showing %1$s blocks.");
             case SEARCH:
-                updateTables(dates);
-                return feedbackMessageMultiResults(dates, "Found %1$s results.");
+                updateTables(blockDateTask);
+                return feedbackMessageMultiResults(blockDateTask, "Found %1$s results.");
             case ERROR:
                 return "Not able to fully process command";
 
