@@ -23,7 +23,8 @@ import org.eclipse.swt.widgets.Listener;
 //@author A0118846W
 public class TableComposite extends Composite {
 
-    private static final String TODAY_TABLE_TAB_LABEL = "Tasks";
+    private static final int NUM_TAB_LABELS = 4;
+    private static final String TODAY_TABLE_TAB_LABEL = "Today";
     private static final String UPCOMING_TABLE_TAB_LABEL = "Upcoming";
     private static final String TOMORROW_TABLE_TAB_LABEL = "Tomorrow";
     private static final String FLOATING_TABLE_TAB_LABEL = "Someday";
@@ -100,6 +101,7 @@ public class TableComposite extends Composite {
         tables.add(floatingTableUI);
         floatingTable.setControl(floatingTableUI.getTable());
         
+        addListener(tabFolder);
     }
 
     private void formatRegistry(Composite parent) {
@@ -108,5 +110,20 @@ public class TableComposite extends Composite {
         FontData[] fontData = new FontData[] { new FontData("Arial", 10,
                 SWT.BOLD | SWT.UNDERLINE_SINGLE) };
         registry.put("title", fontData);
+    }
+    
+    private void addListener(CTabFolder folder) {
+        Display display = folder.getDisplay();
+        display.addFilter(SWT.KeyDown, new Listener() {
+
+            public void handleEvent(Event event) {
+                int index = folder.getSelectionIndex();
+                if (event.keyCode == SWT.F3) {
+                    folder.setSelection((index + 1 ) % NUM_TAB_LABELS);
+                } else if (event.keyCode == SWT.F2) {
+                    folder.setSelection((index + NUM_TAB_LABELS - 1 ) % NUM_TAB_LABELS);
+                }
+            }
+        });
     }
 }
