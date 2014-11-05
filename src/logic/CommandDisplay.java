@@ -102,4 +102,9 @@ public class CommandDisplay extends Command {
         }
         return new Result(list, success, getType(), resultType);
     }
+    
+    @Override
+    public String toString() {
+        return "cmddisplay rangetype: " + this.rangeType + " id: " + this.id;
+    }
 }

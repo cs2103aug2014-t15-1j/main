@@ -92,4 +92,9 @@ public class CommandUnblock extends Command {
         outputs.add(blockDate);
         return new Result(outputs, success, CommandType.BLOCK, ResultType.BLOCKDATE);
     }
+    
+    @Override
+    public String toString() {
+        return "cmdunblock id: " + this.id;
+    }
 }

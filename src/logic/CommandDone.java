@@ -156,4 +156,10 @@ public class CommandDone extends Command {
     protected static List<Task> fetchLastDoneTasks() {
         return lastTasksRange;
     }
+    
+    @Override
+    public String toString() {
+        return "cmddone rangetype: " + this.rangeType + " id: " + this.id + " date: " +
+               this.dateTime.toString();
+    }
 }

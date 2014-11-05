@@ -152,4 +152,10 @@ public class CommandTodo extends Command {
     protected Result executeComplement() {
         return this.cmdDone.execute(false);
     }
+    
+    @Override
+    public String toString() {
+        return "cmdtodo rangeType: " + this.rangeType + " id: " + this.id + " date: " +
+               this.dateTime;
+    }
 }

@@ -2,8 +2,8 @@ package parser;
 
 public class TaskParam {
     
-    private String name;
-    private String field;
+    private String name = "";
+    private String field = "";
 
     public TaskParam(String name, String field) {
         this.name = name.trim();
@@ -24,11 +24,7 @@ public class TaskParam {
 
     public void addToField(String str) {
         if (str.length() > 0) {
-            if (field.length() > 0) {
-                this.field = this.field.concat(" " + str.trim());
-            } else {
-                this.field = str.trim();
-            }
+            this.field = this.field.concat(" " + str.trim()).trim();
         }
     }
 

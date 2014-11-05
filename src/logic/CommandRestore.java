@@ -147,4 +147,9 @@ public class CommandRestore extends Command {
     protected Result executeComplement() {
         return cmdDelete.execute(false);
     }
+    
+    @Override
+    public String toString() {
+        return "cmdrestore rangetype: " + this.rangeType + " id: " + this.id;
+    }
 }

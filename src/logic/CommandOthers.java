@@ -138,4 +138,9 @@ public class CommandOthers extends Command {
             processor.getForwardCommandHistory().push(cmd);
         }
     }
+    
+    @Override
+    public String toString() {
+        return "cmdothers type: " + this.type;
+    }
 }

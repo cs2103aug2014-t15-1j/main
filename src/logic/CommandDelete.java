@@ -80,15 +80,6 @@ public class CommandDelete extends Command {
                 return null;
         }
     }
-
-    @Override
-    public String toString() {
-        String result = "\n[[ CMD-Delete: ]]";
-        result = result.concat("\nrangeType: " + rangeType);
-        result = result.concat("\nid: " + id);
-
-        return result;
-    }
     
     /**
      * Executes "delete" operation<br>
@@ -167,5 +158,10 @@ public class CommandDelete extends Command {
     @Override
     protected Result executeComplement() {
         return cmdRestore.execute(false);
+    }
+    
+    @Override
+    public String toString() {
+        return "cmddelete rangetype: " + this.rangeType + " id: " + this.id;
     }
 }
