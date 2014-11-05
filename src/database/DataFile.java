@@ -2,7 +2,6 @@ package database;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Collections;
 
 /**
  * This class handles the logic involved in reading and writing of tasks to the
@@ -21,8 +20,6 @@ public class DataFile {
 
     /** Name of file to write tasks to. */
     final private static String FILENAME_TASK = "data_tasks.txt";
-    /** Name of file to write BlackDates to. */
-    final private static String FILENAME_BLOCKDATE = "data_blockdates.txt";
 
     /** Reads from file containing tasks */
     private TaskReader taskReader;
@@ -30,32 +27,23 @@ public class DataFile {
     /** Writes to file containing tasks */
     private TaskWriter taskWriter;
 
-    /** Reads from file containing BlockDates. */
-    private BlockDateReader blockDateReader;
-
-    /** Writes to file containing BlockDates. */
-    private BlockDateWriter blockDateWriter;
-
     /** Exclusively contains undeleted to-do tasks. */
     private static List<Task> toDoTasks = new ArrayList<Task>();
 
     /** Exclusively contains undeleted done tasks. */
     private static List<Task> doneTasks = new ArrayList<Task>();
 
+    /** Exclusively contains undeleted block tasks. */
+    private static List<Task> blockTasks = new ArrayList<Task>();
+
     /** Exclusively contains deleted to-do and deleted done tasks. */
     private static List<Task> deletedTasks = new ArrayList<Task>();
 
     /**
-     * Contains references to all Task objects in toDoTasks, doneTasks, and
-     * deletedTasks. Does not contain duplicate tasks.
+     * Contains references to all Task objects in toDoTasks, doneTasks,
+     * blockTasks, and deletedTasks. Does not contain duplicate objects.
      */
     private static List<Task> allTasks = new ArrayList<Task>();
-
-    /** Contains undeleted blocked dates. */
-    private static List<BlockDate> allBlockDates = new ArrayList<BlockDate>();
-
-    /** Contains deleted blocked dates. */
-    private static List<BlockDate> deletedBlockDates = new ArrayList<BlockDate>();
 
     /**
      * Default constructor.
@@ -68,13 +56,8 @@ public class DataFile {
     public DataFile() {
         taskReader = new TaskReader(FILENAME_TASK);
         taskWriter = new TaskWriter(FILENAME_TASK);
-        blockDateReader = new BlockDateReader(FILENAME_BLOCKDATE);
-        blockDateWriter = new BlockDateWriter(FILENAME_BLOCKDATE);
         if (taskReader.fileExists() && allTasks.isEmpty()) {
             populateTaskLists();
-        }
-        if (blockDateReader.fileExists() && allBlockDates.isEmpty()) {
-            populateBlockDateList();
         }
     }
 
@@ -99,88 +82,54 @@ public class DataFile {
         }
     }
 
-    private void populateBlockDateList() {
-        allBlockDates.addAll(blockDateReader.read());
-    }
-
     /**
-     * Returns an unmodifiable view of the list of to-do tasks. Attempts to
-     * modify the returned list, whether direct or via its iterator, result in
-     * an UnsupportedOperationException.
+     * Returns a list of to-do Task objects. Exclusively contains undeleted
+     * to-do tasks.
      * 
-     * Exclusively contains undeleted to-do tasks.
-     * 
-     * @return Unmodifiable view of the specified list.
+     * @return List of to-do Task objects.
      */
     public List<Task> getToDoTasks() {
-        Collections.sort(toDoTasks, new Task());
-        return Collections.unmodifiableList(toDoTasks);
+        return toDoTasks;
     }
 
     /**
-     * Returns an unmodifiable view of the list of done tasks. Attempts to
-     * modify the returned list, whether direct or via its iterator, result in
-     * an UnsupportedOperationException.
+     * Returns a list of done Task objects. Exclusively contains undeleted done
+     * tasks.
      * 
-     * Exclusively contains undeleted done tasks.
-     * 
-     * @return Unmodifiable view of the specified list.
+     * @return List of done Task objects.
      */
     public List<Task> getDoneTasks() {
-        Collections.sort(doneTasks, new Task());
-        return Collections.unmodifiableList(doneTasks);
+        return doneTasks;
     }
 
     /**
-     * Returns an unmodifiable view of the list of deleted tasks. Attempts to
-     * modify the returned list, whether direct or via its iterator, result in
-     * an UnsupportedOperationException.
+     * Returns a list of block Task objects. Exclusively contains undeleted
+     * block tasks.
      * 
-     * Exclusively contains deleted to-do and deleted done tasks.
+     * @return List of block Task objects.
+     */
+    public List<Task> getBlockTasks() {
+        return blockTasks;
+    }
+
+    /**
+     * Returns a list of deleted Task objects. Exclusively contains deleted
+     * deleted tasks.
      * 
-     * @return Unmodifiable view of the specified list.
+     * @return List of deleted Task objects.
      */
     public List<Task> getDeletedTasks() {
-        Collections.sort(deletedTasks, new Task());
-        return Collections.unmodifiableList(deletedTasks);
+        return deletedTasks;
     }
 
     /**
-     * Returns an unmodifiable view of the list of all tasks. Attempts to modify
-     * the returned list, whether direct or via its iterator, result in an
-     * UnsupportedOperationException.
+     * Returns a list all Task objects. Contains references to to-do, done, and
+     * block Task objects. Does not contain duplicate Task objects.
      * 
-     * Contains references to all Task objects in toDoTasks, doneTasks, and
-     * deletedTasks. Does not contain duplicate tasks.
-     * 
-     * @return Unmodifiable view of the specified list.
+     * @return List of all Task objects.
      */
     public List<Task> getAllTasks() {
-        Collections.sort(allTasks, new Task());
-        return Collections.unmodifiableList(allTasks);
-    }
-
-    /**
-     * Returns an unmodifiable view of the list of all undeleted blocked dates.
-     * Attempts to modify the returned list, whether direct or via its iterator,
-     * result in an UnsupportedOperationException.
-     * 
-     * @return Unmodifiable view of the specified list.
-     */
-    public List<BlockDate> getAllBlockDates() {
-        Collections.sort(allBlockDates, new BlockDate());
-        return Collections.unmodifiableList(allBlockDates);
-    }
-
-    /**
-     * Returns an unmodifiable view of the list of deleted blocked dates.
-     * Attempts to modify the returned list, whether direct or via its iterator,
-     * result in an UnsupportedOperationException.
-     * 
-     * @return Unmodifiable view of the specified list.
-     */
-    public List<BlockDate> getDeletedBlockDates() {
-        return Collections.unmodifiableList(deletedBlockDates);
+        return allTasks;
     }
 
     /**
@@ -193,11 +142,6 @@ public class DataFile {
     public Task getTask(int id) {
         Task task = searchTaskById(allTasks, id);
         return task;
-    }
-
-    public BlockDate getBlockDate(int id) {
-        BlockDate bD = searchBlockDateById(allBlockDates, id);
-        return bD;
     }
 
     /**
@@ -213,25 +157,6 @@ public class DataFile {
         for (Task task : tasks) {
             if (task.getId() == id) {
                 return task;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Given id, returns BlockDate object from specified task list.
-     * 
-     * @param blockDates
-     *            The BlockDate list to search from.
-     * @param id
-     *            The BlockDate's unique ID.
-     * @return BlockDate object of matching ID, or null if it is not in the
-     *         list.
-     */
-    private BlockDate searchBlockDateById(List<BlockDate> blockDates, int id) {
-        for (BlockDate bD : blockDates) {
-            if (bD.getId() == id) {
-                return bD;
             }
         }
         return null;
@@ -267,11 +192,6 @@ public class DataFile {
         return writeTasksToFile(updatedTaskInfo);
     }
 
-    private boolean updateBlockDateFile() {
-        String updatedBlockDateInfo = getBlockDateInfo(allBlockDates);
-        return writeBlockDatesToFile(updatedBlockDateInfo);
-    }
-
     /**
      * Converts Task objects, from specified list, to a single String to write
      * to system file.
@@ -288,14 +208,6 @@ public class DataFile {
         return allTaskInfo;
     }
 
-    private String getBlockDateInfo(List<BlockDate> blockDates) {
-        String allBlockDateInfo = "";
-        for (BlockDate bD : blockDates) {
-            allBlockDateInfo += bD.toString() + "\n";
-        }
-        return allBlockDateInfo;
-    }
-
     /**
      * Writes String containing all to-do and done task info to system file.
      * 
@@ -305,10 +217,6 @@ public class DataFile {
      */
     private boolean writeTasksToFile(String allTaskInfo) {
         return taskWriter.write(allTaskInfo);
-    }
-
-    private boolean writeBlockDatesToFile(String allBlockDateInfo) {
-        return blockDateWriter.write(allBlockDateInfo);
     }
 
     /**
@@ -590,15 +498,13 @@ public class DataFile {
      */
     public boolean wipeFile() {
         Task.resetId();
-        BlockDate.resetId();
         allTasks.clear();
         toDoTasks.clear();
         doneTasks.clear();
+        blockTasks.clear();
         deletedTasks.clear();
-        allBlockDates.clear();
-        deletedBlockDates.clear();
 
-        return updateTaskFile() && updateBlockDateFile();
+        return updateTaskFile();
     }
 
     /**
@@ -703,154 +609,5 @@ public class DataFile {
         doneTasks.add(task);
         task.setType(TaskType.DONE);
         return updateTaskFile();
-    }
-
-    /**
-     * Adds a new BlockDate to lists and file. Populates relevant list, and
-     * updates file with new information.
-     * 
-     * @param bD
-     *            New BlockDate object to be written to file.
-     * @return True, if successfully written to file.
-     */
-    public boolean addNewBD(BlockDate bD) {
-        allBlockDates.add(bD);
-        return updateBlockDateFile();
-    }
-
-    /**
-     * Deletes BlockDate object based on the ID provided in argument. Updates
-     * BlockDate lists and file.
-     * 
-     * Overloaded function.
-     * 
-     * @param id
-     *            The ID of the BlockDate object to delete.
-     * @return True, if file has been successfully updated with deletion.
-     */
-    public boolean deleteBD(int id) {
-        BlockDate bD = searchBlockDateById(allBlockDates, id);
-        return deleteBDByObject(bD);
-    }
-
-    /**
-     * Deletes BlockDate object provided in argument. Updates BlockDate lists
-     * and file.
-     * 
-     * Overloaded function.
-     * 
-     * @param bD
-     *            The BlockDate object to delete.
-     * @return True, if file has been successfully updated with deletion.
-     */
-    public boolean deleteBD(BlockDate bD) {
-        return deleteBDByObject(bD);
-    }
-
-    /**
-     * Deletes object provided in argument. Removes object from allBlockDates
-     * list, adds to deletedBlockDates list, and updates file.
-     * 
-     * @param bD
-     *            The BlockDate object to delete.
-     * @return True, if file has been successfully updated with deletion.
-     */
-    private boolean deleteBDByObject(BlockDate bD) {
-        allBlockDates.remove(bD);
-        deletedBlockDates.add(bD);
-        return updateBlockDateFile();
-    }
-
-    /**
-     * Restores BlockDate object based on the ID provided in argument. Updates
-     * BlockDate lists and file.
-     * 
-     * Overloaded function.
-     * 
-     * @param id
-     *            The ID of the BlockDate object to restore.
-     * @return True, if file has been successfully updated with restoration.
-     */
-    public boolean restoreBD(int id) {
-        BlockDate bD = searchBlockDateById(deletedBlockDates, id);
-        return restoreBDByObject(bD);
-    }
-
-    /**
-     * Restores BlockDate object provided in argument. Updates BlockDate lists
-     * and file.
-     * 
-     * Overloaded function.
-     * 
-     * @param bD
-     *            The BlockDate object to restore.
-     * @return True, if file has been successfully updated with restoration.
-     */
-    public boolean restoreBD(BlockDate bD) {
-        return restoreBDByObject(bD);
-    }
-
-    /**
-     * Restores object provided in argument. Removes object from
-     * deletedBlockDates list, adds to allBlockDates list, and updates file.
-     * 
-     * @param bD
-     *            The BlockDate object to restore.
-     * @return True, if file has been successfully updated with restoration.
-     */
-    private boolean restoreBDByObject(BlockDate bD) {
-        deletedBlockDates.remove(bD);
-        allBlockDates.add(bD);
-        return updateBlockDateFile();
-    }
-
-    /**
-     * Permanently deletes BlockDate object provided in argument. Cannot be
-     * undone. Used when undoing add commands. Decrements BlockDate ID counter.
-     * Updates BlockDate lists and file.
-     * 
-     * Overloaded function.
-     * 
-     * @param task
-     *            The BlockDate object to permanently delete.
-     * @return True, if file has been successfully updated with wipe.
-     */
-    public boolean wipeBD(BlockDate bD) {
-        return wipeBDByObject(bD);
-    }
-
-    /**
-     * Permanently deletes BlockDate object based on the ID provided in
-     * argument. Cannot be undone. Used when undoing add commands. Decrements
-     * BlockDate ID counter. Updates BlockDate lists and file.
-     * 
-     * Overloaded function.
-     * 
-     * @param id
-     *            The ID of the BlockDate object to permanently delete.
-     * @return True, if file has been successfully updated with wipe.
-     */
-    public boolean wipeBD(int id) {
-        BlockDate bD = searchBlockDateById(allBlockDates, id);
-        return wipeBDByObject(bD);
-    }
-
-    /**
-     * Permanently deletes BlockDate object provided in argument. Cannot be
-     * undone. Used when undoing add commands. Decrements BlockDate ID counter.
-     * Removes object from all lists, and updates file.
-     * 
-     * @param task
-     *            The BlockDate object to permanently delete.
-     * @return True, if file has been successfully updated with wipe.
-     */
-    private boolean wipeBDByObject(BlockDate bD) {
-        if (bD == null) {
-            return false; // Invalid ID
-        }
-
-        allBlockDates.remove(bD);
-        bD.decrementId();
-        return updateBlockDateFile();
     }
 }
