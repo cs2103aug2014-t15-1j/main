@@ -33,11 +33,11 @@ public abstract class Command {
     }
 
     protected Result execute(boolean userInput) {
-        return new Result();
+        return new Result(null, false, CommandType.ERROR, null);
     }
 
     protected Result executeComplement() {
-        return new Result();
+        return new Result(null, false, CommandType.ERROR, null);
     }
 
     protected void setType(CommandType type) {

@@ -66,21 +66,16 @@ public class CommandOthers extends Command {
         switch (getType()) {
             case REDO:
                 return executeRedo();
-                
             case UNDO:
                 return executeUndo();
-                
             case EXIT:
                 return new Result(null, true, getType(), ResultType.TASK);
-                
             case RESET:
                 return new Result(null, true, getType(), true, ResultType.TASK);
-                
             case HELP:
                 return new Result(null, true, getType(), null);
-                
             default:
-                return new Result();
+                return new Result(null, false, getType(), ResultType.TASK);
         }
     }
 
@@ -104,7 +99,6 @@ public class CommandOthers extends Command {
                 case DONE:
                     r = backwardCommand.executeComplement();
                     break;
-                    
                 default:
                     return new Result(null, false, CommandType.ERROR, null);
             }

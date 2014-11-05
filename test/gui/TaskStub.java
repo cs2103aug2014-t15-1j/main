@@ -5,7 +5,6 @@ import java.util.List;
 
 import database.DateTime;
 import database.Task;
-import database.TaskType;
 
 /*
  * This class is to be used for testing ONLY.
@@ -25,19 +24,19 @@ public class TaskStub extends Task {
     private List<String> tags = new ArrayList<String>();
     private boolean done;
     private boolean deleted = false;
-    private TaskType taskType = TaskType.TODO;
 
     public TaskStub(String name, DateTime due, DateTime start, DateTime end,
-            List<String> tags, TaskType taskType) {
+            List<String> tags) {
+        super(name, due, start, end, tags);
         setName(name);
         setDue(due);
         setStart(start);
         setEnd(end);
         setTags(tags);
-        setTaskType(taskType);
     }
 
     public TaskStub(Task existingTask) {
+        super(existingTask);
         this.ID = existingTask.getId();
         this.name = existingTask.getName();
         this.due = existingTask.getDue();
@@ -120,18 +119,5 @@ public class TaskStub extends Task {
 
     public void setDone(boolean done) {
         this.done = done;
-    }
-    
-    public void setTaskType(TaskType taskType) {
-        this.taskType = taskType;
-    }
-    
-    public String getSummary() {
-        String summary = name + " ";
-        summary += start + " ";
-        summary += due + " ";
-        summary += tags.toString();
-        summary += taskType;
-        return summary;
     }
 }

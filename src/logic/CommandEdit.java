@@ -130,20 +130,17 @@ public class CommandEdit extends Command {
             Task existingTask = processor.getFile().getTask(taskId);
             if (existingTask != null) {
                 Task oldTask = new Task(existingTask);
-                for (String deleteParam : delete) {
-                    switch (deleteParam) {
+                for (String d : delete) {
+                    switch (d) {
                         case "name":
                             name = null;
                             break;
-                            
                         case "due":
                             due = null;
                             break;
-                            
                         case "start":
                             start = null;
                             break;
-                            
                         case "tags":
                             tags = null;
                             break;

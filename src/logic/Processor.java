@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 
 import logic.Result.ResultType;
 import parser.Parser;
+import database.BlockDate;
 import database.DataFile;
 import database.Task;
 
@@ -278,11 +279,11 @@ public class Processor extends Observable {
     }
     
 	
-	public List<Task> fetchBlockedDate() {
+	public List<BlockDate> fetchBlockedDate() {
 	    if (LOGGING_ENABLED) {
 	        log.info("Fetching Blocked Dates");
 	    }
-        return file.getBlockTasks();
+        return file.getAllBlockDates();
     }
 	
 	public String fetchInputUpKey() {

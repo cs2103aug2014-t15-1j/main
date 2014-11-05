@@ -110,19 +110,16 @@ public class CommandDelete extends Command {
             case "id":
                 success = deleteTaskUsingID(list);
                 break;
-                
             case "search":
                 if (userInput) {
                     processor.getForwardSearchListHistory().push(processor.getLastSearch());
                 }
                 success = deleteSearchedTasks(list);
                 break;
-                
             case "all":
                 success = true;
                 confirmation = true;
                 break;
-                
             default:
                 success = false;
         }

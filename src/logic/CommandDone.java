@@ -109,14 +109,11 @@ public class CommandDone extends Command {
             case "id":
                 success = doneById(list);
                 break;
-                
             case "date":
                 success = doneByDate(list);
                 break;
-                
             default:
                 break;
-                
         }
         
         return new Result(list, success, getType(), ResultType.TASK);

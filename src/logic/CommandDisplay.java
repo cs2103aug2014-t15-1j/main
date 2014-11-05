@@ -3,7 +3,6 @@ package logic;
 import java.util.ArrayList;
 import java.util.List;
 
-import database.Task;
 import logic.Result.ResultType;
 import parser.TaskParam;
 
@@ -74,52 +73,42 @@ public class CommandDisplay extends Command {
      * @return Result
      */
     @Override
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     protected Result execute(boolean userInput) {
         if (Processor.LOGGING_ENABLED) {
             Processor.getLogger().info("Executing 'Display' Command...");
         }
-        
         Processor processor = Processor.getInstance();
-        List<Task> list = new ArrayList<Task>();
+        List list = new ArrayList();
         boolean success = true;
         ResultType resultType = ResultType.TASK;
-        
         switch (rangeType) {
             case "id":
                 int taskId = Integer.parseInt(id);
                 list.add(processor.getFile().getTask(taskId));
                 break;
-                
             case "search":
                 list = processor.getLastSearch();
                 break;
-                
             case "block":
-                list = processor.getFile().getBlockTasks();
+                list = processor.getFile().getAllBlockDates();
                 resultType = ResultType.BLOCKDATE;
                 break;
-                
             case "done":
                 list = processor.getFile().getDoneTasks();
                 break;
-                
             case "deleted":
                 list = processor.getFile().getDeletedTasks();
                 break;
-                
             case "todo":
                 list = processor.getFile().getToDoTasks();
                 break;
-                
             case "all":
                 list = processor.getFile().getAllTasks();
                 break;
-                
             default:
                 success = false;
-                
         }
-        
         return new Result(list, success, getType(), resultType);
     }
 }
