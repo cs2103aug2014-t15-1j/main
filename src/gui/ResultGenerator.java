@@ -1,18 +1,25 @@
 package gui;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+
+import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.widgets.Control;
 
 import logic.CommandType;
 import logic.Processor;
 import logic.Result;
-import database.BlockDate;
+import database.DateTime;
 import database.Task;
 
 public class ResultGenerator {
 
     private static Processor processor;
-    private static TaskTableUI taskTable = TaskTableUI.getInstance();
-    private static DateTableUI dateTable = DateTableUI.getInstance();
+    private static TableManagement tableManagement = new TableManagement(); 
     private static ResultGenerator resultGen;
 
     public static ResultGenerator getInstance() {
@@ -30,7 +37,7 @@ public class ResultGenerator {
         FloatingTaskList floatingList = FloatingTaskList.getInstance();
         processor.addObserver(floatingList);
         floatingList.initialise();
-        refreshTodoTable();
+        refreshTables();
     }
 
     public String sendInput(String input) {
@@ -54,7 +61,7 @@ public class ResultGenerator {
         if (input.equals("y") || input.equals("yes")) {
             Processor.reset();
             start();
-            refreshTodoTable();
+            refreshTables();
             return true;
         }
 
@@ -90,9 +97,9 @@ public class ResultGenerator {
     }
 
     private String processDateBasedResult(Result result) {
-        List<BlockDate> dates = result.getBlockedDates(); // get list of dates
+        List<Task> dates = result.getBlockedDates(); // get list of dates
         if (dates.size() == 0) {
-            refreshBlockTable();
+            refreshTables();
             return "No dates have been blocked";
         }
 
@@ -103,34 +110,34 @@ public class ResultGenerator {
                 if (result.needsConfirmation()) {
                     return "Unable to block date. Date coincides with another blocked date or task.";
                 }
-                refreshBlockTable();
-                setDateTableSelection(dates);
+                refreshTables();
+                setTableSelection(dates);
                 return "BLOCKED: " + feedbackSingleBlock(dates);
 
             case UNBLOCK:
-                refreshBlockTable();
-                setDateTableSelection(dates);
+                refreshTables();
+                setTableSelection(dates);
                 return "UNBLOCKED: " + feedbackSingleBlock(dates);
 
             case REDO:
                 if (result.needsConfirmation()) {
                     return "Unable to redo command. Date coincides with another blocked date or task.";
                 }
-                refreshBlockTable();
-                setDateTableSelection(dates);
+                refreshTables();
+                setTableSelection(dates);
                 return "Command Redone.";
 
             case UNDO:
-                refreshBlockTable();
-                setDateTableSelection(dates);
+                refreshTables();
+                setTableSelection(dates);
                 return "Command Undone.";
 
             case DISPLAY:
-                refreshBlockTable();
+                refreshTables();
                 return feedbackMessageMultiResults(dates,
                                                    "Showing %1$s blocks.");
             case SEARCH:
-                dateTable.update(dates);
+                updateTables(dates);
                 return feedbackMessageMultiResults(dates, "Found %1$s results.");
             case ERROR:
                 return "Not able to fully process command";
@@ -142,10 +149,10 @@ public class ResultGenerator {
 
     }
 
-    private String feedbackSingleBlock(List<BlockDate> dates) {
-        BlockDate date = dates.get(0);
-        return date.getStartDate().toString() + " to " +
-               date.getEndDate().toString();
+    private String feedbackSingleBlock(List<Task> dates) {
+        Task date = dates.get(0);
+        return date.getStart().toString() + " to " +
+               date.getDue().toString();
     }
 
     private String processTaskBasedResult(Result result) {
@@ -155,8 +162,8 @@ public class ResultGenerator {
 
         switch (result.getCommandType()) {
             case ADD:
-                refreshTodoTable();
-                setTaskTableSelection(outputs);
+                refreshTables();
+                setTableSelection(outputs);
                 if (result.needsConfirmation()) {
                     return "Unable to add task. Task coincides with a blocked date.";
                 }
@@ -165,52 +172,52 @@ public class ResultGenerator {
                 if (result.needsConfirmation()) {
                     return "This will erase all data, PERMANENTLY.  Key 'y' to continue or 'n' to abort";
                 }
-                refreshTodoTable();
-                setTaskTableSelection(outputs);
+                refreshTables();
+                setTableSelection(outputs);
                 return feedbackMessage(outputs, "Deleted %1$s");
             case RESET:
                 if (result.needsConfirmation()) {
                     return "This will erase all data, PERMANENTLY.  Key 'y' to continue or 'n' to abort";
                 }
-                refreshTodoTable();
+                refreshTables();
                 return feedbackMessage(outputs, "Deleted %1$s");
             case EDIT:
-                refreshTodoTable();
-                setTaskTableSelection(outputs);
+                refreshTables();
+                setTableSelection(outputs);
                 return feedbackMessage(outputs, "Edited %1$s");
             case DISPLAY:
                 if (outputs.size() == 0) {
 
                     return "No tasks to show.";
                 } else if (outputs.size() == 1) {
-                    setTaskTableSelection(outputs);
+                    setTableSelection(outputs);
                 }
-                taskTable.update(outputs);
+                updateTables(outputs);
                 return feedbackMessageMultiResults(outputs,
                                                    "%1$s task(s) found.");
             case SEARCH:
-                taskTable.update(outputs);
+                updateTables(outputs);
                 return feedbackMessageMultiResults(outputs,
                                                    "Found %1$s match(es).");
             case TODO:
-                refreshTodoTable();
-                setTaskTableSelection(outputs);
+                refreshTables();
+                setTableSelection(outputs);
                 return feedbackMessage(outputs, "Marked %1$s as todo.");
             case DONE:
-                refreshTodoTable();
-                setTaskTableSelection(outputs);
+                refreshTables();
+                setTableSelection(outputs);
                 return feedbackMessage(outputs, "Marked %1$s as done.");
             case UNDO:
-                refreshTodoTable();
-                setTaskTableSelection(outputs);
+                refreshTables();
+                setTableSelection(outputs);
                 return "Command Undone.";
             case REDO:
-                refreshTodoTable();
-                setTaskTableSelection(outputs);
+                refreshTables();
+                setTableSelection(outputs);
                 return "Command Redone.";
             case RESTORE:
-                refreshTodoTable();
-                setTaskTableSelection(outputs);
+                refreshTables();
+                setTableSelection(outputs);
                 return feedbackMessage(outputs, "Restored %1$s.");
             case EXIT:
                 return "exit";
@@ -232,8 +239,7 @@ public class ResultGenerator {
         return String.format(commandDone, taskDone.getName());
     }
 
-    @SuppressWarnings("rawtypes")
-    private String feedbackMessageMultiResults(List outputs, String feedback) {
+    private String feedbackMessageMultiResults(List<Task> outputs, String feedback) {
         int size = outputs.size();
         return String.format(feedback, size);
     }
@@ -251,23 +257,18 @@ public class ResultGenerator {
                parameter.equals("null");
     }
 
-    private void refreshTodoTable() {
+    private void refreshTables() {
         List<Task> tasks = processor.fetchToDoTasks();
-        taskTable.update(tasks);
+        tableManagement.update(tasks);
     }
-
-    private void refreshBlockTable() {
-        List<BlockDate> dates = processor.fetchBlockedDate();
-        dateTable.update(dates);
+    
+    private void updateTables(List<Task> tasks){
+        tableManagement.update(tasks);
     }
-
-    private void setTaskTableSelection(List<Task> outputs) {
+    
+    private void setTableSelection(List<Task> outputs) {
         List<Task> tasks = processor.fetchToDoTasks();
-        taskTable.setTableSection(outputs.get(0), tasks);
+        tableManagement.setTableSelection(outputs.get(0), tasks);
     }
 
-    private void setDateTableSelection(List<BlockDate> outputs) {
-        List<BlockDate> dates = processor.fetchBlockedDate();
-        dateTable.setTableSection(outputs.get(0), dates);
-    }
 }

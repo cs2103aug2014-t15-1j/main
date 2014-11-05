@@ -24,7 +24,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import database.DateTime;
 import database.Task;
 
-public class TaskTableUI extends Composite {
+public class TableUI extends Composite {
 
     private static FontRegistry registry;
     private static final String HEADER_NAME_ID = "Id";
@@ -54,24 +54,11 @@ public class TaskTableUI extends Composite {
 
     private TableViewer tableViewer;
     private CTabFolder folder;
-    private static TaskTableUI taskTableUI;
 
-    private TaskTableUI(CTabFolder parent) {
+    public TableUI(CTabFolder parent) {
         super(parent, SWT.NULL);
         folder = parent;
         buildControls(parent);
-    }
-
-    public static TaskTableUI getInstance() {
-        assert (taskTableUI != null);
-        return taskTableUI;
-    }
-
-    public static TaskTableUI getInstance(CTabFolder parent) {
-        if (taskTableUI == null) {
-            taskTableUI = new TaskTableUI(parent);
-        }
-        return taskTableUI;
     }
 
     public TableViewer getTableViewer() {

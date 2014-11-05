@@ -189,7 +189,6 @@ public class FeedbackAndInput extends Composite {
 
     protected void processInput(String input) {
         String output = resultGenerator.sendInput(input);
-
         if (output.equals(CODE_EXIT)) {
             exitProgram();
         } else if (output.equals(ASK_CONFIRM_DELETE)) {
