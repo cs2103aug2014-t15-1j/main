@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import logic.CommandType;
 import logic.Result.ResultType;
@@ -12,9 +13,14 @@ import objects.DateTimeStub;
 import objects.ResultStub;
 import objects.TaskStub;
 
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import database.Task;
 
 /*
  * This class contains the junit tests for the ResultGenerator.java class. 
@@ -25,22 +31,125 @@ import org.junit.Test;
 public class ResultGeneratorTest {
 
     private static ResultGenerator resultGenerator = new ResultGenerator();
-    private static ArrayList<TaskStub> outputs = new ArrayList<TaskStub>();
-    private static ArrayList<BlockDateStub> outputsDate = new ArrayList<BlockDateStub>();
-
+    private static List<TaskStub> outputs = new ArrayList<TaskStub>();
+    private static List<BlockDateStub> outputsDate = new ArrayList<BlockDateStub>();
+    private static List<String> tags = new ArrayList<String>();
+    
+   @Before
+   public void setUp(){
+       tags.add("");
+       outputs.add(new TaskStub("name", new DateTimeStub("", ""),
+                                new DateTimeStub("", ""), new DateTimeStub("", ""), tags));
+       outputsDate.add(new BlockDateStub(
+                                         new DateTimeStub("21/10/2014", "1922"), new DateTimeStub(
+                                                 "21/10/2014", "1927")));
+   }
+    
     @After
     public void tearDown() {
         outputs.clear();
         outputsDate.clear();
     }
+    
+    @Test
+    public void test_ResultGenerator(){
+        Display display = new Display();
+        Shell shell = new Shell(display);
+        MainScreen.runProgram(shell);
+        
+        setUp();
+        test_Add();
+        tearDown();
+        
+        setUp();
+        test_Add_Unsucessful();
+        tearDown();
+        
+        setUp();
+        test_Add_NullName();
+        tearDown();
+        
+        setUp();
+        test_Add_EmptyName();
+        tearDown();
+        
+        setUp();
+        test_Add_NullStringName();
+        tearDown();
+        
+        setUp();
+        test_Add_NeedConfirmation();
+        tearDown();
+        
+        setUp();
+        test_Delete();
+        tearDown();
+        
+        setUp();
+        test_DeleteAll();
+        tearDown();
+        
+        setUp();
+        test_Edit();
+        tearDown();
+        
+        setUp();
+        test_Display();
+        tearDown();
+        
+        setUp();
+        test_Display_20_Tasks();
+        tearDown();
+        
+        setUp();
+        test_Display_EmptyFile();
+        tearDown();
+        
+        setUp();
+        test_Search();
+        tearDown();
+       
+       setUp();
+       test_Todo();
+        tearDown();
+        
+        setUp();
+        test_Done();
+        tearDown();
+        
+        setUp();
+        test_Undo_Block();
+        tearDown();
+        
+        setUp();
+        test_Undo();
+        tearDown();
+        
+        setUp();
+        test_Redo();
+        tearDown();
+        
+        setUp();
+        test_Redo_Block();
+        tearDown();
+        
+        setUp();
+        test_Block();
+        tearDown();
+        
+        setUp();
+        test_Unblock();
+        tearDown();
+           
+        shell.dispose();
+        display.dispose();
+    }
 
     /**
      * Tests a generic successful add command for the Task ResultType.
      */
-    @Test
+    
     public void test_Add() {
-        outputs.add(new TaskStub("name", new DateTimeStub("", ""),
-                new DateTimeStub("", ""), new DateTimeStub("", ""), null));
         ResultStub result = new ResultStub(outputs, true, CommandType.ADD,
                 false, ResultType.TASK);
 
@@ -54,10 +163,8 @@ public class ResultGeneratorTest {
      * ResultGenerator treats all unsucessful commands the same, only one test
      * case has been implemented for all the commands.
      */
-    @Test
+    
     public void test_Add_Unsucessful() {
-        outputs.add(new TaskStub("name", new DateTimeStub("", ""),
-                new DateTimeStub("", ""), new DateTimeStub("", ""), null));
         ResultStub result = new ResultStub(outputs, false, CommandType.ADD,
                 false, ResultType.TASK);
 
@@ -72,11 +179,12 @@ public class ResultGeneratorTest {
      * an invalid Result Object the same for all commands, only one test case
      * for add has been implemented.
      */
-    @Test
+    
     public void test_Add_NullName() {
-        outputs.add(new TaskStub(null, new DateTimeStub("", ""),
-                new DateTimeStub("", ""), new DateTimeStub("", ""), null));
-        ResultStub result = new ResultStub(outputs, false, CommandType.ADD,
+        List<Task> outputsNullName = new ArrayList<Task>();
+        outputsNullName.add(new TaskStub(null, new DateTimeStub("", ""),
+                new DateTimeStub("", ""), new DateTimeStub("", ""), tags));
+        ResultStub result = new ResultStub(outputsNullName, false, CommandType.ADD,
                 false, ResultType.TASK);
         try {
             resultGenerator.processResult(result, "add name");
@@ -91,11 +199,12 @@ public class ResultGeneratorTest {
      * ResultGenerator.java treats an invalid Result Object the same for all
      * commands, only one test case for add has been implemented.
      */
-    @Test
+    
     public void test_Add_EmptyName() {
-        outputs.add(new TaskStub("", new DateTimeStub("", ""),
-                new DateTimeStub("", ""), new DateTimeStub("", ""), null));
-        ResultStub result = new ResultStub(outputs, false, CommandType.ADD,
+        List<Task> outputsEmptyName = new ArrayList<Task>();
+        outputsEmptyName.add(new TaskStub("", new DateTimeStub("", ""),
+                new DateTimeStub("", ""), new DateTimeStub("", ""), tags));
+        ResultStub result = new ResultStub(outputsEmptyName, false, CommandType.ADD,
                 false, ResultType.TASK);
         try {
             resultGenerator.processResult(result, "add name");
@@ -110,11 +219,12 @@ public class ResultGeneratorTest {
      * ResultGenerator.java treats an invalid Result Object the same for all
      * commands, only one test case for add has been implemented.
      */
-    @Test
+    
     public void test_Add_NullStringName() {
-        outputs.add(new TaskStub("null", new DateTimeStub("", ""),
-                new DateTimeStub("", ""), new DateTimeStub("", ""), null));
-        ResultStub result = new ResultStub(outputs, false, CommandType.ADD,
+        List<Task> outputsNullStringName = new ArrayList<Task>();
+        outputsNullStringName.add(new TaskStub("null", new DateTimeStub("", ""),
+                new DateTimeStub("", ""), new DateTimeStub("", ""), tags));
+        ResultStub result = new ResultStub(outputsNullStringName, false, CommandType.ADD,
                 false, ResultType.TASK);
         try {
             resultGenerator.processResult(result, "add name");
@@ -126,54 +236,25 @@ public class ResultGeneratorTest {
     /**
      * Tests when an task to be added command coincides with the a blocked date.
      */
-    @Test
+    
     public void test_Add_NeedConfirmation() {
-        outputs.add(new TaskStub("name", new DateTimeStub("", ""),
+        List<Task> outputsNeedConfirmation = new ArrayList<Task>();
+        outputsNeedConfirmation.add(new TaskStub("name", new DateTimeStub("", ""),
                 new DateTimeStub("21/10/2014", "18:53"), new DateTimeStub(
-                        "21/10/2014", "21:00"), null));
-        ResultStub result = new ResultStub(outputs, true, CommandType.ADD,
+                        "21/10/2014", "21:00"), tags));
+        ResultStub result = new ResultStub(outputsNeedConfirmation, true, CommandType.ADD,
                 true, ResultType.TASK);
 
         String actual = resultGenerator.processResult(result, "add name");
-        String expected = "Unable to add task. Task coincides with a blocked date. Key 'y' to override date or 'n' to abort";
+        String expected = "Unable to add task. Task coincides with a blocked date.";
         assertEquals(expected, actual);
-    }
-
-    @Ignore
-    public void test_CommandType_NullTaskResultType() {
-        outputs.add(new TaskStub("name", new DateTimeStub("", ""),
-                new DateTimeStub("", ""), new DateTimeStub("", ""), null));
-        ResultStub result = new ResultStub(outputs, true, null, false,
-                ResultType.TASK);
-
-        try {
-            resultGenerator.processResult(result, "add name");
-        } catch (IllegalArgumentException error) {
-            assertTrue(error.getMessage().contains("Illegal Command Type"));
-        }
-    }
-
-    @Ignore
-    public void test_CommandType_NullBlockDateResultType() {
-        outputs.add(new TaskStub("name", new DateTimeStub("", ""),
-                new DateTimeStub("", ""), new DateTimeStub("", ""), null));
-        ResultStub result = new ResultStub(outputs, true, null, false,
-                ResultType.BLOCKDATE);
-
-        try {
-            resultGenerator.processResult(result, "add name");
-        } catch (IllegalArgumentException error) {
-            assertTrue(error.getMessage().contains("Illegal Command Type"));
-        }
     }
 
     /**
      * Tests generic delete
      */
-    @Test
+    
     public void test_Delete() {
-        outputs.add(new TaskStub("name", new DateTimeStub("", ""),
-                new DateTimeStub("", ""), new DateTimeStub("", ""), null));
         ResultStub result = new ResultStub(outputs, true, CommandType.DELETE,
                 false, ResultType.TASK);
         String actual = resultGenerator.processResult(result, "delete name");
@@ -184,10 +265,8 @@ public class ResultGeneratorTest {
     /**
      * Tests generic deleteAll, asks the user for confirmation
      */
-    @Test
+    
     public void test_DeleteAll() {
-        outputs.add(new TaskStub("name", new DateTimeStub("", ""),
-                new DateTimeStub("", ""), new DateTimeStub("", ""), null));
         ResultStub result = new ResultStub(outputs, true, CommandType.DELETE,
                 true, ResultType.TASK);
         String actual = resultGenerator.processResult(result, "delete name");
@@ -198,15 +277,14 @@ public class ResultGeneratorTest {
     /**
      * Tests generic edit
      */
-    @Test
+    
     public void test_Edit() {
-        TaskStub task = new TaskStub("name", new DateTimeStub("", ""),
-                new DateTimeStub("", ""), new DateTimeStub("", ""), null);
-        outputs.add(task);
+        Task task = outputs.get(0);
+        int ID = task.getId();
         ResultStub result = new ResultStub(outputs, true, CommandType.EDIT,
                 false, ResultType.TASK);
         String actual = resultGenerator.processResult(result,
-                                                      "edit" + task.getID());
+                                                      "edit" + ID);
         String expected = "Edited name";
         assertEquals(expected, actual);
     }
@@ -214,36 +292,53 @@ public class ResultGeneratorTest {
     /**
      * Tests generic display
      */
-    @Test
+    
     public void test_Display() {
-        outputs.add(new TaskStub("name", new DateTimeStub("", ""),
-                new DateTimeStub("", ""), new DateTimeStub("", ""), null));
         ResultStub result = new ResultStub(outputs, true, CommandType.DISPLAY,
                 false, ResultType.TASK);
         String actual = resultGenerator.processResult(result, "display");
         String expected = "1 task(s) found.";
         assertEquals(expected, actual);
     }
+    
+    /**
+     * Tests display for 20 tasks
+     */
+    
+    public void test_Display_20_Tasks() {
+        List<Task> outputsDisplayTest = new ArrayList<Task>();
+        for(int index = 0; index < 10; index++){
+            outputsDisplayTest.add(new TaskStub("name", new DateTimeStub("", ""),
+                    new DateTimeStub("", ""), new DateTimeStub("", ""), tags));
+            outputsDisplayTest.add(new TaskStub("email boss", new DateTimeStub("", ""),
+                                     new DateTimeStub("", ""), new DateTimeStub("", ""), tags));
+        }
+        
+        ResultStub result = new ResultStub(outputsDisplayTest, true, CommandType.DISPLAY,
+                false, ResultType.TASK);
+        String actual = resultGenerator.processResult(result, "display");
+        String expected = "20 task(s) found.";
+        assertEquals(expected, actual);
+    }
 
     /**
      * Tests display when there are no tasks to be displayed to the user
      */
-    @Test
+    
     public void test_Display_EmptyFile() {
+        tearDown();
         ResultStub result = new ResultStub(outputs, true, CommandType.DISPLAY,
                 false, ResultType.TASK);
         String actual = resultGenerator.processResult(result, "display");
         String expected = "No tasks to show.";
         assertEquals(expected, actual);
+        setUp();
     }
 
     /**
      * Tests generic search
      */
-    @Test
     public void test_Search() {
-        outputs.add(new TaskStub("name", new DateTimeStub("", ""),
-                new DateTimeStub("", ""), new DateTimeStub("", ""), null));
         ResultStub result = new ResultStub(outputs, true, CommandType.SEARCH,
                 false, ResultType.TASK);
         String actual = resultGenerator.processResult(result, "search name");
@@ -254,12 +349,9 @@ public class ResultGeneratorTest {
     /**
      * Tests generic ToDo
      */
-    @Test
     public void test_Todo() {
-        TaskStub task = new TaskStub("name", new DateTimeStub("", ""),
-                new DateTimeStub("", ""), new DateTimeStub("", ""), null);
+        Task task = outputs.get(0);
         int ID = task.getId();
-        outputs.add(task);
         ResultStub result = new ResultStub(outputs, true, CommandType.TODO,
                 false, ResultType.TASK);
         String actual = resultGenerator.processResult(result, "todo" + ID);
@@ -270,12 +362,9 @@ public class ResultGeneratorTest {
     /**
      * Tests generic done
      */
-    @Test
     public void test_Done() {
-        TaskStub task = new TaskStub("name", new DateTimeStub("", ""),
-                new DateTimeStub("", ""), new DateTimeStub("", ""), null);
+        Task task = outputs.get(0);
         int ID = task.getId();
-        outputs.add(task);
         ResultStub result = new ResultStub(outputs, true, CommandType.DONE,
                 false, ResultType.TASK);
         String actual = resultGenerator.processResult(result, "Done" + ID);
@@ -287,10 +376,9 @@ public class ResultGeneratorTest {
      * Tests generic undo for ResultType Task. Undo a command related to a task
      * e.g. add, edit, delete
      */
-    @Test
     public void test_Undo() {
-        ResultStub result = new ResultStub(outputs, true, CommandType.UNDO,
-                false, ResultType.TASK);
+       ResultStub result = new ResultStub(outputs, true, CommandType.UNDO,
+                                          false, ResultType.TASK);
         String actual = resultGenerator.processResult(result, "undo");
         String expected = "Command Undone.";
         assertEquals(expected, actual);
@@ -300,11 +388,7 @@ public class ResultGeneratorTest {
      * Tests generic undo for ResultType blockdate. Undo a block/unblock date
      * command
      */
-    @Test
     public void test_Undo_Block() {
-        outputsDate.add(new BlockDateStub(
-                new DateTimeStub("21/10/2014", "1922"), new DateTimeStub(
-                        "21/10/2014", "1927")));
         ResultStub result = new ResultStub(outputsDate, true, CommandType.UNDO,
                 false, ResultType.BLOCKDATE);
         String actual = resultGenerator.processResult(result, "redo");
@@ -316,7 +400,6 @@ public class ResultGeneratorTest {
      * Test generic redo for ResultType task. Redo a command related to task
      * e.g. add, edit, delete
      */
-    @Test
     public void test_Redo() {
         ResultStub result = new ResultStub(outputs, true, CommandType.REDO,
                 false, ResultType.TASK);
@@ -329,11 +412,7 @@ public class ResultGeneratorTest {
      * Test generic redo for ResultType block date. Redo a block/unblock date
      * command
      */
-    @Test
     public void test_Redo_Block() {
-        outputsDate.add(new BlockDateStub(
-                new DateTimeStub("21/10/2014", "1922"), new DateTimeStub(
-                        "21/10/2014", "1927")));
         ResultStub result = new ResultStub(outputsDate, true, CommandType.REDO,
                 false, ResultType.BLOCKDATE);
         String actual = resultGenerator.processResult(result, "redo");
@@ -341,12 +420,8 @@ public class ResultGeneratorTest {
         assertEquals(expected, actual);
     }
 
-    @Ignore
-    // Block has not been fully implemented
+    
     public void test_Block() {
-        outputsDate.add(new BlockDateStub(
-                new DateTimeStub("21/10/2014", "1922"), new DateTimeStub(
-                        "21/10/2014", "1927")));
         ResultStub result = new ResultStub(outputsDate, true,
                 CommandType.BLOCK, false, ResultType.BLOCKDATE);
         String actual = resultGenerator
@@ -356,18 +431,23 @@ public class ResultGeneratorTest {
         assertEquals(expected, actual);
     }
 
-    @Ignore
-    // Block has not been fully implemented
+    
     public void test_Unblock() {
-        outputsDate.add(new BlockDateStub(
-                new DateTimeStub("21/10/2014", "1922"), new DateTimeStub(
-                        "21/10/2014", "1927")));
         ResultStub result = new ResultStub(outputsDate, true,
                 CommandType.UNBLOCK, false, ResultType.BLOCKDATE);
         String actual = resultGenerator
                 .processResult(result,
                                "unblock 1922 21/10/2014 to 1927 21/10/2014");
         String expected = "UNBLOCKED: 21/10/2014 1922 to 21/10/2014 1927";
+        assertEquals(expected, actual);
+    }
+    
+    public void test_Restore(){
+        Task task = outputs.get(0);
+        int ID = task.getId();
+        ResultStub result = new ResultStub(outputs, true, CommandType.RESTORE, false, ResultType.TASK);
+        String actual = resultGenerator.processResult(result, "restore" + ID);
+        String expected = "Restored name";
         assertEquals(expected, actual);
     }
 

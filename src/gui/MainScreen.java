@@ -27,12 +27,7 @@ public class MainScreen {
         Display display = new Display();
         Shell shell = new Shell(display);
 
-        Images images = new Images(shell);
-        new Fonts(shell);
-        configureShell(shell, images);
-        createContents(shell);
-        initialiseProgram();
-        new ProcessUserInteraction();
+        runProgram(shell);
 
         shell.pack();
         shell.open();
@@ -45,6 +40,15 @@ public class MainScreen {
         display.dispose();
         Images.disposeAllImages();
     }
+
+public static void runProgram(Shell shell) {
+    Images images = new Images(shell);
+    new Fonts(shell);
+    configureShell(shell, images);
+    createContents(shell);
+    initialiseProgram();
+    new ProcessUserInteraction();
+}
 
     private static void initialiseProgram() {
         ResultGenerator resultGen = ResultGenerator.getInstance();

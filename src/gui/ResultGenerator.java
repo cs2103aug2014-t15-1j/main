@@ -15,8 +15,8 @@ import database.Task;
 public class ResultGenerator {
 
     private static Processor processor;
-    private static TaskTableUI taskTable = TaskTableUI.getInstance();
-    private static DateTableUI dateTable = DateTableUI.getInstance();
+    private static TaskTableUI taskTable;
+    private static DateTableUI dateTable;
     private static ResultGenerator resultGen;
 
     /**
@@ -118,6 +118,8 @@ public class ResultGenerator {
 
     private void initialiseAppilcation() {
         processor = Processor.getInstance();
+        taskTable = TaskTableUI.getInstance();
+       dateTable = DateTableUI.getInstance();
     }
     
     private boolean isHelp(Result result) {
@@ -184,8 +186,13 @@ public class ResultGenerator {
 
     private String feedbackSingleBlock(List<BlockDate> dates) {
         BlockDate date = dates.get(0);
-        return date.getStartDate().toString() + " to " +
-               date.getEndDate().toString();
+        if(date.getStartTime() == null || date.getEndTime() == null){
+            return date.getStartDate().toString() + " to " +
+                   date.getEndDate().toString();
+        } else{
+            return date.getStartDate().toString() + " " + date.getStartTime()+ " to " +
+                    date.getEndDate().toString() + " " + date.getEndTime();
+        }
     }
 
     private String processTaskBasedResult(Result result) {
@@ -201,6 +208,7 @@ public class ResultGenerator {
                     return "Unable to add task. Task coincides with a blocked date.";
                 }
                 return feedbackMessage(outputs, "Added %1$s");
+                
             case DELETE:
                 if (result.needsConfirmation()) {
                     return "This will erase all data, PERMANENTLY.  Key 'y' to continue or 'n' to abort";
@@ -208,12 +216,14 @@ public class ResultGenerator {
                 refreshTodoTable();
                 setTaskTableSelection(outputs);
                 return feedbackMessage(outputs, "Deleted %1$s");
+                
             case RESET:
                 if (result.needsConfirmation()) {
                     return "This will erase all data, PERMANENTLY.  Key 'y' to continue or 'n' to abort";
                 }
                 refreshTodoTable();
                 return feedbackMessage(outputs, "Deleted %1$s");
+                
             case EDIT:
                 refreshTodoTable();
                 setTaskTableSelection(outputs);
