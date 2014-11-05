@@ -404,7 +404,7 @@ public class DatabaseLogic {
                 // TODO toss exception?
                 assert false;
         }
-        task.setType(TaskType.TODO);
-        return toDoTasks.add(task);
+        task.setType(TaskType.DONE);
+        return doneTasks.add(task);
     }
 }
