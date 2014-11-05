@@ -19,7 +19,7 @@ public class Task implements Comparable<Task> {
 
     /**
      * Unique ID for each new Task object. Increments at new Task instantiation.
-     * Decrements when undoing an object creation.
+     * Should be decremented when undoing an object creation.
      */
     private static int newId = 1;
 
@@ -85,9 +85,9 @@ public class Task implements Comparable<Task> {
         }
         this.ID = newId++;
         this.name = name;
-        this.start = start;
-        this.due = due;
-        this.completedOn = completedOn;
+        this.start = new DateTime(start);
+        this.due = new DateTime(due);
+        this.completedOn = new DateTime(completedOn);
         this.tags.addAll(tags);
         this.type = type;
     }
@@ -256,10 +256,8 @@ public class Task implements Comparable<Task> {
      */
     private String concatanateTags() {
         String concatanatedTags = "";
-        if (!tags.isEmpty()) { // TODO Necessary?
-            for (String tempTag : tags) {
-                concatanatedTags += tempTag + " ";
-            }
+        for (String tempTag : tags) {
+            concatanatedTags += tempTag + " ";
         }
         return concatanatedTags;
     }
@@ -274,7 +272,6 @@ public class Task implements Comparable<Task> {
         String summary = name + " ";
         summary += start + " ";
         summary += due + " ";
-        summary += completedOn + " ";
         summary += concatanateTags();
         summary += type;
         return summary;
@@ -285,7 +282,7 @@ public class Task implements Comparable<Task> {
     }
 
     /** Reduces ID counter by one. */
-    public void decrementId() {
+    public static void decrementId() {
         --newId;
     }
 
@@ -312,7 +309,7 @@ public class Task implements Comparable<Task> {
     }
 
     public void setStart(DateTime start) {
-        this.start = start;
+        this.start = new DateTime(start);
     }
 
     /** Resets scheduled start date and time to an empty String. */
@@ -325,7 +322,7 @@ public class Task implements Comparable<Task> {
     }
 
     public void setDue(DateTime due) {
-        this.due = due;
+        this.due = new DateTime(due);
     }
 
     /** Resets due date and time to an empty String. */
@@ -348,14 +345,6 @@ public class Task implements Comparable<Task> {
     public void setTags(List<String> tags) {
         this.tags.clear();
         this.tags.addAll(tags);
-    }
-
-    /**
-     * @param tags
-     *            List of tags to remove from existing list of tags.
-     */
-    public void removeTags(List<String> tags) {
-        this.tags.removeAll(tags);
     }
 
     /** Resets list of tags to an empty list. */
