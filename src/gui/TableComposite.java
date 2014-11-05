@@ -16,9 +16,8 @@ import org.eclipse.swt.widgets.Table;
 
 /**
  * TableComposite contains a tabFolder containing all the tables used in the application.
- * @author Sharon
- *
  */
+//@author A0118846W
 public class TableComposite extends Composite {
 
     private static final String TASK_TABLE_TAB_LABEL = "Tasks";

@@ -18,7 +18,6 @@ import parser.DateParser;
  * TimeUI is the user interface that shows the system time.
  * TimeUI implementes the Observer interface, it observes logic.Processor
  * The singleton pattern is used, so every instance of this class refers to the same instance
- * @author Sharon, Yao Xiang
  */
 public class TimeUI implements Observer {
     

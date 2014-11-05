@@ -6,9 +6,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 /**
  * The Images class adds all file images into a registry to be used by the application
- * @author Sharon
- *
  */
+//@author A0118846W
 public class Images {
 
     private static ImageRegistry registry;

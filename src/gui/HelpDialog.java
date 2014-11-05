@@ -20,9 +20,8 @@ import org.eclipse.swt.widgets.Shell;
 
 /**
  * HelpDialog is the Dialog which contains an image showing all the commands the user can input
- * @author Sharon
- *
  */
+//@author A0118846W
 public class HelpDialog extends Dialog {
     
     private static final String CLOSE_LABEL_TEXT = "To close press ESC";

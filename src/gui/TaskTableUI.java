@@ -28,9 +28,8 @@ import database.Task;
  * TaskTable is a table interface located that is located in a Tab Folder.
  * This table shows all tasks blocked by the user in a table.
  * The singleton pattern is used so that only one interface of the table is used.
- * @author Sharon
  */
-
+//@author A0118846W
 public class TaskTableUI extends Composite {
 
     

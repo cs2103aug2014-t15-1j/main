@@ -21,7 +21,6 @@ import database.Task;
  * The FloatingTaskList is a user interface that shows all of the user's tasks that are without any dates
  * The Observer interface is implemented, FloatingTaskList observes logic.Processor
  * The singleton pattern is applied so that any instance of the class refers to the same instance
- * @author Sharon, Yao Xiang
  *
  */
 public class FloatingTaskList implements Observer {

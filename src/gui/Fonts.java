@@ -5,6 +5,10 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.widgets.Composite;
 
+/**
+ * This class contains all the fonts used through out the application.
+ */
+// @author A0118846W
 public class Fonts {
     private static FontRegistry registry;
 

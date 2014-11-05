@@ -17,9 +17,8 @@ import org.eclipse.swt.widgets.Display;
 /**
  * This Composite contains the user interfaces that show additional information about the tasks carried out. 
  * The children of this Composite include TimeUI, Calendar, UpcomingTaskList, FloatingTaskList
- * @author Sharon
- *
  */
+//@author A0118846W
 public class SidePane extends Composite {
 
     private static final int MIN_HEIGHT_SIDE_PANE = 500;

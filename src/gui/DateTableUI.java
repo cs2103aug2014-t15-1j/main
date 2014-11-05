@@ -22,9 +22,8 @@ import database.BlockDate;
  * The DateTableUI is a table interface that is located in the a TabFolder. 
  * This user interface shows all the dates blocked by the user in a table.
  * The singleton pattern is used so that only one instance of the interface is used.
- * @author Sharon
- *
  */
+//@author A0118846W
 public class DateTableUI extends Composite {
     
     private static final String HEADER_NAME_ID = "Id";

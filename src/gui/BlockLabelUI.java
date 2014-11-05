@@ -19,8 +19,9 @@ import database.BlockDate;
  * The blockLabelUI is the user interface which displays the top five dates blocked by the user. 
  * It also implements the Observer interface, it observers logic.Processor
  * The singleton pattern is applied so that any instance of the class refers to the same instance.
- * @author Sharon
  */
+
+// @author A0118846W
 public class BlockLabelUI implements Observer{
     
     private static BlockLabelUI blockLabelUI;

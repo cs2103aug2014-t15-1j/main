@@ -11,9 +11,8 @@ import org.eclipse.swt.widgets.Label;
 
 /**
  * This Composite contains the title of the program.
- * @author Sharon
- *
  */
+//@author A0118846W
 public class TitleLabel extends Composite {
 
     private static final String LABEL_TEXT = "Haystack";

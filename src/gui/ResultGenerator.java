@@ -10,7 +10,6 @@ import database.Task;
 
 /**
  * Processes the Result objects returned by logic.Processor to update the graphical user interface accordingly.
- * @author Sharon, Yao Xiang
  */
 public class ResultGenerator {
 

@@ -11,9 +11,8 @@ import org.eclipse.swt.widgets.Shell;
 
 /**
  * This class creates and setUps the window for the Haystack application
- * @author Sharon
- *
  */
+//@author A0118846W
 public class MainScreen {
 
     private static final int NUM_COLS_SCREEN = 2;

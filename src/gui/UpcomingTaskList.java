@@ -27,8 +27,6 @@ import database.Task;
  * The list is arranged by dates. 
  * The Observer interface is implemented. UpcomingTaskList observes logic.Processor
  * The singleton pattern is used, so any instance of the class refers to the same instance
- * @author Sharon, Yao Xiang
- *
  */
 public class UpcomingTaskList implements Observer {
 
@@ -114,7 +112,7 @@ public class UpcomingTaskList implements Observer {
     private void buildList(Composite parent) {
         list = new StyledText(parent, SWT.MULTI | SWT.READ_ONLY |
                                       SWT.LEFT_TO_RIGHT | SWT.V_SCROLL);
-
+        
         list.setFont(fontRegistry.get("list"));
         setListLayout(list);
         format(list);
