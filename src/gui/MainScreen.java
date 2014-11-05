@@ -23,7 +23,7 @@ public class MainScreen {
         new Images(shell);
         configureShell(shell);
         createContents(shell);
-       initialiseProgram();
+        initialiseProgram();
 
         shell.pack();
         shell.open();
