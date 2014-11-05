@@ -50,7 +50,7 @@ public class MainScreen {
      * Code taken from
      * <a href="http://stackoverflow.com/questions/23126313/removing-window-border-in-swt-ui-disables-re-positioning">Stack Overflow</a>
      */
-    private static void createDragControls(Shell shell) {
+    private static void createDragControls(final Shell shell) {
         Listener l = new Listener()
         {
             Point origin;
