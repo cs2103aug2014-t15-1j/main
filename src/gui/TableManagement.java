@@ -17,7 +17,7 @@ import database.DateTime;
 import database.Task;
 
 public class TableManagement {
-   // tabs - Today, tmr, someday, upcoming, todo, block, done
+   
     private static CTabFolder folder; 
     private static List<TableViewer> tables;
     

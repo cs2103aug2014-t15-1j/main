@@ -115,7 +115,7 @@ public class TableComposite extends Composite {
         doneTable.setText(DONE_TABLE_TAB_LABEL);
         TableViewer doneTableUI =  new TableUI(tabFolder).getTableViewer();
         tables.add(doneTableUI);
-        floatingTable.setControl(doneTableUI.getTable());
+        doneTable.setControl(doneTableUI.getTable());
         
         CTabItem blockTable = new CTabItem(tabFolder, SWT.NONE);
         blockTable.setText(BLOCK_TABLE_TAB_LABEL);
