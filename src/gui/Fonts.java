@@ -4,6 +4,7 @@ import org.eclipse.jface.resource.FontRegistry;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 
 /**
  * This class contains all the fonts used through out the application.
@@ -40,9 +41,17 @@ public class Fonts {
         fontData = new FontData[] { new FontData("Courier New", 10,
                 SWT.BOLD | SWT.UNDERLINE_SINGLE) };
         registry.put("title", fontData);
-
-        fontData = new FontData[] { new FontData("Courier New", 10, SWT.NONE) };
-        registry.put("table", fontData);
+        
+        int screenWidth = Display.getCurrent().getBounds().width;
+        System.out.println(screenWidth);
+        
+        if (screenWidth>= 1920) {
+            fontData = new FontData[] { new FontData("Consolas", 10, SWT.NONE) };
+            registry.put("table", fontData);
+        } else {
+            fontData = new FontData[] { new FontData("Consolas", 8, SWT.NONE) };
+            registry.put("table", fontData);
+        }
         
         fontData = new FontData[] { new FontData("Arial", 11, SWT.NORMAL | SWT.BOLD) };
         registry.put("helpsheet", fontData);

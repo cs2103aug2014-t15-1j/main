@@ -142,7 +142,22 @@ public class TableUI{
     }
 
     private void setUpColumns(Composite parent) {
-        TableViewerColumn column = setColumnHeader(HEADER_NAME_ID, COL_WIDTH_ID);
+        Table table = tableViewer.getTable();
+        int scrollBarWidth = table.getVerticalBar().getSize().x;
+        int screenWidth = parent.getDisplay().getBounds().width;
+        int spaceLeft;
+        int[] colWidths; // ID, start, due, tags, type/status
+        if (screenWidth<1920) {
+            int tableWidth = (int) (screenWidth * 0.8 * 0.70); //very rough approximation
+            spaceLeft = tableWidth - 30 - 120 - 120 - 120 - (120 + 40) - scrollBarWidth;
+            colWidths = new int[]{30, 120, 120, 120, 160};
+        } else {
+            int tableWidth = (int) (screenWidth * 0.8 * 0.78); //very rough approximation
+            spaceLeft = tableWidth - 40 - 150 - 150 - 200 - (150 + 50) - scrollBarWidth;
+            colWidths = new int[]{40, 150, 150, 200, 200};
+        }
+        
+        TableViewerColumn column = setColumnHeader(HEADER_NAME_ID, colWidths[0]);
         column.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
@@ -155,8 +170,8 @@ public class TableUI{
                 return "";
             }
         });
-        column = setColumnHeader(HEADER_NAME_NAME, COL_WIDTH);
-
+        
+        column = setColumnHeader(HEADER_NAME_NAME, spaceLeft);
         column.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
@@ -174,7 +189,7 @@ public class TableUI{
             }
         });
 
-        column = setColumnHeader(HEADER_NAME_START, COL_WIDTH_DATE);
+        column = setColumnHeader(HEADER_NAME_START, colWidths[1]);
         column.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
@@ -194,7 +209,7 @@ public class TableUI{
             }
         });
 
-        column = setColumnHeader(HEADER_NAME_DUE, COL_WIDTH_DATE);
+        column = setColumnHeader(HEADER_NAME_DUE, colWidths[2]);
 
         column.setLabelProvider(new ColumnLabelProvider() {
             @Override
@@ -214,7 +229,7 @@ public class TableUI{
             }
         });
 
-        column = setColumnHeader(HEADER_NAME_TAGS, COL_WIDTH);
+        column = setColumnHeader(HEADER_NAME_TAGS, colWidths[3]);
         column.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
@@ -237,7 +252,7 @@ public class TableUI{
 
         });
 
-        column = setColumnHeader(HEADER_NAME_STATUS, COL_WIDTH_STATUS);
+        column = setColumnHeader(HEADER_NAME_STATUS, colWidths[4]);
         column.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
@@ -261,7 +276,6 @@ public class TableUI{
             }
         });
 
-        Table table = tableViewer.getTable();
         table.setLayoutData(new GridData(GridData.FILL_BOTH));
 
         table.addListener(SWT.RESIZE, new Listener() {

@@ -77,31 +77,32 @@ public class TableComposite extends Composite {
         tabFolder = new CTabFolder(this, SWT.BORDER);
         tabFolder.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-        CTabItem todayTable = new CTabItem(tabFolder, SWT.BORDER);
+        CTabItem todayTable = new CTabItem(tabFolder, SWT.NONE);
         todayTable.setText(TODAY_TABLE_TAB_LABEL);
         TableViewer todayTableUI =  new TableUI(tabFolder).getTableViewer();
         tables.add(todayTableUI);
         todayTable.setControl(todayTableUI.getTable());
         
-        CTabItem tomorrowTable = new CTabItem(tabFolder, SWT.BORDER);
+        CTabItem tomorrowTable = new CTabItem(tabFolder, SWT.NONE);
         tomorrowTable.setText(TOMORROW_TABLE_TAB_LABEL);
         TableViewer tomorrowTableUI =  new TableUI(tabFolder).getTableViewer();
         tables.add(tomorrowTableUI);
         tomorrowTable.setControl(tomorrowTableUI.getTable());
 
-        CTabItem upcomingTable = new CTabItem(tabFolder, SWT.BORDER);
+        CTabItem upcomingTable = new CTabItem(tabFolder, SWT.NONE);
         upcomingTable.setText(UPCOMING_TABLE_TAB_LABEL);
         TableViewer upcomingTableUI =  new TableUI(tabFolder).getTableViewer();
         tables.add(upcomingTableUI);
         upcomingTable.setControl(upcomingTableUI.getTable());
         
-        CTabItem floatingTable = new CTabItem(tabFolder, SWT.BORDER);
+        CTabItem floatingTable = new CTabItem(tabFolder, SWT.NONE);
         floatingTable.setText(FLOATING_TABLE_TAB_LABEL);
         TableViewer floatingTableUI =  new TableUI(tabFolder).getTableViewer();
         tables.add(floatingTableUI);
         floatingTable.setControl(floatingTableUI.getTable());
         
         addListener(tabFolder);
+        tabFolder.setSelection(0);
     }
 
     private void formatRegistry(Composite parent) {
