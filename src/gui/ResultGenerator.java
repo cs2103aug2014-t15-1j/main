@@ -123,6 +123,22 @@ public class ResultGenerator {
         return processor.fetchInputDownKey();
     }
     
+    public static List<Task> getTimedTasks(){
+        return processor.fetchTimedTasks();
+    }
+    
+    public static List<Task> getToDoTasks(){
+        return processor.fetchToDoTasks();
+    }
+    
+    public static List<Task> getFloatingTasks(){
+        return processor.fetchFloatingTasks();
+    }
+    
+    public static List<Task> getBlockTasks(){
+        return processor.fetchBlockedDate();
+    }
+    
     private void addObservers() {
         UpcomingTaskList upcomingList = UpcomingTaskList.getInstance();
         processor.addObserver(upcomingList);
@@ -328,7 +344,7 @@ public class ResultGenerator {
     
     private void setTableSelection(List<Task> outputs) {
         refreshTables();
-        //tableManagement.setTableSelection(outputs.get(0));
+        tableManagement.setTableSelection(outputs.get(0));
     }
 
 }

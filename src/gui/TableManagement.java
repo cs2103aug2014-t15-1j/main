@@ -68,9 +68,10 @@ public class TableManagement {
 
     public void setTableSelection(Task taskToSelect){
         TableViewer table = getTable(taskToSelect);
-        setElementSelection(taskToSelect, null, table);
+        List<Task> tasks = getTableContent(taskToSelect);
+        setElementSelection(taskToSelect, tasks, table);
     }
-    
+
     /**
      * Selects an element in the table. Default selection is the first element
      */
@@ -93,10 +94,13 @@ public class TableManagement {
         DateTime date = task.getDue();
         
         if(task.isToDo()){
+            folder.setSelection(0);
             return tables.get(0);
         }else if(task.isDone()){
+            folder.setSelection(5);
             return tables.get(5);
         }else if(task.isBlock()){
+            folder.setSelection(6);
             return tables.get(6);
         }
         
@@ -109,6 +113,38 @@ public class TableManagement {
         }else{
             return tables.get(3);
         }
+    }
+    
+
+    private List<Task> getTableContent(Task task) {
+        List<Task> floating = ResultGenerator.getFloatingTasks();
+        List<Task> timed = ResultGenerator.getTimedTasks();
+        List<Task> blocked = ResultGenerator.getBlockTasks();
+        List<Task> todo = ResultGenerator.getToDoTasks();
+        
+        if(task.isToDo()){
+            return todo;
+        }else if(task.isBlock()){
+            return blocked;
+        }else if(task.isDone()){
+            return getDoneList(timed);
+        }else if(task.isFloating()){
+            return floating;
+        }
+        
+        return null;
+    }
+    
+    private List<Task> getDoneList(List<Task> timed) {
+        List<Task> timedList = new ArrayList<Task>();
+        int size = timed.size();
+        for(int index = 0; index < size; index++){
+            Task currTask = timed.get(index);
+            if(currTask.isDone()){
+                timedList.add(currTask);
+            }
+        }
+        return timedList;
     }
 
     private boolean isToday(DateTime date) {
