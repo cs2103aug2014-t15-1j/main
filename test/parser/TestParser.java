@@ -21,7 +21,7 @@ public class TestParser {
         String cmd;
 
         // Valid command with spaces in front/behind
-        result = "\n[[ CMD-OTHERS ]]" + "\ncmd-type: HELP" + "\ncmd-info: ";
+        result = "cmdothers type: HELP";
         cmd = Parser.parse("    hELp    ").toString();
         assertEquals("Command: spaces", result, cmd);
 
@@ -113,24 +113,19 @@ public class TestParser {
         String cmd;
 
         // Empty Add
-        result = "\n[[ CMD-ADD: ]]" + "\nname: " + "\nstart: " + "\ndue: "
-                 + "\ntags: []";
+        result = "cmdadd name:  start:  due:  tags: ";
         cmd = Parser.parse("add").toString();
         assertEquals("Add: empty", result, cmd);
 
         // Basic Add ending with a parameter
-        result = "\n[[ CMD-ADD: ]]" + "\nname: do homework it's cs2103 end"
-                 + "\nstart: " + "\ndue: " + "\ntags: [#cs2103]";
+        result ="cmdadd name: do homework it's cs2103 start:  due:  tags: [#cs2103]";
         cmd = Parser.parse("add do homework it's #cs2103 cs2103 end")
                 .toString();
         assertEquals("Add: simple, end param", result, cmd);
 
         // Full Add
-        result = "\n[[ CMD-ADD: ]]"
-                 + "\nname: do start up research # due from "
-                 + "start 29/10/2014 soon. do quickly due thurs"
-                 + "\nstart: 27/10/2014 0900" + "\ndue: 29/10/2014"
-                 + "\ntags: [#cs2103, #work]";
+        result = "cmdadd name: do start up research # due from soon. do quickly due thurs" +
+                " start: 29/10/2014 due: 27/10/2014 0900 tags: [#cs2103, #work]";
         cmd = Parser.parse("  add   do start #cs2103  up research # "
                                    + "due from from  27/10/2014  0900 "
                                    + "start 29/10/2014 soon. do quickly due "
@@ -139,24 +134,22 @@ public class TestParser {
         assertEquals("Add: full", result, cmd);
 
         // Testing missing date in start and end
-        result = "\n[[ CMD-ADD: ]]" + "\nname: do work" + "\nstart: " +
-                 DateParser.getCurrDateStr() + " 0300" + "\ndue: " +
-                 DateParser.getCurrDateStr() + " 0600" + "\ntags: []";
+        result = "cmdadd name: do work start: " + 
+                 DateParser.getCurrDateStr() + " 0300 due: " +
+                 DateParser.getCurrDateStr() + " 0600 tags: []";
         cmd = Parser.parse("add do work from 0300 to 0600\n").toString();
         assertEquals("Add: date filling", result, cmd);
 
         // Testing missing date in start with reordering
-        result = "\n[[ CMD-ADD: ]]" + "\nname: do work"
-                 + "\nstart: 29/10/2014 0300" + "\ndue: 29/10/2014 0600"
-                 + "\ntags: []";
+        result ="cmdadd name: do work start: 29/10/2014 0300 due: 29/10/2014 0600 tags: []";
         cmd = Parser.parse("add do work from 29/10/2014 0600 due 0300\n")
                 .toString();
         assertEquals("Add: 1 missing date, reordering", result, cmd);
 
-        // Debugging
-        result = "\n[[ CMD-ADD: ]]" + "\nname: do work" + "\nstart: " +
-                 DateParser.getCurrDateStr() + " 0600" + "\ndue: " +
-                 DateParser.getTmrDateStr() + " 0800" + "\ntags: []";
+        // Today/Tomorrow
+        result = "cmdadd name: do work start: " + 
+                 DateParser.getCurrDateStr() + " 0600 due: " +
+                 DateParser.getTmrDateStr() + " 0800 tags: []";
         cmd = Parser.parse("add do work from today 0600 to tomorrow 0800\n")
                 .toString();
         assertEquals("Add: today/tomorrow", result, cmd);

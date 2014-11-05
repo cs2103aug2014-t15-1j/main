@@ -12,10 +12,10 @@ import database.TaskType;
 
 public class CommandBlock extends Command {
 
-    // Block dates range [get("start"), get("end"); returns date]
-    // If it's only 1 day, start = end
-    private DateTime start = new DateTime();
-    private DateTime due = new DateTime();
+    private String name = "";
+    private DateTime from = new DateTime();
+    private DateTime to = new DateTime();
+    private List<String> tags = new ArrayList<String>();
     
     public CommandBlock(List<TaskParam> content) {
         this(content, false);
@@ -36,13 +36,20 @@ public class CommandBlock extends Command {
 
     private void constructUsingParam(TaskParam param) {
         switch (param.getName()) {
-            case "start":
-                this.start = DateParser.parseToDateTime(param.getField());
+            case "name":
+                this.name = name.concat(" " + param.getField()).trim();
                 break;
 
-            case "end":
-                this.due = DateParser.parseToDateTime(param.getField());
+            case "from":
+                this.from = DateParser.parseToDateTime(param.getField());
                 break;
+                
+            case "to":
+                this.to = DateParser.parseToDateTime(param.getField());
+                break;
+
+            case "tag":
+                this.tags.add(param.getField());
 
             default:
                 this.type = CommandType.ERROR;
@@ -54,26 +61,15 @@ public class CommandBlock extends Command {
     public String get(String field) {
         switch (field) {
             case "start":
-                return this.start.toString();
+                return this.from.toString();
 
             case "end":
-                return this.due.toString();
+                return this.to.toString();
 
             default:
                 return null;
         }
     }
-
-    @Override
-    public String toString() {
-        String result = "\n[[ CMD-BLOCK: ]]";
-        result = result.concat("\nstart: " + start);
-        result = result.concat("\nend: " + due);
-
-        return result;
-    }
-    
-
 
     /**
      * Executes Block Command
@@ -93,13 +89,13 @@ public class CommandBlock extends Command {
         List<Task> outputs = new ArrayList<Task>();
        
         for (Task blockedDate : blockRange) {
-            if (start.compareTo(blockedDate.getStart()) <= 0 &&
-                    due.compareTo(blockedDate.getDue()) >= 0) {
+            if (from.compareTo(blockedDate.getStart()) <= 0 &&
+                    to.compareTo(blockedDate.getDue()) >= 0) {
                     success = false;
                     outputs.add(blockedDate);
                     break;
-            } else if (blockedDate.getStart().compareTo(start) <= 0 &&
-                    blockedDate.getDue().compareTo(due) >= 0) {
+            } else if (blockedDate.getStart().compareTo(from) <= 0 &&
+                    blockedDate.getDue().compareTo(to) >= 0) {
                 success = false;
                 outputs.add(blockedDate);
                 break;
@@ -107,7 +103,7 @@ public class CommandBlock extends Command {
         }
 
         if (success) {
-            Task currBlock = new Task("", start, due, new DateTime(), new ArrayList<String>(), TaskType.BLOCK);
+            Task currBlock = new Task("", from, to, new DateTime(), new ArrayList<String>(), TaskType.BLOCK);
             processor.getFile().addNewTask(currBlock);
             outputs.add(currBlock);
         }
@@ -130,4 +126,11 @@ public class CommandBlock extends Command {
         return new Result(outputs, success, CommandType.UNBLOCK, ResultType.BLOCKDATE);
 
     }
+    
+    @Override
+    public String toString() {
+        return "cmdblock name: " + this.name + " from: " + this.from + " to: " +
+               this.to + " tags: " + this.tags;
+    }
+    
 }

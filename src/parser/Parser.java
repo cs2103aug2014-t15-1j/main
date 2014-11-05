@@ -17,9 +17,9 @@ import logic.CommandRestore;
 import logic.CommandSearch;
 import logic.CommandTodo;
 import logic.CommandUnblock;
-import database.BlockDate;
 import database.DateTime;
 import database.Task;
+import database.TaskType;
 
 // TODO: Class description with reason why it's static
 public class Parser {
@@ -876,7 +876,6 @@ public class Parser {
         List<String> tags = new ArrayList<String>();
 
         int fieldIndex = 0;
-        boolean isDone = false;
         boolean breakPointMet = false;
 
         for (int i = 0; i < textItems.length; i++) {
@@ -939,10 +938,6 @@ public class Parser {
                 type = TaskType.DONE;
                 break;
 
-            case "deleted":
-                type = TaskType.DELETED;
-                break;
-
             case "block":
                 type = TaskType.BLOCK;
                 break;
@@ -955,44 +950,8 @@ public class Parser {
         DateTime due = dateTimes[1];
         DateTime completed = dateTimes[2];
 
-        Task newTask = new Task(name, start, due, completed, type, tags);
-        newTask.setDone(isDone);
+        Task newTask = new Task(name, start, due, completed, tags, type);
         return newTask;
-    }
-
-    // ========== BLOCK PARSING METHODS ==========//
-
-    /**
-     * Forms a <code>BlockDate</code> object by parsing a <code>String</code>
-     * containing the saved string literals of two <code>DateTime</code> objects
-     * (starting and ending dates and times).
-     * <p>
-     * Note that the input <code>String</code> must be of the given
-     * format(below), containing two pairs of dates and times, and the word "to"
-     * between them. All 5 items must have spaces between them.
-     * 
-     * @param text
-     *            format: "{@literal <date> <time> to <date> <time>}"
-     * 
-     */
-    public static BlockDate parseToBlock(String text) {
-        String[] fields = text.split(" ");
-        assert (fields.length == 5) : "Invalid number of terms";
-        assert (fields[2].equals("to")) : "Missing \"to\"";
-
-        String startDate = fields[0];
-        String startTime = fields[1];
-        String dueDate = fields[3];
-        String dueTime = fields[4];
-        assert (DateParser.isValidDate(startDate) && DateParser
-                .isValidTime(startTime)) : "Invalid start DateTime saved";
-        assert (DateParser.isValidDate(dueDate) && DateParser
-                .isValidTime(dueTime)) : "invalid due DateTime saved";
-
-        DateTime startDt = new DateTime(startDate, startTime);
-        DateTime dueDt = new DateTime(dueDate, dueTime);
-
-        return new BlockDate(startDt, dueDt);
     }
 
     // FOR TESTING PURPOSES
@@ -1002,7 +961,11 @@ public class Parser {
         String input = "";
         while (!input.equals("exit")) {
             input = sc.nextLine();
-            System.out.println(parse(input));
+            if (input.contains("parse")){
+                System.out.println(parseToTask(input.substring(6)));
+            } else {
+                System.out.println(parse(input));
+            }
         }
 
         sc.close();
