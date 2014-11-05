@@ -242,8 +242,8 @@ public class TableUI{
                     if (tags == null || tags.isEmpty()) {
                         return "";
                     }
-                    for (int index = 0; index < tags.size(); index++) {
-                        tag = tag + tags.get(index);
+                    for (String tempTag : tags) {
+                        tag += tempTag + " ";
                     }
                     return tag;
                 }

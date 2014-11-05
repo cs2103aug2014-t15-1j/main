@@ -43,8 +43,6 @@ public class Fonts {
         registry.put("title", fontData);
         
         int screenWidth = Display.getCurrent().getBounds().width;
-        System.out.println(screenWidth);
-        
         if (screenWidth>= 1920) {
             fontData = new FontData[] { new FontData("Consolas", 10, SWT.NONE) };
             registry.put("table", fontData);
