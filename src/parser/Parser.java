@@ -934,6 +934,10 @@ public class Parser {
 
         TaskType type = TaskType.TODO;
         switch (param[4].toLowerCase()) {
+            case "todo":
+                type = TaskType.TODO;
+                break;
+            
             case "done":
                 type = TaskType.DONE;
                 break;

@@ -316,12 +316,7 @@ public class TableUI{
     }
 
     private TableViewerColumn setColumnHeader(String headerName, int colWidth) {
-        TableViewerColumn columnViewer;
-        if (headerName.equals(HEADER_NAME_NAME)) {
-            columnViewer = new TableViewerColumn(tableViewer, SWT.LEFT);
-        } else {
-            columnViewer = new TableViewerColumn(tableViewer, SWT.CENTER);
-        }
+        TableViewerColumn columnViewer = new TableViewerColumn(tableViewer, SWT.LEFT);
         TableColumn column = columnViewer.getColumn();
         column.setText(headerName);
         column.setWidth(colWidth);

@@ -3,9 +3,12 @@ package gui;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Monitor;
 import org.eclipse.swt.widgets.Shell;
 
@@ -19,16 +22,17 @@ public class MainScreen {
     private static final String PROGRAM_NAME = "Haystack";
     private static int SHELL_WIDTH = 1200;
     private static int SHELL_HEIGTH = 860;
+    
 /**
  * Runs and initializes the application
  */
     public static void run() {
         Display display = new Display();
-        Shell shell = new Shell(display);
+        Shell shell = new Shell(display, SWT.NO_TRIM);
+        createDragControls(shell);
 
         runProgram(shell);
 
-        shell.pack();
         shell.open();
 
         while (!shell.isDisposed()) {
@@ -38,6 +42,43 @@ public class MainScreen {
 
         display.dispose();
         Images.disposeAllImages();
+    }
+    
+    /** 
+     * Create drag controls along the shell's borders.
+     * 
+     * Code taken from
+     * <a href="http://stackoverflow.com/questions/23126313/removing-window-border-in-swt-ui-disables-re-positioning">Stack Overflow</a>
+     */
+    private static void createDragControls(Shell shell) {
+        Listener l = new Listener()
+        {
+            Point origin;
+
+            public void handleEvent(Event e)
+            {
+                switch (e.type)
+                {
+                    case SWT.MouseDown:
+                        origin = new Point(e.x, e.y);
+                        break;
+                    case SWT.MouseUp:
+                        origin = null;
+                        break;
+                    case SWT.MouseMove:
+                        if (origin != null)
+                        {
+                            Point p = shell.getDisplay().map(shell, null, e.x, e.y);
+                            shell.setLocation(p.x - origin.x, p.y - origin.y);
+                        }
+                        break;
+                }
+            }
+        };
+        
+        shell.addListener(SWT.MouseDown, l);
+        shell.addListener(SWT.MouseUp, l);
+        shell.addListener(SWT.MouseMove, l);
     }
 
 public static void runProgram(Shell shell) {
@@ -55,7 +96,12 @@ public static void runProgram(Shell shell) {
     }
 
     private static void configureShell(Shell shell, Images images) {
-        shell.setSize(SHELL_WIDTH, SHELL_HEIGTH);
+        Display display = shell.getDisplay();
+        Rectangle bounds = display.getBounds();
+        int shellWidth = (int) (bounds.width * 0.8);
+        int shellHeight = (int) (bounds.height * 0.8);
+        
+        shell.setSize(shellWidth, shellHeight);
         setBackGround(shell, images);
         setPositionToCenterOfScreen(shell);
         setLayout(shell);
@@ -63,8 +109,8 @@ public static void runProgram(Shell shell) {
 
     private static void createContents(Shell shell) {
         new TitleLabel(shell, shell.getStyle());
-        new MainInterface(shell, shell.getStyle());
         new SidePane(shell, shell.getStyle());
+        new MainInterface(shell, shell.getStyle());
     }
 
     private static void setBackGround(Shell parent, Images images) {
