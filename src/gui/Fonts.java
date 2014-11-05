@@ -46,9 +46,16 @@ public class Fonts {
         if (screenWidth>= 1920) {
             fontData = new FontData[] { new FontData("Consolas", 10, SWT.NONE) };
             registry.put("table", fontData);
+            
+
+            fontData = new FontData[] { new FontData("Consolas", 10, SWT.BOLD) };
+            registry.put("table status", fontData);
         } else {
             fontData = new FontData[] { new FontData("Consolas", 8, SWT.NONE) };
             registry.put("table", fontData);
+            
+            fontData = new FontData[] { new FontData("Consolas", 8, SWT.BOLD) };
+            registry.put("table status", fontData);
         }
         
         fontData = new FontData[] { new FontData("Arial", 11, SWT.NORMAL | SWT.BOLD) };

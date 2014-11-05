@@ -17,26 +17,32 @@ import database.DateTime;
 import database.Task;
 
 public class TableManagement {
-   
+    private static final int INDEX_TODO = 0;
+    private static final int INDEX_TODAY = 1;
+    private static final int INDEX_TOMORROW = 2;
+    private static final int INDEX_UPCOMING = 3;
+    private static final int INDEX_SOMEDAY = 4;
+    private static final int INDEX_DONE = 5;
+    private static final int INDEX_BLOCK= 6;
+    
     private static CTabFolder folder; 
     private static List<TableViewer> tables;
     
     public TableManagement(){
      folder = TableComposite.getTabFolder();
      tables = TableComposite.getTables();
-     addTableListeners();
     }
     
     public void updateFloatingTaskTable(List<Task> tasks){
-        tables.get(4).setInput(tasks);
+        tables.get(INDEX_SOMEDAY).setInput(tasks);
     }
     
     public void updateToDoTable(List<Task> tasks){
-        tables.get(0).setInput(tasks);
+        tables.get(INDEX_TODO).setInput(tasks);
     }
     
     public void updateBlockTable(List<Task> blockTasks){
-       tables.get(6).setInput(blockTasks);
+       tables.get(INDEX_BLOCK).setInput(blockTasks);
     }
 
     public void updateTimedTable(List<Task> tasks) {
@@ -60,10 +66,10 @@ public class TableManagement {
             }
         }
         
-        tables.get(1).setInput(todaysTasks);
-        tables.get(2).setInput(tomorrowsTasks);
-        tables.get(3).setInput(upcomingTasks);
-        tables.get(5).setInput(doneTasks);
+        tables.get(INDEX_TODAY).setInput(todaysTasks);
+        tables.get(INDEX_TOMORROW).setInput(tomorrowsTasks);
+        tables.get(INDEX_UPCOMING).setInput(upcomingTasks);
+        tables.get(INDEX_DONE).setInput(doneTasks);
     }
 
     public void setTableSelection(Task taskToSelect){
@@ -94,24 +100,24 @@ public class TableManagement {
         DateTime date = task.getDue();
         
         if(task.isToDo()){
-            folder.setSelection(0);
-            return tables.get(0);
+            folder.setSelection(INDEX_TODO);
+            return tables.get(INDEX_TODO);
         }else if(task.isDone()){
-            folder.setSelection(5);
-            return tables.get(5);
+            folder.setSelection(INDEX_DONE);
+            return tables.get(INDEX_DONE);
         }else if(task.isBlock()){
-            folder.setSelection(6);
-            return tables.get(6);
+            folder.setSelection(INDEX_BLOCK);
+            return tables.get(INDEX_BLOCK);
         }
         
         if(task.isFloating()){
-           return tables.get(4);
+           return tables.get(INDEX_SOMEDAY);
         }else if(isToday(date)){
-            return tables.get(1);
+            return tables.get(INDEX_TODAY);
         }else if(isTomorrow(date)){
-            return tables.get(2);
+            return tables.get(INDEX_TOMORROW);
         }else{
-            return tables.get(3);
+            return tables.get(INDEX_UPCOMING);
         }
     }
     
@@ -200,25 +206,4 @@ public class TableManagement {
         DateTime tomorrowsDate = new DateTime(tomorrowDate, tomorrowTime);
         return tomorrowsDate;
     }
-    
-    private  void addTableListeners() {
-        Display display = folder.getDisplay();
-        display.addFilter(SWT.KeyDown, new Listener() {
-
-            public void handleEvent(Event event) {
-                if (((event.stateMask & SWT.CTRL) == SWT.CTRL) &&
-                    (event.keyCode == 'd')) {
-                    int index = folder.getSelectionIndex();
-                    if(index < 4){
-                        folder.setSelection(index+1);
-                    }else{
-                        folder.setSelection(0);
-                    }
-                } else if (event.keyCode == SWT.F1) {
-                    new HelpDialog(folder.getShell());
-                }
-            }
-        });
-    }
-
 }
