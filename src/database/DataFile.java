@@ -640,16 +640,16 @@ public class DataFile {
      * @return True, if file has been successfully updated with change.
      */
     private boolean toDoTaskByObject(Task task) {
-        if (task == null || (!task.isDeleted() && !task.isDone())) {
+        if (task == null || (!task.isDeleted() && task.isToDo())) {
             return false; // Invalid ID or is undeleted to-do task
         }
 
-        task.setDone(false);
         if (task.isDeleted()) {
             return restoreTask(task);
         }
-        toDoTasks.add(task);
         doneTasks.remove(task);
+        toDoTasks.add(task);
+        task.setType(TaskType.TODO);
         return updateTaskFile();
     }
 
@@ -696,12 +696,12 @@ public class DataFile {
             return false; // Invalid ID or is undeleted done task
         }
 
-        task.setDone(true);
         if (task.isDeleted()) {
             return restoreTask(task);
         }
-        doneTasks.add(task);
         toDoTasks.remove(task);
+        doneTasks.add(task);
+        task.setType(TaskType.DONE);
         return updateTaskFile();
     }
 
