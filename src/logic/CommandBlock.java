@@ -103,7 +103,7 @@ public class CommandBlock extends Command {
         }
 
         if (success) {
-            Task currBlock = new Task("", from, to, new DateTime(), new ArrayList<String>(), TaskType.BLOCK);
+            Task currBlock = new Task(name, from, to, new DateTime(), tags, TaskType.BLOCK);
             processor.getFile().addNewTask(currBlock);
             outputs.add(currBlock);
         }
@@ -112,6 +112,7 @@ public class CommandBlock extends Command {
                 ResultType.BLOCKDATE);
     }
 
+    // TODO: UPDATE FOR NEW TASK FORMAT.
     @Override
     protected Result executeComplement() {
         Processor processor = Processor.getInstance();

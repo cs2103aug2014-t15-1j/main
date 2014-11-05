@@ -41,7 +41,9 @@ public class Result {
         this(null, false, CommandType.ERROR, false, null);
     }
     
-    /** Main Constructor for Result Object */
+    /** Main Constructor for Result Object 
+     * <p>
+     * Calls {@link #Result(List, boolean, CommandType, boolean, ResultType) Overloaded Constructor}*/
     public Result(List<Task> outputs, boolean success, CommandType cmdType, ResultType resultType){
         this(outputs, success, cmdType, false, resultType);
     }
