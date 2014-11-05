@@ -2,7 +2,6 @@ package logic;
 
 import java.util.List;
 
-import database.BlockDate;
 import database.Task;
 
 /**
@@ -14,8 +13,7 @@ import database.Task;
 public class Result {
     
 	//Contains Task/BlockDate Objects that are affected in an operation
-    @SuppressWarnings("rawtypes")
-    private List outputs;
+    private List<Task> outputs;
     
 	//True if the operation performed is successful, else False.
     private boolean success;
@@ -44,8 +42,7 @@ public class Result {
     }
     
     /** Main Constructor for Result Object */
-    @SuppressWarnings("rawtypes")
-    public Result(List outputs, boolean success, CommandType cmdType, ResultType resultType){
+    public Result(List<Task> outputs, boolean success, CommandType cmdType, ResultType resultType){
         this(outputs, success, cmdType, false, resultType);
     }
     
@@ -62,8 +59,7 @@ public class Result {
      * @param resultType
      *         - equals  {@code ResultType.TASK} or {@code ResultType.BLOCKDATE}.
      */
-	@SuppressWarnings("rawtypes")
-    public Result(List outputs, boolean success, CommandType cmdType, boolean confirmation, ResultType resultType) {
+    public Result(List<Task> outputs, boolean success, CommandType cmdType, boolean confirmation, ResultType resultType) {
 		this.outputs = outputs;
 		this.success = success;
 		this.cmdType = cmdType;
@@ -72,13 +68,11 @@ public class Result {
 	}
 	
 	/** Accessors */
-	@SuppressWarnings("unchecked")
     public List<Task> getTasks() {
 		return outputs;
 	}
 	
-	@SuppressWarnings("unchecked")
-    public List<BlockDate> getBlockedDates() {
+    public List<Task> getBlockedDates() {
 	    return outputs;
 	}
 

@@ -6,9 +6,9 @@ import java.util.ArrayList;
 import logic.Result.ResultType;
 import parser.DateParser;
 import parser.TaskParam;
-import database.BlockDate;
 import database.DateTime;
 import database.Task;
+import database.TaskType;
 
 /**
  * This Command performs the Addition of new Tasks
@@ -96,7 +96,7 @@ public class CommandAdd extends Command {
         }
         boolean blockConfirmation = isBlocked();
         if (!blockConfirmation) {
-            Task newTask = new Task(name, start, due, completedOn, tags);
+            Task newTask = new Task(name, start, due, completedOn, tags, TaskType.TODO);
             success = Processor.getInstance().getFile().addNewTask(newTask);
             list.add(newTask);
             blockConfirmation = false;
@@ -114,16 +114,16 @@ public class CommandAdd extends Command {
         boolean blocked = false;
         if (!due.isEmpty() || !start.isEmpty()) {
             Processor processor = Processor.getInstance();
-            List<BlockDate> blockDates = processor.getFile().getAllBlockDates();
-            for (BlockDate blockDate : blockDates) {
+            List<Task> blockDates = processor.getFile().getBlockTasks();
+            for (Task blockDate : blockDates) {
                 //Start && due
                 if (!start.isEmpty() && !due.isEmpty()) {
                     //return end is before start
-                    return !(due.isEarlierThan(blockDate.getStart()) || !start.isEarlierThan(blockDate.getEnd()));
+                    return !(due.isEarlierThan(blockDate.getStart()) || !start.isEarlierThan(blockDate.getDue()));
                 } else if (!start.isEmpty()) {
-                    return !(start.isEarlierThan(blockDate.getStart()) || !start.isEarlierThan(blockDate.getEnd()));
+                    return !(start.isEarlierThan(blockDate.getStart()) || !start.isEarlierThan(blockDate.getDue()));
                 } else {
-                    return !(due.isEarlierThan(blockDate.getStart()) || !due.isEarlierThan(blockDate.getEnd()));
+                    return !(due.isEarlierThan(blockDate.getStart()) || !due.isEarlierThan(blockDate.getDue()));
                 }
             }
         }

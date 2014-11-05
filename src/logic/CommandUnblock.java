@@ -5,7 +5,7 @@ import java.util.List;
 
 import logic.Result.ResultType;
 import parser.TaskParam;
-import database.BlockDate;
+import database.Task;
 
 public class CommandUnblock extends Command {
 
@@ -67,12 +67,12 @@ public class CommandUnblock extends Command {
         Processor processor = Processor.getInstance();
         boolean success = false;
         int unblockId = Integer.parseInt(id);
-        List<BlockDate> outputs = new ArrayList<BlockDate>();
+        List<Task> outputs = new ArrayList<Task>();
         
         if (unblockId > 0) {
-            BlockDate blockDate = processor.getFile().getBlockDate(unblockId);
+            Task blockDate = processor.getFile().getTask(unblockId);
             if (blockDate != null) {
-                success = processor.getFile().deleteBD(blockDate);
+                success = processor.getFile().deleteTask(blockDate);
                 outputs.add(blockDate);
                 success = true;
             }
@@ -85,10 +85,10 @@ public class CommandUnblock extends Command {
     protected Result executeComplement() {
         boolean success = false;
         Processor processor = Processor.getInstance();
-        List<BlockDate> outputs = new ArrayList<BlockDate>();
+        List<Task> outputs = new ArrayList<Task>();
         int unblockId = Integer.parseInt(id);
-        success = processor.getFile().restoreBD(unblockId);
-        BlockDate blockDate = processor.getFile().getBlockDate(unblockId);
+        success = processor.getFile().restoreTask(unblockId);
+        Task blockDate = processor.getFile().getTask(unblockId);
         outputs.add(blockDate);
         return new Result(outputs, success, CommandType.BLOCK, ResultType.BLOCKDATE);
     }

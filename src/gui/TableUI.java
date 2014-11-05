@@ -24,14 +24,14 @@ import org.eclipse.swt.widgets.TableColumn;
 import database.DateTime;
 import database.Task;
 
+
 /**
  * TaskTable is a table interface located that is located in a Tab Folder.
  * This table shows all tasks blocked by the user in a table.
  * The singleton pattern is used so that only one interface of the table is used.
  */
 //@author A0118846W
-public class TaskTableUI extends Composite {
-
+public class TableUI{
     
     private static final String HEADER_NAME_ID = "Id";
     private static final String HEADER_NAME_NAME = "Name";
@@ -60,45 +60,17 @@ public class TaskTableUI extends Composite {
 
     private TableViewer tableViewer;
     private CTabFolder folder;
-    private static TaskTableUI taskTableUI;
     private static FontRegistry registry;
     
     /**
      * Creates an instance of the TaskTableUI
      * @param parent tab folder where the TaskTableUI is located in
      */
-    private TaskTableUI(CTabFolder parent) {
-        super(parent, SWT.NULL);
+    public TableUI(CTabFolder parent) {
         folder = parent;
         buildControls(parent);
     }
-    
-    /**
-     * This method returns an instance of TaskTableUI. It should be called to create the TaskTableUI object
-     * @param parent tab folder where the TaskTableUI is located in
-     * @return an instance of TaskTable UI
-     */
-    public static TaskTableUI getInstance(CTabFolder parent) {
-        if (taskTableUI == null) {
-            taskTableUI = new TaskTableUI(parent);
-        }
-        return taskTableUI;
-    }
-   
-    /**
-     * This method returns an instance of TaskTableUi. 
-     * It should be called after the TaskTableUI object has been created.
-     * If it is called before the TaskTableUI object is created, an assertion failure will occur
-     * @return
-     */
-    public static TaskTableUI getInstance() {
-        assert (taskTableUI != null);
-        return taskTableUI;
-    }
-    
-    /**
-     * Returns the tableViewer object used to create the table in taskTableUI.
-     */
+
     public TableViewer getTableViewer() {
         return tableViewer;
     }

@@ -104,7 +104,6 @@ public class FeedbackAndInput extends Composite{
         Color black = display.getSystemColor(SWT.COLOR_BLACK);
         Color white = display.getSystemColor(SWT.COLOR_WHITE);
         commandLine.setBackground(black);
-
         commandLine.setForeground(white);
         commandLine.setFont(registry.get("commandLine"));
     }

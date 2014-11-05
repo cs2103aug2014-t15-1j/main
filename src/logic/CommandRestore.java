@@ -88,14 +88,17 @@ public class CommandRestore extends Command {
             case "id":
                 success = restoreUsingId(list);
                 break;
+                
             case "search":
                 if (userInput) {
                     processor.getBackwardSearchListHistory().push(processor.getLastSearch());
                 }
                 success = restoreUsingSearch(list);
                 break;
+                
             default:
                 success = false;
+                
         }
         return new Result(list, success, getType(), ResultType.TASK);
     }

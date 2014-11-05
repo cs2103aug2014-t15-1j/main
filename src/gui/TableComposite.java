@@ -1,6 +1,10 @@
 package gui;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.jface.resource.FontRegistry;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
@@ -12,7 +16,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Table;
 
 /**
  * TableComposite contains a tabFolder containing all the tables used in the application.
@@ -20,16 +23,20 @@ import org.eclipse.swt.widgets.Table;
 //@author A0118846W
 public class TableComposite extends Composite {
 
-    private static final String TASK_TABLE_TAB_LABEL = "Tasks";
-    private static final String DATE_TABLE_TAB_LABEL = "Blocked Dates";
+    private static final String TODAY_TABLE_TAB_LABEL = "Tasks";
+    private static final String UPCOMING_TABLE_TAB_LABEL = "Upcoming";
+    private static final String TOMORROW_TABLE_TAB_LABEL = "Tomorrow";
+    private static final String FLOATING_TABLE_TAB_LABEL = "Someday";
     
     private static CTabFolder tabFolder;
-    
-    /**
-     * Creates the TableComposite and its children
-     * @param parent Composite where the TableComposite is located in
-     * @param style Style that the TableComposite should follow
-     */
+    private FontRegistry registry;
+    private static List<TableViewer> tables = new ArrayList<TableViewer>();
+
+/**
+ * Creates the TableComposite and its children
+ * @param parent Composite where the TableComposite is located in
+ * @param style Style that the TableComposite should follow
+ */
     public TableComposite(Composite parent, int style) {
         super(parent, style);
         setLayout();
@@ -51,36 +58,55 @@ public class TableComposite extends Composite {
 
         setColour(this);
     }
-
+    
+    public static CTabFolder getTabFolder(){
+        return tabFolder;
+    }
+    
+    public static List<TableViewer> getTables(){
+        return tables;
+    }
     private void setColour(Composite parent) {
         Color white = parent.getDisplay().getSystemColor(SWT.COLOR_WHITE);
         this.setBackground(white);
     }
 
     private void createContents(Composite parent) {
-        
+        formatRegistry(parent);
         tabFolder = new CTabFolder(this, SWT.BORDER);
         tabFolder.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-        createTaskTableTab(tabFolder);
+        CTabItem todayTable = new CTabItem(tabFolder, SWT.BORDER);
+        todayTable.setText(TODAY_TABLE_TAB_LABEL);
+        TableViewer todayTableUI =  new TableUI(tabFolder).getTableViewer();
+        tables.add(todayTableUI);
+        todayTable.setControl(todayTableUI.getTable());
+        
+        CTabItem tomorrowTable = new CTabItem(tabFolder, SWT.BORDER);
+        tomorrowTable.setText(TOMORROW_TABLE_TAB_LABEL);
+        TableViewer tomorrowTableUI =  new TableUI(tabFolder).getTableViewer();
+        tables.add(tomorrowTableUI);
+        tomorrowTable.setControl(tomorrowTableUI.getTable());
 
-        createDateTableTab(tabFolder);
+        CTabItem upcomingTable = new CTabItem(tabFolder, SWT.BORDER);
+        upcomingTable.setText(UPCOMING_TABLE_TAB_LABEL);
+        TableViewer upcomingTableUI =  new TableUI(tabFolder).getTableViewer();
+        tables.add(upcomingTableUI);
+        upcomingTable.setControl(upcomingTableUI.getTable());
+        
+        CTabItem floatingTable = new CTabItem(tabFolder, SWT.BORDER);
+        floatingTable.setText(FLOATING_TABLE_TAB_LABEL);
+        TableViewer floatingTableUI =  new TableUI(tabFolder).getTableViewer();
+        tables.add(floatingTableUI);
+        floatingTable.setControl(floatingTableUI.getTable());
+        
     }
 
-    private void createTaskTableTab(CTabFolder tabFolder) {
-        CTabItem taskTable = new CTabItem(tabFolder, SWT.BORDER);
-        taskTable.setText(TASK_TABLE_TAB_LABEL);
-        Table taskTableUI = TaskTableUI.getInstance(tabFolder).getTableViewer()
-                .getTable();
-        taskTable.setControl(taskTableUI);
-    }
+    private void formatRegistry(Composite parent) {
+        registry = new FontRegistry(parent.getDisplay());
 
-
-    private void createDateTableTab(CTabFolder tabFolder) {
-        CTabItem dateTable = new CTabItem(tabFolder, SWT.NONE);
-        dateTable.setText(DATE_TABLE_TAB_LABEL);
-        Table dateTableUI = DateTableUI.getInstance(tabFolder).getTableViewer()
-                .getTable();
-        dateTable.setControl(dateTableUI);
+        FontData[] fontData = new FontData[] { new FontData("Arial", 10,
+                SWT.BOLD | SWT.UNDERLINE_SINGLE) };
+        registry.put("title", fontData);
     }
 }

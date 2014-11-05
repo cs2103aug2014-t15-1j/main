@@ -1,6 +1,27 @@
-Do CS2103 Homework ### start:  due:  completed:  #cshomework status: todo
-Do CS2103 Homework ### start:  due:  completed:  #cshomework status: todo
-Do CS2103 Homework ### start:  due:  completed:  #cshomework status: todo
-Do CS2103 Homework ### start:  due:  completed:  status: todo
-Do CS2103 Homework ### start:  due:  completed:  status: todo
-Do CS2103 Homework ### start:  due:  completed:  status: todo
+VHDL Test ### start:  due: 06/11/2014 completed:  status: todo
+prgram ### start:  due: 10/11/2014 2300 completed:  status: todo
+V0.5 project manual ### start:  due: 10/11/2014 2300 completed:  status: todo
+circuit ### start:  due: 09/11/2014 completed:  status: todo
+five-page report ### start:  due: 09/11/2014 completed:  status: todo
+presentation of circuit ### start:  due: 10/11/2014 completed:  status: todo
+ee2020 exam ### start:  due: 11/11/2014 completed:  status: todo
+peer evaluation ### start:  due: 12/11/2014 completed:  status: todo
+ee2021 homework ### start:  due: 09/11/2014 completed:  status: todo
+system tray icon ### start:  due: 05/11/2014 2300 completed:  status: todo
+watch ee2020 webcast ### start:  due: 05/11/2014 completed:  status: todo
+read up on homework ### start:  due: 06/11/2014 completed:  status: todo
+improve upcoming and floating list ### start:  due: 05/11/2014 completed:  status: todo
+return library books ### start:  due: 11/11/2014 completed:  status: todo
+pay fines for reserved book ### start:  due: 12/11/2014 completed:  status: todo
+software demo ### start:  due: 13/11/2014 completed:  status: todo
+do peer evaluation ### start: 06/11/2014 2000 due: 06/11/2014 completed:  status: todo
+colour code command words ### start:  due:  completed:  status: todo
+colour code cells ### start:  due: 05/11/2014 completed:  status: todo
+improve indentation on lists ### start:  due: 08/11/2014 completed:  status: todo
+cs2101 class test ### start:  due: 13/11/2014 completed:  status: todo
+prepare for cs2103t tutorial ### start:  due: 05/11/2014 2300 completed:  status: todo
+prepare for vhdl test ### start:  due: 06/11/2014 1000 completed:  status: todo
+dry the clothes ### start:  due: 06/11/2014 1000 completed:  status: todo
+fix timer ### start:  due: 06/11/2014 completed:  status: todo
+reminders ### start:  due: 06/11/2014 completed:  status: todo
+aceptance test ### start:  due: 22/11/2014 completed:  #black-box-testing status: todo
