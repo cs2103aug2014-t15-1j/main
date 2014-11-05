@@ -102,6 +102,20 @@ public class ResultGenerator {
         return String.format("Not able to process '%1$s'", input);
     }
     
+    /**
+     * Returns a previous input entered by user. Traverses up input history
+     */
+    public static String getUpKeyInput(){
+        return processor.fetchInputUpKey();
+    }
+    
+    /**
+     * Returns a previous input entered by user. Traverses down input history
+     */
+    public static String getDownKeyInput(){
+        return processor.fetchInputDownKey();
+    }
+    
     private void addObservers() {
         UpcomingTaskList upcommingList = UpcomingTaskList.getInstance();
         processor.addObserver(upcommingList);
