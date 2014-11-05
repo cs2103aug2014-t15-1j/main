@@ -39,7 +39,6 @@ public class TableUI extends Composite {
     private static final String PARA_STATUS_DELETED = "Deleted";
     private static final String PARA_STATUS_TODO = "To do";
     private static final String PARA_STATUS_DONE = "Done";
-    private static final String PARA_STATUS_BLOCK = "Blocked Date";
 
     // NOTE: 350 is able to fit up to 20 chars
     private static final int COL_WIDTH = 100;
@@ -52,7 +51,6 @@ public class TableUI extends Composite {
 
     // NOTE: 150 is just right for all statuses - To Do, Done, Deleted
     private static final int COL_WIDTH_STATUS = 135;
-   
 
     private TableViewer tableViewer;
     private CTabFolder folder;
@@ -238,10 +236,8 @@ public class TableUI extends Composite {
                     } else if (task.isDone()) {
                         Status = PARA_STATUS_DONE + " " +
                                  task.getCompletedOn().toString();
-                    } else if(task.isToDo()){
+                    } else {
                         Status = PARA_STATUS_TODO;
-                    }else{
-                        Status = PARA_STATUS_BLOCK;
                     }
                     return Status;
                 }
