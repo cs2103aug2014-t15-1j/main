@@ -1,6 +1,5 @@
 package database;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -16,7 +15,7 @@ import parser.DateParser;
  * 
  */
 
-public class Task implements Comparable<Task>, Comparator<Task> {
+public class Task implements Comparable<Task> {
 
     /**
      * Unique ID for each new Task object. Increments at new Task instantiation.
@@ -89,7 +88,7 @@ public class Task implements Comparable<Task>, Comparator<Task> {
         this.start = start;
         this.due = due;
         this.completedOn = completedOn;
-        this.tags = tags;
+        this.tags.addAll(tags);
         this.type = type;
     }
 
@@ -102,68 +101,41 @@ public class Task implements Comparable<Task>, Comparator<Task> {
      *            The existing Task object to clone attributes by value from.
      */
     public Task(Task task) {
-        this.ID = task.getId();
-        this.name = task.getName();
-        this.start = task.getStart();
-        this.due = task.getDue();
-        this.completedOn = task.getCompletedOn();
-        this.tags.addAll(task.getTags());
-        this.type = task.type;
-    }
-
-    /**
-     * Stores searchable Task attributes in a single String. To be processed by
-     * a search function matching search terms.
-     * 
-     * @return String containing searchable Task attributes.
-     */
-    public String getSummary() {
-        String summary = name + " ";
-        summary += start + " ";
-        summary += due + " ";
-        summary += completedOn + " ";
-        summary += concatanateTags();
-        summary += type;
-        return summary;
+        ID = task.ID;
+        name = task.name;
+        start = new DateTime(task.start);
+        due = new DateTime(task.due);
+        completedOn = new DateTime(task.completedOn);
+        tags.addAll(task.tags);
+        type = task.type;
     }
 
     /**
      * Compares this Task object with the specified Task object for order.
      * Returns a negative integer, zero, or a positive integer if this object's
-     * due date is less earlier than, equal to, or later than that of the
-     * specified object. Implementation is dependent on DateTime's compareTo().
+     * DateTime is less earlier than, equal to, or later than that of the
+     * specified object. Start DateTimes are first used in the comparison if
+     * they are not empty, otherwise due DateTimes are used. Implementation is
+     * dependent on DateTime's compareTo().
      * 
      * @return A negative integer, zero, or a positive integer if this object's
-     *         due date is less earlier than, equal to, or later than that of
-     *         the specified object.
+     *         date is less earlier than, equal to, or later than that of the
+     *         specified object.
      */
     @Override
     public int compareTo(Task otherTask) {
-        if (type == TaskType.BLOCK) {
-            return this.getDue().compareTo(otherTask.getStart());
-        } else {
-            return this.due.compareTo(otherTask.due);
+        DateTime taskDate = this.due;
+        DateTime otherTaskDate = otherTask.due;
+        if (!this.start.isEmpty()) {
+            taskDate = this.start;
         }
-    }
-
-    /**
-     * Sorting by DateTime. If start attribute is not empty, that takes
-     * precedence over due attribute in comparisons.
-     */
-    @Override
-    public int compare(Task task, Task otherTask) {
-        DateTime taskDate = task.getDue();
-        DateTime otherTaskDate = otherTask.getDue();
-        if (!task.getStart().isEmpty()) {
-            taskDate = task.getStart();
+        if (!otherTask.start.isEmpty()) {
+            otherTaskDate = otherTask.start;
         }
-        if (!otherTask.getStart().isEmpty()) {
-            otherTaskDate = otherTask.getStart();
-        }
-
         return taskDate.compareTo(otherTaskDate);
     }
 
+    // TODO remove if not needed
     public boolean contains(Task otherTask) {
         // Within Range of days
         if (this.getStart().compareTo(otherTask.getStart()) <= 0 &&
@@ -292,6 +264,22 @@ public class Task implements Comparable<Task>, Comparator<Task> {
         return concatanatedTags;
     }
 
+    /**
+     * Stores searchable Task attributes in a single String. To be processed by
+     * a search function matching search terms.
+     * 
+     * @return String containing searchable Task attributes.
+     */
+    public String getSummary() {
+        String summary = name + " ";
+        summary += start + " ";
+        summary += due + " ";
+        summary += completedOn + " ";
+        summary += concatanateTags();
+        summary += type;
+        return summary;
+    }
+
     public int getId() {
         return ID;
     }
@@ -390,14 +378,14 @@ public class Task implements Comparable<Task>, Comparator<Task> {
     public TaskType getType() {
         return type;
     }
-    
+
     public void setType(TaskType type) {
         this.type = type;
         if (type == TaskType.DONE && completedOn.isEmpty()) {
             completedOn = new DateTime(DateParser.getCurrDateTime());
             assert completedOn.getDate().matches(DateTime.getDatePattern());
             assert completedOn.getTime().matches(DateTime.getTimePattern());
-        } else if (type == TaskType.TODO) {
+        } else if (type == TaskType.TODO || type == TaskType.BLOCK) {
             completedOn.resetDateTime();
         }
     }
@@ -408,5 +396,9 @@ public class Task implements Comparable<Task>, Comparator<Task> {
 
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;
+    }
+
+    public boolean isFloating() {
+        return start.isEmpty() && due.isEmpty();
     }
 }
