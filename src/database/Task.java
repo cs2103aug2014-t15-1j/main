@@ -59,14 +59,16 @@ public class Task implements Comparable<Task> {
      * 
      * @param name
      *            Task description.
-     * @param due
-     *            Due date and time, format: DD/MM/YYYY HHMM
      * @param start
-     *            Scheduled start date and time, format: DD/MM/YYYY HHMM
-     * @param end
-     *            Scheduled end date and time, format: DD/MM/YYYY HHMM
+     *            Start date and time, format: DD/MM/YYYY HHMM
+     * @param due
+     *            End/due date and time, format: DD/MM/YYYY HHMM
+     * @param completedOn
+     *            Date and time task was completed on, format: DD/MM/YYYY HHMM
      * @param tags
      *            To aid searching and categorizing. Each tag contains #.
+     * @param type
+     *            Type of task.
      */
     public Task(String name, DateTime start, DateTime due,
             DateTime completedOn, List<String> tags, TaskType type) {
