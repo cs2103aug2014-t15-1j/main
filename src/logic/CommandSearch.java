@@ -199,4 +199,10 @@ public class CommandSearch extends Command {
         }
         return false;
     }*/
+    
+    @Override
+    public String toString() {
+        return "cmdsearch status: " + this.status + " date: " + this.date + " tags: " +
+               this.tags + " keywords: " + this.keywords;
+    }
 }

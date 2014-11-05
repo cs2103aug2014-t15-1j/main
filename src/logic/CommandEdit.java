@@ -180,4 +180,10 @@ public class CommandEdit extends Command {
         success = processor.getFile().updateTaskInfo(prevTask.getId(), taskName, taskStart, taskDue, taskTags);
         return new Result(tasks, success, getType(), ResultType.TASK);
     }
+    
+    @Override
+    public String toString() {
+        return "cmdedit id: " + this.id + " name: " + this.name + " start: " + this.start + " due: " +
+               this.due + " tags: " + this.tags + " delete: " + this.delete;
+    }
 }

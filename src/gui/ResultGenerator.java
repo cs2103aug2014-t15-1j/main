@@ -130,8 +130,8 @@ public class ResultGenerator {
         FloatingTaskList floatingList = FloatingTaskList.getInstance();
         processor.addObserver(floatingList);
         floatingList.initialise();
-        BlockLabelUI blockLabelUI = BlockLabelUI.getInstance();
-        processor.addObserver(blockLabelUI);
+        //BlockLabelUI blockLabelUI = BlockLabelUI.getInstance();
+       // processor.addObserver(blockLabelUI);
         TimeUI timeLabel = TimeUI.getInstance();
         Processor.getInstance().addObserver(timeLabel);
     }

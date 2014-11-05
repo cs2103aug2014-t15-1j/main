@@ -196,7 +196,7 @@ public class DateParser {
         }
 
         if (!isValidDateTime(str)) {
-            throw new IllegalArgumentException("Invalid input for parseToDate");
+            throw new IllegalArgumentException("Invalid input for parseToDateTime");
         }
 
         String date = "";

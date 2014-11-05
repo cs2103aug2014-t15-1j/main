@@ -12,15 +12,23 @@ import database.TaskType;
 
 public class CommandBlock extends Command {
 
+<<<<<<< HEAD
     // Block dates range [get("start"), get("end"); returns date]
     // If it's only 1 day, start = end
     private DateTime start = new DateTime();
     private DateTime due = new DateTime();
     
+=======
+    private String name = "";
+    private DateTime from = new DateTime();
+    private DateTime to = new DateTime();
+    private List<String> tags = new ArrayList<String>();
+
+>>>>>>> 3e939707a46ea9ab6e4f103a1f56af99a61ad9cb
     public CommandBlock(List<TaskParam> content) {
         this(content, false);
     }
-    
+
     protected CommandBlock(List<TaskParam> content, boolean isComplement) {
         if (content.isEmpty()) {
             this.type = CommandType.ERROR;
@@ -36,13 +44,25 @@ public class CommandBlock extends Command {
 
     private void constructUsingParam(TaskParam param) {
         switch (param.getName()) {
-            case "start":
-                this.start = DateParser.parseToDateTime(param.getField());
+            case "name":
+                this.name = name.concat(" " + param.getField()).trim();
                 break;
 
+            case "from":
+                this.from = DateParser.parseToDateTime(param.getField());
+                break;
+
+<<<<<<< HEAD
             case "end":
                 this.due = DateParser.parseToDateTime(param.getField());
+=======
+            case "to":
+                this.to = DateParser.parseToDateTime(param.getField());
+>>>>>>> 3e939707a46ea9ab6e4f103a1f56af99a61ad9cb
                 break;
+
+            case "tag":
+                this.tags.add(param.getField());
 
             default:
                 this.type = CommandType.ERROR;
@@ -77,6 +97,7 @@ public class CommandBlock extends Command {
 
     /**
      * Executes Block Command
+     * 
      * @param userInput
      * @return Result
      */
@@ -88,6 +109,7 @@ public class CommandBlock extends Command {
         Processor processor = Processor.getInstance();
         List<Task> blockRange = processor.getFile().getBlockTasks();
         boolean success = true;
+
         List<Task> outputs = new ArrayList<Task>();
        
         for (Task blockedDate : blockRange) {
@@ -103,16 +125,17 @@ public class CommandBlock extends Command {
                 break;
             }
         }
-        
+
         if (success) {
             Task currBlock = new Task("", start, due, new DateTime(), new ArrayList<String>(), TaskType.BLOCK);
             processor.getFile().addNewTask(currBlock);
             outputs.add(currBlock);
         }
-        
-        return new Result(outputs, success, CommandType.BLOCK, ResultType.BLOCKDATE);
+
+        return new Result(outputs, success, CommandType.BLOCK,
+                ResultType.BLOCKDATE);
     }
-    
+
     @Override
     protected Result executeComplement() {
         Processor processor = Processor.getInstance();
@@ -125,6 +148,6 @@ public class CommandBlock extends Command {
             outputs.add(currBlock);
         }
         return new Result(outputs, success, CommandType.UNBLOCK, ResultType.BLOCKDATE);
-        
+
     }
 }

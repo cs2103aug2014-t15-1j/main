@@ -63,7 +63,7 @@ public class FeedbackAndInput extends Composite{
     
     private void buildControls() {
         getRegistry();
-        BlockLabelUI.getInstance(this);
+      //  BlockLabelUI.getInstance(this);
         buildCommandLineUI();
         buildFeedbackUI();
     }

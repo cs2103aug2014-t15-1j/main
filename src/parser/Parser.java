@@ -3,6 +3,7 @@ package parser;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Scanner;
 
 import logic.Command;
 import logic.CommandAdd;
@@ -48,6 +49,7 @@ public class Parser {
     private static final String[] STR_ARRAY_EMPTY = new String[0];
 
     private static final String[] PARAMS_EDIT = { "due", "start", "tags" };
+    private static final String[] PARAMS_BLOCK = { "from", "to" };
     private static final String[] PARAMS_DATE = { "due", "start" };
     private static final String[] PARAMS_DATE_FULL = { "due", "by", "start",
                                                       "from", "end", "to" };
@@ -74,7 +76,7 @@ public class Parser {
         String[] commandItems = input.trim().split(" ");
 
         if (commandItems.length > 0) {
-            String commandType = getFirstWord(commandItems);
+            String commandType = getCommandWord(commandItems);
             String[] commandParams = removeFirstWord(commandItems);
 
             switch (commandType) {
@@ -129,13 +131,14 @@ public class Parser {
      *            An array containing a command input split by spaces
      * @return String containing command word in lower-case
      */
-    private static String getFirstWord(String[] commandItems) {
+    private static String getCommandWord(String[] commandItems) {
         return commandItems[0].toLowerCase();
     }
 
     /**
-     * Returns a clone of the input String array, excluding the command word.
-     * The command word is assumed to be the first item of the array.
+     * Returns a clone of the input String array, excluding the first word. This
+     * is used to remove the command word, which is assumed to be the first item
+     * of the array.
      * 
      * @param commandItems
      * @return An array smaller than the input array by 1. Minimum size is 0.
@@ -222,108 +225,115 @@ public class Parser {
                     "You can't block nothing! Input a date or time frame!");
         }
 
+        String currFieldOrig = "";
+        String currField = "";
         List<TaskParam> blockFields = new ArrayList<TaskParam>();
+        ArrayList<String> availParams = generateParamArrayList(PARAMS_BLOCK);
 
-        boolean hasConnector = false;
-        boolean hasFirstDate = false;
-        boolean hasFirstTime = false;
-        boolean hasSecondDate = false;
-        boolean hasSecondTime = false;
+        String currWord;
+        boolean currHasDate = false;
+        boolean currHasTime = false;
 
-        String firstDateStr = "";
-        String secondDateStr = "";
-        String firstTimeStr = "";
-        String secondTimeStr = "";
-
-        // Collect fields; each date and each time should only be filled once.
-        int index;
-        for (index = 0; index < commandParams.length; index++) {
-            String currWord = commandParams[index];
-            if (!hasConnector && currWord.equalsIgnoreCase("to")) {
-                hasConnector = true;
-            } else if (DateParser.isValidDate(currWord)) {
-                if (!hasConnector && !hasFirstDate) {
-                    firstDateStr = currWord;
-                    hasFirstDate = true;
-                } else if (hasConnector && !hasSecondDate) {
-                    secondDateStr = currWord;
-                    hasSecondDate = true;
-                } else {
-                    throw new IllegalArgumentException(
-                            "That format for multiple dates is not accepted!");
+        for (int j = 0; j < commandParams.length; j++) {
+            currWord = commandParams[j];
+            if (hasValidHashTag(currWord)) {
+                // No matter the current field, collect hashtags first
+                blockFields.add(new TaskParam("tag", currWord));
+            } else if (currField.equalsIgnoreCase(currWord) &&
+                       !currWord.isEmpty() && !currHasDate && !currHasTime) {
+                // If parameters are repeated, add the previous one to name
+                addToFieldParam(blockFields, "name", currFieldOrig);
+            } else if (availParams.contains(currWord.toLowerCase())) {
+                // If the current word is an available parameter name
+                if (isParamOf(PARAMS_BLOCK, currField) && !currHasDate &&
+                    !currHasTime) {
+                    // If the last parameter was not filled, it was not a
+                    // parameter
+                    addToFieldParam(blockFields, "name", currFieldOrig);
+                    availParams.add(currField);
                 }
-            } else if (DateParser.isValidTime(currWord)) {
-                if (!hasConnector && !hasFirstTime) {
-                    firstTimeStr = currWord;
-                    hasFirstTime = true;
-                } else if (hasConnector && !hasSecondTime) {
-                    secondTimeStr = currWord;
-                    hasSecondTime = true;
+                // Reassign currField values
+                currField = currWord.toLowerCase();
+                // Save the original word (with capitalisation)
+                currFieldOrig = currWord;
+                // Remove availability
+                availParams.remove(currField);
+                // Reset hasDate/Time values
+                currHasDate = false;
+                currHasTime = false;
+            } else if (isParamOf(PARAMS_BLOCK, currField) &&
+                       !currWord.isEmpty()) {
+                // If currently a date parameter and string is not ""
+                if (!currHasDate && DateParser.isValidDate(currWord)) {
+                    addToFieldParam(blockFields, currField, currWord);
+                    currHasDate = true;
+                } else if (!currHasTime && DateParser.isValidTime(currWord)) {
+                    addToFieldParam(blockFields, currField, currWord);
+                    currHasTime = true;
                 } else {
-                    throw new IllegalArgumentException(
-                            "That format for multiple times is not accepted!");
+                    // If not a valid date/time, reset fields
+                    // Add the parameter name to "name" if no date/time
+                    // was assigned.
+                    TaskParam nameParam = getTaskParam(blockFields, "name");
+                    if (!currHasDate && !currHasTime) {
+                        nameParam.addToField(currFieldOrig);
+                        availParams.add(currField);
+                    }
+                    nameParam.addToField(currWord);
+                    currField = "";
+                    currFieldOrig = "";
                 }
-            } else if (currWord.isEmpty()) {
-                // An empty string accommodates for multiple spaces
-                continue;
             } else {
-                // Stop checking upon reaching an invalid word.
-                break;
+                addToFieldParam(blockFields, "name", currWord);
             }
         }
 
-
-
-        // Check if any fields have been input
-        if (!hasFirstDate && !hasFirstTime && !hasSecondDate && !hasSecondTime) {
-            throw new IllegalArgumentException(
-                    "No date or time detected! "
-                            + "Please input a date/time range to block!");
+        // catches if the last word was a parameter
+        if (isParamOf(PARAMS_BLOCK, currField) && !currHasDate && !currHasTime) {
+            addToFieldParam(blockFields, "name", currFieldOrig);
         }
 
         // Fill in empty dates
-        if (!hasFirstDate && !hasSecondDate) {
-            firstDateStr = DateParser.getCurrDateStr();
-            secondDateStr = firstDateStr;
-        } else if (!hasFirstDate) {
-            // TODO: Based on time stated
-            firstDateStr = secondDateStr;
-        } else if (!hasSecondDate) {
-            secondDateStr = firstDateStr;
+        TaskParam fromTp = getTaskParam(blockFields, "from");
+        TaskParam toTp = getTaskParam(blockFields, "to");
+        String fromStr = fromTp.getField();
+        String toStr = toTp.getField();
+        if (!DateParser.containsDate(fromStr) &&
+            !DateParser.containsDate(toStr)) {
+            String currDate = DateParser.getCurrDateStr();
+            fromTp.addToField(currDate);
+            toTp.addToField(currDate);
+        } else if (!DateParser.containsDate(fromStr)) {
+            String toDate = DateParser.getFirstDate(toStr);
+            fromTp.addToField(toDate);
+        } else if (!DateParser.containsDate(toStr)) {
+            String fromDate = DateParser.getFirstDate(fromStr);
+            toTp.addToField(fromDate);
         }
 
         // Check order of date/times; switch if necessary.
-        // TODO: Check if there's something wrong with this that needs trim().
-        DateTime dateTime1 = DateParser.parseToDateTime((firstDateStr + " " + firstTimeStr).trim());
-        DateTime dateTime2 = DateParser.parseToDateTime((secondDateStr + " " + secondTimeStr).trim());
-        TaskParam startTp;
-        TaskParam endTp;
-        if (dateTime1.isEarlierThan(dateTime2) || dateTime1.equals(dateTime2)) {
-            startTp = new TaskParam("start", dateTime1.toString());
-            endTp = new TaskParam("end", dateTime2.toString());
-            // Fill in empty times
-            if (!hasFirstTime) {
-                startTp.addToField("0000");
-            }
-            if (!hasSecondTime) {
-                endTp.addToField("2359");
-            }
-        } else {
-            startTp = new TaskParam("start", dateTime2.toString());
-            endTp = new TaskParam("end", dateTime1.toString());
-            // Fill in empty times
-            if (!hasFirstTime) {
-                endTp.addToField("2359");
-            }
-            if (!hasSecondTime) {
-                startTp.addToField("0000");
-            }
+        // While checking, add the times as necessary
+        fromStr = fromTp.getField();
+        toStr = toTp.getField();
+        DateTime fromDt = DateParser.parseToDateTime(fromStr);
+        DateTime toDt = DateParser.parseToDateTime(toStr);
+        if (!fromDt.isEarlierThan(toDt) && !fromDt.equals(toDt)) {
+            fromTp.setField(toStr);
+            toTp.setField(fromStr);
         }
 
-        // Create and return Command
-        blockFields.add(startTp);
-        blockFields.add(endTp);
+        // Fill in empty times
+        if (!DateParser.containsTime(fromStr)) {
+            fromTp.addToField("0000");
+        }
+        if (!DateParser.containsTime(toStr)) {
+            toTp.addToField("2359");
+        }
+        
+        removeDuplicates(blockFields);
+
         return new CommandBlock(blockFields);
+
     }
 
     private static Command parseDisplay(String[] commandParams) {
@@ -453,8 +463,13 @@ public class Parser {
         List<TaskParam> editFields = new ArrayList<TaskParam>();
 
         // try saveEditIdToField() catch return CommandOthers
+        int firstWord = 0;
         try {
-            id = commandParams[0];
+            id = commandParams[firstWord];
+            while (id.isEmpty()) {
+                firstWord++;
+                id = commandParams[firstWord];
+            }
             Integer.parseInt(id);
             editFields.add(new TaskParam("id", id));
         } catch (IndexOutOfBoundsException e) {
@@ -844,19 +859,19 @@ public class Parser {
      * Forms a <code>Task</code> object by parsing a <code>String</code>
      * containing the stored string literals.
      * <p>
-     * Note that the input <code>String</code> must be of the given format(below),
-     * contain all four parameters names ("start:" to "status:"), and have
-     * spaces between tags and parameter names. The position of the tags is
-     * flexible as long as it comes after "start:".
+     * Note that the input <code>String</code> must be of the given
+     * format(below), contain all four parameters names ("start:" to "type:"),
+     * and have spaces between tags and parameter names. The position of the
+     * tags is flexible as long as it comes after "start:".
      * 
      * @param text
      *            format:
      *            {@literal "<name> ### start: <date/time> due: <date/time> completed: 
-     * <date/time> <tags> status: <status>"}
+     * <date/time> <tags> type: <type>"}
      */
     public static Task parseToTask(String text) {
         String[] textItems = text.trim().split(" ");
-        // name, start, due, completed, status
+        // name, start, due, completed, type
         String[] param = new String[] { "", "", "", "", "" };
         List<String> tags = new ArrayList<String>();
 
@@ -881,7 +896,7 @@ public class Parser {
             } else {
                 if (currWordLC.equals("start:") || currWordLC.equals("due:") ||
                     currWordLC.equals("completed:") ||
-                    currWordLC.equals("status:")) {
+                    currWordLC.equals("type:")) {
                     fieldIndex++;
                     assert (fieldIndex < 5) : "Too many parameters for TaskParser!";
                 } else if (hasValidHashTag(currWord)) {
@@ -901,11 +916,8 @@ public class Parser {
 
         assert (fieldIndex == 4) : "TaskParser is missing parameter names.";
 
-        // Convert param inputs
+        // Convert param inputs for Task constructor
         String name = param[0];
-        if (param[4].equalsIgnoreCase("done")) {
-            isDone = true;
-        }
 
         // Convert date/time inputs into DateTime objects
         DateTime[] dateTimes = new DateTime[ADD_DATE_PARAM_NUM];
@@ -921,11 +933,29 @@ public class Parser {
             }
         }
 
+        TaskType type = TaskType.TODO;
+        switch (param[4].toLowerCase()) {
+            case "done":
+                type = TaskType.DONE;
+                break;
+
+            case "deleted":
+                type = TaskType.DELETED;
+                break;
+
+            case "block":
+                type = TaskType.BLOCK;
+                break;
+
+            default:
+                assert false : "Invalid TaskType while parsing from file!";
+        }
+
         DateTime start = dateTimes[0];
         DateTime due = dateTimes[1];
         DateTime completed = dateTimes[2];
 
-        Task newTask = new Task(name, start, due, completed, tags);
+        Task newTask = new Task(name, start, due, completed, type, tags);
         newTask.setDone(isDone);
         return newTask;
     }
@@ -937,9 +967,9 @@ public class Parser {
      * containing the saved string literals of two <code>DateTime</code> objects
      * (starting and ending dates and times).
      * <p>
-     * Note that the input <code>String</code> must be of the given format(below),
-     * containing two pairs of dates and times, and the word "to" between them.
-     * All 5 items must have spaces between them.
+     * Note that the input <code>String</code> must be of the given
+     * format(below), containing two pairs of dates and times, and the word "to"
+     * between them. All 5 items must have spaces between them.
      * 
      * @param text
      *            format: "{@literal <date> <time> to <date> <time>}"
@@ -963,6 +993,19 @@ public class Parser {
         DateTime dueDt = new DateTime(dueDate, dueTime);
 
         return new BlockDate(startDt, dueDt);
+    }
+
+    // FOR TESTING PURPOSES
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        String input = "";
+        while (!input.equals("exit")) {
+            input = sc.nextLine();
+            System.out.println(parse(input));
+        }
+
+        sc.close();
     }
 
 }
