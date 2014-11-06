@@ -199,7 +199,7 @@ public class ResultGenerator {
 
             case DISPLAY:
                 if (blockDateTask.size() == 0) {
-
+                    
                     return "Nothing has been blocked.";
                 } else if (blockDateTask.size() == 1) {
                     setTableSelection(blockDateTask);
@@ -208,7 +208,7 @@ public class ResultGenerator {
                 return feedbackMessageMultiResults(blockDateTask,
                                                    "Showing %1$s blocks.");
             case SEARCH:
-                updateTables(blockDateTask);
+                updateSearchTable(blockDateTask);
                 return feedbackMessageMultiResults(blockDateTask, "Found %1$s results.");
             case ERROR:
                 return "Not able to fully process command";
@@ -261,7 +261,6 @@ public class ResultGenerator {
                 return feedbackMessage(outputs, "Edited %1$s");
             case DISPLAY:
                 if (outputs.size() == 0) {
-
                     return "No tasks to show.";
                 } else if (outputs.size() == 1) {
                     setTableSelection(outputs);
