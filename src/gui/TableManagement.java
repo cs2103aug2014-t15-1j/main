@@ -46,6 +46,10 @@ public class TableManagement {
         tables.get(INDEX_TODO).setInput(tasks);
     }
     
+    public void updateDoneTable(List<Task> tasks){
+        tables.get(INDEX_DONE).setInput(tasks);
+    }
+
     public void updateBlockTable(List<Task> blockTasks){
        tables.get(INDEX_BLOCK).setInput(blockTasks);
     }
@@ -134,6 +138,7 @@ public class TableManagement {
     private List<Task> getTableContent(Task task) {
         List<Task> floating = ResultGenerator.getFloatingTasks();
         List<Task> timed = ResultGenerator.getTimedTasks();
+        List<Task> done = ResultGenerator.getDoneTasks();
         List<Task> blocked = ResultGenerator.getBlockTasks();
         List<Task> todo = ResultGenerator.getToDoTasks();
         
@@ -142,11 +147,11 @@ public class TableManagement {
         }else if(task.isBlock()){
             return blocked;
         }else if(task.isDone()){
-            return getDoneList(timed);
+            return done;
         }else if(task.isFloating()){
             return floating;
         }
-        
+
         return null;
     }
     

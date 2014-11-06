@@ -84,7 +84,6 @@ public class ProcessorTest {
         Result r3a = TestProcessor.processInput("redo");
         assertTrue(equalsObj(testTask3, r3a.getTasks().get(0)));
         
-        
         //Add with end
         Result r4 = TestProcessor.processInput("add end 10/10/2012 1010");
         assertTrue(equalsObj(testTask3, r4.getTasks().get(0)));
@@ -94,7 +93,7 @@ public class ProcessorTest {
         
         //Add with tags
         Result r5 = TestProcessor.processInput("add #homework");
-        testTags.add("#homework");
+        testTask5.getTags().add("#homework");
         assertTrue(equalsObj(testTask5, r5.getTasks().get(0)));
         TestProcessor.processInput("undo");
         Result r5a = TestProcessor.processInput("redo");
@@ -102,6 +101,7 @@ public class ProcessorTest {
         
         //All valid parameters
         Result r6 = TestProcessor.processInput("add Do CS2103 Homework due 10/10/2012 1010 start 10/10/2012 1010 #homework");
+        testTask6.getTags().add("#homework");
         assertTrue(equalsObj(testTask6, r6.getTasks().get(0)));
         TestProcessor.processInput("undo");
         Result r6a = TestProcessor.processInput("redo");
@@ -142,7 +142,7 @@ public class ProcessorTest {
         assertTrue(equalsObj(r12.getTasks().get(0), testTask10));
         */
         //Test Edit Tags
-        testTags.add("#homework");
+        testTask11.getTags().add("#homework");
         TestProcessor.processInput("edit 1 #homework");
         TestProcessor.processInput("undo");
         Result r15 = TestProcessor.processInput("redo");
@@ -288,22 +288,22 @@ public class ProcessorTest {
 	@Test
 	public void testBlock() {
 	    TestProcessor.processInput("block 23/04/2012 to 23/05/2014");
-		assertTrue(TestProcessor.fetchBlockedDate().size() == 1);
+		assertTrue(TestProcessor.fetchBlockTasks().size() == 1);
 	}
 
 	@Test
 	public void testUnblock() {
-        assertTrue(TestProcessor.fetchBlockedDate().size() == 0);
+        assertTrue(TestProcessor.fetchBlockTasks().size() == 0);
 	    TestProcessor.processInput("block 23/04/2012 to 23/05/2014");
-        assertTrue(TestProcessor.fetchBlockedDate().size() == 1);
+        assertTrue(TestProcessor.fetchBlockTasks().size() == 1);
         TestProcessor.processInput("unblock 0");
-        assertTrue(TestProcessor.fetchBlockedDate().size() == 1);
+        assertTrue(TestProcessor.fetchBlockTasks().size() == 1);
         TestProcessor.processInput("unblock -1");
-        assertTrue(TestProcessor.fetchBlockedDate().size() == 1);
+        assertTrue(TestProcessor.fetchBlockTasks().size() == 1);
         TestProcessor.processInput("unblock 5");
-        assertTrue(TestProcessor.fetchBlockedDate().size() == 1);
+        assertTrue(TestProcessor.fetchBlockTasks().size() == 1);
         TestProcessor.processInput("unblock 1");
-	    assertTrue(TestProcessor.fetchBlockedDate().size() == 0);
+	    assertTrue(TestProcessor.fetchBlockTasks().size() == 0);
 	}
 
 	@Test
@@ -313,6 +313,7 @@ public class ProcessorTest {
 	    TestProcessor.processInput("add Task3");
 	    
 	    //Equivalence Partition
+	    assertTrue(TestProcessor.getFile().getToDoTasks().size() == 3);
 	    //1. Test done <id>
         TestProcessor.processInput("done 1");
         assertTrue(TestProcessor.getFile().getToDoTasks().size() == 2);
@@ -334,7 +335,9 @@ public class ProcessorTest {
         TestProcessor.processInput("redo");
         assertTrue(TestProcessor.getFile().getToDoTasks().size() == 1);
         TestProcessor.processInput("undo");
+        assertTrue(TestProcessor.getFile().getToDoTasks().size() == 2);
         TestProcessor.processInput("undo");
+        System.out.println(TestProcessor.getFile().getToDoTasks().size());
         assertTrue(TestProcessor.getFile().getToDoTasks().size() == 3);
 	}
 
@@ -368,6 +371,7 @@ public class ProcessorTest {
         TestProcessor.processInput("redo");
         assertTrue(TestProcessor.getFile().getToDoTasks().size() == 2);
         TestProcessor.processInput("undo");
+        assertTrue(TestProcessor.getFile().getToDoTasks().size() == 1);
         TestProcessor.processInput("undo");
         assertTrue(TestProcessor.getFile().getToDoTasks().size() == 0);
 	}

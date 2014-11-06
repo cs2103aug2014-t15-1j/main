@@ -135,8 +135,12 @@ public class ResultGenerator {
         return processor.fetchFloatingTasks();
     }
     
+    public static List<Task> getDoneTasks(){
+        return processor.fetchDoneTasks();
+    }
+    
     public static List<Task> getBlockTasks(){
-        return processor.fetchBlockedDate();
+        return processor.fetchBlockTasks();
     }
     
     private void addObservers() {
@@ -336,10 +340,12 @@ public class ResultGenerator {
     private void refreshTables() {
         List<Task> toDo = processor.fetchToDoTasks();
         List<Task> floating = processor.fetchFloatingTasks();
-        List<Task> blocked = processor.fetchBlockedDate();
+        List<Task> done = processor.fetchDoneTasks();
+        List<Task> blocked = processor.fetchBlockTasks();
         List<Task> timed = processor.fetchTimedTasks();
         tableManagement.updateToDoTable(toDo);
         tableManagement.updateFloatingTaskTable(floating);
+        tableManagement.updateDoneTable(done);
         tableManagement.updateBlockTable(blocked);
         tableManagement.updateTimedTable(timed);
     }

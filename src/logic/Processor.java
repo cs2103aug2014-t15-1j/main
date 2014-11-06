@@ -31,7 +31,7 @@ import database.Task;
 public class Processor extends Observable {
     
     /** Logger for monitoring purposes */
-    protected final static boolean LOGGING_ENABLED = false;
+    protected final static boolean LOGGING_ENABLED = true;
     private static final Logger log = Logger.getLogger(Processor.class.getName());
     
     protected static boolean IS_UNIT_TEST = false;
@@ -321,6 +321,19 @@ public class Processor extends Observable {
 	    }
         return file.getToDoTasks();
     }
+	
+	/** 
+     * This method fetches tasks that have status marked as TODO
+     * 
+     * @return
+     *     List{@literal<Task>} - DONE tasks
+     */
+    public List<Task> fetchDoneTasks() {
+        if (LOGGING_ENABLED) {
+            log.info("Fetching Done Tasks");
+        }
+        return file.getDoneTasks();
+    }
     
 	/** 
      * This method fetches tasks that have status marked as BLOCK
@@ -328,7 +341,7 @@ public class Processor extends Observable {
      * @return
      *     List{@literal<Task>} - BLOCK tasks
      */
-	public List<Task> fetchBlockedDate() {
+	public List<Task> fetchBlockTasks() {
 	    if (LOGGING_ENABLED) {
 	        log.info("Fetching Blocked Dates");
 	    }
