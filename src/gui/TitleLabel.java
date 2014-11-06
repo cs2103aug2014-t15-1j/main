@@ -47,7 +47,7 @@ public class TitleLabel extends Composite {
         title.setFont(registry.get("haystack title"));
         Color color;
         // color = parent.getDisplay().getSystemColor(SWT.COLOR_BLACK);
-        color = new Color(Display.getCurrent(), 255, 255, 180);
+        color = new Color(Display.getCurrent(), 125, 255, 125);
         title.setForeground(color);
         color.dispose();
 

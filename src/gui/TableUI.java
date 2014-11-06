@@ -109,7 +109,7 @@ public class TableUI{
         setUpColumns(parent);
 
         Table table = tableViewer.getTable();
-        Color color = new Color(Display.getCurrent(), 255 - colourIndex*3, 255 - colourIndex*10, 255 - colourIndex*18);
+        Color color = new Color(Display.getCurrent(), 255 - colourIndex*10, 255 - colourIndex, 255 - colourIndex*13);
         table.setBackground(color);
         colourIndex++;
         color.dispose();
