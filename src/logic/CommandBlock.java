@@ -60,10 +60,10 @@ public class CommandBlock extends Command {
     @Override
     public String get(String field) {
         switch (field) {
-            case "start":
+            case "from":
                 return this.from.toString();
 
-            case "end":
+            case "to":
                 return this.to.toString();
 
             default:

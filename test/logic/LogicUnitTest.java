@@ -538,21 +538,23 @@ public class LogicUnitTest {
     public void testBlockCommand() {
         //Block
         List<TaskParam> contents = new ArrayList<TaskParam>();
-        TaskParamStub start = new TaskParamStub("start", "11/10/2014 0000");
-        TaskParamStub end = new TaskParamStub("end", "12/10/2014 2359");
+        TaskParamStub start = new TaskParamStub("from", "11/10/2014 0000");
+        TaskParamStub due = new TaskParamStub("to", "12/10/2014 2359");
         contents.add(start);
-        contents.add(end);
+        contents.add(due);
         //Test blocking of date range
         CommandBlock cmd = new CommandBlock(contents);
         Result result = cmd.execute(true);
+        
+        System.out.println(cmd);
         assertTrue(result.isSuccess());
         // ------ Test path for complement
         result = cmd.executeComplement();
         assertTrue(result.isSuccess());
-        
+       
         //Test Retrieval of Information
-        assertTrue(cmd.get("start").equals("11/10/2014 0000"));
-        assertTrue(cmd.get("end").equals("12/10/2014 2359"));
+        assertTrue(cmd.get("from").toString().equals("11/10/2014 0000"));
+        assertTrue(cmd.get("to").toString().equals("12/10/2014 2359"));
 
         assertNotNull(cmd.toString());
     }

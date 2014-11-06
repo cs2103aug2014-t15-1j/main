@@ -31,7 +31,7 @@ import database.Task;
 public class Processor extends Observable {
     
     /** Logger for monitoring purposes */
-    protected final static boolean LOGGING_ENABLED = true;
+    protected final static boolean LOGGING_ENABLED = false;
     private static final Logger log = Logger.getLogger(Processor.class.getName());
     
     protected static boolean IS_UNIT_TEST = false;
