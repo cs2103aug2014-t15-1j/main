@@ -109,8 +109,15 @@ public class TableUI{
         setUpColumns(parent);
 
         Table table = tableViewer.getTable();
-        table.setBackground(new Color(Display.getCurrent(), 255, 255, 255 - colourIndex*15));
+        Color color;
+        if (colourIndex%2 == 0) {
+            color = new Color(Display.getCurrent(), 180, 245, 245);
+        } else {
+            color = new Color(Display.getCurrent(), 255, 255, 200); 
+        }
+        table.setBackground(color);
         colourIndex++;
+        color.dispose();
         table.setLinesVisible(true);
         table.setHeaderVisible(true);
         table.setEnabled(true);
