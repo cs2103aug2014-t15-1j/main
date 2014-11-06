@@ -373,11 +373,14 @@ public class DatabaseLogic {
         switch (task.getType()) {
             case DONE:
                 doneTasks.remove(task);
+                break;
             case BLOCK:
                 blockTasks.remove(task);
+                break;
             default:
                 // TODO toss exception?
                 assert false;
+                break;
         }
         task.setType(TaskType.TODO);
         return toDoTasks.add(task);
@@ -403,11 +406,14 @@ public class DatabaseLogic {
         switch (task.getType()) {
             case TODO:
                 toDoTasks.remove(task);
+                break;
             case BLOCK:
                 blockTasks.remove(task);
+                break;
             default:
                 // TODO toss exception?
                 assert false;
+                break;
         }
         task.setType(TaskType.DONE);
         return doneTasks.add(task);
