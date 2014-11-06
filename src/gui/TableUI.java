@@ -11,11 +11,13 @@ import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
@@ -77,37 +79,6 @@ public class TableUI{
         return tableViewer;
     }
     
-    /**
-     * Updates the table interface shown to the user. The TaskTableUI object should be created before calling
-     * this method. Otherwise, an assertion failure will occur.
-     * @param tasks List of tasks to update the table with
-     */
-    public void update(List<Task> tasks) {
-        assert (tableViewer != null);
-        assert (folder != null);
-        tableViewer.setInput(tasks);
-        folder.setSelection(0);
-    }
-    
-    /**
-     * Selects a specific Task element in the TaskTask
-     * @param taskToSelect task to be selected
-     * @param tasks list of tasks the table contains
-     */
-    public void setTableSection(Task taskToSelect, List<Task> tasks) {
-        int size = tasks.size();
-        int indexToSelect = 0;
-        for (int index = 0; index < size; index++) {
-            Task currTask = tasks.get(index);
-            if (currTask.equals(taskToSelect)) {
-                indexToSelect = index;
-                break;
-            }
-        }
-
-        tableViewer.getTable().setSelection(indexToSelect);
-    }
-
     private void buildControls(Composite parent) {
         getRegistry(parent);
         buildLabel(parent);
@@ -176,7 +147,6 @@ public class TableUI{
             @Override
             public String getText(Object element) {
                 if (element instanceof Task) {
-                    // set Name: max 40 characters
                     Task task = (Task) element;
                     String name = task.getName();
                     assert (task != null);
@@ -273,6 +243,45 @@ public class TableUI{
                     return Status;
                 }
                 return "";
+            }
+            
+
+            @Override
+            public Color getBackground(Object element){
+                if(element instanceof Task){
+                    Task task = (Task) element;
+                    Display display = Display.getCurrent();
+                    if(task.isDeleted()){
+                        return Colours.getDeletedColor();
+                    }else if(task.isBlock()){
+                        return display.getSystemColor(SWT.COLOR_BLUE);
+                    }else if(task.isToDo()){
+                        return Colours.getToDoColor();
+                    }else if(task.isDone()){
+                        return display.getSystemColor(SWT.COLOR_GRAY);
+                    }
+                }
+                return Display.getCurrent().getSystemColor(SWT.COLOR_WHITE);
+            }
+            
+            @Override
+            public Color getForeground(Object element){
+                if(element instanceof Task){
+                    Task task = (Task) element;
+                    Display display = Display.getCurrent();
+                    return Display.getCurrent().getSystemColor(SWT.COLOR_WHITE);
+                }
+                return Display.getCurrent().getSystemColor(SWT.COLOR_BLACK);
+            }
+            
+            @Override
+            public Font getFont(Object element){
+                if(element instanceof Task){
+                    Task task = (Task) element;
+                    Display display = Display.getCurrent();
+                    return registry.get("table element");
+                }
+                return null;
             }
         });
 

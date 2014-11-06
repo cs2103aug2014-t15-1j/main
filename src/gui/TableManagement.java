@@ -17,20 +17,44 @@ import database.DateTime;
 import database.Task;
 
 public class TableManagement {
+    private static final int INDEX_TODO = 0;
+    private static final int INDEX_TODAY = 1;
+    private static final int INDEX_TOMORROW = 2;
+    private static final int INDEX_UPCOMING = 3;
+    private static final int INDEX_SOMEDAY = 4;
+    private static final int INDEX_DONE = 5;
+    private static final int INDEX_BLOCK= 6;
+    
     private static CTabFolder folder; 
     private static List<TableViewer> tables;
     
     public TableManagement(){
      folder = TableComposite.getTabFolder();
      tables = TableComposite.getTables();
-     addTableListeners();
     }
     
-    public void update(List<Task> tasks) {
+    public void updateTable(List<Task> tasks){
+        Task task = tasks.get(0);
+        getTable(task);
+    }
+    
+    public void updateFloatingTaskTable(List<Task> tasks){
+        tables.get(INDEX_SOMEDAY).setInput(tasks);
+    }
+    
+    public void updateToDoTable(List<Task> tasks){
+        tables.get(INDEX_TODO).setInput(tasks);
+    }
+    
+    public void updateBlockTable(List<Task> blockTasks){
+       tables.get(INDEX_BLOCK).setInput(blockTasks);
+    }
+
+    public void updateTimedTable(List<Task> tasks) {
         List<Task> todaysTasks = new ArrayList<Task>();
         List<Task> tomorrowsTasks = new ArrayList<Task>();
         List<Task> upcomingTasks = new ArrayList<Task>();
-        List<Task> floatingTasks = new ArrayList<Task>();
+        List<Task> doneTasks = new ArrayList<Task>();
         
         int size = tasks.size();
         for(int index = 0; index < size; index++){
@@ -39,29 +63,31 @@ public class TableManagement {
                 todaysTasks.add(currTask);
             }else if(isTomorrow(currTask.getDue())){
                 tomorrowsTasks.add(currTask);
-            }else if(isUpcoming(currTask.getDue())){
+            }else{
                 upcomingTasks.add(currTask);
-            } else{
-                floatingTasks.add(currTask);
+            }
+            if(currTask.isDone()){
+                doneTasks.add(currTask);
             }
         }
         
-        tables.get(0).setInput(todaysTasks);
-        tables.get(1).setInput(tomorrowsTasks);
-        tables.get(2).setInput(upcomingTasks);
-        tables.get(3).setInput(floatingTasks);
-        
+        tables.get(INDEX_TODAY).setInput(todaysTasks);
+        tables.get(INDEX_TOMORROW).setInput(tomorrowsTasks);
+        tables.get(INDEX_UPCOMING).setInput(upcomingTasks);
+        tables.get(INDEX_DONE).setInput(doneTasks);
     }
-    
-    public void setTableSelection(Task taskToSelect, List<Task> tasks){
+
+    public void setTableSelection(Task taskToSelect){
         TableViewer table = getTable(taskToSelect);
+        List<Task> tasks = getTableContent(taskToSelect);
         setElementSelection(taskToSelect, tasks, table);
     }
-    
+
     /**
      * Selects an element in the table. Default selection is the first element
      */
     private void setElementSelection(Task taskToSelect, List<Task> tasks, TableViewer tableViewer) {
+        
         int size = tasks.size();
         int indexToSelect = 0;
         for (int index = 0; index < size; index++) {
@@ -78,19 +104,62 @@ public class TableManagement {
     private TableViewer getTable(Task task){
         DateTime date = task.getDue();
         
-        if(date == null){
-            // floating
-           return tables.get(3);
-        }else if(isToday(date)){
-            //today
-            return tables.get(0);
-        }else if(isTomorrow(date)){
-            // tomorrow
-            return tables.get(1);
-        }else{
-            // upcoming
-            return tables.get(3);
+        if(task.isToDo()){
+            setTableSelection(INDEX_TODO);
+            return tables.get(INDEX_TODO);
+        }else if(task.isDone()){
+            setTableSelection(INDEX_DONE);
+            return tables.get(INDEX_DONE);
+        }else if(task.isBlock()){
+            setTableSelection(INDEX_BLOCK);
+            return tables.get(INDEX_BLOCK);
         }
+        
+        if(task.isFloating()){
+           return tables.get(INDEX_SOMEDAY);
+        }else if(isToday(date)){
+            return tables.get(INDEX_TODAY);
+        }else if(isTomorrow(date)){
+            return tables.get(INDEX_TOMORROW);
+        }else{
+            return tables.get(INDEX_UPCOMING);
+        }
+    }
+
+    private void setTableSelection(int index) {
+        folder.setSelection(index);
+    }
+    
+
+    private List<Task> getTableContent(Task task) {
+        List<Task> floating = ResultGenerator.getFloatingTasks();
+        List<Task> timed = ResultGenerator.getTimedTasks();
+        List<Task> blocked = ResultGenerator.getBlockTasks();
+        List<Task> todo = ResultGenerator.getToDoTasks();
+        
+        if(task.isToDo()){
+            return todo;
+        }else if(task.isBlock()){
+            return blocked;
+        }else if(task.isDone()){
+            return getDoneList(timed);
+        }else if(task.isFloating()){
+            return floating;
+        }
+        
+        return null;
+    }
+    
+    private List<Task> getDoneList(List<Task> timed) {
+        List<Task> timedList = new ArrayList<Task>();
+        int size = timed.size();
+        for(int index = 0; index < size; index++){
+            Task currTask = timed.get(index);
+            if(currTask.isDone()){
+                timedList.add(currTask);
+            }
+        }
+        return timedList;
     }
 
     private boolean isToday(DateTime date) {
@@ -123,7 +192,7 @@ public class TableManagement {
         }
         return false;
     }
-
+    
     private boolean isEqualDate(DateTime date, DateTime dateToCompare) {
         return dateToCompare.getDate().equals(date.getDate());
     }
@@ -146,25 +215,4 @@ public class TableManagement {
         DateTime tomorrowsDate = new DateTime(tomorrowDate, tomorrowTime);
         return tomorrowsDate;
     }
-    
-    private  void addTableListeners() {
-        Display display = folder.getDisplay();
-        display.addFilter(SWT.KeyDown, new Listener() {
-
-            public void handleEvent(Event event) {
-                if (((event.stateMask & SWT.CTRL) == SWT.CTRL) &&
-                    (event.keyCode == 'd')) {
-                    int index = folder.getSelectionIndex();
-                    if(index < 4){
-                        folder.setSelection(index+1);
-                    }else{
-                        folder.setSelection(0);
-                    }
-                } else if (event.keyCode == SWT.F1) {
-                    new HelpDialog(folder.getShell());
-                }
-            }
-        });
-    }
-
 }

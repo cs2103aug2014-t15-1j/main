@@ -123,10 +123,26 @@ public class ResultGenerator {
         return processor.fetchInputDownKey();
     }
     
+    public static List<Task> getTimedTasks(){
+        return processor.fetchTimedTasks();
+    }
+    
+    public static List<Task> getToDoTasks(){
+        return processor.fetchToDoTasks();
+    }
+    
+    public static List<Task> getFloatingTasks(){
+        return processor.fetchFloatingTasks();
+    }
+    
+    public static List<Task> getBlockTasks(){
+        return processor.fetchBlockedDate();
+    }
+    
     private void addObservers() {
-        UpcomingTaskList upcommingList = UpcomingTaskList.getInstance();
-        processor.addObserver(upcommingList);
-        upcommingList.initialise();
+        UpcomingTaskList upcomingList = UpcomingTaskList.getInstance();
+        processor.addObserver(upcomingList);
+        upcomingList.initialise();
         FloatingTaskList floatingList = FloatingTaskList.getInstance();
         processor.addObserver(floatingList);
         floatingList.initialise();
@@ -184,7 +200,13 @@ public class ResultGenerator {
                 return "Command Undone.";
 
             case DISPLAY:
-                refreshTables();
+                if (blockDateTask.size() == 0) {
+
+                    return "Nothing has been blocked.";
+                } else if (blockDateTask.size() == 1) {
+                    setTableSelection(blockDateTask);
+                }
+                updateTables(blockDateTask);
                 return feedbackMessageMultiResults(blockDateTask,
                                                    "Showing %1$s blocks.");
             case SEARCH:
@@ -312,17 +334,22 @@ public class ResultGenerator {
     }
 
     private void refreshTables() {
-        List<Task> tasks = processor.fetchToDoTasks();
-        tableManagement.update(tasks);
+        List<Task> toDo = processor.fetchToDoTasks();
+        List<Task> floating = processor.fetchFloatingTasks();
+        List<Task> blocked = processor.fetchBlockedDate();
+        List<Task> timed = processor.fetchTimedTasks();
+        tableManagement.updateToDoTable(toDo);
+        tableManagement.updateFloatingTaskTable(floating);
+        tableManagement.updateBlockTable(blocked);
+        tableManagement.updateTimedTable(timed);
     }
     
     private void updateTables(List<Task> tasks){
-        tableManagement.update(tasks);
+        tableManagement.updateTable(tasks);
     }
     
     private void setTableSelection(List<Task> outputs) {
-        List<Task> tasks = processor.fetchToDoTasks();
-        tableManagement.setTableSelection(outputs.get(0), tasks);
+        tableManagement.setTableSelection(outputs.get(0));
     }
 
 }

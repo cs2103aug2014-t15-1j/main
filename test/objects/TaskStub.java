@@ -21,18 +21,18 @@ public class TaskStub extends Task {
     private String name;
     private DateTime due = new DateTime();
     private DateTime start = new DateTime();
-    private DateTime end = new DateTime();
+    private DateTime completedOn = new DateTime();
     private List<String> tags = new ArrayList<String>();
     private boolean done;
     private boolean deleted = false;
     private TaskType taskType = TaskType.TODO;
 
-    public TaskStub(String name, DateTime due, DateTime start, DateTime end,
+    public TaskStub(String name, DateTime due, DateTime start, DateTime completedOn,
             List<String> tags, TaskType taskType) {
         setName(name);
         setDue(due);
         setStart(start);
-        setEnd(end);
+        setEnd(completedOn);
         setTags(tags);
         setTaskType(taskType);
     }
@@ -42,7 +42,7 @@ public class TaskStub extends Task {
         this.name = existingTask.getName();
         this.due = existingTask.getDue();
         this.start = existingTask.getStart();
-        this.end = existingTask.getCompletedOn();
+        this.completedOn = existingTask.getCompletedOn();
         this.deleted = existingTask.isDeleted();
         this.done = existingTask.isDone();
     }
@@ -69,7 +69,7 @@ public class TaskStub extends Task {
     }
 
     public DateTime getEnd() {
-        return end;
+        return completedOn;
     }
 
     public List<String> getTags() {
@@ -107,7 +107,7 @@ public class TaskStub extends Task {
     }
 
     public void setEnd(DateTime end) {
-        this.end = end;
+        this.completedOn = end;
     }
 
     public void setTags(List<String> tags) {
