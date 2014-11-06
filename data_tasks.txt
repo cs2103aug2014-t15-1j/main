@@ -1,7 +1,6 @@
-settle gui ### start: 06/11/2014 due: 06/11/2014 1200 completed:  type: TODO
-do work ### start:  due:  completed:  type: TODO
-do work ### start:  due: 06/11/2014 completed:  type: TODO
-do work ### start:  due: 07/11/2014 completed:  type: TODO
-hi ### start:  due:  completed:  type: TODO
-hello ### start:  due:  completed:  type: TODO
-meeting ### start: 06/11/2014 0000 due: 07/11/2014 2359 completed:  type: BLOCK
+Do CS2103 Homework ### start:  due:  completed:  #cshomework type: TODO
+Do CS2103 Homework ### start:  due:  completed:  #cshomework type: TODO
+Do CS2103 Homework ### start:  due:  completed:  #cshomework type: TODO
+Do CS2103 Homework ### start:  due:  completed:  type: TODO
+Do CS2103 Homework ### start:  due:  completed:  type: TODO
+Do CS2103 Homework ### start:  due:  completed:  type: TODO

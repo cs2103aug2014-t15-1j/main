@@ -48,7 +48,9 @@ public class SidePane extends Composite {
     }
 
     private void addCalendar() {
-      new DateTime(this, SWT.CALENDAR);
+        DateTime dt = new DateTime(this, SWT.CALENDAR);
+        System.out.println(dt.getSize().x);
+
     }
     
 
