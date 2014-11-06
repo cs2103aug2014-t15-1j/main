@@ -60,7 +60,6 @@ public class TableComposite extends Composite {
         this.setLayout(layout);
         this.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-        setColour(this);
     }
     
     public static CTabFolder getTabFolder(){
@@ -70,17 +69,12 @@ public class TableComposite extends Composite {
     public static List<TableViewer> getTables(){
         return tables;
     }
-    
-    private void setColour(Composite parent) {
-        //Color white = parent.getDisplay().getSystemColor(SWT.COLOR_WHITE);
-        //this.setBackground(white);
-    }
-
+ 
     private void createContents(Composite parent) {
         formatRegistry(parent);
         tabFolder = new CTabFolder(this, SWT.NONE);
         tabFolder.setLayoutData(new GridData(GridData.FILL_BOTH));
-        tabFolder.setBackground(new Color(Display.getDefault(), 220, 220, 220));
+        tabFolder.setBackground(Colours.getTabFolderColour());
 
         createTable(tabFolder, TODO_TABLE_TAB_LABEL);
         createTable(tabFolder, TODAY_TABLE_TAB_LABEL);
