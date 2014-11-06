@@ -1,5 +1,6 @@
 package database;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -83,6 +84,7 @@ public class DatabaseLogic {
      * @return List of to-do Task objects.
      */
     public List<Task> getToDoTasks() {
+        Collections.sort(toDoTasks);
         return toDoTasks;
     }
 
@@ -93,6 +95,7 @@ public class DatabaseLogic {
      * @return List of done Task objects.
      */
     public List<Task> getDoneTasks() {
+        Collections.sort(doneTasks);
         return doneTasks;
     }
 
@@ -103,6 +106,7 @@ public class DatabaseLogic {
      * @return List of block Task objects.
      */
     public List<Task> getBlockTasks() {
+        Collections.sort(blockTasks);
         return blockTasks;
     }
 
@@ -113,6 +117,7 @@ public class DatabaseLogic {
      * @return List of deleted Task objects.
      */
     public List<Task> getDeletedTasks() {
+        Collections.sort(deletedTasks);
         return deletedTasks;
     }
 
@@ -123,6 +128,7 @@ public class DatabaseLogic {
      * @return List of all Task objects.
      */
     public List<Task> getAllTasks() {
+        Collections.sort(allTasks);
         return allTasks;
     }
 
