@@ -25,19 +25,19 @@ public class CommandSearch extends Command {
 
     private void constructUsingParam(TaskParam param) {
         switch (param.getName()) {
-            case "status":
+            case PARAM_STATUS:
                 this.status = param.getField();
                 break;
                 
-            case "date":
+            case PARAM_DATE:
                 this.date = param.getField();
                 break;
                 
-            case "tag":
+            case PARAM_TAG:
                 this.tags.add(param.getField());
                 break;
 
-            case "word":
+            case PARAM_WORD:
                 this.keywords.add(param.getField());
                 break;
 
@@ -50,10 +50,10 @@ public class CommandSearch extends Command {
     @Override
     public String get(String field) {
         switch (field) {
-            case "date":
+            case PARAM_DATE:
                 return date;
                 
-            case "status":
+            case PARAM_STATUS:
                 return status;
 
             default:
@@ -91,16 +91,7 @@ public class CommandSearch extends Command {
     private void searchUsingDateAndKeyAndTags(String date, List<String> keywords, List<String> tags) {
         int criteriaCount = getCriteriaCount(date, keywords, tags);
         if (criteriaCount >= 0) {
-            List<Task> searchRange = Processor.getInstance().getFile().getToDoTasks();
-            if (status.equals("all")) {
-                searchRange = Processor.getInstance().getFile().getAllTasks();
-            }
-            if (status.equals("done")) {
-                searchRange = Processor.getInstance().getFile().getDoneTasks();
-            }
-            if (status.equals("deleted")) {
-                searchRange = Processor.getInstance().getFile().getDeletedTasks();
-            }
+            List<Task> searchRange = getSearchBoundary(status);
             
             for (Task task : searchRange) {
                 int found = criteriaCount;
@@ -149,6 +140,26 @@ public class CommandSearch extends Command {
         return count;
     }
     
+    private List<Task> getSearchBoundary(String status) {
+        List<Task> searchRange = Processor.getInstance().getFile().getToDoTasks();
+        switch (status) {
+            case RANGE_TYPE_ALL:
+                searchRange = Processor.getInstance().getFile().getAllTasks();
+                break;
+                
+            case RANGE_TYPE_DONE:
+                searchRange = Processor.getInstance().getFile().getDoneTasks();
+                break;
+                
+            case RANGE_TYPE_DELETED:
+                searchRange = Processor.getInstance().getFile().getDeletedTasks();
+                break;
+                
+            default:
+                break;
+        }
+        return searchRange;
+    }
     
     /*Obsolete Codes below, due to changing of conditions for Search Command
     

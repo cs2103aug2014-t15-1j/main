@@ -30,31 +30,17 @@ public class CommandDisplay extends Command {
 
     private void constructUsingParam(TaskParam param) {
         switch (param.getName()) {
-            case "rangeType":
+            case PARAM_RANGE_TYPE:
                 this.rangeType = param.getField();
                 break;
 
-            case "id":
+            case PARAM_ID:
                 this.id = param.getField();
                 break;
 
             default:
                 this.type = CommandType.ERROR;
                 this.error = "Restore constructor parameter error";
-        }
-    }
-
-    @Override
-    public String get(String field) {
-        switch (field) {
-            case "rangeType":
-                return this.rangeType;
-
-            case "id":
-                return this.id;
-
-            default:
-                return null;
         }
     }
 
@@ -76,33 +62,33 @@ public class CommandDisplay extends Command {
         ResultType resultType = ResultType.TASK;
         
         switch (rangeType) {
-            case "id":
+            case RANGE_TYPE_ID:
                 int taskId = Integer.parseInt(id);
                 list.add(processor.getFile().getTask(taskId));
                 break;
                 
-            case "search":
+            case RANGE_TYPE_SEARCH:
                 list = processor.getLastSearch();
                 break;
                 
-            case "block":
+            case RANGE_TYPE_BLOCK:
                 list = processor.getFile().getBlockTasks();
                 resultType = ResultType.BLOCKDATE;
                 break;
                 
-            case "done":
+            case RANGE_TYPE_DONE:
                 list = processor.getFile().getDoneTasks();
                 break;
                 
-            case "deleted":
+            case RANGE_TYPE_DELETED:
                 list = processor.getFile().getDeletedTasks();
                 break;
                 
-            case "todo":
+            case RANGE_TYPE_TODO:
                 list = processor.getFile().getToDoTasks();
                 break;
                 
-            case "all":
+            case RANGE_TYPE_ALL:
                 list = processor.getFile().getAllTasks();
                 break;
                 
@@ -112,6 +98,20 @@ public class CommandDisplay extends Command {
         }
         
         return new Result(list, success, getType(), resultType);
+    }
+    
+    @Override
+    public String get(String field) {
+        switch (field) {
+            case PARAM_RANGE_TYPE:
+                return this.rangeType;
+
+            case PARAM_ID:
+                return this.id;
+
+            default:
+                return null;
+        }
     }
     
     @Override

@@ -25,10 +25,6 @@ public class CommandAdd extends Command {
 
     private List<String> tags = new ArrayList<String>();
 
-    private static final String PARAM_NAME = "name";
-    private static final String PARAM_DUE = "due";
-    private static final String PARAM_START = "start";
-
     public CommandAdd(List<TaskParam> content) {
         this.type = CommandType.ADD;
         for (TaskParam param : content) {
@@ -38,48 +34,25 @@ public class CommandAdd extends Command {
 
     private void constructUsingParam(TaskParam param) {
         switch (param.getName()) {
-            case "name":
+            case PARAM_NAME:
                 this.name = param.getField();
                 break;
 
-            case "start":
+            case PARAM_START:
                 this.start = DateParser.parseToDateTime(param.getField());
                 break;
 
-            case "due":
+            case PARAM_DUE:
                 this.due = DateParser.parseToDateTime(param.getField());
                 break;
 
-            case "tag":
+            case PARAM_TAG:
                 this.tags.add(param.getField());
                 break;
 
             default:
                 System.out.println("Error in adding Add parameters");
         }
-    }
-
-    @Override
-    public String get(String paramName) {
-        switch (paramName) {
-            case PARAM_NAME:
-                return this.name;
-
-            case PARAM_START:
-                return this.start.toString();
-
-            case PARAM_DUE:
-                return this.due.toString();
-
-            default:
-                System.out.println("Add: Get's got a problem!");
-                return null;
-        }
-    }
-
-    @Override
-    public List<String> getTags() {
-        return this.tags;
     }
 
     /**
@@ -109,8 +82,8 @@ public class CommandAdd extends Command {
     /**
      * This method checks if the Task contains dates that are already blocked.
      * 
-     * @return Returns true if when trying to Add a Task with a specified date
-     *         that fall within a blocked date range, else false.
+     * @return boolean - {@code True} if when trying to add a Task with a specified date
+     *         that fall within a blocked date range, else {@code False}.
      */
     private boolean isBlocked() {
         boolean blocked = false;
@@ -118,19 +91,28 @@ public class CommandAdd extends Command {
             Processor processor = Processor.getInstance();
             List<Task> blockDates = processor.getFile().getBlockTasks();
             for (Task blockDate : blockDates) {
-                //Start && due
-                if (!start.isEmpty() && !due.isEmpty()) {
-                    //return end is before start
-                    return !(due.isEarlierThan(blockDate.getStart()) || !start.isEarlierThan(blockDate.getDue()));
-                } else if (!start.isEmpty()) {
-                    return !(start.isEarlierThan(blockDate.getStart()) || !start.isEarlierThan(blockDate.getDue()));
-                } else {
-                    return !(due.isEarlierThan(blockDate.getStart()) || !due.isEarlierThan(blockDate.getDue()));
-
+                if(overlapsWithBlockTask(blockDate)) {
+                    return true;
                 }
             }
         }
         return blocked;
+    }
+
+    /**
+     * This method checks if the current CommandAdd object is trying to add to
+     * to a date range that is blocked.
+     * @return 
+     *      boolean - True if overlaps
+     */
+    private boolean overlapsWithBlockTask(Task blockDate) {
+        if (!start.isEmpty() && !due.isEmpty()) {
+            return !(due.isEarlierThan(blockDate.getStart()) || !start.isEarlierThan(blockDate.getDue()));
+        } else if (!start.isEmpty()) {
+            return !(start.isEarlierThan(blockDate.getStart()) || !start.isEarlierThan(blockDate.getDue()));
+        } else {
+            return !(due.isEarlierThan(blockDate.getStart()) || !due.isEarlierThan(blockDate.getDue()));
+        }
     }
 
     /**
@@ -155,6 +137,29 @@ public class CommandAdd extends Command {
         }
 
         return new Result(tasks, success, getType(), ResultType.TASK);
+    }
+    
+    @Override
+    public String get(String paramName) {
+        switch (paramName) {
+            case PARAM_NAME:
+                return this.name;
+
+            case PARAM_START:
+                return this.start.toString();
+
+            case PARAM_DUE:
+                return this.due.toString();
+
+            default:
+                System.out.println("Add: Get's got a problem!");
+                return null;
+        }
+    }
+
+    @Override
+    public List<String> getTags() {
+        return this.tags;
     }
 
     @Override

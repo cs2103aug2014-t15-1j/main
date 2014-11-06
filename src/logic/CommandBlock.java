@@ -36,19 +36,19 @@ public class CommandBlock extends Command {
 
     private void constructUsingParam(TaskParam param) {
         switch (param.getName()) {
-            case "name":
+            case PARAM_NAME:
                 this.name = name.concat(" " + param.getField()).trim();
                 break;
 
-            case "from":
+            case PARAM_FROM:
                 this.from = DateParser.parseToDateTime(param.getField());
                 break;
                 
-            case "to":
+            case PARAM_TO:
                 this.to = DateParser.parseToDateTime(param.getField());
                 break;
 
-            case "tag":
+            case PARAM_TAG:
                 this.tags.add(param.getField());
 
             default:
@@ -57,20 +57,6 @@ public class CommandBlock extends Command {
         }
     }
     
-    @Override
-    public String get(String field) {
-        switch (field) {
-            case "from":
-                return this.from.toString();
-
-            case "to":
-                return this.to.toString();
-
-            default:
-                return null;
-        }
-    }
-
     /**
      * Executes Block Command
      * 
@@ -116,6 +102,21 @@ public class CommandBlock extends Command {
     @Override
     protected Result executeComplement() {
         Processor processor = Processor.getInstance();
+        List<Task> tasks = new ArrayList<Task>();
+        boolean success = false;
+
+        int taskId = processor.getFile().getBlockTasks().size() - 1;
+        Task toDelete = processor.getFile().getBlockTasks().get(taskId);
+
+        success = processor.getFile().wipeTask(toDelete);
+
+        if (success) {
+            tasks.add(toDelete);
+        }
+
+        return new Result(tasks, success, getType(), ResultType.BLOCKDATE);
+        /*
+         * Processor processor = Processor.getInstance();
         boolean success = false;
         List<Task> outputs = new ArrayList<Task>();
         int blockIndex = processor.getFile().getBlockTasks().size() - 1;
@@ -124,8 +125,22 @@ public class CommandBlock extends Command {
             success = processor.getFile().wipeTask(currBlock);
             outputs.add(currBlock);
         }
-        return new Result(outputs, success, CommandType.UNBLOCK, ResultType.BLOCKDATE);
+        return new Result(outputs, success, CommandType.UNBLOCK, ResultType.BLOCKDATE);*/
 
+    }
+    
+    @Override
+    public String get(String field) {
+        switch (field) {
+            case PARAM_FROM:
+                return this.from.toString();
+
+            case PARAM_TO:
+                return this.to.toString();
+
+            default:
+                return null;
+        }
     }
     
     @Override

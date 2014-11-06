@@ -49,11 +49,11 @@ public class CommandDelete extends Command {
 
     private void constructUsingParam(TaskParam param) {
         switch (param.getName()) {
-            case "rangeType":
+            case PARAM_RANGE_TYPE:
                 this.rangeType = param.getField();
                 break;
 
-            case "id":
+            case PARAM_ID:
                 this.id = param.getField();
                 break;
 
@@ -65,20 +65,6 @@ public class CommandDelete extends Command {
 
     private void initialiseComplementCommand(List<TaskParam> content) {
         this.cmdRestore = new CommandRestore(content, true);
-    }
-    
-    @Override
-    public String get(String field) {
-        switch (field) {
-            case "rangeType":
-                return this.rangeType;
-
-            case "id":
-                return this.id;
-
-            default:
-                return null;
-        }
     }
     
     /**
@@ -98,18 +84,18 @@ public class CommandDelete extends Command {
         boolean confirmation = false;
         
         switch (rangeType) {
-            case "id":
+            case RANGE_TYPE_ID:
                 success = deleteTaskUsingID(list);
                 break;
                 
-            case "search":
+            case RANGE_TYPE_SEARCH:
                 if (userInput) {
                     processor.getForwardSearchListHistory().push(processor.getLastSearch());
                 }
                 success = deleteSearchedTasks(list);
                 break;
                 
-            case "all":
+            case RANGE_TYPE_ALL:
                 success = true;
                 confirmation = true;
                 break;
@@ -161,6 +147,20 @@ public class CommandDelete extends Command {
     @Override
     protected Result executeComplement() {
         return cmdRestore.execute(false);
+    }
+    
+    @Override
+    public String get(String field) {
+        switch (field) {
+            case PARAM_RANGE_TYPE:
+                return this.rangeType;
+
+            case PARAM_ID:
+                return this.id;
+
+            default:
+                return null;
+        }
     }
     
     @Override

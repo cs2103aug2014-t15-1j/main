@@ -43,15 +43,15 @@ public class CommandTodo extends Command {
 
     private void constructUsingParam(TaskParam param) {
         switch (param.getName()) {
-            case "rangeType":
+            case PARAM_RANGE_TYPE:
                 this.rangeType = param.getField();
                 break;
 
-            case "id":
+            case PARAM_ID:
                 this.id = param.getField();
                 break;
 
-            case "date":
+            case PARAM_DATE:
                 assert (DateParser.isValidDate(param.getField())) : "Invalid date for done";
                 this.dateTime = new DateTime(param.getField(), "");
                 break;
@@ -68,13 +68,13 @@ public class CommandTodo extends Command {
     @Override
     public String get(String field) {
         switch (field) {
-            case "rangeType":
+            case PARAM_RANGE_TYPE:
                 return this.rangeType;
 
-            case "id":
+            case PARAM_ID:
                 return this.id;
 
-            case "date":
+            case PARAM_DATE:
                 return this.dateTime.toString();
                   
             default:
@@ -95,14 +95,16 @@ public class CommandTodo extends Command {
         
         Result result = new Result(null, false, getType(), ResultType.TASK);
         switch (rangeType) {
-            case "id":
+            case RANGE_TYPE_ID:
                     result = todoById();
                 break;
-            case "date":
+                
+            case RANGE_TYPE_DATE:
                 if (!userInput) {
                     result = todoByDate();
                 }
                 break;
+                
             default:
                 break;
         }

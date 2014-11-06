@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Observable;
 import java.util.Stack;
-import java.util.Timer;
 import java.util.logging.FileHandler;
 import java.util.logging.Formatter;
 import java.util.logging.Logger;
@@ -74,8 +73,6 @@ public class Processor extends Observable {
 	/** Stores input string for 'down' key **/
 	private Stack<String> inputStringForwardHistory;
 	
-    private Timer secondsTimer;
-	
 	/** Default Constructor for Processor */
     private Processor() {
         this(IS_UNIT_TEST);
@@ -104,9 +101,6 @@ public class Processor extends Observable {
 	    inputStringBackwardHistory = new Stack<String>();
 	    inputStringForwardHistory = new Stack<String>();
 	    currentInputString = "";
-	    
-	    secondsTimer = new Timer("secondsTimer", true);
-	    secondsTimer.scheduleAtFixedRate(new TaskScheduler(), 0, (long) 1000);
     }
 	
 	private static void initialiseLogger() {
@@ -144,7 +138,6 @@ public class Processor extends Observable {
      */
 	public static Processor reset() {
 	    processor.wipeFile();
-	    processor.getTimer().cancel();
 	    processor = new Processor();
 	    return processor;
 	}
@@ -410,9 +403,5 @@ public class Processor extends Observable {
 	
 	protected void initialiseNewSearchList() {
 	    lastSearch = new ArrayList<Task>();
-	}
-	
-	protected Timer getTimer() {
-	    return secondsTimer;
 	}
 }

@@ -9,7 +9,6 @@ import database.Task;
 
 public class CommandRestore extends Command {
 
-    // Restore types [get("rangeType"); returns "all" | "id"]
     protected String rangeType = "";
 
     // Restore type data [get("id"); returns string]
@@ -38,11 +37,11 @@ public class CommandRestore extends Command {
 
     private void constructUsingParam(TaskParam param) {
         switch (param.getName()) {
-            case "rangeType":
+            case PARAM_RANGE_TYPE:
                 this.rangeType = param.getField();
                 break;
 
-            case "id":
+            case PARAM_ID:
                 this.id = param.getField();
                 break;
 
@@ -59,10 +58,10 @@ public class CommandRestore extends Command {
     @Override
     public String get(String field) {
         switch (field) {
-            case "rangeType":
+            case PARAM_RANGE_TYPE:
                 return this.rangeType;
 
-            case "id":
+            case PARAM_ID:
                 return this.id;
 
             default:
@@ -85,11 +84,11 @@ public class CommandRestore extends Command {
         List<Task> list = new ArrayList<Task>();
         boolean success = false;
         switch (rangeType) {
-            case "id":
+            case RANGE_TYPE_ID:
                 success = restoreUsingId(list);
                 break;
                 
-            case "search":
+            case RANGE_TYPE_SEARCH:
                 if (userInput) {
                     processor.getBackwardSearchListHistory().push(processor.getLastSearch());
                 }

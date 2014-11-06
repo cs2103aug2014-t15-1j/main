@@ -9,16 +9,20 @@ import parser.TaskParam;
 import database.DateTime;
 import database.Task;
 
+/**
+ * This class extends abstract class Command
+ * CommandDone class is used to complete operations related to the done/todo operations
+ * @author Yao Xiang
+ *
+ */
 public class CommandDone extends Command {
-
-
+    
     private static List<Task> lastTasksRange = new ArrayList<Task>();
     
-    // Done types [get("rangeType"); returns "all" | "id" | "date"]
     private String rangeType = "";
 
     private DateTime dateTime = new DateTime();
-    // Done data [get("id"), get("date"); returns string]
+    
     private String id = "";
 
     private CommandTodo cmdTodo = null;
@@ -27,6 +31,13 @@ public class CommandDone extends Command {
         this(content, false);
     }
     
+    /**
+     * This method constructs the CommandDone object<p>
+     * @param
+     *      List{@literal<TaskParam>} content - Expected to contain TaskParam object
+     *      <br>
+     *      boolean isComplement - True if it is a child of another Command object
+     */
     protected CommandDone(List<TaskParam> content, boolean isComplement) {
         if (content.isEmpty()) {
             this.type = CommandType.ERROR;
@@ -43,15 +54,15 @@ public class CommandDone extends Command {
 
     private void constructUsingParam(TaskParam param) {
         switch (param.getName()) {
-            case "rangeType":
+            case PARAM_RANGE_TYPE:
                 this.rangeType = param.getField();
                 break;
 
-            case "id":
+            case PARAM_ID:
                 this.id = param.getField();
                 break;
             
-            case "date": ;
+            case PARAM_DATE: ;
                 assert (DateParser.isValidDate(param.getField())) : "Invalid date for done";
                 this.dateTime = new DateTime(param.getField(), "");
                 break;
@@ -62,30 +73,22 @@ public class CommandDone extends Command {
         }
     }
 
+    /** 
+     * This method initialises the CommandTodo object.<p>
+     * This object is used when performing when performing complement operations.
+     * 
+     * @param 
+     *      content - Contains a list of TaskParam objects similar to it's parent Command
+     */
     private void initialiseComplementCommand(List<TaskParam> content) {
         this.cmdTodo = new CommandTodo(content, true);
     }
-    
-    @Override
-    public String get(String field) {
-        switch (field) {
-            case "rangeType":
-                return this.rangeType;
-
-            case "id":
-                return this.id;
-                
-            case "date":
-                return this.dateTime.toString();
-
-            default:
-                return null;
-        }
-    }
 
     /**
-     * Executes "done" operation
-     * Marks a task as 'done'
+     * Executes "done" operation<p>
+     * This is executed using the command:<br>
+     * "done {@literal<id>}" or "done {@literal<date>}"<p>
+     * This method marks either one/several Tasks as 'done'
      * @return Result
      */
     @Override
@@ -96,11 +99,11 @@ public class CommandDone extends Command {
         List<Task> list = new ArrayList<Task>();
         boolean success = false;
         switch (rangeType) {
-            case "id":
+            case RANGE_TYPE_ID:
                 success = doneById(list);
                 break;
                 
-            case "date":
+            case RANGE_TYPE_DATE:
                 success = doneByDate(list);
                 break;
                 
@@ -143,7 +146,7 @@ public class CommandDone extends Command {
     }
     
     /**
-     * Executes "todo" operation
+     * Executes "todo" operation<p>
      * Marks a 'done' task as 'todo'
      * @return Result
      */
@@ -156,8 +159,32 @@ public class CommandDone extends Command {
         return result;
     }
     
+    /**
+     * This method fetches a list of Tasks which are done in the last 'done' operation<p>
+     * For "done {@literal<id>}", the list will contain only one Task.<br>
+     * For "done {@literal<date>}", the list will contain only several Tasks.
+     * @return
+     *      List{@literal<Task>}
+     */
     protected static List<Task> fetchLastDoneTasks() {
         return lastTasksRange;
+    }
+
+    @Override
+    public String get(String field) {
+        switch (field) {
+            case PARAM_RANGE_TYPE:
+                return this.rangeType;
+
+            case PARAM_ID:
+                return this.id;
+                
+            case PARAM_DATE:
+                return this.dateTime.toString();
+
+            default:
+                return null;
+        }
     }
     
     @Override

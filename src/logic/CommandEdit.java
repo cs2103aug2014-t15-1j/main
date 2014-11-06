@@ -17,13 +17,6 @@ public class CommandEdit extends Command {
     private DateTime start = new DateTime();
     private List<String> tags = new ArrayList<String>();
     private List<String> delete = new ArrayList<String>();
-    
-    private static final String PARAM_ID = "id";
-    private static final String PARAM_NAME = "name";
-    private static final String PARAM_DUE = "due";
-    private static final String PARAM_START = "start";
-    private static final String PARAM_TAG = "tag";
-    private static final String PARAM_DEL = "delete";
 
     public CommandEdit(List<TaskParam> content) {
         this.type = CommandType.EDIT;
@@ -55,7 +48,7 @@ public class CommandEdit extends Command {
                 this.tags.add(param.getField());
                 break;
                 
-            case PARAM_DEL:
+            case PARAM_DELETE:
                 this.delete.add(param.getField());
                 break;
                 
@@ -118,19 +111,19 @@ public class CommandEdit extends Command {
                 Task oldTask = new Task(existingTask);
                 for (String deleteParam : delete) {
                     switch (deleteParam) {
-                        case "name":
+                        case DELETE_NAME:
                             name = null;
                             break;
                             
-                        case "due":
+                        case DELETE_DUE:
                             due = null;
                             break;
                             
-                        case "start":
+                        case DELETE_START:
                             start = null;
                             break;
                             
-                        case "tags":
+                        case DELETE_TAGS:
                             tags = null;
                             break;
                     }
