@@ -1,19 +1,10 @@
 package gui;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-
-import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.swt.custom.CTabFolder;
-import org.eclipse.swt.widgets.Control;
 
 import logic.CommandType;
 import logic.Processor;
 import logic.Result;
-import database.DateTime;
 import database.Task;
 
 /**

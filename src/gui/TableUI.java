@@ -1,5 +1,7 @@
 package gui;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import org.eclipse.jface.resource.FontRegistry;
@@ -143,6 +145,21 @@ public class TableUI{
                 }
                 return "";
             }
+            
+            @Override
+            public Color getForeground(Object element){
+                if(element instanceof Task){
+                    Task task = (Task) element;
+                    Display display = Display.getCurrent();
+                    DateTime due = task.getDue();
+                    if(due == null){
+                        return Display.getCurrent().getSystemColor(SWT.COLOR_BLACK);
+                    }else if(isOverdue(due) && !task.isDone() ){
+                        return Colours.getDeletedColor();
+                    }
+                }
+                return Display.getCurrent().getSystemColor(SWT.COLOR_BLACK);
+            }
         });
         
         column = setColumnHeader(HEADER_NAME_NAME, spaceLeft);
@@ -159,6 +176,21 @@ public class TableUI{
                     return task.getName();
                 }
                 return "";
+            }
+            
+            @Override
+            public Color getForeground(Object element){
+                if(element instanceof Task){
+                    Task task = (Task) element;
+                    Display display = Display.getCurrent();
+                    DateTime due = task.getDue();
+                    if(due == null){
+                        return Display.getCurrent().getSystemColor(SWT.COLOR_BLACK);
+                    }else if(isOverdue(due) && !task.isDone() ){
+                        return Colours.getDeletedColor();
+                    }
+                }
+                return Display.getCurrent().getSystemColor(SWT.COLOR_BLACK);
             }
         });
 
@@ -180,6 +212,21 @@ public class TableUI{
                 }
                 return "";
             }
+            
+            @Override
+            public Color getForeground(Object element){
+                if(element instanceof Task){
+                    Task task = (Task) element;
+                    Display display = Display.getCurrent();
+                    DateTime due = task.getDue();
+                    if(due == null){
+                        return Display.getCurrent().getSystemColor(SWT.COLOR_BLACK);
+                    }else if(isOverdue(due) && !task.isDone() ){
+                        return Colours.getDeletedColor();
+                    }
+                }
+                return Display.getCurrent().getSystemColor(SWT.COLOR_BLACK);
+            }
         });
 
         column = setColumnHeader(HEADER_NAME_DUE, colWidths[2]);
@@ -199,6 +246,21 @@ public class TableUI{
                     return dueDate;
                 }
                 return "";
+            }
+            
+            @Override
+            public Color getForeground(Object element){
+                if(element instanceof Task){
+                    Task task = (Task) element;
+                    Display display = Display.getCurrent();
+                    DateTime due = task.getDue();
+                    if(due == null){
+                        return Display.getCurrent().getSystemColor(SWT.COLOR_BLACK);
+                    }else if(isOverdue(due) && !task.isDone() ){
+                        return Colours.getDeletedColor();
+                    }
+                }
+                return Display.getCurrent().getSystemColor(SWT.COLOR_BLACK);
             }
         });
 
@@ -222,7 +284,21 @@ public class TableUI{
                 }
                 return "";
             }
-
+            
+            @Override
+            public Color getForeground(Object element){
+                if(element instanceof Task){
+                    Task task = (Task) element;
+                    Display display = Display.getCurrent();
+                    DateTime due = task.getDue();
+                    if(due == null){
+                        return Display.getCurrent().getSystemColor(SWT.COLOR_BLACK);
+                    }else if(isOverdue(due) && !task.isDone() ){
+                        return Colours.getDeletedColor();
+                    }
+                }
+                return Display.getCurrent().getSystemColor(SWT.COLOR_BLACK);
+            }
         });
 
         column = setColumnHeader(HEADER_NAME_STATUS, colWidths[4]);
@@ -305,6 +381,22 @@ public class TableUI{
             }
         });
 
+    }
+
+    protected boolean isOverdue(DateTime date) {
+            DateTime now = getTodaysDate();
+            if (date.isEarlierThan(now)) {
+                return true;
+            }
+            return false;
+    }
+
+    private DateTime getTodaysDate() {
+        Date date = new Date();
+        String nowDate = new SimpleDateFormat("dd/MM/YYYY").format(date);
+        String nowTime = new SimpleDateFormat("hhmm").format(date);
+        DateTime today = new DateTime(nowDate, nowTime);
+        return today;
     }
 
     protected void resizeCol() {
