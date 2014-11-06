@@ -4,7 +4,6 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import database.BlockDate;
 import database.DateTime;
 import database.Task;
 
@@ -113,19 +112,20 @@ public class TestParser {
         String cmd;
 
         // Empty Add
-        result = "cmdadd name:  start:  due:  tags: ";
+        result = "cmdadd name:  start:  due:  tags: []";
         cmd = Parser.parse("add").toString();
         assertEquals("Add: empty", result, cmd);
 
         // Basic Add ending with a parameter
-        result ="cmdadd name: do homework it's cs2103 start:  due:  tags: [#cs2103]";
+        result ="cmdadd name: do homework it's cs2103 end start:  due:  tags: [#cs2103]";
         cmd = Parser.parse("add do homework it's #cs2103 cs2103 end")
                 .toString();
         assertEquals("Add: simple, end param", result, cmd);
 
         // Full Add
-        result = "cmdadd name: do start up research # due from soon. do quickly due thurs" +
-                " start: 29/10/2014 due: 27/10/2014 0900 tags: [#cs2103, #work]";
+        result = "cmdadd name: do start up research # due from start " +
+                "29/10/2014 soon. do quickly due thurs start: 27/10/2014 0900 " +
+                "due: 29/10/2014 tags: [#cs2103, #work]";
         cmd = Parser.parse("  add   do start #cs2103  up research # "
                                    + "due from from  27/10/2014  0900 "
                                    + "start 29/10/2014 soon. do quickly due "
@@ -618,62 +618,6 @@ public class TestParser {
         System.out.println("...success!");
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void failCmdBlockNoDt() {
-        System.out
-                .println("\n>> Failing Block Command with an invalid input...");
-
-        // Invalid input parameter (random word)
-        // Valid date after the word does not affect result.
-        Parser.parse("block monday 23/04/2014");
-
-        System.out.println("...success!");
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void failCmdBlockNoTo() {
-        System.out
-                .println("\n>> Failing Block Command with two dates and no 'to'...");
-
-        // Missing 'to'
-        Parser.parse("block 23/04/2014 23/04/2014");
-
-        System.out.println("...success!");
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void failCmdBlockDate1() {
-        System.out
-                .println("\n>> Failing Block Command with an asterisk in date...");
-
-        // Inproper characters
-        Parser.parse("block 23/04/2*14");
-
-        System.out.println("...success!");
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void failCmdBlockDate2() {
-        System.out
-                .println("\n>> Failing Block Command with a negative year...");
-
-        // Negative Year should have been caught by parser
-        Parser.parse("block 23/04/-114");
-
-        System.out.println("...success!");
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void failCmdBlockDate3() {
-        System.out
-                .println("\n>> Failing Block Command with a close-to-valid date...");
-
-        // Inproper characters
-        Parser.parse("block 23/04/201");
-
-        System.out.println("...success!");
-    }
-
     @Test
     public void testCmdUnblock() {
         System.out.println("\n>> Testing Unblock Command...");
@@ -739,47 +683,6 @@ public class TestParser {
         result = "\n[[ CMD-OTHERS ]]" + "\ncmd-type: HELP" + "\ncmd-info: ";
         cmd = Parser.parse("  heLP me      ").toString();
         assertEquals("Help: caps, spaces, extra words", result, cmd);
-
-        System.out.println("...success!");
-    }
-
-    @Test
-    public void testParseToBlock() {
-        System.out.println("\n>> Testing parseToBlock()...");
-
-        String result;
-        String blockDate;
-
-        // Single date
-        result = "23/04/2014 0000 to 23/04/2014 2359";
-        blockDate = Parser.parseToBlock("23/04/2014 0000 to 23/04/2014 2359")
-                .toString();
-        assertEquals(result, blockDate);
-
-        // Across days [string comparison]
-        result = "23/04/2014 0500 to 25/04/2014 1000";
-        blockDate = Parser.parseToBlock("23/04/2014 0500 to 25/04/2014 1000")
-                .toString();
-        assertEquals(result, blockDate);
-
-        BlockDate sampleBD;
-        BlockDate outputBD;
-
-        // Across days [object comparison]
-        sampleBD = new BlockDate(new DateTime("23/04/2014", "0500"),
-                new DateTime("25/04/2014", "1000"));
-        outputBD = Parser.parseToBlock("23/04/2014 0500 to 25/04/2014 1000");
-        assertEquals(sampleBD, outputBD);
-
-        System.out.println("...success!");
-    }
-
-    @Test(expected = AssertionError.class)
-    public void failParseToBlock() {
-        System.out.println("\n>> Failing parseToBlock()...");
-
-        // Note: -ea needed to trigger AssertionError
-        Parser.parseToBlock("23/04/2014 0000 to 23/04/2014");
 
         System.out.println("...success!");
     }
