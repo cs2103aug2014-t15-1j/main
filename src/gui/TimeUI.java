@@ -28,10 +28,11 @@ public class TimeUI implements Observer {
      * @param parent Composite where TimeUI is located
      */
     private TimeUI(Composite parent){
-        time = new StyledText(parent, SWT.NONE);
+        time = new StyledText(parent, SWT.CENTER);
         setLayout();
         format(parent.getDisplay()); 
-        time.setText(DateParser.getCurrTimeStr());
+        String currTime = DateParser.getCurrTimeStr();
+        time.setText("  Time now is " + currTime.substring(0,2) + ":" + currTime.substring(2) + "  ");
     }
     
     /**
@@ -64,6 +65,7 @@ public class TimeUI implements Observer {
         if (arg.equals("clock")){
             String currTime = Calendar.getInstance().getTime().toString();
             time.setText(currTime);
+            System.out.println("currTime: " + currTime);
         }
     }
 
@@ -73,8 +75,12 @@ public class TimeUI implements Observer {
     }
 
     private void setColour(Display display) {
-        Color color = display.getSystemColor(SWT.COLOR_WHITE);        
-         time.setForeground(color);
+        Color color = display.getSystemColor(SWT.COLOR_BLACK);
+        time.setForeground(color);
+        //color = display.getSystemColor(SWT.COLOR_WHITE);
+        //time.setBackground(color);
+        Color bg = new Color(Display.getCurrent(),252,252,247);
+        time.setBackground(bg);
     }
 
     private void setFontOfTimeUI() {
@@ -88,6 +94,7 @@ public class TimeUI implements Observer {
 
     private void setLayout() {
        GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
+       gridData.horizontalAlignment = SWT.CENTER;
        time.setLayoutData(gridData);
     }
 }

@@ -37,6 +37,7 @@ public class TitleLabel extends Composite {
         this.setLayout(layout);
         GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
         gridData.horizontalSpan = NUM_COLS_SCREEN;
+        gridData.horizontalAlignment = SWT.LEFT;
         this.setLayoutData(gridData);
     }
 
@@ -46,8 +47,8 @@ public class TitleLabel extends Composite {
         title.setText(LABEL_TEXT);
         title.setFont(registry.get("haystack title"));
         Color color;
-        // color = parent.getDisplay().getSystemColor(SWT.COLOR_BLACK);
-        color = new Color(Display.getCurrent(), 125, 255, 125);
+        color = parent.getDisplay().getSystemColor(SWT.COLOR_BLACK);
+        //color = new Color(Display.getCurrent(), 125, 255, 125);
         title.setForeground(color);
         color.dispose();
 

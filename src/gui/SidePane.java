@@ -32,7 +32,7 @@ public class SidePane extends Composite {
 
     private void setDimensions(Composite parent) {
         int shellWidth = parent.getSize().x;
-        this.setSize(shellWidth / 3, MIN_HEIGHT_SIDE_PANE);
+        this.setSize((int)(shellWidth*0.8), MIN_HEIGHT_SIDE_PANE);
     }
 
     private void setLayout(Composite parent) {
@@ -43,8 +43,8 @@ public class SidePane extends Composite {
     }
 
     private void createChildren() {
-        TimeUI.getInstance(this);
         addCalendar();
+        TimeUI.getInstance(this);
     }
 
     private void addCalendar() {

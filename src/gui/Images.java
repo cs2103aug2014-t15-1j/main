@@ -3,6 +3,7 @@ package gui;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 /**
  * The Images class adds all file images into a registry to be used by the application
@@ -29,9 +30,21 @@ public class Images {
     }
 
     private void addImagesFromFile() {
-        ImageDescriptor id = ImageDescriptor
-                .createFromFile(getClass(), "/resource/mainbg.png");
-        registry.put("main", id);
+        int screenWidth = Display.getCurrent().getBounds().width;
+        ImageDescriptor id;
+        if (screenWidth<=1280) {
+            id = ImageDescriptor
+                    .createFromFile(getClass(), "/resource/bg1280.png");
+            registry.put("main", id);
+        } else if (screenWidth<=1920) {
+            id = ImageDescriptor
+                    .createFromFile(getClass(), "/resource/bg1920.png");
+            registry.put("main", id);
+        } else {
+            id = ImageDescriptor
+                    .createFromFile(getClass(), "/resource/bg1920.png");
+            registry.put("main", id);
+        }
 
         id = ImageDescriptor.createFromFile(getClass(),
                                             "/resource/resultBg.png");

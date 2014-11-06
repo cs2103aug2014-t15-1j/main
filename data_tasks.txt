@@ -1,6 +1,6 @@
-Do CS2103 Homework ### start:  due:  completed:  #cshomework type: TODO
-Do CS2103 Homework ### start:  due:  completed:  #cshomework type: TODO
-Do CS2103 Homework ### start:  due:  completed:  #cshomework type: TODO
-Do CS2103 Homework ### start:  due:  completed:  type: TODO
+Modify background ### start:  due: 07/11/2014 1000 completed:  #cs2103 type: TODO
+Stabilise functions ### start:  due: 07/11/2014 2359 completed:  #cs2103 type: TODO
+start on documentation ### start: 07/11/2014 due:  completed:  #cs2103 type: TODO
+Read that essay thing for monday ### start:  due: 10/11/2014 1200 completed:  #cs2101 type: TODO
 Do CS2103 Homework ### start:  due:  completed:  type: TODO
 Do CS2103 Homework ### start:  due:  completed:  type: TODO
