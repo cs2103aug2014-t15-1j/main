@@ -45,7 +45,7 @@ public class TableUI{
     private static final String HEADER_NAME_STATUS = "Status";
     private static final String PARA_STATUS_BLOCK = "Blocked Date";
 
-    private static final String CELL_EMPTY_DATE = "<no date>";
+    private static final String CELL_EMPTY_DATE = "empty";
 
     private static final String PARA_STATUS_DELETED = "Deleted";
     private static final String PARA_STATUS_TODO = "To do";
@@ -331,29 +331,19 @@ public class TableUI{
             public Color getBackground(Object element){
                 if(element instanceof Task){
                     Task task = (Task) element;
-                    Display display = Display.getCurrent();
                     if(task.isDeleted()){
                         return Colours.getDeletedColor();
                     }else if(task.isBlock()){
-                        return display.getSystemColor(SWT.COLOR_BLUE);
+                        return Colours.getBlockDateColor();
                     }else if(task.isToDo()){
                         return Colours.getToDoColor();
                     }else if(task.isDone()){
-                        return display.getSystemColor(SWT.COLOR_GRAY);
+                        return Colours.getDoneColor();
                     }
                 }
                 return Display.getCurrent().getSystemColor(SWT.COLOR_WHITE);
             }
             
-            @Override
-            public Color getForeground(Object element){
-                if(element instanceof Task){
-                    Task task = (Task) element;
-                    Display display = Display.getCurrent();
-                    return Display.getCurrent().getSystemColor(SWT.COLOR_WHITE);
-                }
-                return Display.getCurrent().getSystemColor(SWT.COLOR_BLACK);
-            }
             
             @Override
             public Font getFont(Object element){

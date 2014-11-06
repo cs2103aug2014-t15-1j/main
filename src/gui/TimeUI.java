@@ -20,7 +20,10 @@ import parser.DateParser;
  * The singleton pattern is used, so every instance of this class refers to the same instance
  */
 public class TimeUI implements Observer {
-    
+    // use swt timer
+    // refresh table every minute
+    // key up
+    // toggle visibility
     private StyledText time;
     private  static TimeUI timeUI;
     /**
