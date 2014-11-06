@@ -31,6 +31,7 @@ public class TableComposite extends Composite {
     private static final String FLOATING_TABLE_TAB_LABEL = "Someday";
     private static final String BLOCK_TABLE_TAB_LABEL = "Blocked";
     private static final String DONE_TABLE_TAB_LABEL = "Done";
+    private static final String SEARCH_TABLE_TAB_LABEL = "Search";
     
     private static CTabFolder tabFolder;
     private FontRegistry registry;
@@ -83,6 +84,7 @@ public class TableComposite extends Composite {
         createTable(tabFolder, FLOATING_TABLE_TAB_LABEL);
         createTable(tabFolder, DONE_TABLE_TAB_LABEL);
         createTable(tabFolder, BLOCK_TABLE_TAB_LABEL);
+        createTable(tabFolder, SEARCH_TABLE_TAB_LABEL);
         
         addListener(tabFolder);
         tabFolder.setSelection(0);

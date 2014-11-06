@@ -58,7 +58,6 @@ public class TableManagement {
         List<Task> todaysTasks = new ArrayList<Task>();
         List<Task> tomorrowsTasks = new ArrayList<Task>();
         List<Task> upcomingTasks = new ArrayList<Task>();
-        List<Task> doneTasks = new ArrayList<Task>();
         
         int size = tasks.size();
         for(int index = 0; index < size; index++){
@@ -70,15 +69,11 @@ public class TableManagement {
             }else{
                 upcomingTasks.add(currTask);
             }
-            if(currTask.isDone()){
-                doneTasks.add(currTask);
-            }
         }
         
         tables.get(INDEX_TODAY).setInput(todaysTasks);
         tables.get(INDEX_TOMORROW).setInput(tomorrowsTasks);
         tables.get(INDEX_UPCOMING).setInput(upcomingTasks);
-        tables.get(INDEX_DONE).setInput(doneTasks);
     }
 
     public void setTableSelection(Task taskToSelect){
