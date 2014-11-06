@@ -49,6 +49,7 @@ public class TitleLabel extends Composite {
         // color = parent.getDisplay().getSystemColor(SWT.COLOR_BLACK);
         color = new Color(Display.getCurrent(), 255, 255, 180);
         title.setForeground(color);
+        color.dispose();
 
     }
 
