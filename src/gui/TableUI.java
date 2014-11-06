@@ -224,6 +224,7 @@ public class TableUI{
                     if(due == null){
                         return Display.getCurrent().getSystemColor(SWT.COLOR_BLACK);
                     }else if(isOverdue(due) && !task.isDone() ){
+
                         return Colours.getOverdueColour();
                     }
                 }
@@ -377,7 +378,7 @@ public class TableUI{
 
     protected boolean isOverdue(DateTime date) {
             DateTime now = getTodaysDate();
-            if (date.isEarlierThan(now)) {
+            if (date.isEarlierThan(now) || date.equals(now)) {
                 return true;
             }
             return false;
@@ -386,7 +387,7 @@ public class TableUI{
     private DateTime getTodaysDate() {
         Date date = new Date();
         String nowDate = new SimpleDateFormat("dd/MM/YYYY").format(date);
-        String nowTime = new SimpleDateFormat("hhmm").format(date);
+        String nowTime = new SimpleDateFormat("HHmm").format(date);
         DateTime today = new DateTime(nowDate, nowTime);
         return today;
     }

@@ -56,7 +56,7 @@ public class ProcessUserInteraction {
     }
 
     private void addHelpListener() {
-        display.addFilter(SWT.KeyDown, new Listener(){
+        display.addFilter(SWT.KeyUp, new Listener(){
             public void handleEvent(Event event){
                 if(event.keyCode == SWT.F1){
                     openHelpDialog();

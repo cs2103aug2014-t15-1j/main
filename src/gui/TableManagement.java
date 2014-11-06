@@ -39,6 +39,21 @@ public class TableManagement {
         getTable(task);
     }
     
+    public void refreshTables(){
+        System.out.println("refreshing table at " + Calendar.getInstance().getTime().toString());
+            List<Task> toDo = ResultGenerator.getToDoTasks();
+            List<Task> floating = ResultGenerator.getFloatingTasks();
+            List<Task> done = ResultGenerator.getDoneTasks();
+            List<Task> blocked = ResultGenerator.getBlockTasks();
+            List<Task> timed = ResultGenerator.getTimedTasks();
+            
+            updateToDoTable(toDo);
+            updateFloatingTaskTable(floating);
+            updateDoneTable(done);
+            updateBlockTable(blocked);
+            updateTimedTable(timed);
+    }
+
     public void updateFloatingTaskTable(List<Task> tasks){
         tables.get(INDEX_SOMEDAY).setInput(tasks);
     }

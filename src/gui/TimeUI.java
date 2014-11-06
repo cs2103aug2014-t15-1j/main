@@ -1,6 +1,7 @@
 package gui;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -16,10 +17,9 @@ import parser.DateParser;
 
 /**
  * TimeUI is the user interface that shows the system time.
- * TimeUI implementes the Observer interface, it observes logic.Processor
  * The singleton pattern is used, so every instance of this class refers to the same instance
  */
-public class TimeUI implements Observer {
+public class TimeUI{
     // use swt timer
     // refresh table every minute
     // key up
@@ -31,11 +31,31 @@ public class TimeUI implements Observer {
      * @param parent Composite where TimeUI is located
      */
     private TimeUI(Composite parent){
-        time = new StyledText(parent, SWT.CENTER);
+        time = new StyledText(parent, SWT.CENTER | SWT.MULTI | SWT.H_SCROLL);
         setLayout();
-        format(parent.getDisplay()); 
-        String currTime = DateParser.getCurrTimeStr();
-        time.setText("  Time now is " + currTime.substring(0,2) + ":" + currTime.substring(2) + "  ");
+        time.setWordWrap(true);
+        time.setText("  Time now is   :  ");
+        format(parent.getDisplay());
+        Runnable timer = new Runnable(){
+            public void run(){
+                if(!parent.getShell().isDisposed()){
+                    
+                parent.getDisplay().timerExec(1000, this);
+                Calendar cal = Calendar.getInstance();
+                String timeNow = cal.getTime().toString();
+                time.setText(timeNow);
+                
+                if (cal.get(Calendar.SECOND) == 0) {
+                    
+                    (new TableManagement()).refreshTables();
+                }
+                
+                }
+            }
+        };
+        if(!parent.getShell().isDisposed()){
+        parent.getDisplay().timerExec(1000, timer);
+        }
     }
     
     /**
@@ -58,18 +78,6 @@ public class TimeUI implements Observer {
     public static TimeUI getInstance(){
         assert(timeUI != null);
         return timeUI;
-    }
-    
-    /**
-     * updates the timeUI interface, to show the current time
-     */
-    @Override
-    public void update(Observable o, Object arg) {
-        if (arg.equals("clock")){
-            String currTime = Calendar.getInstance().getTime().toString();
-            time.setText(currTime);
-            System.out.println("currTime: " + currTime);
-        }
     }
 
     private void format(Display display) {

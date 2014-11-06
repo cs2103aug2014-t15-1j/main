@@ -1,5 +1,6 @@
 package gui;
 
+import java.util.Calendar;
 import java.util.List;
 
 import logic.CommandType;
@@ -32,7 +33,6 @@ public class ResultGenerator {
      */
     public void start() {
         initialiseAppilcation();
-        addObservers();
         refreshTables();
     }
     
@@ -85,16 +85,7 @@ public class ResultGenerator {
 
         if (result.isSuccess()) {
 
-            if (isHelp(result)) {
-                return "Help";
-            }
-
-            switch (result.getResultType()) {
-                case BLOCKDATE:
-                    return processDateBasedResult(result);
-                case TASK:
-                    return processTaskBasedResult(result);
-            }
+           return processTaskBasedResult(result);
 
         }
         return String.format("Not able to process '%1$s'", input);
@@ -119,6 +110,7 @@ public class ResultGenerator {
     }
     
     public static List<Task> getToDoTasks(){
+        System.out.println("refreshing table at get ToDo" + Calendar.getInstance().getTime().toString());
         return processor.fetchToDoTasks();
     }
     
@@ -133,82 +125,9 @@ public class ResultGenerator {
     public static List<Task> getBlockTasks(){
         return processor.fetchBlockTasks();
     }
-    
-    private void addObservers() {
-       TimeUI timeLabel = TimeUI.getInstance();
-        Processor.getInstance().addObserver(timeLabel);
-    }
 
     private void initialiseAppilcation() {
         processor = Processor.getInstance();
-    }
-    
-    private boolean isHelp(Result result) {
-        if (result.getResultType() == null &&
-            result.getCommandType().equals(CommandType.HELP)) {
-            return true;
-        }
-
-        return false;
-    }
-
-    private String processDateBasedResult(Result result) {
-        List<Task> blockDateTask = result.getBlockedDates(); // get list of dates
-        if (blockDateTask.size() == 0) {
-            refreshTables();
-            return "No dates have been blocked";
-        }
-
-        assert (result.getCommandType() != null);
-
-        switch (result.getCommandType()) {
-            case BLOCK:
-                if (result.needsConfirmation()) {
-                    return "Unable to block date. Date coincides with another blocked date or task.";
-                }
-                refreshTables();
-                setTableSelection(blockDateTask);
-                return "BLOCKED: " + feedbackSingleBlock(blockDateTask);
-
-            case UNBLOCK:
-                refreshTables();
-                setTableSelection(blockDateTask);
-                return "UNBLOCKED: " + feedbackSingleBlock(blockDateTask);
-
-            case REDO:
-                if (result.needsConfirmation()) {
-                    return "Unable to redo command. Date coincides with another blocked date or task.";
-                }
-                refreshTables();
-                setTableSelection(blockDateTask);
-                return "Command Redone.";
-
-            case UNDO:
-                refreshTables();
-                setTableSelection(blockDateTask);
-                return "Command Undone.";
-
-            case DISPLAY:
-                if (blockDateTask.size() == 0) {
-                    
-                    return "Nothing has been blocked.";
-                } else if (blockDateTask.size() == 1) {
-                    setTableSelection(blockDateTask);
-                }
-                updateTables(blockDateTask);
-                return feedbackMessageMultiResults(blockDateTask,
-                                                   "Showing %1$s blocks.");
-            case SEARCH:
-                updateSearchTable(blockDateTask);
-                return feedbackMessageMultiResults(blockDateTask, "Found %1$s results.");
-            case ERROR:
-                return "Not able to fully process command";
-
-            default:
-                // this line of code should never be reached
-                throw new IllegalArgumentException("Illegal Command Type");
-        }
-
     }
 
     private String feedbackSingleBlock(List<Task> dates) {
@@ -239,6 +158,19 @@ public class ResultGenerator {
                 setTableSelection(outputs);
                 return feedbackMessage(outputs, "Deleted %1$s");
                 
+            case BLOCK:
+                if (result.needsConfirmation()) {
+                    return "Unable to block date. Date coincides with another blocked date or task.";
+                }
+                refreshTables();
+                setTableSelection(outputs);
+                return "BLOCKED: " + feedbackSingleBlock(outputs);
+
+            case UNBLOCK:
+                refreshTables();
+                setTableSelection(outputs);
+                return "UNBLOCKED: " + feedbackSingleBlock(outputs);
+
             case RESET:
                 if (result.needsConfirmation()) {
                     return "This will erase all data, PERMANENTLY.  Key 'y' to continue or 'n' to abort";
@@ -252,7 +184,7 @@ public class ResultGenerator {
                 return feedbackMessage(outputs, "Edited %1$s");
             case DISPLAY:
                 if (outputs.size() == 0) {
-                    return "No tasks to show.";
+                    return "Nothing to show.";
                 } else if (outputs.size() == 1) {
                     setTableSelection(outputs);
                 }
@@ -276,6 +208,9 @@ public class ResultGenerator {
                 setTableSelection(outputs);
                 return "Command Undone.";
             case REDO:
+                if (result.needsConfirmation()) {
+                    return "Unable to redo command. Date coincides with another blocked date or task.";
+                }
                 refreshTables();
                 setTableSelection(outputs);
                 return "Command Redone.";
@@ -283,6 +218,8 @@ public class ResultGenerator {
                 refreshTables();
                 setTableSelection(outputs);
                 return feedbackMessage(outputs, "Restored %1$s.");
+            case HELP:
+                return "Help";
             case EXIT:
                 return "exit";
             case ERROR:
