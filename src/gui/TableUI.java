@@ -155,7 +155,7 @@ public class TableUI{
                     if(due == null){
                         return Display.getCurrent().getSystemColor(SWT.COLOR_BLACK);
                     }else if(isOverdue(due) && !task.isDone() ){
-                        return Colours.getDeletedColor();
+                        return Colours.getOverdueColour();
                     }
                 }
                 return Display.getCurrent().getSystemColor(SWT.COLOR_BLACK);
@@ -187,7 +187,7 @@ public class TableUI{
                     if(due == null){
                         return Display.getCurrent().getSystemColor(SWT.COLOR_BLACK);
                     }else if(isOverdue(due) && !task.isDone() ){
-                        return Colours.getDeletedColor();
+                        return Colours.getOverdueColour();
                     }
                 }
                 return Display.getCurrent().getSystemColor(SWT.COLOR_BLACK);
@@ -222,7 +222,7 @@ public class TableUI{
                     if(due == null){
                         return Display.getCurrent().getSystemColor(SWT.COLOR_BLACK);
                     }else if(isOverdue(due) && !task.isDone() ){
-                        return Colours.getDeletedColor();
+                        return Colours.getOverdueColour();
                     }
                 }
                 return Display.getCurrent().getSystemColor(SWT.COLOR_BLACK);
@@ -257,7 +257,7 @@ public class TableUI{
                     if(due == null){
                         return Display.getCurrent().getSystemColor(SWT.COLOR_BLACK);
                     }else if(isOverdue(due) && !task.isDone() ){
-                        return Colours.getDeletedColor();
+                        return Colours.getOverdueColour();
                     }
                 }
                 return Display.getCurrent().getSystemColor(SWT.COLOR_BLACK);
@@ -294,7 +294,7 @@ public class TableUI{
                     if(due == null){
                         return Display.getCurrent().getSystemColor(SWT.COLOR_BLACK);
                     }else if(isOverdue(due) && !task.isDone() ){
-                        return Colours.getDeletedColor();
+                        return Colours.getOverdueColour();
                     }
                 }
                 return Display.getCurrent().getSystemColor(SWT.COLOR_BLACK);

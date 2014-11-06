@@ -1,6 +1,8 @@
 package gui;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -46,7 +48,7 @@ public class SidePane extends Composite {
     }
 
     private void addCalendar() {
-        new DateTime(this, SWT.CALENDAR);
+      new DateTime(this, SWT.CALENDAR);
     }
     
 
