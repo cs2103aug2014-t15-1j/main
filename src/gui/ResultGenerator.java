@@ -144,13 +144,7 @@ public class ResultGenerator {
     }
     
     private void addObservers() {
-        UpcomingTaskList upcomingList = UpcomingTaskList.getInstance();
-        processor.addObserver(upcomingList);
-        upcomingList.initialise();
-        FloatingTaskList floatingList = FloatingTaskList.getInstance();
-        processor.addObserver(floatingList);
-        floatingList.initialise();
-        TimeUI timeLabel = TimeUI.getInstance();
+       TimeUI timeLabel = TimeUI.getInstance();
         Processor.getInstance().addObserver(timeLabel);
     }
 

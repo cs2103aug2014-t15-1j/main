@@ -1,18 +1,10 @@
 package gui;
 
-import logic.Processor;
-
-import org.eclipse.jface.resource.FontRegistry;
-import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DateTime;
-import org.eclipse.swt.widgets.Display;
 
 /**
  * This Composite contains the user interfaces that show additional information about the tasks carried out. 
@@ -51,8 +43,6 @@ public class SidePane extends Composite {
     private void createChildren() {
         TimeUI.getInstance(this);
         addCalendar();
-        UpcomingTaskList.getInstance(this);
-        FloatingTaskList.getInstance(this);
     }
 
     private void addCalendar() {
