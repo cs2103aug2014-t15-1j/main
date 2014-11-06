@@ -176,7 +176,6 @@ public class DatabaseLogic {
      * @return True, if successfully written to file.
      */
     public boolean add(Task task) {
-        assert !allTasks.contains(task);
         allTasks.add(task);
         switch (task.getType()) {
             case TODO:
