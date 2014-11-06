@@ -276,7 +276,7 @@ public class ResultGenerator {
                 return feedbackMessageMultiResults(outputs,
                                                    "%1$s task(s) found.");
             case SEARCH:
-                updateTables(outputs);
+                updateSearchTable(outputs);
                 return feedbackMessageMultiResults(outputs,
                                                    "Found %1$s match(es).");
             case TODO:
@@ -352,6 +352,10 @@ public class ResultGenerator {
     
     private void updateTables(List<Task> tasks){
         tableManagement.updateTable(tasks);
+    }
+    
+    private void updateSearchTable(List<Task> tasks){
+        tableManagement.updateSearchTable(tasks);
     }
     
     private void setTableSelection(List<Task> outputs) {

@@ -24,6 +24,7 @@ public class TableManagement {
     private static final int INDEX_SOMEDAY = 4;
     private static final int INDEX_DONE = 5;
     private static final int INDEX_BLOCK= 6;
+    private static final int INDEX_SEARCH = 7;
     
     private static CTabFolder folder; 
     private static List<TableViewer> tables;
@@ -53,7 +54,12 @@ public class TableManagement {
     public void updateBlockTable(List<Task> blockTasks){
        tables.get(INDEX_BLOCK).setInput(blockTasks);
     }
-
+    
+    public void updateSearchTable(List<Task> searchResults){
+        tables.get(INDEX_SEARCH).setInput(searchResults);
+        folder.setSelection(INDEX_SEARCH);
+    }
+    
     public void updateTimedTable(List<Task> tasks) {
         List<Task> todaysTasks = new ArrayList<Task>();
         List<Task> tomorrowsTasks = new ArrayList<Task>();
