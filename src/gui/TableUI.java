@@ -61,6 +61,8 @@ public class TableUI{
     // NOTE: 150 is just right for all statuses - To Do, Done, Deleted
     private static final int COL_WIDTH_STATUS = 175;
     
+    private static int colourIndex = 1;
+    private static Color[] tableColours = new Color[7];
 
     private TableViewer tableViewer;
     private CTabFolder folder;
@@ -83,7 +85,6 @@ public class TableUI{
         getRegistry(parent);
         buildLabel(parent);
         buildTable(parent);
-
     }
 
     private void getRegistry(Composite parent) {
@@ -98,7 +99,7 @@ public class TableUI{
     }
 
     private void buildTable(Composite parent) {
-        tableViewer = new TableViewer(parent, SWT.MULTI | SWT.BORDER |
+        tableViewer = new TableViewer(parent, SWT.BORDER |
                                               SWT.FULL_SELECTION);
 
         tableViewer.setContentProvider(new ArrayContentProvider());
@@ -106,6 +107,8 @@ public class TableUI{
         setUpColumns(parent);
 
         Table table = tableViewer.getTable();
+        table.setBackground(new Color(Display.getCurrent(), 255, 255, 255 - colourIndex*15));
+        colourIndex++;
         table.setLinesVisible(true);
         table.setHeaderVisible(true);
         table.setEnabled(true);

@@ -42,7 +42,7 @@ public class TableComposite extends Composite {
  * @param style Style that the TableComposite should follow
  */
     public TableComposite(Composite parent, int style) {
-        super(parent, style);
+        super(parent, SWT.NONE);
         setLayout();
         createContents(parent);
     }
@@ -72,15 +72,15 @@ public class TableComposite extends Composite {
     }
     
     private void setColour(Composite parent) {
-        Color white = parent.getDisplay().getSystemColor(SWT.COLOR_WHITE);
-        this.setBackground(white);
+        //Color white = parent.getDisplay().getSystemColor(SWT.COLOR_WHITE);
+        //this.setBackground(white);
     }
 
     private void createContents(Composite parent) {
         formatRegistry(parent);
-        tabFolder = new CTabFolder(this, SWT.BORDER);
+        tabFolder = new CTabFolder(this, SWT.NONE);
         tabFolder.setLayoutData(new GridData(GridData.FILL_BOTH));
-        
+        tabFolder.setBackground(new Color(Display.getDefault(), 220, 220, 220));
 
         createTable(tabFolder, TODO_TABLE_TAB_LABEL);
         createTable(tabFolder, TODAY_TABLE_TAB_LABEL);
