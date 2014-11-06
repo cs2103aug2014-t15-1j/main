@@ -30,7 +30,7 @@ public class TimeUI{
      * Creates an instance of TimeUI
      * @param parent Composite where TimeUI is located
      */
-    private TimeUI(Composite parent){
+    private TimeUI(final Composite parent){
         time = new StyledText(parent, SWT.CENTER | SWT.MULTI | SWT.H_SCROLL);
         setLayout();
         time.setWordWrap(true);
