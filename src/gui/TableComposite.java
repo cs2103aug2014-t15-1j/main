@@ -23,7 +23,7 @@ import org.eclipse.swt.widgets.Listener;
 //@author A0118846W
 public class TableComposite extends Composite {
 // Today, tmr, someday, upcoming, todo, block, done
-    private static final int NUM_TAB_LABELS = 7;
+    private static final int NUM_TAB_LABELS = 8; // Update this if adding new labels
     private static final String TODO_TABLE_TAB_LABEL = "To Do";
     private static final String TODAY_TABLE_TAB_LABEL = "Today";
     private static final String TOMORROW_TABLE_TAB_LABEL = "Tomorrow";

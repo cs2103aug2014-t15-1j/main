@@ -7,6 +7,7 @@ import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 
 /**
@@ -25,7 +26,7 @@ public class TitleLabel extends Composite {
      * @param style  Style that TitleLabel has
      */
     public TitleLabel(Composite parent, int style) {
-        super(parent, style);
+        super(parent, SWT.NONE);
         setLayout(parent);
         createContents(parent);
     }
@@ -44,7 +45,9 @@ public class TitleLabel extends Composite {
         Label title = new Label(this, SWT.SINGLE | SWT.CENTER);
         title.setText(LABEL_TEXT);
         title.setFont(registry.get("haystack title"));
-        Color color = parent.getDisplay().getSystemColor(SWT.COLOR_BLACK);
+        Color color;
+        // color = parent.getDisplay().getSystemColor(SWT.COLOR_BLACK);
+        color = new Color(Display.getCurrent(), 255, 255, 180);
         title.setForeground(color);
 
     }

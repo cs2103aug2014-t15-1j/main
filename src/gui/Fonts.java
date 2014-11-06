@@ -29,7 +29,7 @@ public class Fonts {
         FontData[] fontData = new FontData[] {new FontData ("Courier New", 13, SWT.BOLD) };
         registry.put("commandLine", fontData);
         
-        fontData = new FontData[] { new FontData("Impact", 13, SWT.NORMAL) };
+        fontData = new FontData[] { new FontData("Impact", 16, SWT.NORMAL) };
          registry.put("haystack title", fontData);
 
         fontData = new FontData[] { new FontData("Courier New", 11, SWT.NORMAL) };
