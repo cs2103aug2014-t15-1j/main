@@ -3,7 +3,6 @@ package logic;
 import java.util.ArrayList;
 import java.util.List;
 
-import logic.Result.ResultType;
 import parser.DateParser;
 import parser.TaskParam;
 import database.DateTime;
@@ -16,7 +15,7 @@ public class CommandBlock extends Command {
     private DateTime from = new DateTime();
     private DateTime to = new DateTime();
     private List<String> tags = new ArrayList<String>();
-    
+
     public CommandBlock(List<TaskParam> content) {
         this(content, false);
     }
@@ -43,7 +42,7 @@ public class CommandBlock extends Command {
             case PARAM_FROM:
                 this.from = DateParser.parseToDateTime(param.getField());
                 break;
-                
+
             case PARAM_TO:
                 this.to = DateParser.parseToDateTime(param.getField());
                 break;
@@ -57,7 +56,7 @@ public class CommandBlock extends Command {
                 this.error = "Block constructor parameter error";
         }
     }
-    
+
     /**
      * Executes Block Command
      * 
@@ -74,15 +73,15 @@ public class CommandBlock extends Command {
         boolean success = true;
 
         List<Task> outputs = new ArrayList<Task>();
-       
+
         for (Task blockedDate : blockRange) {
             if (from.compareTo(blockedDate.getStart()) <= 0 &&
-                    to.compareTo(blockedDate.getDue()) >= 0) {
-                    success = false;
-                    outputs.add(blockedDate);
-                    break;
+                to.compareTo(blockedDate.getDue()) >= 0) {
+                success = false;
+                outputs.add(blockedDate);
+                break;
             } else if (blockedDate.getStart().compareTo(from) <= 0 &&
-                    blockedDate.getDue().compareTo(to) >= 0) {
+                       blockedDate.getDue().compareTo(to) >= 0) {
                 success = false;
                 outputs.add(blockedDate);
                 break;
@@ -90,13 +89,13 @@ public class CommandBlock extends Command {
         }
 
         if (success) {
-            Task currBlock = new Task(name, from, to, new DateTime(), tags, TaskType.BLOCK);
+            Task currBlock = new Task(name, from, to, new DateTime(), tags,
+                    TaskType.BLOCK);
             processor.getFile().add(currBlock);
             outputs.add(currBlock);
         }
 
-        return new Result(outputs, success, CommandType.BLOCK,
-                ResultType.BLOCKDATE);
+        return new Result(outputs, success, CommandType.BLOCK);
     }
 
     // TODO: UPDATE FOR NEW TASK FORMAT.
@@ -115,21 +114,20 @@ public class CommandBlock extends Command {
             tasks.add(toDelete);
         }
 
-        return new Result(tasks, success, getType(), ResultType.BLOCKDATE);
+        return new Result(tasks, success, getType());
         /*
-         * Processor processor = Processor.getInstance();
-        boolean success = false;
-        List<Task> outputs = new ArrayList<Task>();
-        int blockIndex = processor.getFile().getBlockTasks().size() - 1;
-        if (blockIndex >= 0) {
-            Task currBlock = processor.getFile().getBlockTasks().get(blockIndex);
-            success = processor.getFile().wipeTask(currBlock);
-            outputs.add(currBlock);
-        }
-        return new Result(outputs, success, CommandType.UNBLOCK, ResultType.BLOCKDATE);*/
+         * Processor processor = Processor.getInstance(); boolean success =
+         * false; List<Task> outputs = new ArrayList<Task>(); int blockIndex =
+         * processor.getFile().getBlockTasks().size() - 1; if (blockIndex >= 0)
+         * { Task currBlock =
+         * processor.getFile().getBlockTasks().get(blockIndex); success =
+         * processor.getFile().wipeTask(currBlock); outputs.add(currBlock); }
+         * return new Result(outputs, success, CommandType.UNBLOCK,
+         * ResultType.BLOCKDATE);
+         */
 
     }
-    
+
     @Override
     public String get(String field) {
         switch (field) {
@@ -143,11 +141,11 @@ public class CommandBlock extends Command {
                 return null;
         }
     }
-    
+
     @Override
     public String toString() {
         return "cmdblock name: " + this.name + " from: " + this.from + " to: " +
                this.to + " tags: " + this.tags;
     }
-    
+
 }

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import database.Task;
-import logic.Result.ResultType;
 import parser.TaskParam;
 
 public class CommandDisplay extends Command {
@@ -45,9 +44,9 @@ public class CommandDisplay extends Command {
     }
 
     /**
-     * Executes "display" operation
-     * Allows display, display <id>, display search
+     * Executes "display" operation Allows display, display <id>, display search
      * Allows show, show <id>, show search
+     * 
      * @return Result
      */
     @Override
@@ -55,51 +54,65 @@ public class CommandDisplay extends Command {
         if (Processor.LOGGING_ENABLED) {
             Processor.getLogger().info("Executing 'Display' Command...");
         }
-        
+
         Processor processor = Processor.getInstance();
         List<Task> list = new ArrayList<Task>();
         boolean success = true;
-        ResultType resultType = ResultType.TASK;
-        
+
         switch (rangeType) {
+            case RANGE_TYPE_ALL:
+                list = processor.getFile().getAllTasks();
+                break;
+
             case RANGE_TYPE_ID:
                 int taskId = Integer.parseInt(id);
                 list.add(processor.getFile().getTask(taskId));
                 break;
-                
-            case RANGE_TYPE_SEARCH:
-                list = processor.getLastSearch();
-                break;
-                
+
             case RANGE_TYPE_BLOCK:
-                list = processor.getFile().getBlockTasks();
-                resultType = ResultType.BLOCKDATE;
+                list = processor.fetchBlockTasks();
                 break;
-                
+
             case RANGE_TYPE_DONE:
-                list = processor.getFile().getDoneTasks();
+                list = processor.fetchDoneTasks();
                 break;
-                
+
             case RANGE_TYPE_DELETED:
-                list = processor.getFile().getDeletedTasks();
+                list = processor.fetchDeletedTasks();
                 break;
-                
+
             case RANGE_TYPE_TODO:
-                list = processor.getFile().getToDoTasks();
+                list = processor.fetchToDoTasks();
                 break;
-                
-            case RANGE_TYPE_ALL:
-                list = processor.getFile().getAllTasks();
+
+            case RANGE_TYPE_TODAY:
+                list = processor.fetchTodayTasks();
                 break;
-                
+
+            case RANGE_TYPE_TOMORROW:
+                list = processor.fetchTomorrowTasks();
+                break;
+
+            case RANGE_TYPE_NEXTWEEK:
+                list = processor.fetchNextWeekTasks();
+                break;
+
+            case RANGE_TYPE_SOMEDAY:
+                list = processor.fetchFloatingTasks();
+                break;
+
+            case RANGE_TYPE_SEARCH:
+                list = processor.fetchLastSearch();
+                break;
+
             default:
                 success = false;
-                
+
         }
-        
-        return new Result(list, success, getType(), resultType);
+
+        return new Result(list, success, getType());
     }
-    
+
     @Override
     public String get(String field) {
         switch (field) {
@@ -113,7 +126,7 @@ public class CommandDisplay extends Command {
                 return null;
         }
     }
-    
+
     @Override
     public String toString() {
         return "cmddisplay rangetype: " + this.rangeType + " id: " + this.id;

@@ -3,7 +3,6 @@ package logic;
 import java.util.ArrayList;
 import java.util.List;
 
-import logic.Result.ResultType;
 import parser.TaskParam;
 import database.Task;
 
@@ -14,11 +13,11 @@ public class CommandRestore extends Command {
     // Restore type data [get("id"); returns string]
     protected String id = "";
     protected CommandDelete cmdDelete = null;
-    
+
     public CommandRestore(List<TaskParam> content) {
         this(content, false);
-    }    
-    
+    }
+
     protected CommandRestore(List<TaskParam> content, boolean isComplement) {
         if (content.isEmpty()) {
             this.type = CommandType.ERROR;
@@ -50,7 +49,7 @@ public class CommandRestore extends Command {
                 this.error = "Restore constructor parameter error";
         }
     }
-    
+
     private void initialiseComplementCommand(List<TaskParam> content) {
         this.cmdDelete = new CommandDelete(content, true);
     }
@@ -68,11 +67,11 @@ public class CommandRestore extends Command {
                 return null;
         }
     }
-    
+
     /**
-     * Executes "Restore" operation
-     * Restores a deleted Task
-     * Allows restore <id>, restore search
+     * Executes "Restore" operation Restores a deleted Task Allows restore <id>,
+     * restore search
+     * 
      * @return true/false on whether operation is performed
      */
     @Override
@@ -87,19 +86,20 @@ public class CommandRestore extends Command {
             case RANGE_TYPE_ID:
                 success = restoreUsingId(list);
                 break;
-                
+
             case RANGE_TYPE_SEARCH:
                 if (userInput) {
-                    processor.getBackwardSearchListHistory().push(processor.getLastSearch());
+                    processor.getBackwardSearchListHistory()
+                            .push(processor.fetchLastSearch());
                 }
                 success = restoreUsingSearch(list);
                 break;
-                
+
             default:
                 success = false;
-                
+
         }
-        return new Result(list, success, getType(), ResultType.TASK);
+        return new Result(list, success, getType());
     }
 
     /** Restores a deleted Task using Id */
@@ -108,7 +108,7 @@ public class CommandRestore extends Command {
         int taskId = Integer.parseInt(id);
         boolean success = false;
         Task task = processor.getFile().getTask(taskId);
-        
+
         if (task != null) {
             success = processor.getFile().restore(task);
             if (success) {
@@ -117,12 +117,13 @@ public class CommandRestore extends Command {
         }
         return success;
     }
-    
+
     /** Restores all deleted Tasks due to 'delete search' */
     private boolean restoreUsingSearch(List<Task> list) {
         try {
             Processor processor = Processor.getInstance();
-            List<Task> restoreList = processor.getBackwardSearchListHistory().pop();
+            List<Task> restoreList = processor.getBackwardSearchListHistory()
+                    .pop();
             if (restoreList != null) {
                 for (Task t : restoreList) {
                     boolean success = processor.getFile().restore(t);
@@ -138,18 +139,18 @@ public class CommandRestore extends Command {
         }
         return true;
     }
-    
+
     /**
-     * Executes "delete" operation
-     * Deletes a task
-     * Allows delete <id>, delete search, delete all
+     * Executes "delete" operation Deletes a task Allows delete <id>, delete
+     * search, delete all
+     * 
      * @return Result
      */
     @Override
     protected Result executeComplement() {
         return cmdDelete.execute(false);
     }
-    
+
     @Override
     public String toString() {
         return "cmdrestore rangetype: " + this.rangeType + " id: " + this.id;

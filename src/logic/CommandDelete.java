@@ -3,7 +3,6 @@ package logic;
 import java.util.ArrayList;
 import java.util.List;
 
-import logic.Result.ResultType;
 import parser.TaskParam;
 import database.Task;
 
@@ -26,11 +25,11 @@ public class CommandDelete extends Command {
 
     /* Complement Command object of this Command Object */
     private CommandRestore cmdRestore = null;
-    
+
     public CommandDelete(List<TaskParam> content) {
         this(content, false);
     }
-    
+
     protected CommandDelete(List<TaskParam> content, boolean isComplement) {
         if (content.isEmpty()) {
             this.type = CommandType.ERROR;
@@ -38,7 +37,7 @@ public class CommandDelete extends Command {
         } else {
             this.type = CommandType.DELETE;
 
-            for (TaskParam param :  content) {
+            for (TaskParam param : content) {
                 constructUsingParam(param);
             }
             if (!isComplement) {
@@ -66,11 +65,12 @@ public class CommandDelete extends Command {
     private void initialiseComplementCommand(List<TaskParam> content) {
         this.cmdRestore = new CommandRestore(content, true);
     }
-    
+
     /**
      * Executes "delete" operation<br>
      * Deletes a task<br>
      * Allows delete {@literal<id>}, delete search, delete all
+     * 
      * @return Result
      */
     @Override
@@ -82,33 +82,35 @@ public class CommandDelete extends Command {
         List<Task> list = new ArrayList<Task>();
         boolean success = false;
         boolean confirmation = false;
-        
+
         switch (rangeType) {
             case RANGE_TYPE_ID:
                 success = deleteTaskUsingID(list);
                 break;
-                
+
             case RANGE_TYPE_SEARCH:
                 if (userInput) {
-                    processor.getForwardSearchListHistory().push(processor.getLastSearch());
+                    processor.getForwardSearchListHistory()
+                            .push(processor.fetchLastSearch());
                 }
                 success = deleteSearchedTasks(list);
                 break;
-                
+
             case RANGE_TYPE_ALL:
                 success = true;
                 confirmation = true;
                 break;
-                
+
             default:
                 success = false;
         }
-        return new Result(list, success, this.getType(), confirmation, ResultType.TASK);
+        return new Result(list, success, this.getType(), confirmation);
     }
-    
+
     /** Deletes Task using Id */
     private boolean deleteTaskUsingID(List<Task> list) {
-        Task t = Processor.getInstance().getFile().getTask(Integer.parseInt(id));
+        Task t = Processor.getInstance().getFile()
+                .getTask(Integer.parseInt(id));
 
         if (t == null) {
             return false;
@@ -120,12 +122,13 @@ public class CommandDelete extends Command {
             return success;
         }
     }
-    
+
     /** Deletes all Tasks in searchList */
     private boolean deleteSearchedTasks(List<Task> list) {
         try {
             Processor processor = Processor.getInstance();
-            List<Task> deleteList = processor.getForwardSearchListHistory().pop();
+            List<Task> deleteList = processor.getForwardSearchListHistory()
+                    .pop();
             for (Task t : deleteList) {
                 processor.getFile().delete(t);
                 list.add(t);
@@ -142,13 +145,14 @@ public class CommandDelete extends Command {
      * Executes "Restore" operation<br>
      * Restores a deleted Task<br>
      * Allows restore {@literal<id>}, restore search
+     * 
      * @return true/false on whether operation is performed
      */
     @Override
     protected Result executeComplement() {
         return cmdRestore.execute(false);
     }
-    
+
     @Override
     public String get(String field) {
         switch (field) {
@@ -162,7 +166,7 @@ public class CommandDelete extends Command {
                 return null;
         }
     }
-    
+
     @Override
     public String toString() {
         return "cmddelete rangetype: " + this.rangeType + " id: " + this.id;

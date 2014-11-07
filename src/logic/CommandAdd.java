@@ -3,7 +3,6 @@ package logic;
 import java.util.List;
 import java.util.ArrayList;
 
-import logic.Result.ResultType;
 import parser.DateParser;
 import parser.TaskParam;
 import database.DateTime;
@@ -70,20 +69,21 @@ public class CommandAdd extends Command {
         }
         boolean blockConfirmation = isBlocked();
         if (!blockConfirmation) {
-            Task newTask = new Task(name, start, due, completedOn, tags, TaskType.TODO);
+            Task newTask = new Task(name, start, due, completedOn, tags,
+                    TaskType.TODO);
             success = Processor.getInstance().getFile().add(newTask);
             list.add(newTask);
             blockConfirmation = false;
         }
-        return new Result(list, success, getType(), blockConfirmation,
-                ResultType.TASK);
+        return new Result(list, success, getType(), blockConfirmation);
     }
 
     /**
      * This method checks if the Task contains dates that are already blocked.
      * 
-     * @return boolean - {@code True} if when trying to add a Task with a specified date
-     *         that fall within a blocked date range, else {@code False}.
+     * @return boolean - {@code True} if when trying to add a Task with a
+     *         specified date that fall within a blocked date range, else
+     *         {@code False}.
      */
     private boolean isBlocked() {
         boolean blocked = false;
@@ -91,7 +91,7 @@ public class CommandAdd extends Command {
             Processor processor = Processor.getInstance();
             List<Task> blockDates = processor.getFile().getBlockTasks();
             for (Task blockDate : blockDates) {
-                if(overlapsWithBlockTask(blockDate)) {
+                if (overlapsWithBlockTask(blockDate)) {
                     return true;
                 }
             }
@@ -102,16 +102,19 @@ public class CommandAdd extends Command {
     /**
      * This method checks if the current CommandAdd object is trying to add to
      * to a date range that is blocked.
-     * @return 
-     *      boolean - True if overlaps
+     * 
+     * @return boolean - True if overlaps
      */
     private boolean overlapsWithBlockTask(Task blockDate) {
         if (!start.isEmpty() && !due.isEmpty()) {
-            return !(due.isEarlierThan(blockDate.getStart()) || !start.isEarlierThan(blockDate.getDue()));
+            return !(due.isEarlierThan(blockDate.getStart()) || !start
+                    .isEarlierThan(blockDate.getDue()));
         } else if (!start.isEmpty()) {
-            return !(start.isEarlierThan(blockDate.getStart()) || !start.isEarlierThan(blockDate.getDue()));
+            return !(start.isEarlierThan(blockDate.getStart()) || !start
+                    .isEarlierThan(blockDate.getDue()));
         } else {
-            return !(due.isEarlierThan(blockDate.getStart()) || !due.isEarlierThan(blockDate.getDue()));
+            return !(due.isEarlierThan(blockDate.getStart()) || !due
+                    .isEarlierThan(blockDate.getDue()));
         }
     }
 
@@ -136,9 +139,9 @@ public class CommandAdd extends Command {
             tasks.add(toDelete);
         }
 
-        return new Result(tasks, success, getType(), ResultType.TASK);
+        return new Result(tasks, success, getType());
     }
-    
+
     @Override
     public String get(String paramName) {
         switch (paramName) {
@@ -164,8 +167,8 @@ public class CommandAdd extends Command {
 
     @Override
     public String toString() {
-        return "cmdadd name: " + this.name + " start: " + this.start + " due: " +
-               this.due + " tags: " + this.tags;
+        return "cmdadd name: " + this.name + " start: " + this.start +
+               " due: " + this.due + " tags: " + this.tags;
     }
 
 }

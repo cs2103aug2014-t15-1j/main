@@ -3,7 +3,6 @@ package logic;
 import java.util.List;
 import java.util.ArrayList;
 
-import logic.Result.ResultType;
 import parser.TaskParam;
 import database.Task;
 
@@ -28,11 +27,11 @@ public class CommandSearch extends Command {
             case PARAM_STATUS:
                 this.status = param.getField();
                 break;
-                
+
             case PARAM_DATE:
                 this.date = param.getField();
                 break;
-                
+
             case PARAM_TAG:
                 this.tags.add(param.getField());
                 break;
@@ -52,7 +51,7 @@ public class CommandSearch extends Command {
         switch (field) {
             case PARAM_DATE:
                 return date;
-                
+
             case PARAM_STATUS:
                 return status;
 
@@ -73,8 +72,9 @@ public class CommandSearch extends Command {
     }
 
     /**
-     * Executes "search" operation
-     * Allows search <date> <key1> <key2> #tag1 #tag2
+     * Executes "search" operation Allows search <date> <key1> <key2> #tag1
+     * #tag2
+     * 
      * @return Result
      */
     @Override
@@ -85,14 +85,17 @@ public class CommandSearch extends Command {
         }
         Processor.getInstance().initialiseNewSearchList();
         searchUsingDateAndKeyAndTags(date, keywords, tags);
-        return new Result(Processor.getInstance().getLastSearch(), true, getType(), ResultType.TASK);
+        return new Result(Processor.getInstance().fetchLastSearch(), true,
+                getType());
     }
-    
-    private void searchUsingDateAndKeyAndTags(String date, List<String> keywords, List<String> tags) {
+
+    private void searchUsingDateAndKeyAndTags(String date,
+                                              List<String> keywords,
+                                              List<String> tags) {
         int criteriaCount = getCriteriaCount(date, keywords, tags);
         if (criteriaCount >= 0) {
             List<Task> searchRange = getSearchBoundary(status);
-            
+
             for (Task task : searchRange) {
                 int found = criteriaCount;
                 if (date != "") {
@@ -117,18 +120,19 @@ public class CommandSearch extends Command {
                     }
                 }
                 if (found == 0) {
-                    Processor.getInstance().getLastSearch().add(task);
+                    Processor.getInstance().fetchLastSearch().add(task);
                 }
             }
         }
     }
-    
-    private int getCriteriaCount(String date, List<String> keywords, List<String> tags) {
+
+    private int getCriteriaCount(String date, List<String> keywords,
+                                 List<String> tags) {
         int count = 0;
         if (date != "") {
             count++;
         }
-        
+
         if (!keywords.isEmpty()) {
             count++;
         }
@@ -139,81 +143,64 @@ public class CommandSearch extends Command {
 
         return count;
     }
-    
+
     private List<Task> getSearchBoundary(String status) {
-        List<Task> searchRange = Processor.getInstance().getFile().getToDoTasks();
+        List<Task> searchRange = Processor.getInstance().getFile()
+                .getToDoTasks();
         switch (status) {
             case RANGE_TYPE_ALL:
                 searchRange = Processor.getInstance().getFile().getAllTasks();
                 break;
-                
+
             case RANGE_TYPE_DONE:
                 searchRange = Processor.getInstance().getFile().getDoneTasks();
                 break;
-                
+
             case RANGE_TYPE_DELETED:
-                searchRange = Processor.getInstance().getFile().getDeletedTasks();
+                searchRange = Processor.getInstance().getFile()
+                        .getDeletedTasks();
                 break;
-                
+
             default:
                 break;
         }
         return searchRange;
     }
-    
-    /*Obsolete Codes below, due to changing of conditions for Search Command
-    
-    /* Performs search using date
-    private void searchUsingDate(String date) {
-        List<Task> toDoTasks = Processor.getInstance().getFile().getToDoTasks();
-        for (Task t: toDoTasks) {
-            if (t.getDue().equals(date)) {
-                Processor.getInstance().getLastSearch().add(t);
-            }
-        }
-    }
-    
-    /**
-     * Performs search using Keywords or Tags 
-     * Tries to find if tags is present first before searching for keywords
+
+    /*
+     * Obsolete Codes below, due to changing of conditions for Search Command
      * 
-    private void searchUsingKeyOrTags(List<String> keywords, List<String> tags) {
-        /*List<Task> toDoTasks = Processor.getInstance().getFile().getToDoTasks();
-        for (Task task: toDoTasks) {       
-            boolean found = isTagged(task, tags);
-            if (!found) {
-                found = containsKeyword(task, keywords);
-            }
-        }
-    }
-    
-    /** Checks if a Task is tagged under a tag in a List of tags
-    private boolean isTagged(Task task, List<String> tags) {
-        for (String tag: tags) {
-            for (String taskTag : task.getTags()) {
-                if (taskTag.contains(tag)) {
-                    Processor.getInstance().getLastSearch().add(task);
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-    
-    /** Checks if a Task contains a certain keyword in the List of keywords
-    private boolean containsKeyword(Task task, List<String> keywords) {
-        for (String key: keywords) {
-            if (task.getName().toLowerCase().contains(key.toLowerCase())) {
-                Processor.getInstance().getLastSearch().add(task);
-                return true;
-            }
-        }
-        return false;
-    }*/
-    
+     * /* Performs search using date private void searchUsingDate(String date) {
+     * List<Task> toDoTasks = Processor.getInstance().getFile().getToDoTasks();
+     * for (Task t: toDoTasks) { if (t.getDue().equals(date)) {
+     * Processor.getInstance().getLastSearch().add(t); } } }
+     * 
+     * /** Performs search using Keywords or Tags Tries to find if tags is
+     * present first before searching for keywords
+     * 
+     * private void searchUsingKeyOrTags(List<String> keywords, List<String>
+     * tags) { /*List<Task> toDoTasks =
+     * Processor.getInstance().getFile().getToDoTasks(); for (Task task:
+     * toDoTasks) { boolean found = isTagged(task, tags); if (!found) { found =
+     * containsKeyword(task, keywords); } } }
+     * 
+     * /** Checks if a Task is tagged under a tag in a List of tags private
+     * boolean isTagged(Task task, List<String> tags) { for (String tag: tags) {
+     * for (String taskTag : task.getTags()) { if (taskTag.contains(tag)) {
+     * Processor.getInstance().getLastSearch().add(task); return true; } } }
+     * return false; }
+     * 
+     * /** Checks if a Task contains a certain keyword in the List of keywords
+     * private boolean containsKeyword(Task task, List<String> keywords) { for
+     * (String key: keywords) { if
+     * (task.getName().toLowerCase().contains(key.toLowerCase())) {
+     * Processor.getInstance().getLastSearch().add(task); return true; } }
+     * return false; }
+     */
+
     @Override
     public String toString() {
-        return "cmdsearch status: " + this.status + " date: " + this.date + " tags: " +
-               this.tags + " keywords: " + this.keywords;
+        return "cmdsearch status: " + this.status + " date: " + this.date +
+               " tags: " + this.tags + " keywords: " + this.keywords;
     }
 }

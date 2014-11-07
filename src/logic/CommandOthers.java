@@ -2,8 +2,6 @@ package logic;
 
 import java.util.Arrays;
 
-import logic.Result.ResultType;
-
 /**
  * This Command object encompasses the commands that need no other parameter
  * inputs.
@@ -28,7 +26,7 @@ public class CommandOthers extends Command {
 
     public CommandOthers(String type) {
         assert (Arrays.asList(CMD_OTHERS).contains(type));
-        
+
         switch (type.toLowerCase()) {
             case STR_EXIT:
                 this.type = CommandType.EXIT;
@@ -57,19 +55,19 @@ public class CommandOthers extends Command {
         switch (getType()) {
             case REDO:
                 return executeRedo();
-                
+
             case UNDO:
                 return executeUndo();
-                
+
             case EXIT:
-                return new Result(null, true, getType(), ResultType.TASK);
-                
+                return new Result(null, true, getType());
+
             case RESET:
-                return new Result(null, true, getType(), true, ResultType.TASK);
-                
+                return new Result(null, true, getType(), true);
+
             case HELP:
-                return new Result(null, true, getType(), null);
-                
+                return new Result(null, true, getType());
+
             default:
                 return new Result();
         }
@@ -80,7 +78,7 @@ public class CommandOthers extends Command {
             Processor.getLogger().info("Executing 'Undo' Command...");
         }
         Processor processor = Processor.getInstance();
-        Result r = new Result(null, false, CommandType.UNDO, null);
+        Result r = new Result(null, false, CommandType.UNDO);
         if (!processor.getBackwardCommandHistory().isEmpty()) {
             Command backwardCommand = processor.getBackwardCommandHistory()
                     .pop();
@@ -95,9 +93,9 @@ public class CommandOthers extends Command {
                 case DONE:
                     r = backwardCommand.executeComplement();
                     break;
-                    
+
                 default:
-                    return new Result(null, false, CommandType.ERROR, null);
+                    return new Result(null, false, CommandType.ERROR);
             }
             modifyHistory(backwardCommand, r.isSuccess(), false);
         }
@@ -123,7 +121,7 @@ public class CommandOthers extends Command {
             result.setCommandType(CommandType.REDO);
             return result;
         }
-        return new Result(null, false, getType(), null);
+        return new Result(null, false, getType());
     }
 
     /**
@@ -144,7 +142,7 @@ public class CommandOthers extends Command {
             processor.getForwardCommandHistory().push(cmd);
         }
     }
-    
+
     @Override
     public String toString() {
         return "cmdothers type: " + this.type;

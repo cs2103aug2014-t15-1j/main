@@ -1,38 +1,23 @@
 package logic;
 
 /**
- * List below are the Command Type available for the different operations
- * HELP     - Displays a list of Commands to user
- * ADD      - Add a Task
- * EDIT     - Edit an existing Task
- * DELETE   - Deletes an existing Task
- * RESTORE  - Restores a deleted Task
- * SEARCH   - Search using keywords/tags of existing Task
- * DISPLAY  - Shows/Displays existing Tasks
- * BLOCK    - Blocks a date
- * UNBLOCK  - Unblocks a blocked date
- * DONE     - Marks a task as done
- * TODO     - Marks a task as todo
- * UNDO     - Undo last action
- * REDO     - Redo last action undone
- * EXIT     - Exits from program
- * ERROR    - Error found in the command entered (Wrong format)
+ * List below are the Command Type available for the different operations<br>
+ * HELP - Displays a list of Commands to user<br>
+ * ADD - Add a Task<br>
+ * EDIT - Edit an existing Task<br>
+ * DELETE - Deletes an existing Task<br>
+ * RESTORE - Restores a deleted Task<br>
+ * SEARCH - Search using keywords/tags of existing Task<br>
+ * DISPLAY - Shows/Displays existing Tasks<br>
+ * BLOCK - Blocks a date<br>
+ * UNBLOCK - Unblocks a blocked date<br>
+ * DONE - Marks a task as done<br>
+ * TODO - Marks a task as todo<br>
+ * UNDO - Undo last action<br>
+ * REDO - Redo last action undone<br>
+ * EXIT - Exits from program<br>
+ * ERROR - Error found in the command entered (Wrong format)<br>
  */
 public enum CommandType {
-	HELP,
-	ADD,
-	EDIT, 
-	DELETE,
-	RESTORE,
-	SEARCH,
-	DISPLAY,
-	BLOCK,
-	UNBLOCK,
-	DONE,
-	TODO,
-	UNDO,
-	REDO,
-	EXIT,
-	RESET,
-	ERROR;
+    HELP, ADD, EDIT, DELETE, RESTORE, SEARCH, DISPLAY, BLOCK, UNBLOCK, DONE, TODO, UNDO, REDO, EXIT, RESET, ERROR;
 }

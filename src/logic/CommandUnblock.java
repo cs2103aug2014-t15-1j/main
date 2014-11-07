@@ -3,7 +3,6 @@ package logic;
 import java.util.ArrayList;
 import java.util.List;
 
-import logic.Result.ResultType;
 import parser.TaskParam;
 import database.Task;
 
@@ -12,11 +11,11 @@ public class CommandUnblock extends Command {
     // Only one type of unblock search: "id"
     // Use get("id"); returns string
     protected String id;
-    
+
     public CommandUnblock(List<TaskParam> content) {
         this(content, false);
     }
-    
+
     protected CommandUnblock(List<TaskParam> content, boolean isComplement) {
         if (content.isEmpty()) {
             this.type = CommandType.ERROR;
@@ -41,7 +40,7 @@ public class CommandUnblock extends Command {
                 this.error = "Unblock constructor parameter error";
         }
     }
-    
+
     // TODO: Change to empty get()?
     @Override
     public String get(String field) {
@@ -56,6 +55,7 @@ public class CommandUnblock extends Command {
 
     /**
      * Executes Block Command
+     * 
      * @param userInput
      * @return Result
      */
@@ -68,7 +68,7 @@ public class CommandUnblock extends Command {
         boolean success = false;
         int unblockId = Integer.parseInt(id);
         List<Task> outputs = new ArrayList<Task>();
-        
+
         if (unblockId > 0) {
             Task blockDate = processor.getFile().getTask(unblockId);
             if (blockDate != null) {
@@ -77,10 +77,10 @@ public class CommandUnblock extends Command {
                 success = true;
             }
         }
-        
-        return new Result(outputs, success, CommandType.UNBLOCK, ResultType.BLOCKDATE);
+
+        return new Result(outputs, success, CommandType.UNBLOCK);
     }
-    
+
     @Override
     protected Result executeComplement() {
         boolean success = false;
@@ -90,9 +90,9 @@ public class CommandUnblock extends Command {
         success = processor.getFile().restore(unblockId);
         Task blockDate = processor.getFile().getTask(unblockId);
         outputs.add(blockDate);
-        return new Result(outputs, success, CommandType.BLOCK, ResultType.BLOCKDATE);
+        return new Result(outputs, success, CommandType.BLOCK);
     }
-    
+
     @Override
     public String toString() {
         return "cmdunblock id: " + this.id;
