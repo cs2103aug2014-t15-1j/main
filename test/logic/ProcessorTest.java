@@ -58,7 +58,7 @@ public class ProcessorTest {
 		} catch (NullPointerException e) {
 		}
 		return equal;
-	}
+	} 
 	
 	@Test
 	//Test for 'Add' Command & Inclusive of Undo/Redo
@@ -127,6 +127,7 @@ public class ProcessorTest {
         Result r3 = TestProcessor.processInput("redo");
         assertTrue(equalsObj(r3.getTasks().get(0), testTask7));
         
+        //Test Edit of Start
         TestProcessor.processInput("edit 1 start 10/10/2012 1010");
         TestProcessor.processInput("undo");
         Result r6 = TestProcessor.processInput("redo");
@@ -149,6 +150,11 @@ public class ProcessorTest {
         assertTrue(equalsObj(r15.getTasks().get(0), testTask11));
         
         //Test Edit of Delete:
+            //Delete start
+            //Delete due
+            //Delete tag
+        TestProcessor.processInput("edit 1 delete due");
+        
         
 	}
 
@@ -337,7 +343,6 @@ public class ProcessorTest {
         TestProcessor.processInput("undo");
         assertTrue(TestProcessor.getFile().getToDoTasks().size() == 2);
         TestProcessor.processInput("undo");
-        System.out.println(TestProcessor.getFile().getToDoTasks().size());
         assertTrue(TestProcessor.getFile().getToDoTasks().size() == 3);
 	}
 

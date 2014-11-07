@@ -18,8 +18,9 @@ public class CommandEdit extends Command {
     private List<String> delete = new ArrayList<String>();
 
     public CommandEdit(List<TaskParam> content) {
+        assert (content != null);
+        assert (!content.isEmpty());
         this.type = CommandType.EDIT;
-
         for (TaskParam param : content) {
             constructUsingParam(param);
         }
@@ -52,7 +53,7 @@ public class CommandEdit extends Command {
                 break;
 
             default:
-                System.out.println("EDITor, we have a problem.");
+                assert false : "Invalid input - Received: " + param.getName();
         }
     }
 
@@ -130,11 +131,11 @@ public class CommandEdit extends Command {
                 success = processor.getFile().edit(existingTask, name, start,
                                                    due, tags);
                 if (success) {
-                    performUpdate(list, oldTask, existingTask);
+                    updateProcessorInfo(list, oldTask, existingTask);
                 }
             }
         }
-        return new Result(list, success, getType());
+        return new Result(list, success, getType(), DISPLAY_TAB_NO_CHANGE);
     }
 
     private int getTaskId() {
@@ -149,7 +150,7 @@ public class CommandEdit extends Command {
         return taskId;
     }
 
-    private void performUpdate(List<Task> list, Task oldTask, Task existingTask) {
+    private void updateProcessorInfo(List<Task> list, Task oldTask, Task existingTask) {
         Processor processor = Processor.getInstance();
         processor.getEditedTaskHistory().push(oldTask);
         list.add(existingTask);
@@ -172,7 +173,7 @@ public class CommandEdit extends Command {
         tasks.add(prevTask);
         success = processor.getFile().edit(prevTask.getId(), taskName,
                                            taskStart, taskDue, taskTags);
-        return new Result(tasks, success, getType());
+        return new Result(tasks, success, getType(), DISPLAY_TAB_NO_CHANGE);
     }
 
     @Override

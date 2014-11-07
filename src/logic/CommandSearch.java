@@ -9,8 +9,11 @@ import database.Task;
 public class CommandSearch extends Command {
 
     private List<String> tags = new ArrayList<String>();
+    
     private List<String> keywords = new ArrayList<String>();
+    
     private String date = "";
+    
     private String status = "todo";
 
     public CommandSearch(List<TaskParam> content) {
@@ -41,8 +44,7 @@ public class CommandSearch extends Command {
                 break;
 
             default:
-                this.type = CommandType.ERROR;
-                this.error = "Search constructor parameter error";
+                assert false : "Invalid input - Received: " + param.getName();
         }
     }
 
@@ -64,8 +66,7 @@ public class CommandSearch extends Command {
     public List<String> getTags() {
         return this.tags;
     }
-
-    // TODO: Add to Command
+    
     @Override
     public List<String> getKeywords() {
         return this.keywords;
@@ -79,14 +80,14 @@ public class CommandSearch extends Command {
      */
     @Override
     protected Result execute(boolean userInput) {
-        // TODO: Search by this.status
         if (Processor.LOGGING_ENABLED) {
             Processor.getLogger().info("Executing 'Search' Command...");
         }
+        
         Processor.getInstance().initialiseNewSearchList();
         searchUsingDateAndKeyAndTags(date, keywords, tags);
         return new Result(Processor.getInstance().fetchLastSearch(), true,
-                getType());
+                getType(), DISPLAY_TAB_RESULT);
     }
 
     private void searchUsingDateAndKeyAndTags(String date,
@@ -167,6 +168,12 @@ public class CommandSearch extends Command {
         return searchRange;
     }
 
+    @Override
+    public String toString() {
+        return "cmdsearch status: " + this.status + " date: " + this.date +
+               " tags: " + this.tags + " keywords: " + this.keywords;
+    }
+
     /*
      * Obsolete Codes below, due to changing of conditions for Search Command
      * 
@@ -198,9 +205,4 @@ public class CommandSearch extends Command {
      * return false; }
      */
 
-    @Override
-    public String toString() {
-        return "cmdsearch status: " + this.status + " date: " + this.date +
-               " tags: " + this.tags + " keywords: " + this.keywords;
-    }
 }

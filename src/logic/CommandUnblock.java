@@ -6,10 +6,13 @@ import java.util.List;
 import parser.TaskParam;
 import database.Task;
 
+/** OBSOLETE CLASS
+ * 
+ * @author Yao Xiang
+ *
+ */
 public class CommandUnblock extends Command {
 
-    // Only one type of unblock search: "id"
-    // Use get("id"); returns string
     protected String id;
 
     public CommandUnblock(List<TaskParam> content) {
@@ -17,15 +20,12 @@ public class CommandUnblock extends Command {
     }
 
     protected CommandUnblock(List<TaskParam> content, boolean isComplement) {
-        if (content.isEmpty()) {
-            this.type = CommandType.ERROR;
-            this.error = "No arguments for unblock";
-        } else {
-            this.type = CommandType.UNBLOCK;
-
-            for (TaskParam param : (List<TaskParam>) content) {
-                constructUsingParam(param);
-            }
+        assert (content != null);
+        assert (!content.isEmpty());
+        this.type = CommandType.UNBLOCK;
+        
+        for (TaskParam param : (List<TaskParam>) content) {
+            constructUsingParam(param);
         }
     }
 
@@ -36,8 +36,7 @@ public class CommandUnblock extends Command {
                 break;
 
             default:
-                this.type = CommandType.ERROR;
-                this.error = "Unblock constructor parameter error";
+                assert false : "Invalid input - Received: " + param.getName();
         }
     }
 
@@ -78,7 +77,7 @@ public class CommandUnblock extends Command {
             }
         }
 
-        return new Result(outputs, success, CommandType.UNBLOCK);
+        return new Result(outputs, success, CommandType.UNBLOCK, DISPLAY_TAB_NO_CHANGE);
     }
 
     @Override
@@ -90,7 +89,7 @@ public class CommandUnblock extends Command {
         success = processor.getFile().restore(unblockId);
         Task blockDate = processor.getFile().getTask(unblockId);
         outputs.add(blockDate);
-        return new Result(outputs, success, CommandType.BLOCK);
+        return new Result(outputs, success, CommandType.BLOCK, DISPLAY_TAB_NO_CHANGE);
     }
 
     @Override

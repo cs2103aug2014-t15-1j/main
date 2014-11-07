@@ -24,10 +24,12 @@ public class Result {
     private CommandType cmdType;
 
     private boolean confirmation;
+    
+    private String displayTab;
 
     /** Dummy Constructor for Result */
     public Result() {
-        this(null, false, CommandType.ERROR, false);
+        this(null, false, null, false, null);
     }
 
     /**
@@ -36,8 +38,8 @@ public class Result {
      * Calls {@link #Result(List, boolean, CommandType, boolean, ResultType)
      * Overloaded Constructor}
      */
-    public Result(List<Task> outputs, boolean success, CommandType cmdType) {
-        this(outputs, success, cmdType, false);
+    public Result(List<Task> outputs, boolean success, CommandType cmdType, String displayTab) {
+        this(outputs, success, cmdType, false, displayTab);
     }
 
     /**
@@ -52,16 +54,16 @@ public class Result {
      * @param confirmation
      *            - {@code true} if requires confirmation from user,
      *            {@code false} if no further action is require from the user.
-     * @param resultType
-     *            - equals {@code ResultType.TASK} or
-     *            {@code ResultType.BLOCKDATE}.
+     * @param displayTab
+     *            - The tab that the result is suppose to be displayed on
      */
     public Result(List<Task> outputs, boolean success, CommandType cmdType,
-            boolean confirmation) {
+            boolean confirmation, String displayTab) {
         this.outputs = outputs;
         this.success = success;
         this.cmdType = cmdType;
         this.confirmation = confirmation;
+        this.displayTab  = displayTab;
     }
 
     /** Accessors */
@@ -85,6 +87,9 @@ public class Result {
         return confirmation;
     }
 
+    public String getDisplayTab() {
+        return displayTab;
+    }
     // Mutators
     public void setSuccess(boolean success) {
         this.success = success;
@@ -97,6 +102,6 @@ public class Result {
     @Override
     public String toString() {
         return outputs + "[" + success + "][" + cmdType + "][" + confirmation +
-               "]";
+               "][" + displayTab + "]";
     }
 }

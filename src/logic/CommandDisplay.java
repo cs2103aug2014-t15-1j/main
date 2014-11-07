@@ -8,22 +8,16 @@ import parser.TaskParam;
 
 public class CommandDisplay extends Command {
 
-    /* Restore types - "all","id" */
     private String rangeType = "";
 
-    /* Restore type data [get("id"); returns string] */
     private String id = "";
 
     public CommandDisplay(List<TaskParam> content) {
-        if (content.isEmpty()) {
-            this.type = CommandType.ERROR;
-            this.error = "No arguments for display";
-        } else {
-            this.type = CommandType.DISPLAY;
-
-            for (TaskParam param : content) {
-                constructUsingParam(param);
-            }
+        assert (content != null);
+        assert (!content.isEmpty());
+        this.type = CommandType.DISPLAY;
+        for (TaskParam param : content) {
+            constructUsingParam(param);
         }
     }
 
@@ -38,8 +32,7 @@ public class CommandDisplay extends Command {
                 break;
 
             default:
-                this.type = CommandType.ERROR;
-                this.error = "Restore constructor parameter error";
+                assert false : "Invalid input - Received: " + param.getName();
         }
     }
 
@@ -58,9 +51,11 @@ public class CommandDisplay extends Command {
         Processor processor = Processor.getInstance();
         List<Task> list = new ArrayList<Task>();
         boolean success = true;
-
+        String displayTab = DISPLAY_TAB_RESULT;
+        
         switch (rangeType) {
             case RANGE_TYPE_ALL:
+                displayTab = DISPLAY_TAB_ALL;
                 list = processor.getFile().getAllTasks();
                 break;
 
@@ -86,18 +81,22 @@ public class CommandDisplay extends Command {
                 break;
 
             case RANGE_TYPE_TODAY:
+                displayTab = DISPLAY_TAB_TODAY;
                 list = processor.fetchTodayTasks();
                 break;
 
             case RANGE_TYPE_TOMORROW:
+                displayTab = DISPLAY_TAB_TOMORROW;
                 list = processor.fetchTomorrowTasks();
                 break;
 
             case RANGE_TYPE_UPCOMING:
+                displayTab = DISPLAY_TAB_UPCOMING;
                 list = processor.fetchNextWeekTasks();
                 break;
 
             case RANGE_TYPE_SOMEDAY:
+                displayTab = DISPLAY_TAB_SOMEDAY;
                 list = processor.fetchFloatingTasks();
                 break;
 
@@ -106,11 +105,11 @@ public class CommandDisplay extends Command {
                 break;
 
             default:
-                success = false;
+                assert false : "Invalid input - Received: " + rangeType;
 
         }
 
-        return new Result(list, success, getType());
+        return new Result(list, success, getType(), displayTab);
     }
 
     @Override

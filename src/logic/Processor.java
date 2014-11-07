@@ -147,9 +147,11 @@ public class Processor extends Observable {
      * This methods processes the input by the user
      * 
      * @param String
-     * @return Result
+     * @return  {@link logic.Result#Result(List, boolean, CommandType, boolean)
+     *         Result}
      */
     public Result processInput(String input) throws IllegalArgumentException {
+        assert input != null;
         updateInputHistory(input);
         Command cmd = Parser.parse(input);
         assert cmd != null;
@@ -182,21 +184,18 @@ public class Processor extends Observable {
      *            - Command Object returned from Parser
      * 
      * @param userInput
-     *            - userInput determines if the command was given by the user or
-     *            internally by the system
+     *            - {@code True} if the command was given by the user else
+     *            {@code false} if called internally by the system
      * 
-     * @return Result - boolean {@code success}<br>
-     *         List{@literal <Task>} {@code tasks} - This reference is passed
-     *         into the methods to return {@code Task} that are affected in the
-     *         operation<br>
-     *         CommandType {@code cmdExecuted}
+     * @return {@link logic.Result#Result(List, boolean, CommandType, boolean)
+     *         Result}
      */
     protected Result processCommand(Command cmd, boolean userInput) {
-        if (cmd == null || cmd.getType() == CommandType.ERROR) {
+        if (cmd == null || cmd.getType() == null) {
             if (LOGGING_ENABLED) {
                 log.warning("Error in the input, unable to perform operation.");
             }
-            return new Result(null, false, CommandType.ERROR);
+            return new Result(null, false, null, "");
         } else {
             Result result = cmd.execute(userInput);
             if (result.isSuccess() && !result.needsConfirmation() && userInput) {
@@ -225,8 +224,9 @@ public class Processor extends Observable {
 
     private void updateUIPaneWindow() {
         updateFloatingAndTimedTasks();
-        setChanged();
-        notifyObservers("updateui");
+        /*
+         * -- OBSOLETE CODE -- setChanged(); notifyObservers("updateui");
+         */
         if (LOGGING_ENABLED) {
             log.info("Updated side panel.");
         }

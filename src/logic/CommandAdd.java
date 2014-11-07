@@ -25,6 +25,7 @@ public class CommandAdd extends Command {
     private List<String> tags = new ArrayList<String>();
 
     public CommandAdd(List<TaskParam> content) {
+        assert (content != null);
         this.type = CommandType.ADD;
         for (TaskParam param : content) {
             constructUsingParam(param);
@@ -50,15 +51,17 @@ public class CommandAdd extends Command {
                 break;
 
             default:
-                System.out.println("Error in adding Add parameters");
+                assert false : "Invalid input - Received: " + param.getName();
         }
     }
 
     /**
      * Executes 'add' operation of a task<br>
-     * This method adds a new Task to the Todo List
+     * This method adds a new Task to the Todo List; goes through a check to
+     * certify whether it can be added.
      * 
-     * @return Result
+     * @return {@link logic.Result#Result(List, boolean, CommandType, boolean)
+     *         Result}
      */
     @Override
     protected Result execute(boolean userInput) {
@@ -67,15 +70,19 @@ public class CommandAdd extends Command {
         if (Processor.LOGGING_ENABLED) {
             Processor.getLogger().info("Executing 'Add' Command...");
         }
-        boolean blockConfirmation = isBlocked();
-        if (!blockConfirmation) {
+        boolean isBlock = isBlocked();
+        if (!isBlock) {
             Task newTask = new Task(name, start, due, completedOn, tags,
                     TaskType.TODO);
             success = Processor.getInstance().getFile().add(newTask);
             list.add(newTask);
-            blockConfirmation = false;
         }
-        return new Result(list, success, getType(), blockConfirmation);
+        if (isBlock) {
+            throw new Error(ERROR_BLOCK_ADD);
+        }
+        assert (list.size() == 1);
+        String displayTab = getDisplayTab(list.get(0));
+        return new Result(list, success, getType(), false, displayTab);
     }
 
     /**
@@ -89,7 +96,7 @@ public class CommandAdd extends Command {
         boolean blocked = false;
         if (!due.isEmpty() || !start.isEmpty()) {
             Processor processor = Processor.getInstance();
-            List<Task> blockDates = processor.getFile().getBlockTasks();
+            List<Task> blockDates = processor.fetchBlockTasks();
             for (Task blockDate : blockDates) {
                 if (overlapsWithBlockTask(blockDate)) {
                     return true;
@@ -103,7 +110,7 @@ public class CommandAdd extends Command {
      * This method checks if the current CommandAdd object is trying to add to
      * to a date range that is blocked.
      * 
-     * @return boolean - True if overlaps
+     * @return boolean - {@code True} if overlaps
      */
     private boolean overlapsWithBlockTask(Task blockDate) {
         if (!start.isEmpty() && !due.isEmpty()) {
@@ -122,7 +129,8 @@ public class CommandAdd extends Command {
      * Executes complement for 'add' operation of a task<br>
      * This method deletes the newly added Task to the Todo List
      * 
-     * @return Result
+     * @return {@link logic.Result#Result(List, boolean, CommandType, boolean)
+     *         Result}
      */
     @Override
     protected Result executeComplement() {
@@ -130,8 +138,8 @@ public class CommandAdd extends Command {
         List<Task> tasks = new ArrayList<Task>();
         boolean success = false;
 
-        int taskId = processor.getFile().getToDoTasks().size() - 1;
-        Task toDelete = processor.getFile().getToDoTasks().get(taskId);
+        int taskId = processor.fetchToDoTasks().size() - 1;
+        Task toDelete = processor.fetchToDoTasks().get(taskId);
 
         success = processor.getFile().permanentlyDelete(toDelete);
 
@@ -139,7 +147,8 @@ public class CommandAdd extends Command {
             tasks.add(toDelete);
         }
 
-        return new Result(tasks, success, getType());
+        String displayTab = getDisplayTab(toDelete);
+        return new Result(tasks, success, getType(), displayTab);
     }
 
     @Override

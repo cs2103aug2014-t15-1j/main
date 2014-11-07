@@ -10,14 +10,13 @@ import database.Task;
 
 public class CommandTodo extends Command {
 
-    // Todo types [get("rangeType"); returns "last" | "id"]
     private String rangeType = "";
 
-    // "id" data [get("id"); returns string]
     private String id = "";
 
     private DateTime dateTime = new DateTime();
 
+    /* Complement Command object of this Command Object */
     private CommandDone cmdDone = null;
 
     public CommandTodo(List<TaskParam> content) {
@@ -25,18 +24,15 @@ public class CommandTodo extends Command {
     }
 
     protected CommandTodo(List<TaskParam> content, boolean isComplement) {
-        if (content.isEmpty()) {
-            this.type = CommandType.ERROR;
-            this.error = "No arguments for todo";
-        } else {
-            this.type = CommandType.TODO;
+        assert (content != null);
+        assert (!content.isEmpty());
+        this.type = CommandType.TODO;
 
-            for (TaskParam param : content) {
-                constructUsingParam(param);
-            }
-            if (!isComplement) {
-                initialiseComplementCommand(content);
-            }
+        for (TaskParam param : content) {
+            constructUsingParam(param);
+        }
+        if (!isComplement) {
+            initialiseComplementCommand(content);
         }
     }
 
@@ -54,9 +50,9 @@ public class CommandTodo extends Command {
                 assert (DateParser.isValidDate(param.getField())) : "Invalid date for done";
                 this.dateTime = new DateTime(param.getField(), "");
                 break;
+
             default:
-                this.type = CommandType.ERROR;
-                this.error = "Todo constructor parameter error";
+                assert false : "Invalid input - Received: " + param.getName();
         }
     }
 
@@ -92,7 +88,7 @@ public class CommandTodo extends Command {
             Processor.getLogger().info("Executing 'Todo' Command...");
         }
 
-        Result result = new Result(null, false, getType());
+        Result result = new Result(null, false, getType(), DISPLAY_TAB_NO_CHANGE);
         switch (rangeType) {
             case RANGE_TYPE_ID:
                 result = todoById();
@@ -129,7 +125,7 @@ public class CommandTodo extends Command {
             }
         }
 
-        return new Result(list, success, getType());
+        return new Result(list, success, getType(), DISPLAY_TAB_NO_CHANGE);
     }
 
     private Result todoByDate() {
@@ -142,7 +138,7 @@ public class CommandTodo extends Command {
                 list.add(task);
             }
         }
-        return new Result(list, success, getType());
+        return new Result(list, success, getType(), DISPLAY_TAB_NO_CHANGE);
     }
 
     /**

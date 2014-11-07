@@ -2,10 +2,12 @@ package logic;
 
 import java.util.List;
 
+import parser.DateParser;
+import database.Task;
+
 public abstract class Command {
 
     protected CommandType type = null;
-    protected String error = "";
 
     protected static final String PARAM_ID = "id";
     protected static final String PARAM_NAME = "name";
@@ -37,14 +39,20 @@ public abstract class Command {
     protected static final String DELETE_DUE = "due";
     protected static final String DELETE_START = "start";
     protected static final String DELETE_TAGS = "tags";
-
+    
+    protected static final String DISPLAY_TAB_ALL = "all";
+    protected static final String DISPLAY_TAB_TODAY = "today";
+    protected static final String DISPLAY_TAB_TOMORROW = "tomorrow";
+    protected static final String DISPLAY_TAB_UPCOMING = "upcoming";
+    protected static final String DISPLAY_TAB_SOMEDAY = "someday";
+    protected static final String DISPLAY_TAB_RESULT = "result";
+    protected static final String DISPLAY_TAB_NO_CHANGE = "nochange";
+    
+    protected static final String ERROR_BLOCK_ADD = "Unable to add Task, this clashes with a Block Task!";
+    
     public CommandType getType() {
         assert this.type != null : "CommandType cannot be null!";
         return this.type;
-    }
-
-    public String getError() {
-        return this.error;
     }
 
     public String get(String str) {
@@ -75,4 +83,13 @@ public abstract class Command {
         this.type = type;
     }
 
+    protected String getDisplayTab(Task toDelete) {
+        String displayTab = DISPLAY_TAB_ALL;
+        String todayDate = DateParser.getCurrDateStr();
+        if (toDelete.getDue().getDate().equals(todayDate) ||
+            toDelete.getStart().getDate().equals(todayDate)) {
+            displayTab = DISPLAY_TAB_TODAY;
+        }
+        return displayTab;
+    }
 }

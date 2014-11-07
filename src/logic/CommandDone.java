@@ -21,10 +21,11 @@ public class CommandDone extends Command {
 
     private String rangeType = "";
 
-    private DateTime dateTime = new DateTime();
-
     private String id = "";
 
+    private DateTime dateTime = new DateTime();
+
+    /* Complement Command object of this Command Object */
     private CommandTodo cmdTodo = null;
 
     public CommandDone(List<TaskParam> content) {
@@ -32,9 +33,7 @@ public class CommandDone extends Command {
     }
 
     /**
-     * This method constructs the CommandDone object
-     * <p>
-     * 
+     * This method constructs the CommandDone object <p>
      * @param List
      *            {@literal<TaskParam>} content - Expected to contain TaskParam
      *            object <br>
@@ -42,17 +41,14 @@ public class CommandDone extends Command {
      *            Command object
      */
     protected CommandDone(List<TaskParam> content, boolean isComplement) {
-        if (content.isEmpty()) {
-            this.type = CommandType.ERROR;
-            this.error = "No arguments for done";
-        } else {
-            this.type = CommandType.DONE;
+        assert (content != null);
+        assert (!content.isEmpty());
+        this.type = CommandType.DONE;
 
-            for (TaskParam param : content) {
-                constructUsingParam(param);
-            }
-            initialiseComplementCommand(content);
+        for (TaskParam param : content) {
+            constructUsingParam(param);
         }
+        initialiseComplementCommand(content);
     }
 
     private void constructUsingParam(TaskParam param) {
@@ -66,14 +62,12 @@ public class CommandDone extends Command {
                 break;
 
             case PARAM_DATE:
-                ;
                 assert (DateParser.isValidDate(param.getField())) : "Invalid date for done";
                 this.dateTime = new DateTime(param.getField(), "");
                 break;
 
             default:
-                this.type = CommandType.ERROR;
-                this.error = "Todo constructor parameter error";
+                assert false : "Invalid input - Received: " + param.getName();
         }
     }
 
@@ -108,6 +102,7 @@ public class CommandDone extends Command {
         }
         List<Task> list = new ArrayList<Task>();
         boolean success = false;
+        
         switch (rangeType) {
             case RANGE_TYPE_ID:
                 success = doneById(list);
@@ -122,7 +117,7 @@ public class CommandDone extends Command {
 
         }
 
-        return new Result(list, success, getType());
+        return new Result(list, success, getType(), DISPLAY_TAB_NO_CHANGE);
     }
 
     private boolean doneById(List<Task> list) {

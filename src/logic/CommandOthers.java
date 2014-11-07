@@ -1,7 +1,5 @@
 package logic;
 
-import java.util.Arrays;
-
 /**
  * This Command object encompasses the commands that need no other parameter
  * inputs.
@@ -19,14 +17,10 @@ public class CommandOthers extends Command {
     private static final String STR_REDO = "redo";
     private static final String STR_EXIT = "exit";
 
-    private static final String[] CMD_OTHERS = new String[] { STR_HELP,
-                                                             STR_RESET,
-                                                             STR_UNDO,
-                                                             STR_REDO, STR_EXIT };
-
     public CommandOthers(String type) {
-        assert (Arrays.asList(CMD_OTHERS).contains(type));
-
+        assert (type != null);
+        assert (!type.isEmpty());
+        
         switch (type.toLowerCase()) {
             case STR_EXIT:
                 this.type = CommandType.EXIT;
@@ -47,6 +41,9 @@ public class CommandOthers extends Command {
             case STR_HELP:
                 this.type = CommandType.HELP;
                 break;
+                
+            default:
+                assert false : "Invalid input - Received: " + type;
         }
     }
 
@@ -60,13 +57,13 @@ public class CommandOthers extends Command {
                 return executeUndo();
 
             case EXIT:
-                return new Result(null, true, getType());
+                return new Result(null, true, getType(), DISPLAY_TAB_NO_CHANGE);
 
             case RESET:
-                return new Result(null, true, getType(), true);
+                return new Result(null, true, getType(), DISPLAY_TAB_ALL);
 
             case HELP:
-                return new Result(null, true, getType());
+                return new Result(null, true, getType(), DISPLAY_TAB_NO_CHANGE);
 
             default:
                 return new Result();
@@ -78,7 +75,7 @@ public class CommandOthers extends Command {
             Processor.getLogger().info("Executing 'Undo' Command...");
         }
         Processor processor = Processor.getInstance();
-        Result r = new Result(null, false, CommandType.UNDO);
+        Result r = new Result(null, false, CommandType.UNDO, "");
         if (!processor.getBackwardCommandHistory().isEmpty()) {
             Command backwardCommand = processor.getBackwardCommandHistory()
                     .pop();
@@ -95,7 +92,7 @@ public class CommandOthers extends Command {
                     break;
 
                 default:
-                    return new Result(null, false, CommandType.ERROR);
+                    return new Result(null, false, null, "");
             }
             modifyHistory(backwardCommand, r.isSuccess(), false);
         }
@@ -121,7 +118,7 @@ public class CommandOthers extends Command {
             result.setCommandType(CommandType.REDO);
             return result;
         }
-        return new Result(null, false, getType());
+        return new Result(null, false, getType(), DISPLAY_TAB_NO_CHANGE);
     }
 
     /**

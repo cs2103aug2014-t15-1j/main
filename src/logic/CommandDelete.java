@@ -18,7 +18,6 @@ import database.Task;
  */
 public class CommandDelete extends Command {
 
-    /* RangeType: "id", "search", "id" */
     private String rangeType = "";
 
     private String id = "";
@@ -31,18 +30,15 @@ public class CommandDelete extends Command {
     }
 
     protected CommandDelete(List<TaskParam> content, boolean isComplement) {
-        if (content.isEmpty()) {
-            this.type = CommandType.ERROR;
-            this.error = "No arguments for delete";
-        } else {
-            this.type = CommandType.DELETE;
+        assert (content != null);
+        assert (!content.isEmpty());
+        this.type = CommandType.DELETE;
 
-            for (TaskParam param : content) {
-                constructUsingParam(param);
-            }
-            if (!isComplement) {
-                initialiseComplementCommand((List<TaskParam>) content);
-            }
+        for (TaskParam param : content) {
+            constructUsingParam(param);
+        }
+        if (!isComplement) {
+            initialiseComplementCommand((List<TaskParam>) content);
         }
     }
 
@@ -57,8 +53,7 @@ public class CommandDelete extends Command {
                 break;
 
             default:
-                this.type = CommandType.ERROR;
-                this.error = "Delete constructor parameter error";
+                assert false : "Invalid input - Received: " + param.getName();
         }
     }
 
@@ -71,7 +66,8 @@ public class CommandDelete extends Command {
      * Deletes a task<br>
      * Allows delete {@literal<id>}, delete search, delete all
      * 
-     * @return Result
+     * @return {@link logic.Result#Result(List, boolean, CommandType, boolean)
+     *         Result}
      */
     @Override
     protected Result execute(boolean userInput) {
@@ -90,8 +86,8 @@ public class CommandDelete extends Command {
 
             case RANGE_TYPE_SEARCH:
                 if (userInput) {
-                    processor.getForwardSearchListHistory()
-                            .push(processor.fetchLastSearch());
+                    List<Task> lastSearch = processor.fetchLastSearch();
+                    processor.getForwardSearchListHistory().push(lastSearch);
                 }
                 success = deleteSearchedTasks(list);
                 break;
@@ -102,20 +98,21 @@ public class CommandDelete extends Command {
                 break;
 
             default:
-                success = false;
+                assert false : "Invalid input - Received: " + rangeType;
         }
-        return new Result(list, success, this.getType(), confirmation);
+
+        return new Result(list, success, this.getType(), confirmation, DISPLAY_TAB_NO_CHANGE);
     }
 
     /** Deletes Task using Id */
     private boolean deleteTaskUsingID(List<Task> list) {
-        Task t = Processor.getInstance().getFile()
-                .getTask(Integer.parseInt(id));
+        Processor processor = Processor.getInstance();
+        Task t = processor.getFile().getTask(Integer.parseInt(id));
 
         if (t == null) {
             return false;
         } else {
-            boolean success = Processor.getInstance().getFile().delete(t);
+            boolean success = processor.getFile().delete(t);
             if (success) {
                 list.add(t);
             }
@@ -146,7 +143,8 @@ public class CommandDelete extends Command {
      * Restores a deleted Task<br>
      * Allows restore {@literal<id>}, restore search
      * 
-     * @return true/false on whether operation is performed
+     * @return {@link logic.Result#Result(List, boolean, CommandType, boolean)
+     *         Result}
      */
     @Override
     protected Result executeComplement() {

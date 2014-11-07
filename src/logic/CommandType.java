@@ -19,5 +19,5 @@ package logic;
  * ERROR - Error found in the command entered (Wrong format)<br>
  */
 public enum CommandType {
-    HELP, ADD, EDIT, DELETE, RESTORE, SEARCH, DISPLAY, BLOCK, UNBLOCK, DONE, TODO, UNDO, REDO, EXIT, RESET, ERROR;
+    HELP, ADD, EDIT, DELETE, RESTORE, SEARCH, DISPLAY, BLOCK, UNBLOCK, DONE, TODO, UNDO, REDO, EXIT, RESET;
 }

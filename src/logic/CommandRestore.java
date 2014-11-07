@@ -10,8 +10,9 @@ public class CommandRestore extends Command {
 
     protected String rangeType = "";
 
-    // Restore type data [get("id"); returns string]
     protected String id = "";
+
+    /* Complement Command object of this Command Object */
     protected CommandDelete cmdDelete = null;
 
     public CommandRestore(List<TaskParam> content) {
@@ -19,18 +20,16 @@ public class CommandRestore extends Command {
     }
 
     protected CommandRestore(List<TaskParam> content, boolean isComplement) {
-        if (content.isEmpty()) {
-            this.type = CommandType.ERROR;
-            this.error = "No arguments for restore";
-        } else {
-            this.type = CommandType.RESTORE;
+        assert (content != null);
+        assert (!content.isEmpty());
+        
+        this.type = CommandType.RESTORE;
 
-            for (TaskParam param : content) {
-                constructUsingParam(param);
-            }
-            if (!isComplement) {
-                initialiseComplementCommand(content);
-            }
+        for (TaskParam param : content) {
+            constructUsingParam(param);
+        }
+        if (!isComplement) {
+            initialiseComplementCommand(content);
         }
     }
 
@@ -45,8 +44,7 @@ public class CommandRestore extends Command {
                 break;
 
             default:
-                this.type = CommandType.ERROR;
-                this.error = "Restore constructor parameter error";
+                assert false : "Invalid input - Received: " + param.getName();
         }
     }
 
@@ -99,7 +97,7 @@ public class CommandRestore extends Command {
                 success = false;
 
         }
-        return new Result(list, success, getType());
+        return new Result(list, success, getType(), DISPLAY_TAB_NO_CHANGE);
     }
 
     /** Restores a deleted Task using Id */

@@ -21,15 +21,13 @@ public class CommandBlock extends Command {
     }
 
     protected CommandBlock(List<TaskParam> content, boolean isComplement) {
-        if (content.isEmpty()) {
-            this.type = CommandType.ERROR;
-            this.error = "No arguments for block";
-        } else {
-            this.type = CommandType.BLOCK;
+        assert (content != null);
+        assert (!content.isEmpty());
 
-            for (TaskParam param : content) {
-                constructUsingParam(param);
-            }
+        this.type = CommandType.BLOCK;
+
+        for (TaskParam param : content) {
+            constructUsingParam(param);
         }
     }
 
@@ -52,8 +50,7 @@ public class CommandBlock extends Command {
                 break;
 
             default:
-                this.type = CommandType.ERROR;
-                this.error = "Block constructor parameter error";
+                assert false : "Invalid input - Received: " + param.getName();
         }
     }
 
@@ -61,7 +58,8 @@ public class CommandBlock extends Command {
      * Executes Block Command
      * 
      * @param userInput
-     * @return Result
+     * @return {@link logic.Result#Result(List, boolean, CommandType, boolean)
+     *         Result}
      */
     @Override
     protected Result execute(boolean userInput) {
@@ -69,7 +67,7 @@ public class CommandBlock extends Command {
             Processor.getLogger().info("Executing 'Block' Command...");
         }
         Processor processor = Processor.getInstance();
-        List<Task> blockRange = processor.getFile().getBlockTasks();
+        List<Task> blockRange = processor.fetchBlockTasks();
         boolean success = true;
 
         List<Task> outputs = new ArrayList<Task>();
@@ -88,25 +86,35 @@ public class CommandBlock extends Command {
             }
         }
 
+        String displayTab = "";
         if (success) {
             Task currBlock = new Task(name, from, to, new DateTime(), tags,
                     TaskType.BLOCK);
             processor.getFile().add(currBlock);
             outputs.add(currBlock);
+            displayTab = getDisplayTab(currBlock);
+        } else {
+            throw new Error("This Task overlaps with another Block Task");
         }
 
-        return new Result(outputs, success, CommandType.BLOCK);
+        return new Result(outputs, success, CommandType.BLOCK, displayTab);
     }
 
-    // TODO: UPDATE FOR NEW TASK FORMAT.
+    /**
+     * Executes complement for 'block' operation of a task<br>
+     * This method deletes the newly added BlockTask to the Todo List
+     * 
+     * @return {@link logic.Result#Result(List, boolean, CommandType, boolean)
+     *         Result}
+     */
     @Override
     protected Result executeComplement() {
         Processor processor = Processor.getInstance();
         List<Task> tasks = new ArrayList<Task>();
         boolean success = false;
 
-        int taskId = processor.getFile().getBlockTasks().size() - 1;
-        Task toDelete = processor.getFile().getBlockTasks().get(taskId);
+        int taskId = processor.fetchBlockTasks().size() - 1;
+        Task toDelete = processor.fetchBlockTasks().get(taskId);
 
         success = processor.getFile().permanentlyDelete(toDelete);
 
@@ -114,18 +122,9 @@ public class CommandBlock extends Command {
             tasks.add(toDelete);
         }
 
-        return new Result(tasks, success, getType());
-        /*
-         * Processor processor = Processor.getInstance(); boolean success =
-         * false; List<Task> outputs = new ArrayList<Task>(); int blockIndex =
-         * processor.getFile().getBlockTasks().size() - 1; if (blockIndex >= 0)
-         * { Task currBlock =
-         * processor.getFile().getBlockTasks().get(blockIndex); success =
-         * processor.getFile().wipeTask(currBlock); outputs.add(currBlock); }
-         * return new Result(outputs, success, CommandType.UNBLOCK,
-         * ResultType.BLOCKDATE);
-         */
+        String displayTab = getDisplayTab(toDelete);
 
+        return new Result(tasks, success, getType(), displayTab);
     }
 
     @Override
