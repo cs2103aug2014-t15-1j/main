@@ -50,6 +50,7 @@ public class CommandBlock extends Command {
 
             case PARAM_TAG:
                 this.tags.add(param.getField());
+                break;
 
             default:
                 this.type = CommandType.ERROR;

@@ -125,7 +125,7 @@ public class ResultGenerator {
     public static List<Task> getBlockTasks(){
         return processor.fetchBlockTasks();
     }
-
+    
     private void initialiseAppilcation() {
         processor = Processor.getInstance();
     }

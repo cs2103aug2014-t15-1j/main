@@ -16,12 +16,17 @@ public class DateParser {
     private static final String TYPE_TIME_ONLY = "time-only";
     private static final String TYPE_DATE_ONLY = "date-only";
     private static final String TYPE_DATE_TODAY = "today";
-    private static final String TYPE_DATE_TMR = "tomorrow";
+    private static final String TYPE_DATE_TOMORROW = "tomorrow";
+    private static final String TYPE_DATE_TMR = "tmr";
+
+    private static final String[] LIST_DATE_WORDS = { TYPE_DATE_TODAY,
+                                                     TYPE_DATE_TOMORROW,
+                                                     TYPE_DATE_TMR };
 
     /**
      * The date/time format DateParser will use.
      */
-    private static final DateFormat DATE_FORMAT = new SimpleDateFormat(
+    private static final DateFormat DATE_TIME_FORMAT = new SimpleDateFormat(
             "dd/MM/yyyy HHmm");
 
     /**
@@ -34,7 +39,7 @@ public class DateParser {
      */
     public static DateTime getCurrDateTime() {
         Calendar cal = Calendar.getInstance();
-        String[] date = DATE_FORMAT.format(cal.getTime()).split(" ");
+        String[] date = DATE_TIME_FORMAT.format(cal.getTime()).split(" ");
         return new DateTime(date[0], date[1]);
     }
 
@@ -51,7 +56,20 @@ public class DateParser {
     }
 
     /**
-     * Returns the current date in a <code>String</code> object.
+     * Returns the current time in a <code>String</code> object.
+     * <p>
+     * <i>Uses the default system settings for time.</i>
+     * 
+     * @return <code>String</code> object containing time in <code>HHmm</code>
+     */
+    public static String getCurrTimeStr() {
+        String currDate = getCurrDateTimeStr();
+        String[] dateFields = currDate.split(" ");
+        return dateFields[1];
+    }
+
+    /**
+     * Returns the current date in a <code>String</code>.
      * <p>
      * <i>Uses the default system settings for date.</i>
      * 
@@ -64,9 +82,47 @@ public class DateParser {
         return dateFields[0];
     }
 
+    /**
+     * Returns tomorrow's date in a <code>String</code>.
+     * <p>
+     * <i>Uses the default system settings for date.</i>
+     * 
+     * @return <code>String</code> object containing date in
+     *         <code>dd/MM/yyyy</code>
+     */
     public static String getTmrDateStr() {
         String today = getCurrDateStr();
-        String[] dateFields = today.split("/");
+        return getNextDayStr(today);
+    }
+
+    /**
+     * Returns the date of the day that is <code>numDaysLater</code> days from
+     * today, in a <code>String</code> object.
+     * <p>
+     * <i>Uses the default system settings for date.</i>
+     * 
+     * @return <code>String</code> object containing date in
+     *         <code>dd/MM/yyyy</code>
+     */
+    public static String getDateFromNowStr(int numDaysLater) {
+        String date = getCurrDateStr();
+        for (int i = 0; i < numDaysLater; i++) {
+            date = getNextDayStr(date);
+        }
+        return date;
+    }
+
+    /**
+     * Returns the date one day later than the input date. Input date must be of
+     * the correct <code>String</code> format.
+     * 
+     * @param currDay
+     *            Date in "dd/MM/yyyy" format
+     * @return <code>String</code> object containing date in
+     *         <code>dd/MM/yyyy</code>
+     */
+    private static String getNextDayStr(String currDay) {
+        String[] dateFields = currDay.split("/");
 
         int day = Integer.parseInt(dateFields[0]);
         int tmr = day + 1;
@@ -89,6 +145,10 @@ public class DateParser {
         return date;
     }
 
+    /**
+     * Converts an <code>int</code> to a two-character <code>String</code>, by
+     * adding leading zeroes if necessary.
+     */
     private static String toDoubleDigitStr(int num) {
         if (num < 10) {
             return "0" + Integer.toString(num);
@@ -97,6 +157,10 @@ public class DateParser {
         }
     }
 
+    /**
+     * Converts an <code>int</code> to a four-character <code>String</code>, by
+     * adding "20" in front if necessary.
+     */
     private static String toFourDigitStr(int num) {
         assert (num >= YEAR_MINIMUM || (num >= 0 && num < 100));
 
@@ -113,19 +177,6 @@ public class DateParser {
         assert (dateFields.length == 3);
         String year = dateFields[2];
         return year;
-    }
-
-    /**
-     * Returns the current time in a <code>String</code> object.
-     * <p>
-     * <i>Uses the default system settings for time.</i>
-     * 
-     * @return <code>String</code> object containing time in <code>HHmm</code>
-     */
-    public static String getCurrTimeStr() {
-        String currDate = getCurrDateTimeStr();
-        String[] dateFields = currDate.split(" ");
-        return dateFields[1];
     }
 
     /**
@@ -196,7 +247,8 @@ public class DateParser {
         }
 
         if (!isValidDateTime(str)) {
-            throw new IllegalArgumentException("Invalid input for parseToDateTime");
+            throw new IllegalArgumentException(
+                    "Invalid input for parseToDateTime");
         }
 
         String date = "";
@@ -254,7 +306,7 @@ public class DateParser {
     private static String getDateType(String str) {
         assert (isValidDateTime(str)) : "Invalid DateTime for getDateType()!";
         String[] dateFields = str.trim().split(" ");
-    
+
         // TODO: Magic Strings
         if (isSingleItemArray(dateFields)) {
             if (firstItemIsDate(dateFields)) {
@@ -279,7 +331,7 @@ public class DateParser {
                     result = getCurrDateStr();
                     break;
 
-                case TYPE_DATE_TMR:
+                case TYPE_DATE_TOMORROW:
                     result = getTmrDateStr();
                     break;
             }
@@ -374,8 +426,7 @@ public class DateParser {
     }
 
     private static boolean isValidWordDate(String str) {
-        String[] dateWords = { "today", "tomorrow" };
-        return Arrays.asList(dateWords).contains(str.toLowerCase());
+        return Arrays.asList(LIST_DATE_WORDS).contains(str.toLowerCase());
     }
 
     /**
