@@ -119,7 +119,7 @@ public class CommandTodo extends Command {
             int taskId = Integer.parseInt(id);
             Task task = processor.getFile().getTask(taskId);
             if (task != null) {
-                success = processor.getFile().toDoTask(task);
+                success = processor.getFile().markToDo(task);
                 if (success) {
                     list.add(task);
                 }
@@ -138,7 +138,7 @@ public class CommandTodo extends Command {
         List<Task> list = new ArrayList<Task>();
         boolean success = false;
         for (Task task : CommandDone.fetchLastDoneTasks()) {
-            success = processor.getFile().toDoTask(task);
+            success = processor.getFile().markToDo(task);
             if (success) {
                 list.add(task);
             }

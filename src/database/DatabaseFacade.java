@@ -343,9 +343,9 @@ public class DatabaseFacade {
      *            The ID of the Task object to be marked as to-do.
      * @return True, if file has been successfully updated with change.
      */
-    public boolean toDo(int id) {
+    public boolean markToDo(int id) {
         Task task = databaseLogic.searchTaskById(getAllTasks(), id);
-        boolean success = databaseLogic.toDo(task);
+        boolean success = databaseLogic.markToDo(task);
         if (success) {
             return updateFile();
         } else {
@@ -363,8 +363,8 @@ public class DatabaseFacade {
      *            The Task object to be marked as to-do.
      * @return True, if file has been successfully updated with change.
      */
-    public boolean toDo(Task task) {
-        boolean success = databaseLogic.toDo(task);
+    public boolean markToDo(Task task) {
+        boolean success = databaseLogic.markToDo(task);
         if (success) {
             return updateFile();
         } else {
@@ -382,9 +382,9 @@ public class DatabaseFacade {
      *            The ID of the Task object to be marked as done.
      * @return True, if file has been successfully updated with change.
      */
-    public boolean done(int id) {
+    public boolean markDone(int id) {
         Task task = databaseLogic.searchTaskById(getAllTasks(), id);
-        boolean success = databaseLogic.done(task);
+        boolean success = databaseLogic.markDone(task);
         if (success) {
             return updateFile();
         } else {
@@ -402,8 +402,8 @@ public class DatabaseFacade {
      *            The Task object to be marked as done.
      * @return True, if file has been successfully updated with change.
      */
-    public boolean done(Task task) {
-        boolean success = databaseLogic.done(task);
+    public boolean markDone(Task task) {
+        boolean success = databaseLogic.markDone(task);
         if (success) {
             return updateFile();
         } else {

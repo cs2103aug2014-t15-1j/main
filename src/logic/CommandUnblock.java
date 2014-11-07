@@ -72,7 +72,7 @@ public class CommandUnblock extends Command {
         if (unblockId > 0) {
             Task blockDate = processor.getFile().getTask(unblockId);
             if (blockDate != null) {
-                success = processor.getFile().deleteTask(blockDate);
+                success = processor.getFile().delete(blockDate);
                 outputs.add(blockDate);
                 success = true;
             }
@@ -87,7 +87,7 @@ public class CommandUnblock extends Command {
         Processor processor = Processor.getInstance();
         List<Task> outputs = new ArrayList<Task>();
         int unblockId = Integer.parseInt(id);
-        success = processor.getFile().restoreTask(unblockId);
+        success = processor.getFile().restore(unblockId);
         Task blockDate = processor.getFile().getTask(unblockId);
         outputs.add(blockDate);
         return new Result(outputs, success, CommandType.BLOCK, ResultType.BLOCKDATE);

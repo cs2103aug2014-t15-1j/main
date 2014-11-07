@@ -110,7 +110,7 @@ public class CommandRestore extends Command {
         Task task = processor.getFile().getTask(taskId);
         
         if (task != null) {
-            success = processor.getFile().restoreTask(task);
+            success = processor.getFile().restore(task);
             if (success) {
                 list.add(task);
             }
@@ -125,7 +125,7 @@ public class CommandRestore extends Command {
             List<Task> restoreList = processor.getBackwardSearchListHistory().pop();
             if (restoreList != null) {
                 for (Task t : restoreList) {
-                    boolean success = processor.getFile().restoreTask(t);
+                    boolean success = processor.getFile().restore(t);
                     if (success) {
                         list.add(t);
                     }

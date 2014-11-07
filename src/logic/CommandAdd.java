@@ -71,7 +71,7 @@ public class CommandAdd extends Command {
         boolean blockConfirmation = isBlocked();
         if (!blockConfirmation) {
             Task newTask = new Task(name, start, due, completedOn, tags, TaskType.TODO);
-            success = Processor.getInstance().getFile().addNewTask(newTask);
+            success = Processor.getInstance().getFile().add(newTask);
             list.add(newTask);
             blockConfirmation = false;
         }
@@ -130,7 +130,7 @@ public class CommandAdd extends Command {
         int taskId = processor.getFile().getToDoTasks().size() - 1;
         Task toDelete = processor.getFile().getToDoTasks().get(taskId);
 
-        success = processor.getFile().wipeTask(toDelete);
+        success = processor.getFile().permanentlyDelete(toDelete);
 
         if (success) {
             tasks.add(toDelete);

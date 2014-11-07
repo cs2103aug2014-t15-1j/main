@@ -113,7 +113,7 @@ public class CommandDelete extends Command {
         if (t == null) {
             return false;
         } else {
-            boolean success = Processor.getInstance().getFile().deleteTask(t);
+            boolean success = Processor.getInstance().getFile().delete(t);
             if (success) {
                 list.add(t);
             }
@@ -127,7 +127,7 @@ public class CommandDelete extends Command {
             Processor processor = Processor.getInstance();
             List<Task> deleteList = processor.getForwardSearchListHistory().pop();
             for (Task t : deleteList) {
-                processor.getFile().deleteTask(t);
+                processor.getFile().delete(t);
                 list.add(t);
             }
             processor.getBackwardSearchListHistory().push(deleteList);

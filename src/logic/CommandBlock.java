@@ -90,7 +90,7 @@ public class CommandBlock extends Command {
 
         if (success) {
             Task currBlock = new Task(name, from, to, new DateTime(), tags, TaskType.BLOCK);
-            processor.getFile().addNewTask(currBlock);
+            processor.getFile().add(currBlock);
             outputs.add(currBlock);
         }
 
@@ -108,7 +108,7 @@ public class CommandBlock extends Command {
         int taskId = processor.getFile().getBlockTasks().size() - 1;
         Task toDelete = processor.getFile().getBlockTasks().get(taskId);
 
-        success = processor.getFile().wipeTask(toDelete);
+        success = processor.getFile().permanentlyDelete(toDelete);
 
         if (success) {
             tasks.add(toDelete);

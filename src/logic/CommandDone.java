@@ -121,7 +121,7 @@ public class CommandDone extends Command {
         int taskId = Integer.parseInt(id);
         Task task = processor.getFile().getTask(taskId);
         if (task != null) {
-            success = processor.getFile().doneTask(task);
+            success = processor.getFile().markDone(task);
             if (success) {
                 list.add(task);
             }
@@ -140,7 +140,7 @@ public class CommandDone extends Command {
         }
         for (Task task : list) {
             lastTasksRange.add(task);
-            processor.getFile().doneTask(task);
+            processor.getFile().markDone(task);
         }
         return success;
     }

@@ -128,7 +128,7 @@ public class CommandEdit extends Command {
                             break;
                     }
                 }
-                success = processor.getFile().updateTaskInfo(existingTask, name, start, due, tags);
+                success = processor.getFile().edit(existingTask, name, start, due, tags);
                 if (success) {
                     performUpdate(list, oldTask, existingTask);
                 }
@@ -170,7 +170,7 @@ public class CommandEdit extends Command {
         List<String> taskTags = prevTask.getTags();
         
         tasks.add(prevTask);
-        success = processor.getFile().updateTaskInfo(prevTask.getId(), taskName, taskStart, taskDue, taskTags);
+        success = processor.getFile().edit(prevTask.getId(), taskName, taskStart, taskDue, taskTags);
         return new Result(tasks, success, getType(), ResultType.TASK);
     }
     

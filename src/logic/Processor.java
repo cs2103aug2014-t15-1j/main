@@ -9,10 +9,10 @@ import java.util.logging.FileHandler;
 import java.util.logging.Formatter;
 import java.util.logging.Logger;
 
-import objects.DataFileStub;
+import objects.DatabaseFacadeStub;
 import logic.Result.ResultType;
 import parser.Parser;
-import database.DataFile;
+import database.DatabaseFacade;
 import database.Task;
 
 /**
@@ -38,8 +38,8 @@ public class Processor extends Observable {
     /** Instance of Processor */
     private static Processor processor;
     
-    /** Instance of DataFile */
-    private DataFile file;
+    /** Instance of DatabaseFacade */
+    private DatabaseFacade file;
     
     /** Stores Command History for Undo */
 	private Stack<Command> backwardCommandHistory;
@@ -80,9 +80,9 @@ public class Processor extends Observable {
     
 	private Processor(boolean isTest) {
 	    if (isTest) {
-	        file = new DataFileStub();
+	        file = new DatabaseFacadeStub();
 	    } else {
-	        file = new DataFile();
+	        file = new DatabaseFacade();
 	    }
 	    initialiseProcessor();
 	    initialiseLogger();
@@ -261,7 +261,7 @@ public class Processor extends Observable {
 	}
 		
 	private boolean wipeFile() {
-	    return file.wipeFile();
+	    return file.resetData();
 	}
 	
 	/** 
@@ -369,7 +369,7 @@ public class Processor extends Observable {
         return currentInputString;
     }
 	
-	protected DataFile getFile() {
+	protected DatabaseFacade getFile() {
 	    return file;
 	}
 	

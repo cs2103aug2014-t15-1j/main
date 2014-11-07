@@ -370,7 +370,7 @@ public class DatabaseLogic {
      *            The Task object to mark as to-do.
      * @return True, if file has been successfully updated with change.
      */
-    public boolean toDo(Task task) {
+    public boolean markToDo(Task task) {
         if (task == null || (task.isToDo() && !task.isDeleted())) {
             return false; // Invalid ID or is undeleted to-do task
         }
@@ -403,7 +403,7 @@ public class DatabaseLogic {
      *            The Task object to mark as done.
      * @return True, if file has been successfully updated with change.
      */
-    public boolean done(Task task) {
+    public boolean markDone(Task task) {
         if (task == null || (task.isDone() && !task.isDeleted())) {
             return false; // Invalid ID or is undeleted done task
         }
