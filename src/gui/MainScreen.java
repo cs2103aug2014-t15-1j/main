@@ -15,18 +15,18 @@ import org.eclipse.swt.widgets.Shell;
 /**
  * This class creates and setUps the window for the Haystack application
  */
-//@author A0118846W
+// @author A0118846W
 public class MainScreen {
 
     private static final int NUM_COLS_SCREEN = 2;
     private static final String PROGRAM_NAME = "Haystack";
+
     /**
- * Runs and initializes the application
- */
+     * Runs and initializes the application
+     */
     public static void run() {
         Display display = new Display();
         Shell shell = new Shell(display, SWT.NO_TRIM);
-        createDragControls(shell);
 
         runProgram(shell);
 
@@ -36,27 +36,41 @@ public class MainScreen {
             if (!display.readAndDispatch())
                 display.sleep();
         }
+        
+        display.dispose();
+        disposeResources(display);
+    }
 
+    public static void disposeResources(Display display) {
         display.dispose();
         Images.disposeAllImages();
         Colours.disposeAllColours();
     }
-    
-    /** 
+
+    public static void runProgram(Shell shell) {
+        Images images = new Images(shell);
+        new Fonts(shell);
+        new Colours(shell.getDisplay());
+        createDragControls(shell);
+        configureShell(shell, images);
+        createContents(shell);
+        initialiseProgram();
+        new ProcessUserInteraction();
+    }
+
+    /**
      * Create drag controls along the shell's borders.
      * 
-     * Code taken from
-     * <a href="http://stackoverflow.com/questions/23126313/removing-window-border-in-swt-ui-disables-re-positioning">Stack Overflow</a>
+     * Code taken from <a href=
+     * "http://stackoverflow.com/questions/23126313/removing-window-border-in-swt-ui-disables-re-positioning"
+     * >Stack Overflow</a>
      */
     private static void createDragControls(final Shell shell) {
-        Listener l = new Listener()
-        {
+        Listener l = new Listener() {
             Point origin;
 
-            public void handleEvent(Event e)
-            {
-                switch (e.type)
-                {
+            public void handleEvent(Event e) {
+                switch (e.type) {
                     case SWT.MouseDown:
                         origin = new Point(e.x, e.y);
                         break;
@@ -64,30 +78,20 @@ public class MainScreen {
                         origin = null;
                         break;
                     case SWT.MouseMove:
-                        if (origin != null)
-                        {
-                            Point p = shell.getDisplay().map(shell, null, e.x, e.y);
+                        if (origin != null) {
+                            Point p = shell.getDisplay().map(shell, null, e.x,
+                                                             e.y);
                             shell.setLocation(p.x - origin.x, p.y - origin.y);
                         }
                         break;
                 }
             }
         };
-        
+
         shell.addListener(SWT.MouseDown, l);
         shell.addListener(SWT.MouseUp, l);
         shell.addListener(SWT.MouseMove, l);
     }
-
-public static void runProgram(Shell shell) {
-    Images images = new Images(shell);
-    new Fonts(shell);
-    new Colours(shell.getDisplay());
-    configureShell(shell, images);
-    createContents(shell);
-    initialiseProgram();
-    new ProcessUserInteraction();
-}
 
     private static void initialiseProgram() {
         ResultGenerator resultGen = ResultGenerator.getInstance();
@@ -99,7 +103,7 @@ public static void runProgram(Shell shell) {
         Rectangle bounds = display.getBounds();
         int shellWidth = (int) (bounds.width * 0.8);
         int shellHeight = (int) (bounds.height * 0.8);
-        
+
         shell.setSize(shellWidth, shellHeight);
         setBackGround(shell, images);
         setPositionToCenterOfScreen(shell);
@@ -119,7 +123,7 @@ public static void runProgram(Shell shell) {
                 .getResourceAsStream("resource/Icon.gif")));
 
         Image background = Images.getRegistry().get("main");
-       ImageData imageData = background.getImageData();
+        ImageData imageData = background.getImageData();
         imageData = imageData.scaledTo(parent.getSize().x, parent.getSize().y);
         parent.setBackgroundImage(background);
 

@@ -149,13 +149,16 @@ public class ProcessUserInteraction {
             public void handleEvent(Event event) {
                 String input = commandLine.getText();
                 commandLine.setText("");
-
+                try{
                 if (isReplyToConfrimation) {
                     processReply(input);
                 } else if (input.trim().isEmpty()) {
                     // do nothing, if input is empty
                 } else {
                     processInput(input);
+                }
+                }catch(Exception e){
+                    feedback.setText(e.getMessage());
                 }
             }
         });

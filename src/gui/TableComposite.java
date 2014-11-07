@@ -23,15 +23,13 @@ import org.eclipse.swt.widgets.Listener;
 //@author A0118846W
 public class TableComposite extends Composite {
 // Today, tmr, someday, upcoming, todo, block, done
-    private static final int NUM_TAB_LABELS = 8; // Update this if adding new labels
-    private static final String TODO_TABLE_TAB_LABEL = "To Do";
+    private static final int NUM_TAB_LABELS = 6; // Update this if adding new labels
+    private static final String All_TABLE_TAB_LABEL = "all";
     private static final String TODAY_TABLE_TAB_LABEL = "Today";
     private static final String TOMORROW_TABLE_TAB_LABEL = "Tomorrow";
     private static final String UPCOMING_TABLE_TAB_LABEL = "Upcoming";
     private static final String FLOATING_TABLE_TAB_LABEL = "Someday";
-    private static final String BLOCK_TABLE_TAB_LABEL = "Blocked";
-    private static final String DONE_TABLE_TAB_LABEL = "Done";
-    private static final String SEARCH_TABLE_TAB_LABEL = "Search";
+    private static final String RESULT_TABLE_TAB_LABEL = "Result";
     
     private static CTabFolder tabFolder;
     private FontRegistry registry;
@@ -77,14 +75,12 @@ public class TableComposite extends Composite {
         tabFolder.setLayoutData(new GridData(GridData.FILL_BOTH));
         tabFolder.setBackground(Colours.getTabFolderColour());
 
-        createTable(tabFolder, TODO_TABLE_TAB_LABEL);
+        createTable(tabFolder, All_TABLE_TAB_LABEL);
         createTable(tabFolder, TODAY_TABLE_TAB_LABEL);
         createTable(tabFolder, TOMORROW_TABLE_TAB_LABEL);
         createTable(tabFolder, UPCOMING_TABLE_TAB_LABEL);
         createTable(tabFolder, FLOATING_TABLE_TAB_LABEL);
-        createTable(tabFolder, DONE_TABLE_TAB_LABEL);
-        createTable(tabFolder, BLOCK_TABLE_TAB_LABEL);
-        createTable(tabFolder, SEARCH_TABLE_TAB_LABEL);
+        createTable(tabFolder, RESULT_TABLE_TAB_LABEL);
         
         addListener(tabFolder);
         tabFolder.setSelection(0);
