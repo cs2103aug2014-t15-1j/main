@@ -2,26 +2,18 @@ package gui;
 
 import java.io.InputStream;
 
-import org.eclipse.jface.resource.FontRegistry;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.FocusEvent;
-import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 
 /**
@@ -30,7 +22,7 @@ import org.eclipse.swt.widgets.Shell;
 //@author A0118846W
 public class HelpDialog extends Dialog {
     
-    private static final String CLOSE_LABEL_TEXT = "To close press ESC";
+//    private static final String CLOSE_LABEL_TEXT = "To close press ESC";
     private Image image;
     
     private static Shell helpShell;
@@ -98,7 +90,7 @@ public class HelpDialog extends Dialog {
 
     private void getHelpImage(Composite parent) {
         InputStream stream = getClass()
-                .getResourceAsStream("/resource/Helpsheet.jpg");
+                .getResourceAsStream("/resource/Helpsheet2.png");
         ImageData imageData = new ImageData(stream);
         image = new Image(parent.getDisplay(), imageData);
     }
