@@ -18,17 +18,15 @@ public class ResultStub extends Result {
     private boolean success = false;
     private CommandType cmdType;
     private boolean confirmation = false;
-    private ResultType resultType;
 
     @SuppressWarnings("rawtypes")
     public ResultStub(List outputs, boolean success, CommandType cmdType,
-            boolean confirmation, ResultType resultType) {
-        super(outputs, success, cmdType, confirmation, resultType);
+            boolean confirmation) {
+        super(outputs, success, cmdType, confirmation);
         setTasks(outputs);
         setSuccess(success);
         setCmdType(cmdType);
-        setConfirmation(confirmation);
-        setResultType(resultType);
+        setConfirmation(confirmation);;
     }
 
     /*** ACCESSORS ***/
@@ -45,10 +43,6 @@ public class ResultStub extends Result {
 
     public CommandType getCmdType() {
         return cmdType;
-    }
-
-    public ResultType getResultType() {
-        return this.resultType;
     }
 
     public boolean isSuccess() {
@@ -76,10 +70,6 @@ public class ResultStub extends Result {
 
     public void setCmdType(CommandType cmdType) {
         this.cmdType = cmdType;
-    }
-
-    public void setResultType(ResultType resultType) {
-        this.resultType = resultType;
     }
 
 }
