@@ -59,7 +59,7 @@ public class ProcessUserInteraction {
         display.addFilter(SWT.KeyUp, new Listener(){
             public void handleEvent(Event event){
                 if(event.keyCode == SWT.F1){
-                    openHelpDialog();
+                   openHelpDialog();
                 }
             }
         });
@@ -307,6 +307,7 @@ public class ProcessUserInteraction {
             dialogShell.setData("ID");
             HelpDialog dialog = new HelpDialog(dialogShell);
             dialog.open();
+            dialogShell.setData("different");
         }
         
     }
