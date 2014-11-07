@@ -95,12 +95,12 @@ public class Task implements Comparable<Task> {
     }
 
     /**
-     * Cloning constructor. Does not increment ID counter.
+     * Copy constructor. Does not increment ID counter.
      * 
-     * TODO replace with overridden Object class' clone function.
+     * Creates a deep copy of provided Task object.
      * 
      * @param task
-     *            The existing Task object to clone attributes by value from.
+     *            The existing Task object to create a deep copy from.
      */
     public Task(Task task) {
         ID = task.ID;
@@ -110,6 +110,7 @@ public class Task implements Comparable<Task> {
         completedOn = new DateTime(task.completedOn);
         tags.addAll(task.tags);
         type = task.type;
+        deleted = task.deleted;
     }
 
     /**

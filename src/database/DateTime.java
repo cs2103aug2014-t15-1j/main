@@ -102,14 +102,12 @@ public class DateTime implements Comparable<DateTime> {
     }
 
     /**
-     * Cloning constructor.
+     * Copy constructor.
      * 
-     * Takes a DateTime object, clones its date and time attributes by value,
-     * and creates a new DateTime object with the cloned values.
+     * Creates a deep copy of provided DateTime object.
      * 
      * @param dateTime
-     *            The existing DateTime object to clone date and time attributes
-     *            by value from.
+     *            The existing DateTime object to create a deep copy from.
      */
     public DateTime(DateTime dateTime) {
         assert dateTime != null : "dateTime mustn't be null";
