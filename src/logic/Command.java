@@ -31,7 +31,7 @@ public abstract class Command {
     protected static final String RANGE_TYPE_TODAY = "today";
     protected static final String RANGE_TYPE_TOMORROW = "tomorrow";
     protected static final String RANGE_TYPE_SOMEDAY = "someday";
-    protected static final String RANGE_TYPE_NEXTWEEK = " nextweek";
+    protected static final String RANGE_TYPE_UPCOMING = "upcoming";
 
     protected static final String DELETE_NAME = "name";
     protected static final String DELETE_DUE = "due";

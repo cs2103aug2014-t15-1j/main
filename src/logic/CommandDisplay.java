@@ -93,7 +93,7 @@ public class CommandDisplay extends Command {
                 list = processor.fetchTomorrowTasks();
                 break;
 
-            case RANGE_TYPE_NEXTWEEK:
+            case RANGE_TYPE_UPCOMING:
                 list = processor.fetchNextWeekTasks();
                 break;
 
