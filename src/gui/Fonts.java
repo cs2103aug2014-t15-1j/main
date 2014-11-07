@@ -50,7 +50,7 @@ public class Fonts {
             fontData = new FontData[] { new FontData("Consolas", 10, SWT.BOLD) };
             registry.put("table status", fontData);
         } else {
-            fontData = new FontData[] { new FontData("Impact", 15, SWT.NORMAL) };
+            fontData = new FontData[] { new FontData("Impact", 16, SWT.NORMAL) };
             registry.put("haystack title", fontData);
             
             fontData = new FontData[] { new FontData("Consolas", 8, SWT.NONE) };
