@@ -32,6 +32,9 @@ public class Images {
     private void addImagesFromFile() {
         int screenWidth = Display.getCurrent().getBounds().width;
         ImageDescriptor id;
+        
+        // Background Image is free for commercial use.
+        // Taken from http://pixabay.com/en/tinker-color-share-many-colorful-451275/
         if (screenWidth<=1280) {
             id = ImageDescriptor
                     .createFromFile(getClass(), "/resource/bg1280.png");

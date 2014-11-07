@@ -1,11 +1,18 @@
 package gui;
 
 import org.eclipse.jface.resource.FontRegistry;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
@@ -16,7 +23,7 @@ import org.eclipse.swt.widgets.Label;
 //@author A0118846W
 public class TitleLabel extends Composite {
 
-    private static final String LABEL_TEXT = "Haystack";
+    private static final String LABEL_TEXT = "      Haystack";
     private static final int NUM_COLS_SCREEN = 2;
     private FontRegistry registry;
 
@@ -36,22 +43,48 @@ public class TitleLabel extends Composite {
         layout.numColumns = NUM_COLS_SCREEN;
         this.setLayout(layout);
         GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
-        gridData.horizontalSpan = NUM_COLS_SCREEN;
+        //gridData.horizontalSpan = NUM_COLS_SCREEN;
         gridData.horizontalAlignment = SWT.LEFT;
         this.setLayoutData(gridData);
     }
 
     private void createContents(Composite parent) {
+        createTitle(parent);
+        createButton(parent);
+    }
+
+    /**
+     * Creates a close button for the program.
+     * 
+     * @author Yeo Zi Xian, Justin & Ter Yao Xiang
+     */
+    private void createButton(Composite parent) {
+        Button button = new Button(parent, SWT.PUSH);
+        button.setText(" X ");
+        button.setCursor(new Cursor(Display.getCurrent(), SWT.CURSOR_HAND));
+        button.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, false, false, 1, 1));
+        
+        button.addSelectionListener(new SelectionListener() {
+            public void widgetSelected(SelectionEvent event) {
+                System.exit(0);
+            }
+            
+            public void widgetDefaultSelected(SelectionEvent event) {
+                System.exit(0);
+            }
+        });
+        
+    }
+
+    private void createTitle(Composite parent) {
         getFontRegistry();
         Label title = new Label(this, SWT.SINGLE | SWT.CENTER);
         title.setText(LABEL_TEXT);
         title.setFont(registry.get("haystack title"));
         Color color;
         color = parent.getDisplay().getSystemColor(SWT.COLOR_BLACK);
-        //color = new Color(Display.getCurrent(), 125, 255, 125);
         title.setForeground(color);
         color.dispose();
-
     }
 
     private void getFontRegistry() {

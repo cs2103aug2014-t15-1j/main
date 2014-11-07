@@ -75,7 +75,8 @@ public class TestParser {
 
         // Test full input
         task = tempTaskToString(Parser
-                .parseToTask("do homework ### start: 20/04/2014 due: 20/04/2014 0300 completed: 22/04/2014 1800 #cs2103 #todo status: done\n"));
+                .parseToTask("do homework ### start: 20/04/2014 due: 20/04/2014 0300 "
+                             + "completed: 22/04/2014 1800 #cs2103 #todo type: done\n"));
         result = "\n[[ Task ]]" + "\nName: do homework" + "\nStart: 20/04/2014"
                  + "\nDue: 20/04/2014 0300" + "\nCompleted: 22/04/2014 1800"
                  + "\nTags: [#cs2103, #todo]" + "\nStatus: done";
@@ -83,7 +84,7 @@ public class TestParser {
 
         // Test "empty" input
         task = tempTaskToString(Parser
-                .parseToTask("### start: due: completed: status: \n"));
+                .parseToTask("### start: due: completed: type: todo\n"));
         result = "\n[[ Task ]]" + "\nName: " + "\nStart: " + "\nDue: "
                  + "\nCompleted: " + "\nTags: []" + "\nStatus: todo";
         assertEquals(result, task);
@@ -117,15 +118,15 @@ public class TestParser {
         assertEquals("Add: empty", result, cmd);
 
         // Basic Add ending with a parameter
-        result ="cmdadd name: do homework it's cs2103 end start:  due:  tags: [#cs2103]";
+        result = "cmdadd name: do homework it's cs2103 end start:  due:  tags: [#cs2103]";
         cmd = Parser.parse("add do homework it's #cs2103 cs2103 end")
                 .toString();
         assertEquals("Add: simple, end param", result, cmd);
 
         // Full Add
-        result = "cmdadd name: do start up research # due from start " +
-                "29/10/2014 soon. do quickly due thurs start: 27/10/2014 0900 " +
-                "due: 29/10/2014 tags: [#cs2103, #work]";
+        result = "cmdadd name: do start up research # due from start "
+                 + "29/10/2014 soon. do quickly due thurs start: 27/10/2014 0900 "
+                 + "due: 29/10/2014 tags: [#cs2103, #work]";
         cmd = Parser.parse("  add   do start #cs2103  up research # "
                                    + "due from from  27/10/2014  0900 "
                                    + "start 29/10/2014 soon. do quickly due "
@@ -134,22 +135,20 @@ public class TestParser {
         assertEquals("Add: full", result, cmd);
 
         // Testing missing date in start and end
-        result = "cmdadd name: do work start: " + 
-                 DateParser.getCurrDateStr() + " 0300 due: " +
-                 DateParser.getCurrDateStr() + " 0600 tags: []";
+        result = "cmdadd name: do work start: " + DateParser.getCurrDateStr() +
+                 " 0300 due: " + DateParser.getCurrDateStr() + " 0600 tags: []";
         cmd = Parser.parse("add do work from 0300 to 0600\n").toString();
         assertEquals("Add: date filling", result, cmd);
 
         // Testing missing date in start with reordering
-        result ="cmdadd name: do work start: 29/10/2014 0300 due: 29/10/2014 0600 tags: []";
+        result = "cmdadd name: do work start: 29/10/2014 0300 due: 29/10/2014 0600 tags: []";
         cmd = Parser.parse("add do work from 29/10/2014 0600 due 0300\n")
                 .toString();
         assertEquals("Add: 1 missing date, reordering", result, cmd);
 
         // Today/Tomorrow
-        result = "cmdadd name: do work start: " + 
-                 DateParser.getCurrDateStr() + " 0600 due: " +
-                 DateParser.getTmrDateStr() + " 0800 tags: []";
+        result = "cmdadd name: do work start: " + DateParser.getCurrDateStr() +
+                 " 0600 due: " + DateParser.getTmrDateStr() + " 0800 tags: []";
         cmd = Parser.parse("add do work from today 0600 to tomorrow 0800\n")
                 .toString();
         assertEquals("Add: today/tomorrow", result, cmd);

@@ -24,6 +24,7 @@ import database.TaskType;
 // TODO: Class description with reason why it's static
 public class Parser {
 
+    private static final String TASK_STR_BREAKPOINT = "###";
     // All possible Command types (in string)
     private static final String TYPE_HELP = "help";
     private static final String TYPE_GOTTA = "gotta";
@@ -72,10 +73,12 @@ public class Parser {
      *             message related to the error.
      */
     public static Command parse(String input) throws IllegalArgumentException {
+        // Note: The parser is built to analyse input on a word-by-word basis.
         assert (input != null);
 
-        // The Parser will analyse the input word by word
-        String[] commandItems = input.trim().split(" ");
+        // Split by spaces (break into "words"), ignoring empty Strings that
+        // result from repeated spaces
+        String[] commandItems = removeEmptyStrings(input.split(" "));
 
         if (commandItems.length > 0) {
             String commandType = getCommandWord(commandItems);
@@ -105,8 +108,8 @@ public class Parser {
                 case TYPE_BLOCK:
                     return parseBlock(commandParams);
 
-                case TYPE_UNBLOCK:
-                    return parseUnblock(commandParams);
+//                case TYPE_UNBLOCK:
+//                    return parseUnblock(commandParams);
 
                 case TYPE_DONE:
                     return parseDone(commandParams);
@@ -142,7 +145,6 @@ public class Parser {
      * is used to remove the command word, which is assumed to be the first item
      * of the array.
      * 
-     * @param commandItems
      * @return An array smaller than the input array by 1. Minimum size is 0.
      */
     private static String[] removeFirstWord(String[] commandItems) {
@@ -157,18 +159,41 @@ public class Parser {
         }
     }
 
+    /**
+     * Returns a clone of the input String array, excluding empty Strings. This
+     * gets rid of repeated spaces in a user's input.
+     * 
+     * @return String array excluding empty strings. Minimum size is 0.
+     * 
+     */
+    private static String[] removeEmptyStrings(String[] arr) {
+        ArrayList<String> list = new ArrayList<String>();
+        for (int i = 0; i < arr.length; i++) {
+            if (!arr[i].isEmpty()) {
+                list.add(arr[i]);
+            }
+        }
+
+        String[] result = new String[list.size()];
+        for (int i = 0; i < list.size(); i++) {
+            result[i] = list.get(i);
+        }
+
+        return result;
+    }
+
     // ========== INDIVIDUAL PARSE-COMMAND FUNCTIONS ==========//
 
     private static Command parseTodo(String[] commandParams) {
         List<TaskParam> todoFields = new ArrayList<TaskParam>();
 
         try {
-            String param = commandParams[0].toLowerCase();
-            if (param.equals("last")) {
-                todoFields.add(new TaskParam("rangeType", param));
+            String param = commandParams[0];
+            if (param.equalsIgnoreCase("last")) {
+                addTaskParamToFields(todoFields, "rangeType", "last");
             } else if (isInteger(param)) {
-                todoFields.add(new TaskParam("rangeType", "id"));
-                todoFields.add(new TaskParam("id", param));
+                addTaskParamToFields(todoFields, "rangeType", "id");
+                addTaskParamToFields(todoFields, "id", param);
             } else {
                 throw new IllegalArgumentException("Invalid argument for todo!");
             }
@@ -184,15 +209,14 @@ public class Parser {
 
         try {
             String firstWord = commandParams[0];
-
             if (DateParser.isValidDate(firstWord)) {
-                doneFields.add(new TaskParam("rangeType", "date"));
-                doneFields.add(new TaskParam("date", firstWord));
+                addTaskParamToFields(doneFields, "rangeType", "date");
+                addTaskParamToFields(doneFields, "date", firstWord);
             } else if (firstWord.equalsIgnoreCase("all")) {
-                doneFields.add(new TaskParam("rangeType", "all"));
+                addTaskParamToFields(doneFields, "rangeType", "all");
             } else if (isInteger(firstWord)) {
-                doneFields.add(new TaskParam("rangeType", "id"));
-                doneFields.add(new TaskParam("id", firstWord));
+                addTaskParamToFields(doneFields, "rangeType", "id");
+                addTaskParamToFields(doneFields, "id", firstWord);
             } else {
                 throw new IllegalArgumentException("Invalid argument for done!");
             }
@@ -203,23 +227,24 @@ public class Parser {
         return new CommandDone(doneFields);
     }
 
-    private static Command parseUnblock(String[] commandParams) {
-        List<TaskParam> unblockFields = new ArrayList<TaskParam>();
-
-        try {
-            String firstWord = commandParams[0];
-            if (isInteger(firstWord)) {
-                unblockFields.add(new TaskParam("id", firstWord));
-            } else {
-                throw new IllegalArgumentException(
-                        "Invalid argument for unblock");
-            }
-        } catch (ArrayIndexOutOfBoundsException e) {
-            throw new IllegalArgumentException("No arguments for unblock");
-        }
-
-        return new CommandUnblock(unblockFields);
-    }
+    // /* UNBLOCK HAS BEEN REMOVED */
+    // private static Command parseUnblock(String[] commandParams) {
+    // List<TaskParam> unblockFields = new ArrayList<TaskParam>();
+    //
+    // try {
+    // String firstWord = commandParams[0];
+    // if (isInteger(firstWord)) {
+    // addTaskParamToFields(unblockFields, "id", firstWord);
+    // } else {
+    // throw new IllegalArgumentException(
+    // "Invalid argument for unblock");
+    // }
+    // } catch (ArrayIndexOutOfBoundsException e) {
+    // throw new IllegalArgumentException("No arguments for unblock");
+    // }
+    //
+    // return new CommandUnblock(unblockFields);
+    // }
 
     private static Command parseBlock(String[] commandParams) {
         if (commandParams.length == 0) {
@@ -342,23 +367,18 @@ public class Parser {
         List<TaskParam> displayFields = new ArrayList<TaskParam>();
 
         if (commandParams.length == 0) {
-            displayFields.add(new TaskParam("rangeType", "all"));
+            addTaskParamToFields(displayFields, "rangeType", "all");
         } else {
-            for (int i = 0; i < commandParams.length; i++) {
-                if (!commandParams[i].isEmpty()) {
-                    String firstWord = commandParams[i];
-                    if (isParamOf(PARAMS_DISPLAY, firstWord)) {
-                        displayFields.add(new TaskParam("rangeType", firstWord
-                                .toLowerCase()));
-                    } else if (isInteger(firstWord)) {
-                        displayFields.add(new TaskParam("rangeType", "id"));
-                        displayFields.add(new TaskParam("id", firstWord));
-                    } else {
-                        throw new IllegalArgumentException(
-                                "Invalid argument for display");
-                    }
-                    break;
-                }
+            String firstWord = commandParams[0];
+            if (isParamOf(PARAMS_DISPLAY, firstWord)) {
+                addTaskParamToFields(displayFields, "rangeType",
+                                     firstWord.toLowerCase());
+            } else if (isInteger(firstWord)) {
+                addTaskParamToFields(displayFields, "rangeType", "id");
+                addTaskParamToFields(displayFields, "id", firstWord);
+            } else {
+                throw new IllegalArgumentException(
+                        "Invalid argument for display");
             }
         }
 
@@ -369,18 +389,17 @@ public class Parser {
         List<TaskParam> deleteFields = new ArrayList<TaskParam>();
 
         try {
-            // TODO: catch leading spaces. Remove from commandParams
             String firstWord = commandParams[0];
             if (DateParser.isValidDate(firstWord)) {
-                deleteFields.add(new TaskParam("rangeType", "dates"));
-                deleteFields.add(new TaskParam("start", firstWord));
-                deleteFields.add(new TaskParam("due", firstWord));
+                addTaskParamToFields(deleteFields, "rangeType", "dates");
+                addTaskParamToFields(deleteFields, "start", firstWord);
+                addTaskParamToFields(deleteFields, "due", firstWord);
             } else if (isParamOf(PARAMS_DELETE, firstWord)) {
-                deleteFields.add(new TaskParam("rangeType", firstWord
-                        .toLowerCase()));
+                addTaskParamToFields(deleteFields, "rangeType",
+                                     firstWord.toLowerCase());
             } else if (isInteger(firstWord)) {
-                deleteFields.add(new TaskParam("rangeType", "id"));
-                deleteFields.add(new TaskParam("id", firstWord));
+                addTaskParamToFields(deleteFields, "rangeType", "id");
+                addTaskParamToFields(deleteFields, "id", firstWord);
             } else {
                 throw new IllegalArgumentException(
                         "Invalid argument for delete");
@@ -429,11 +448,12 @@ public class Parser {
             // Check if the first word is a valid status parameter
             int startIndex = firstWordIndex;
             if (isParamOf(PARAMS_STATUS, firstWord)) {
-                addTaskParamToField(searchFields, "status",
-                                    firstWord.toLowerCase());
+                addTaskParamToFields(searchFields, "status",
+                                     firstWord.toLowerCase());
                 startIndex = firstWordIndex + 1;
             }
 
+            // TODO:
             // Categorise the rest of the string
             boolean dateIndicated = false;
             for (int i = startIndex; i < commandParams.length; i++) {
@@ -504,8 +524,8 @@ public class Parser {
                 // If the last parameter was a delete
                 if (availDeleteParams.contains(getDateParamEquiv(currWord))) {
                     // If delete has not been filled and the currWord is valid
-                    addTaskParamToField(editFields, "delete",
-                                        getDateParamEquiv(currWord));
+                    addTaskParamToFields(editFields, "delete",
+                                         getDateParamEquiv(currWord));
                     currHasDelete = true;
                     availDeleteParams.remove(getDateParamEquiv(currWord));
                 } else {
@@ -775,6 +795,12 @@ public class Parser {
         return wordLC;
     }
 
+    /**
+     * Searches <code>fields</code> and returns the TaskParam whose
+     * <code>name</code> is equal to the input <code>currField</code>. If there
+     * is no such TaskParam, this method creates it, adds it to
+     * <code>fields</code> and returns it.
+     */
     private static TaskParam getTaskParam(List<TaskParam> fields,
                                           String currField) {
         // Attempt to get TaskParam named currField from List
@@ -803,8 +829,8 @@ public class Parser {
             if (startDT.compareTo(dueDT) > 0) {
                 fields.remove(startTP);
                 fields.remove(dueTP);
-                fields.add(new TaskParam("due", startTP.getField()));
-                fields.add(new TaskParam("start", dueTP.getField()));
+                addTaskParamToFields(fields, "due", startTP.getField());
+                addTaskParamToFields(fields, "start", dueTP.getField());
             }
         }
     }
@@ -825,9 +851,9 @@ public class Parser {
      * @param paramField
      * @return
      */
-    private static boolean addTaskParamToField(List<TaskParam> fields,
-                                               String paramName,
-                                               String paramField) {
+    private static boolean addTaskParamToFields(List<TaskParam> fields,
+                                                String paramName,
+                                                String paramField) {
         return fields.add(new TaskParam(paramName, paramField));
     }
 
@@ -873,11 +899,34 @@ public class Parser {
      * <date/time> <tags> type: <type>"}
      */
     public static Task parseToTask(String text) {
-        String[] textItems = text.trim().split(" ");
-        // name, start, due, completed, type
-        String[] param = new String[] { "", "", "", "", "" };
+        String[] textItems = removeEmptyStrings(text.split(" "));
+        // Params correspond to: name, start, due, completed, type
+        String[] params = new String[] { "", "", "", "", "" };
         List<String> tags = new ArrayList<String>();
 
+        collectParams(textItems, params, tags);
+        DateTime[] dateTimes = convertToDt(params);
+
+        // Convert param inputs for Task constructor
+        String name = params[0];
+        DateTime start = dateTimes[0];
+        DateTime due = dateTimes[1];
+        DateTime completed = dateTimes[2];
+        TaskType type = getTaskType(params);
+
+        Task newTask = new Task(name, start, due, completed, tags, type);
+        return newTask;
+    }
+
+    /**
+     * @param textItems
+     * @param params
+     * @param tags
+     * @param fieldIndex
+     * @return
+     */
+    private static int collectParams(String[] textItems, String[] params,
+                                     List<String> tags) {
         int fieldIndex = 0;
         boolean breakPointMet = false;
 
@@ -885,15 +934,11 @@ public class Parser {
             String currWord = textItems[i];
             String currWordLC = currWord.toLowerCase();
             if (!breakPointMet) {
-                if (currWord.equals("###")) {
+                if (currWord.equals(TASK_STR_BREAKPOINT)) {
                     breakPointMet = true;
                 } else {
-                    if (param[fieldIndex].isEmpty() || currWord.isEmpty()) {
-                        param[fieldIndex] = param[fieldIndex].concat(currWord);
-                    } else {
-                        param[fieldIndex] = param[fieldIndex].concat(" " +
-                                                                     currWord);
-                    }
+                    params[fieldIndex] = params[fieldIndex]
+                            .concat(" " + currWord).trim();
                 }
             } else {
                 if (currWordLC.equals("start:") || currWordLC.equals("due:") ||
@@ -904,39 +949,49 @@ public class Parser {
                 } else if (hasValidHashTag(currWord)) {
                     tags.add(currWord);
                 } else {
-                    // NOTE: currWord.isEmpty() is to make sure the parser does
-                    // not add " " for each empty string
-                    if (param[fieldIndex].isEmpty() || currWord.isEmpty()) {
-                        param[fieldIndex] = param[fieldIndex].concat(currWord);
-                    } else {
-                        param[fieldIndex] = param[fieldIndex].concat(" " +
-                                                                     currWord);
-                    }
+                    params[fieldIndex] = params[fieldIndex]
+                            .concat(" " + currWord).trim();
                 }
             }
         }
 
         assert (fieldIndex == 4) : "TaskParser is missing parameter names.";
 
-        // Convert param inputs for Task constructor
-        String name = param[0];
+        return fieldIndex;
+    }
 
+    /**
+     * @param params
+     * @return
+     */
+    private static DateTime[] convertToDt(String[] params) {
         // Convert date/time inputs into DateTime objects
         DateTime[] dateTimes = new DateTime[ADD_DATE_PARAM_NUM];
 
         // TODO: REORGANISE
         // Indexes are assigned by 1 (start), 2 (due) 3 (completed)
         for (int i = 1; i <= ADD_DATE_PARAM_NUM; i++) {
-            if (param[i].isEmpty()) {
+            if (params[i].isEmpty()) {
                 dateTimes[i - 1] = new DateTime();
             } else {
-                assert (DateParser.isValidDateTime(param[i]));
-                dateTimes[i - 1] = DateParser.parseToDateTime(param[i]);
+                assert (DateParser.isValidDateTime(params[i]));
+                dateTimes[i - 1] = DateParser.parseToDateTime(params[i]);
             }
         }
+        return dateTimes;
+    }
 
+    /**
+     * Returns the TaskType of a Task using the parameters collected. This
+     * method is used only for parsing Tasks from file.
+     * 
+     * @param params
+     * @return
+     */
+    private static TaskType getTaskType(String[] params) {
         TaskType type = TaskType.TODO;
-        switch (param[4].toLowerCase()) {
+        // TODO: REFACTOR NUMBER
+        switch (params[4].toLowerCase()) {
             case "todo":
                 type = TaskType.TODO;
                 break;
@@ -952,13 +1007,7 @@ public class Parser {
             default:
                 assert false : "Invalid TaskType while parsing from file!";
         }
-
-        DateTime start = dateTimes[0];
-        DateTime due = dateTimes[1];
-        DateTime completed = dateTimes[2];
-
-        Task newTask = new Task(name, start, due, completed, tags, type);
-        return newTask;
+        return type;
     }
 
     // FOR TESTING PURPOSES (Exploratory)

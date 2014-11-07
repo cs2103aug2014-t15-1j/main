@@ -28,9 +28,6 @@ public class Fonts {
     private void addSystemFonts() {
         FontData[] fontData = new FontData[] {new FontData ("Consolas", 12, SWT.BOLD) };
         registry.put("commandLine", fontData);
-        
-        fontData = new FontData[] { new FontData("Impact", 16, SWT.NORMAL) };
-         registry.put("haystack title", fontData);
 
         fontData = new FontData[] { new FontData("Consolas", 11, SWT.NORMAL) };
         registry.put("feedback", fontData);
@@ -44,12 +41,18 @@ public class Fonts {
         
         int screenWidth = Display.getCurrent().getBounds().width;
         if (screenWidth>= 1920) {
+            fontData = new FontData[] { new FontData("Impact", 18, SWT.NORMAL) };
+            registry.put("haystack title", fontData);
+            
             fontData = new FontData[] { new FontData("Consolas", 10, SWT.NONE) };
             registry.put("table", fontData);
             
             fontData = new FontData[] { new FontData("Consolas", 10, SWT.BOLD) };
             registry.put("table status", fontData);
         } else {
+            fontData = new FontData[] { new FontData("Impact", 15, SWT.NORMAL) };
+            registry.put("haystack title", fontData);
+            
             fontData = new FontData[] { new FontData("Consolas", 8, SWT.NONE) };
             registry.put("table", fontData);
             

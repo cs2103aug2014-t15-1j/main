@@ -9,6 +9,7 @@ import database.DateTime;
 
 public class DateParser {
 
+    /** Everything began with 1819. */
     private static final int YEAR_MINIMUM = 1819;
 
     private static final String TYPE_TIME_DATE = "time-date";
@@ -26,7 +27,7 @@ public class DateParser {
     /**
      * The date/time format DateParser will use.
      */
-    private static final DateFormat DATE_TIME_FORMAT = new SimpleDateFormat(
+    private static final DateFormat FORMAT_DATE_TIME = new SimpleDateFormat(
             "dd/MM/yyyy HHmm");
 
     /**
@@ -39,7 +40,7 @@ public class DateParser {
      */
     public static DateTime getCurrDateTime() {
         Calendar cal = Calendar.getInstance();
-        String[] date = DATE_TIME_FORMAT.format(cal.getTime()).split(" ");
+        String[] date = FORMAT_DATE_TIME.format(cal.getTime()).split(" ");
         return new DateTime(date[0], date[1]);
     }
 
@@ -278,7 +279,7 @@ public class DateParser {
                 date = formatDate(dateFields[1]);
                 time = dateFields[0];
                 break;
-                
+
             default:
                 return new DateTime();
         }
