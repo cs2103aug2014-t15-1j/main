@@ -40,20 +40,29 @@ public class TableManagement {
     }
     
     public void refreshTables(){
-        System.out.println("refreshing table at " + Calendar.getInstance().getTime().toString());
             List<Task> toDo = ResultGenerator.getToDoTasks();
             List<Task> floating = ResultGenerator.getFloatingTasks();
             List<Task> done = ResultGenerator.getDoneTasks();
             List<Task> blocked = ResultGenerator.getBlockTasks();
-            List<Task> timed = ResultGenerator.getTimedTasks();
+            List<Task> todays = ResultGenerator.getTodayTasks();
+            List<Task> tomorrow = ResultGenerator.getTomorrowsTasks();
+            List<Task> upcoming = ResultGenerator.getNextWeekTasks();
+            List<Task> search = ResultGenerator.getSearchTasks();
             
             updateToDoTable(toDo);
             updateFloatingTaskTable(floating);
             updateDoneTable(done);
             updateBlockTable(blocked);
-            updateTimedTable(timed);
+            updateTodayTable(todays);
+            updateTomorrowTable(tomorrow);
+            updateUpcomingTable(upcoming);
+            updateSearchTable(search);
     }
-
+    
+    public void updateTable(List<Task> tasks, int index){
+        tables.get(index).setInput(tasks);
+    }
+    
     public void updateFloatingTaskTable(List<Task> tasks){
         tables.get(INDEX_SOMEDAY).setInput(tasks);
     }
@@ -70,9 +79,24 @@ public class TableManagement {
        tables.get(INDEX_BLOCK).setInput(blockTasks);
     }
     
+    public void updateTodayTable(List<Task> todaysTasks){
+        tables.get(INDEX_TODAY).setInput(todaysTasks);
+     }
+    
+    public void updateTomorrowTable(List<Task> tomorrowsTasks){
+        tables.get(INDEX_TOMORROW).setInput(tomorrowsTasks);
+    }
+    
+    public void updateUpcomingTable(List<Task> upcomingTasks){
+        tables.get(INDEX_UPCOMING).setInput(upcomingTasks);
+    }
+    
+    public void updateSomedayTable(List<Task> floatingTasks){
+        tables.get(INDEX_SOMEDAY).setInput(floatingTasks);
+    }
+    
     public void updateSearchTable(List<Task> searchResults){
         tables.get(INDEX_SEARCH).setInput(searchResults);
-        folder.setSelection(INDEX_SEARCH);
     }
     
     public void updateTimedTable(List<Task> tasks) {
@@ -96,8 +120,12 @@ public class TableManagement {
         tables.get(INDEX_TOMORROW).setInput(tomorrowsTasks);
         tables.get(INDEX_UPCOMING).setInput(upcomingTasks);
     }
-
-    public void setTableSelection(Task taskToSelect){
+    
+    public void setTableSelectionByIndex(int index){
+        folder.setSelection(index);
+    }
+    
+    public void setTableSelectionByTask(Task taskToSelect){
         TableViewer table = getTable(taskToSelect);
         List<Task> tasks = getTableContent(taskToSelect);
         setElementSelection(taskToSelect, tasks, table);

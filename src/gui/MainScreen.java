@@ -20,10 +20,7 @@ public class MainScreen {
 
     private static final int NUM_COLS_SCREEN = 2;
     private static final String PROGRAM_NAME = "Haystack";
-    private static int SHELL_WIDTH = 1200;
-    private static int SHELL_HEIGTH = 860;
-    
-/**
+    /**
  * Runs and initializes the application
  */
     public static void run() {
