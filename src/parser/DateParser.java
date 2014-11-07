@@ -122,6 +122,7 @@ public class DateParser {
      *         <code>dd/MM/yyyy</code>
      */
     private static String getNextDayStr(String currDay) {
+        assert isValidDate(currDay) : "input <" + currDay + "> is invalid";
         String[] dateFields = currDay.split("/");
 
         int day = Integer.parseInt(dateFields[0]);
@@ -277,13 +278,13 @@ public class DateParser {
                 date = formatDate(dateFields[1]);
                 time = dateFields[0];
                 break;
+                
+            default:
+                return new DateTime();
         }
 
-        if (date.isEmpty() && time.isEmpty()) {
-            return new DateTime();
-        } else {
-            return new DateTime(date, time);
-        }
+        return new DateTime(date, time);
+
     }
 
     /**
@@ -307,7 +308,6 @@ public class DateParser {
         assert (isValidDateTime(str)) : "Invalid DateTime for getDateType()!";
         String[] dateFields = str.trim().split(" ");
 
-        // TODO: Magic Strings
         if (isSingleItemArray(dateFields)) {
             if (firstItemIsDate(dateFields)) {
                 return TYPE_DATE_ONLY;
@@ -332,6 +332,7 @@ public class DateParser {
                     break;
 
                 case TYPE_DATE_TOMORROW:
+                case TYPE_DATE_TMR:
                     result = getTmrDateStr();
                     break;
             }
@@ -340,7 +341,7 @@ public class DateParser {
                 result = result + "/" + getCurrYearStr();
             }
             String[] dateFieldsStr = new String[3];
-            int[] dateFieldsInt = splitToDateToIntArray(result);
+            int[] dateFieldsInt = splitDateToIntArray(result);
             dateFieldsStr[0] = toDoubleDigitStr(dateFieldsInt[0]);
             dateFieldsStr[1] = toDoubleDigitStr(dateFieldsInt[1]);
             dateFieldsStr[2] = toFourDigitStr(dateFieldsInt[2]);
@@ -357,7 +358,7 @@ public class DateParser {
         return dateFields.length == 2;
     }
 
-    private static int[] splitToDateToIntArray(String str) {
+    private static int[] splitDateToIntArray(String str) {
         assert (isValidNumericalDate(str));
         String[] strArr = splitDateToStrArray(str);
         int[] intArr = new int[] { Integer.parseInt(strArr[0]),
@@ -656,4 +657,5 @@ public class DateParser {
 
         return null;
     }
+
 }

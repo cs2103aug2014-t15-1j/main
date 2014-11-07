@@ -54,7 +54,9 @@ public class Parser {
     private static final String[] PARAMS_DATE_FULL = { "due", "by", "start",
                                                       "from", "end", "to" };
     private static final String[] PARAMS_DISPLAY = { "search", "all", "done",
-                                                    "deleted", "block" };
+                                                    "deleted", "block",
+                                                    "today", "tomorrow",
+                                                    "upcoming", "someday" };
     private static final String[] PARAMS_DELETE = { "all", "search", "done" };
     private static final String[] PARAMS_STATUS = { "done", "deleted", "all" };
 
@@ -329,7 +331,7 @@ public class Parser {
         if (!DateParser.containsTime(toStr)) {
             toTp.addToField("2359");
         }
-        
+
         removeDuplicates(blockFields);
 
         return new CommandBlock(blockFields);
@@ -340,7 +342,7 @@ public class Parser {
         List<TaskParam> displayFields = new ArrayList<TaskParam>();
 
         if (commandParams.length == 0) {
-            displayFields.add(new TaskParam("rangeType", "todo"));
+            displayFields.add(new TaskParam("rangeType", "all"));
         } else {
             for (int i = 0; i < commandParams.length; i++) {
                 if (!commandParams[i].isEmpty()) {
@@ -367,6 +369,7 @@ public class Parser {
         List<TaskParam> deleteFields = new ArrayList<TaskParam>();
 
         try {
+            // TODO: catch leading spaces. Remove from commandParams
             String firstWord = commandParams[0];
             if (DateParser.isValidDate(firstWord)) {
                 deleteFields.add(new TaskParam("rangeType", "dates"));
@@ -937,7 +940,7 @@ public class Parser {
             case "todo":
                 type = TaskType.TODO;
                 break;
-            
+
             case "done":
                 type = TaskType.DONE;
                 break;
@@ -958,14 +961,14 @@ public class Parser {
         return newTask;
     }
 
-    // FOR TESTING PURPOSES
+    // FOR TESTING PURPOSES (Exploratory)
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
 
         String input = "";
         while (!input.equals("exit")) {
             input = sc.nextLine();
-            if (input.contains("parse")){
+            if (input.contains("parse")) {
                 System.out.println(parseToTask(input.substring(6)));
             } else {
                 System.out.println(parse(input));
