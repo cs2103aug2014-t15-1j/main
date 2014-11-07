@@ -85,7 +85,7 @@ public class DatabaseLogic {
      */
     public List<Task> getToDoTasks() {
         Collections.sort(toDoTasks);
-        return toDoTasks;
+        return Collections.unmodifiableList(toDoTasks);
     }
 
     /**
@@ -96,7 +96,7 @@ public class DatabaseLogic {
      */
     public List<Task> getDoneTasks() {
         Collections.sort(doneTasks);
-        return doneTasks;
+        return Collections.unmodifiableList(doneTasks);
     }
 
     /**
@@ -107,7 +107,7 @@ public class DatabaseLogic {
      */
     public List<Task> getBlockTasks() {
         Collections.sort(blockTasks);
-        return blockTasks;
+        return Collections.unmodifiableList(blockTasks);
     }
 
     /**
@@ -118,7 +118,7 @@ public class DatabaseLogic {
      */
     public List<Task> getDeletedTasks() {
         Collections.sort(deletedTasks);
-        return deletedTasks;
+        return Collections.unmodifiableList(deletedTasks);
     }
 
     /**
@@ -129,7 +129,7 @@ public class DatabaseLogic {
      */
     public List<Task> getAllTasks() {
         Collections.sort(allTasks);
-        return allTasks;
+        return Collections.unmodifiableList(allTasks);
     }
 
     /**

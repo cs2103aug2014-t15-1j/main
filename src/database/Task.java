@@ -309,7 +309,8 @@ public class Task implements Comparable<Task> {
     }
 
     public DateTime getStart() {
-        return start;
+        DateTime copyOfStart = new DateTime(start);
+        return copyOfStart;
     }
 
     public void setStart(DateTime start) {
@@ -322,7 +323,8 @@ public class Task implements Comparable<Task> {
     }
 
     public DateTime getDue() {
-        return due;
+        DateTime copyOfDue = new DateTime(due);
+        return copyOfDue;
     }
 
     public void setDue(DateTime due) {
@@ -335,11 +337,14 @@ public class Task implements Comparable<Task> {
     }
 
     public DateTime getCompletedOn() {
-        return completedOn;
+        DateTime copyOfCompletedOn = new DateTime(completedOn);
+        return copyOfCompletedOn;
     }
 
     public List<String> getTags() {
-        return tags;
+        List<String> copyOfTags = new ArrayList<String>();
+        copyOfTags.addAll(tags);
+        return copyOfTags;
     }
 
     /**
