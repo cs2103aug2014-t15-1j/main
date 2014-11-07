@@ -194,8 +194,9 @@ public class Task implements Comparable<Task> {
         }
 
         Task otherTask = (Task) obj;
-        return type.equals(otherTask.type) && name.equals(otherTask.name) &&
-               start.equals(otherTask.start) && due.equals(otherTask.due) &&
+        return ID == otherTask.ID && type.equals(otherTask.type) &&
+               name.equals(otherTask.name) && start.equals(otherTask.start) &&
+               due.equals(otherTask.due) &&
                completedOn.equals(otherTask.completedOn) &&
                tags.equals(otherTask.tags);
     }
