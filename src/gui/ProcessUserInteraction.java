@@ -35,7 +35,6 @@ public class ProcessUserInteraction {
     private Display display;
     private Shell shell;
     
-    
     public ProcessUserInteraction(){
         commandLine = FeedbackAndInput.getCommandLine();
         feedback =  FeedbackAndInput.getFeedback();
@@ -56,8 +55,11 @@ public class ProcessUserInteraction {
     }
 
     private void addHelpListener() {
-        display.addFilter(SWT.KeyUp, new Listener(){
+        display.addFilter(SWT.KeyDown, new Listener(){
             public void handleEvent(Event event){
+                if (isDialogOpen()){
+                    HelpDialog.getHelpDialog().dispose();
+                }
                 if(event.keyCode == SWT.F1){
                    openHelpDialog();
                 }
@@ -149,13 +151,16 @@ public class ProcessUserInteraction {
             public void handleEvent(Event event) {
                 String input = commandLine.getText();
                 commandLine.setText("");
-
+                try{
                 if (isReplyToConfrimation) {
                     processReply(input);
                 } else if (input.trim().isEmpty()) {
                     // do nothing, if input is empty
                 } else {
                     processInput(input);
+                }
+                }catch(Exception e){
+                    feedback.setText(e.getMessage());
                 }
             }
         });
@@ -314,12 +319,11 @@ public class ProcessUserInteraction {
 
     private boolean isDialogOpen() {
         Shell[] shells = Display.getCurrent().getShells();
-        int size = shells.length;
+        int size = shells.length; // 3 shells with help open
         for(int index = 0; index < size; index++){
             String data = (String) shells[index].getData();
-            
+            // Second item is "ID"
             if(data != null && data.equals("ID")){
-                shell.setFocus();
                 return true;
             }
         }

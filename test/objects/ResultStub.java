@@ -2,6 +2,7 @@ package objects;
 
 import java.util.List;
 
+import database.Task;
 import logic.CommandType;
 import logic.Result;
 
@@ -18,15 +19,27 @@ public class ResultStub extends Result {
     private boolean success = false;
     private CommandType cmdType;
     private boolean confirmation = false;
+    private String displayTab = "";
 
+    
     @SuppressWarnings("rawtypes")
-    public ResultStub(List outputs, boolean success, CommandType cmdType,
-            boolean confirmation) {
-        super(outputs, success, cmdType, confirmation);
+    public ResultStub(List outputs, boolean success, CommandType cmdType, String displayTab) {
+        super(outputs, success, cmdType, displayTab);
         setTasks(outputs);
         setSuccess(success);
         setCmdType(cmdType);
-        setConfirmation(confirmation);;
+        setDisplayTab(displayTab);;
+    }
+    
+    @SuppressWarnings("rawtypes")
+    public ResultStub(List outputs, boolean success, CommandType cmdType,
+            boolean confirmation, String displayTab){
+        super(outputs, success, cmdType, confirmation, displayTab);
+        setTasks(outputs);
+        setSuccess(success);
+        setCmdType(cmdType);
+        setDisplayTab(displayTab);
+        setConfirmation(confirmation);
     }
 
     /*** ACCESSORS ***/
@@ -48,6 +61,10 @@ public class ResultStub extends Result {
     public boolean isSuccess() {
         return this.success;
     }
+    
+    public String getDisplayTab(){
+        return displayTab;
+    }
 
     public boolean isConfirmation() {
         return confirmation;
@@ -66,6 +83,10 @@ public class ResultStub extends Result {
 
     public void setConfirmation(boolean confirmation) {
         this.confirmation = confirmation;
+    }
+    
+    public void setDisplayTab(String displayTab){
+        this.displayTab = displayTab;
     }
 
     public void setCmdType(CommandType cmdType) {

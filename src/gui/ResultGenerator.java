@@ -1,9 +1,7 @@
 package gui;
 
-import java.util.Calendar;
 import java.util.List;
 
-import logic.CommandType;
 import logic.Processor;
 import logic.Result;
 import database.Task;
@@ -12,10 +10,6 @@ import database.Task;
  * Processes the Result objects returned by logic.Processor to update the graphical user interface accordingly.
  */
 public class ResultGenerator {
-    
-    private static final int INDEX_TODO = 0;
-    private static final int INDEX_DONE = 5;
-    private static final int INDEX_SEARCH = 7;
     
     private static Processor processor;
     private static TableManagement tableManagement = new TableManagement();
@@ -109,24 +103,9 @@ public class ResultGenerator {
         return processor.fetchInputDownKey();
     }
     
-    public static List<Task> getTimedTasks(){
-        return processor.fetchTimedTasks();
-    }
-    
-    public static List<Task> getToDoTasks(){
-        return processor.fetchToDoTasks();
-    }
-    
-    public static List<Task> getFloatingTasks(){
-        return processor.fetchFloatingTasks();
-    }
-    
-    public static List<Task> getDoneTasks(){
-        return processor.fetchDoneTasks();
-    }
-    
-    public static List<Task> getBlockTasks(){
-        return processor.fetchBlockTasks();
+    public static List<Task> getAllTasks(){
+        List<Task> all = processor.fetchTimedTasks();
+        return all;
     }
     
     public static List<Task> getTodayTasks(){
@@ -137,12 +116,12 @@ public class ResultGenerator {
         return processor.fetchTomorrowTasks();
     }
     
-    public static List<Task> getNextWeekTasks(){
+    public static List<Task> getUpcomingTasks(){
         return processor.fetchNextWeekTasks();
     }
-    
-    public static List<Task> getSearchTasks(){
-        return processor.fetchSearchList();
+
+    public static List<Task> getFloatingTasks(){
+        return processor.fetchFloatingTasks();
     }
     
     private void initialiseAppilcation() {
@@ -157,13 +136,14 @@ public class ResultGenerator {
 
     private String processTaskBasedResult(Result result) {
         List<Task> outputs = result.getTasks();
-
+        String tabName = result.getDisplayTab();
+        
         assert (result.getCommandType() != null);
 
         switch (result.getCommandType()) {
             case ADD:
                 refreshTables();
-                setTableSelectionByTaskList(outputs);
+                setTableSelectionSingleTask(tabName, outputs);
                 if (result.needsConfirmation()) {
                     return "Unable to add task. Task coincides with a blocked date.";
                 }
@@ -174,7 +154,7 @@ public class ResultGenerator {
                     return "This will erase all data, PERMANENTLY.  Key 'y' to continue or 'n' to abort";
                 }
                 refreshTables();
-                setTableSelectionByTaskList(outputs);
+                setTableSelectionSingleTask(tabName, outputs);
                 return feedbackMessage(outputs, "Deleted %1$s");
                 
             case BLOCK:
@@ -182,12 +162,12 @@ public class ResultGenerator {
                     return "Unable to block date. Date coincides with another blocked date or task.";
                 }
                 refreshTables();
-                setTableSelectionByTaskList(outputs);
+                setTableSelectionSingleTask(tabName, outputs);
                 return "BLOCKED: " + feedbackSingleBlock(outputs);
 
             case UNBLOCK:
                 refreshTables();
-                setTableSelectionByTaskList(outputs);
+                setTableSelectionSingleTask(tabName, outputs);
                 return "UNBLOCKED: " + feedbackSingleBlock(outputs);
 
             case RESET:
@@ -199,52 +179,51 @@ public class ResultGenerator {
                 
             case EDIT:
                 refreshTables();
-                setTableSelectionByTaskList(outputs);
+                setTableSelectionSingleTask(tabName, outputs);
                 return feedbackMessage(outputs, "Edited %1$s");
             case DISPLAY:
                 if (outputs.size() == 0) {
-                    return "Nothing to show.";
+                    setTableSelectionByName(tabName);
+                    return "No tasks to show.";
                 } else if (outputs.size() == 1) {
-                    setTableSelectionByTaskList(outputs);
+                    setTableSelectionSingleTask(tabName, outputs);
                 }
-                updateTables(outputs);
+                processDisplay(result);
                 return feedbackMessageMultiResults(outputs,
                                                    "%1$s task(s) found.");
             case SEARCH:
-                updateSearchTable(outputs);
+                processDisplay(result);
                 return feedbackMessageMultiResults(outputs,
                                                    "Found %1$s match(es).");
             case TODO:
                 refreshTables();
-                setTableSelectionByIndex(INDEX_DONE);
+                setTableSelectionSingleTask(tabName, outputs);
                 return feedbackMessage(outputs, "Marked %1$s as todo.");
             case DONE:
                 refreshTables();
-                setTableSelectionByIndex(INDEX_TODO);
+                setTableSelectionSingleTask(tabName, outputs);
                 return feedbackMessage(outputs, "Marked %1$s as done.");
             case UNDO:
                 refreshTables();
-                setTableSelectionByTaskList(outputs);
+                setTableSelectionSingleTask(tabName, outputs);
                 return "Command Undone.";
             case REDO:
                 if (result.needsConfirmation()) {
+                    setTableSelectionSingleTask(tabName, outputs);
                     return "Unable to redo command. Date coincides with another blocked date or task.";
                 }
                 refreshTables();
-                setTableSelectionByTaskList(outputs);
+                setTableSelectionSingleTask(tabName, outputs);
                 return "Command Redone.";
             case RESTORE:
                 refreshTables();
-                setTableSelectionByTaskList(outputs);
+                setTableSelectionSingleTask(tabName, outputs);
                 return feedbackMessage(outputs, "Restored %1$s.");
             case HELP:
                 return "Help";
             case EXIT:
                 return "exit";
-            case ERROR:
-                return "The command format is wrong. Type help for command format";
             default:
-                // this line of code should never be reached
                 throw new IllegalArgumentException("Illegal Command Type");
         }
     }
@@ -276,29 +255,26 @@ public class ResultGenerator {
         return parameter == null || parameter.isEmpty() ||
                parameter.equals("null");
     }
+    
+    private void processDisplay(Result result){
+        refreshTables();
+        String tabToSelect = result.getDisplayTab();
+        tableManagement.setTableSelectionByName(tabToSelect);
+    }
 
     private void refreshTables() {
         tableManagement.refreshTables();
     }
     
-    private void updateTables(List<Task> tasks){
-        tableManagement.updateTable(tasks);
+    private void setTableSelectionByName(String tabName){
+        tableManagement.setTableSelectionByName(tabName);
     }
     
-    private void updateSearchTable(List<Task> tasks){
-        tableManagement.updateSearchTable(tasks);
-        tableManagement.setTableSelectionByIndex(INDEX_SEARCH);
-    }
-    
-    private void setTableSelectionByIndex(int index){
-        tableManagement.setTableSelectionByIndex(index);
-    }
-    
-    private void setTableSelectionByTaskList(List<Task> outputs) {
-        if(outputs.isEmpty()){
+    private void setTableSelectionSingleTask(String tabName, List<Task> outputs){
+        if(outputs == null || outputs.isEmpty()){
+            tableManagement.setTableSelectionByName(tabName);
             return;
         }
-        tableManagement.setTableSelectionByTask(outputs.get(0));
+        tableManagement.setTableSelectionByTask(outputs.get(0), tabName);
     }
-
 }
