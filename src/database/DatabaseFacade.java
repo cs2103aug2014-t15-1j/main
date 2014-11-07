@@ -130,8 +130,12 @@ public class DatabaseFacade {
      * @return True, if successfully written to file.
      */
     public boolean add(Task task) {
-        databaseLogic.add(task);
-        return updateFile();
+        boolean success = databaseLogic.add(task);
+        if (success) {
+            return updateFile();
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -158,8 +162,12 @@ public class DatabaseFacade {
     public boolean edit(int id, String name, DateTime start,
                                   DateTime due, List<String> tags) {
         Task task = databaseLogic.searchTaskById(databaseLogic.getAllTasks(), id);
-        databaseLogic.edit(task, name, start, due, tags);
-        return updateFile();
+        boolean success = databaseLogic.edit(task, name, start, due, tags);
+        if (success) {
+            return updateFile();
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -183,8 +191,12 @@ public class DatabaseFacade {
      */
     public boolean edit(Task task, String name, DateTime start,
                                   DateTime due, List<String> tags) {
-        databaseLogic.edit(task, name, start, due, tags);
-        return updateFile();
+        boolean success = databaseLogic.edit(task, name, start, due, tags);
+        if (success) {
+            return updateFile();
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -199,8 +211,12 @@ public class DatabaseFacade {
      */
     public boolean delete(int id) {
         Task task = databaseLogic.searchTaskById(getAllTasks(), id);
-        databaseLogic.delete(task);
-        return updateFile();
+        boolean success = databaseLogic.delete(task);
+        if (success) {
+            return updateFile();
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -213,8 +229,12 @@ public class DatabaseFacade {
      * @return True, if file has been successfully updated with delete.
      */
     public boolean delete(Task task) {
-        databaseLogic.delete(task);
-        return updateFile();
+        boolean success = databaseLogic.delete(task);
+        if (success) {
+            return updateFile();
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -229,8 +249,12 @@ public class DatabaseFacade {
      */
     public boolean restore(int id) {
         Task task = databaseLogic.searchTaskById(getDeletedTasks(), id);
-        databaseLogic.restore(task);
-        return updateFile();
+        boolean success = databaseLogic.restore(task);
+        if (success) {
+            return updateFile();
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -244,8 +268,12 @@ public class DatabaseFacade {
      * @return True, if file has been successfully updated with restore.
      */
     public boolean restore(Task task) {
-        databaseLogic.restore(task);
-        return updateFile();
+        boolean success = databaseLogic.restore(task);
+        if (success) {
+            return updateFile();
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -261,8 +289,12 @@ public class DatabaseFacade {
      */
     public boolean permanentlyDelete(int id) {
         Task task = databaseLogic.searchTaskById(getAllTasks(), id);
-        databaseLogic.permanentlyDelete(task);
-        return updateFile();
+        boolean success = databaseLogic.permanentlyDelete(task);
+        if (success) {
+            return updateFile();
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -277,8 +309,12 @@ public class DatabaseFacade {
      * @return True, if file has been successfully updated with wipe.
      */
     public boolean permanentlyDelete(Task task) {
-        databaseLogic.permanentlyDelete(task);
-        return updateFile();
+        boolean success = databaseLogic.permanentlyDelete(task);
+        if (success) {
+            return updateFile();
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -289,8 +325,12 @@ public class DatabaseFacade {
      * @return True, if successfully cleared file of data.
      */
     public boolean resetData() {
-        databaseLogic.permanentlyDeleteAllTasks();
-        return updateFile();
+        boolean success = databaseLogic.permanentlyDeleteAllTasks();
+        if (success) {
+            return updateFile();
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -305,8 +345,12 @@ public class DatabaseFacade {
      */
     public boolean toDo(int id) {
         Task task = databaseLogic.searchTaskById(getAllTasks(), id);
-        databaseLogic.toDo(task);
-        return updateFile();
+        boolean success = databaseLogic.toDo(task);
+        if (success) {
+            return updateFile();
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -320,8 +364,12 @@ public class DatabaseFacade {
      * @return True, if file has been successfully updated with change.
      */
     public boolean toDo(Task task) {
-        databaseLogic.toDo(task);
-        return updateFile();
+        boolean success = databaseLogic.toDo(task);
+        if (success) {
+            return updateFile();
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -336,8 +384,12 @@ public class DatabaseFacade {
      */
     public boolean done(int id) {
         Task task = databaseLogic.searchTaskById(getAllTasks(), id);
-        databaseLogic.done(task);
-        return updateFile();
+        boolean success = databaseLogic.done(task);
+        if (success) {
+            return updateFile();
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -351,7 +403,11 @@ public class DatabaseFacade {
      * @return True, if file has been successfully updated with change.
      */
     public boolean done(Task task) {
-        databaseLogic.done(task);
-        return updateFile();
+        boolean success = databaseLogic.done(task);
+        if (success) {
+            return updateFile();
+        } else {
+            return false;
+        }
     }
 }

@@ -345,13 +345,20 @@ public class DatabaseLogic {
      * 
      * @return True, if successfully cleared file of data.
      */
-    public void permanentlyDeleteAllTasks() {
-        Task.resetId();
-        allTasks.clear();
-        toDoTasks.clear();
-        doneTasks.clear();
-        blockTasks.clear();
-        deletedTasks.clear();
+    public boolean permanentlyDeleteAllTasks() {
+        try {
+            Task.resetId();
+            allTasks.clear();
+            toDoTasks.clear();
+            doneTasks.clear();
+            blockTasks.clear();
+            deletedTasks.clear();
+            return true;
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return false;
+        }
     }
 
     /**
