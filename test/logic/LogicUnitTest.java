@@ -10,7 +10,7 @@ import objects.TaskParamStub;
 import org.junit.Before;
 import org.junit.Test;
 
-import parser.TaskParam;
+import parser.objects.TaskParam;
 
 
 public class LogicUnitTest {

@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 import parser.DateParser;
-import parser.TaskParam;
+import parser.objects.TaskParam;
 import database.DateTime;
 import database.Task;
 import database.TaskType;

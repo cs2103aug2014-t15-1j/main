@@ -1,6 +1,6 @@
 package objects;
 
-import parser.TaskParam;
+import parser.objects.TaskParam;
 
 
 public class TaskParamStub extends TaskParam {

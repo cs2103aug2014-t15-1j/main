@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import database.Task;
-import parser.TaskParam;
+import parser.objects.TaskParam;
 
 public class CommandDisplay extends Command {
 

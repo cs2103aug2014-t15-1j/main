@@ -3,7 +3,7 @@ package logic;
 import java.util.ArrayList;
 import java.util.List;
 
-import parser.TaskParam;
+import parser.objects.TaskParam;
 import database.Task;
 
 /**

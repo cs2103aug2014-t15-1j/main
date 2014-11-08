@@ -3,7 +3,7 @@ package logic;
 import java.util.List;
 import java.util.ArrayList;
 
-import parser.TaskParam;
+import parser.objects.TaskParam;
 import database.Task;
 
 public class CommandSearch extends Command {

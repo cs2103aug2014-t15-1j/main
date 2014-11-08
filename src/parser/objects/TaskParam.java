@@ -1,4 +1,4 @@
-package parser;
+package parser.objects;
 
 public class TaskParam {
     
