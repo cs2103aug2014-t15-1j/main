@@ -130,8 +130,8 @@ public class CommandAdd extends Command {
             return !(start.isEarlierThan(blockDate.getStart()) || !start
                     .isEarlierThan(blockDate.getDue()));
         } else {
-            return !(due.isEarlierThan(blockDate.getStart()) || !due
-                    .isEarlierThan(blockDate.getDue()));
+            return !(due.isEarlierThan(blockDate.getStart()) || due
+                    .isLaterThan(blockDate.getDue()));
         }
     }
 
