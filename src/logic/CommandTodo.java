@@ -52,7 +52,8 @@ public class CommandTodo extends Command {
                 break;
 
             default:
-                assert false : "Invalid input - Received: " + param.getName();
+                assert false : "Invalid constructor param - Received: " +
+                               param.getName();
         }
     }
 
@@ -78,9 +79,13 @@ public class CommandTodo extends Command {
     }
 
     /**
-     * Executes "todo" operation Marks a 'done' task as 'todo'
+     * This method executes the "todo" operation.
+     * <p>
+     * Marks a 'done' task as 'todo' or marks a range of tasks in the same
+     * 'done' date as 'todo'.
      * 
-     * @return Result
+     * @return {@link logic.Result#Result(List, boolean, CommandType, boolean)
+     *         Result}
      */
     @Override
     protected Result execute(boolean userInput) {
@@ -88,7 +93,8 @@ public class CommandTodo extends Command {
             Processor.getLogger().info("Executing 'Todo' Command...");
         }
 
-        Result result = new Result(null, false, getType(), DISPLAY_TAB_NO_CHANGE);
+        Result result = new Result(null, false, getType(),
+                DISPLAY_TAB_NO_CHANGE);
         switch (rangeType) {
             case RANGE_TYPE_ID:
                 result = todoById();
@@ -101,7 +107,7 @@ public class CommandTodo extends Command {
                 break;
 
             default:
-                break;
+                assert false : "Invalid rangeType - Received: " + rangeType;
         }
         return result;
     }
@@ -142,9 +148,12 @@ public class CommandTodo extends Command {
     }
 
     /**
-     * Executes "done" operation Marks a task as 'done'
+     * Executes "done" operation
+     * <p>
+     * Marks a task as 'done'
      * 
-     * @return Result
+     * @return {@link logic.Result#Result(List, boolean, CommandType, boolean)
+     *         Result}
      */
     @Override
     protected Result executeComplement() {

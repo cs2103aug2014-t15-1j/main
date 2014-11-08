@@ -3,7 +3,6 @@ package logic;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Observable;
 import java.util.Stack;
 import java.util.logging.FileHandler;
 import java.util.logging.Formatter;
@@ -11,24 +10,27 @@ import java.util.logging.Logger;
 
 import objects.DatabaseFacadeStub;
 import parser.Parser;
-import parser.Parser;
 import database.DatabaseFacade;
 import database.DateTime;
 import database.Task;
 
+//import java.util.Observable; - Observer pattern not implemented
+
 /**
  * This class handles inputs from UI and interacts with other components for the
- * necessary operations. It is dependent on DataFile for operations related to
- * the management of storage of Task. It is also dependent on Parser to decipher
- * user input.
- * 
- * Singleton pattern is applied and only one instance of Processor is available.
- * Result object is being returned to UI for display purposes.
+ * necessary operations. It is dependent on <code>database</code> package for
+ * operations related to the management of storage of <code>Task</code>. It is
+ * also dependent on <code>parser</code> package to decipher the user input.
+ * <p>
+ * <i>Singleton pattern is applied and only <u>one</u> instance of Processor is
+ * available per thread.</i>
+ * <p>
+ * Result object is being returned to the user interface for display purposes.
  * 
  * @author Ter Yao Xiang
  */
 
-public class Processor extends Observable {
+public class Processor {
 
     /** Logger for monitoring purposes */
     protected final static boolean LOGGING_ENABLED = false;
@@ -64,9 +66,6 @@ public class Processor extends Observable {
     /** List of Tasks without Due date/time */
     private List<Task> floatingTasks;
 
-    /** List of Tasks with Due date/time */
-    private List<Task> timedTasks;
-
     /** Stores input string for 'up' key **/
     private Stack<String> inputStringBackwardHistory;
 
@@ -88,7 +87,7 @@ public class Processor extends Observable {
         }
         initialiseProcessor();
         initialiseLogger();
-        updateFloatingAndTimedTasks();
+        updateFloatingTasksList();
     }
 
     private void initialiseProcessor() {
@@ -99,7 +98,6 @@ public class Processor extends Observable {
         editedTaskHistory = new Stack<Task>();
         lastSearch = new ArrayList<Task>();
         floatingTasks = new ArrayList<Task>();
-        timedTasks = new ArrayList<Task>();
         inputStringBackwardHistory = new Stack<String>();
         inputStringForwardHistory = new Stack<String>();
         currentInputString = "";
@@ -123,7 +121,7 @@ public class Processor extends Observable {
      * 
      * @return Instance of Processor
      */
-    public static synchronized Processor getInstance() {
+    public static Processor getInstance() {
         if (processor == null) {
             processor = new Processor();
         }
@@ -144,14 +142,20 @@ public class Processor extends Observable {
     }
 
     /**
-     * This methods processes the input by the user
+     * This method processes the input that is typed in by the user through the
+     * text box provided in the interface.
      * 
-     * @param String
+     * @param input
+     *            - Input given by the user.
      * @return {@link logic.Result#Result(List, boolean, CommandType, boolean)
      *         Result}
+     * @throws IllegalArgumentException
      */
     public Result processInput(String input) throws IllegalArgumentException {
         assert input != null;
+        if (LOGGING_ENABLED) {
+            log.warning("Command entered: " + input);
+        }
         updateInputHistory(input);
         Command cmd = Parser.parse(input);
         assert cmd != null;
@@ -178,14 +182,12 @@ public class Processor extends Observable {
     }
 
     /**
-     * Executes the appropriate actions for each command
+     * Executes the appropriate actions for each command.
      * 
      * @param cmd
-     *            - Command Object returned from Parser
-     * 
+     *            - Command object returned from Parser.
      * @param userInput
-     *            - {@code True} if the command was given by the user else
-     *            {@code false} if called internally by the system
+     *            - True if the command was given by the user.
      * 
      * @return {@link logic.Result#Result(List, boolean, CommandType, boolean)
      *         Result}
@@ -205,13 +207,16 @@ public class Processor extends Observable {
                              " Command executed successfully");
                 }
             }
-            updateUIPaneWindow();
+            updateFloatingTasksList();
             return result;
         }
     }
 
     /**
-     * Adds command to the history list
+     * This method updates the command history. Only commands that modifies <code>Task</code>
+     * objects will be added into the history. Forward command history will be
+     * cleared when a <code>Command</code> is added, similar to how a web browser history
+     * works.
      * 
      * @param cmd
      */
@@ -219,16 +224,6 @@ public class Processor extends Observable {
         if (hasModifiedData(cmd)) {
             forwardCommandHistory.clear();
             backwardCommandHistory.push(cmd);
-        }
-    }
-
-    private void updateUIPaneWindow() {
-        updateFloatingAndTimedTasks();
-        /*
-         * -- OBSOLETE CODE -- setChanged(); notifyObservers("updateui");
-         */
-        if (LOGGING_ENABLED) {
-            log.info("Updated side panel.");
         }
     }
 
@@ -249,24 +244,49 @@ public class Processor extends Observable {
         }
     }
 
-    private void updateFloatingAndTimedTasks() {
-        clearPanelTaskList();
+    private void updateFloatingTasksList() {
+        clearFloatingTaskList();
         for (Task task : file.getToDoTasks()) {
-            if (!task.getDue().isEmpty()) {
-                timedTasks.add(task);
-            } else {
+            if (task.getDue().isEmpty()) {
                 floatingTasks.add(task);
             }
         }
     }
 
-    private void clearPanelTaskList() {
+    private void clearFloatingTaskList() {
         floatingTasks.clear();
-        timedTasks.clear();
     }
 
     private boolean wipeFile() {
         return file.resetData();
+    }
+
+    /**
+     * This method fetches the previous command entered. Returns an empty string
+     * if there is no last command entered
+     * 
+     * @return String
+     */
+    public String fetchPreviousCommand() {
+        if (!inputStringBackwardHistory.isEmpty()) {
+            inputStringForwardHistory.push(currentInputString);
+            currentInputString = inputStringBackwardHistory.pop();
+        }
+        return currentInputString;
+    }
+
+    /**
+     * This method fetches the next command entered. Returns an empty string if
+     * there is no last command entered.
+     * 
+     * @return String
+     */
+    public String fetchNextCommand() {
+        if (!inputStringForwardHistory.isEmpty()) {
+            inputStringBackwardHistory.push(currentInputString);
+            currentInputString = inputStringForwardHistory.pop();
+        }
+        return currentInputString;
     }
 
     /**
@@ -290,24 +310,11 @@ public class Processor extends Observable {
     /**
      * This method fetches the task by Id.
      * 
-     * @return {@link database.Task#Task(String, DateTime, DateTime, DateTime, List, database.TaskType) Task}
+     * @return {@link database.Task#Task(String, DateTime, DateTime, DateTime, List, database.TaskType)
+     *         Task}
      */
     public Task fetchTaskById(int taskId) {
         return processor.getFile().getTask(taskId);
-    }
-    
-    /**
-     * This method fetches tasks that have due dates
-     * 
-     * @return List{@literal<Task>} - Tasks which contains time
-     *
-     */
-    public List<Task> fetchTimedTasks() {
-        if (LOGGING_ENABLED) {
-            log.info("Fetching Timed Tasks");
-        }
-        Collections.sort(timedTasks);
-        return Collections.unmodifiableList(timedTasks);
     }
 
     /**
@@ -319,7 +326,6 @@ public class Processor extends Observable {
         if (LOGGING_ENABLED) {
             log.info("Fetching Floating Tasks");
         }
-        Collections.sort(floatingTasks);
         return Collections.unmodifiableList(floatingTasks);
     }
 
@@ -387,7 +393,7 @@ public class Processor extends Observable {
             if (task.getStart().getDate().equals(todayDateStr) ||
                 task.getDue().getDate().equals(todayDateStr)) {
                 output.add(task);
-                // If floating tasks should be added to today list
+                // [May consider adding floating tasks to today list]
                 // } else if (task.getDue().isEmpty() &&
                 // task.getStart().isEmpty()) {
                 // output.add(task);
@@ -459,37 +465,12 @@ public class Processor extends Observable {
      * Returns true if input <code>date</code> is later than
      * <code>rangeStartEx</code> and is earlier than <code>rangeEndEx</code>.
      * <p>
-     * <i>Note that the range is "exclusive"; dates equal to start/end DateTimes are <u>not</u> considered "between" them.</i>
+     * <i>Note that the range is "exclusive"; dates equal to start/end DateTimes
+     * are <u>not</u> considered "between" them.</i>
      */
     private boolean dateIsBetween(DateTime rangeStartEx, DateTime rangeEndEx,
                                   DateTime date) {
         return date.isLaterThan(rangeStartEx) && date.isEarlierThan(rangeEndEx);
-    }
-
-    /**
-     * This method fetches the last command entered if there is one
-     * 
-     * @return String - Previous command entered
-     */
-    public String fetchInputUpKey() {
-        if (!inputStringBackwardHistory.isEmpty()) {
-            inputStringForwardHistory.push(currentInputString);
-            currentInputString = inputStringBackwardHistory.pop();
-        }
-        return currentInputString;
-    }
-
-    /**
-     * This method fetches the next command entered if there is one
-     * 
-     * @return String - Next command entered
-     */
-    public String fetchInputDownKey() {
-        if (!inputStringForwardHistory.isEmpty()) {
-            inputStringBackwardHistory.push(currentInputString);
-            currentInputString = inputStringForwardHistory.pop();
-        }
-        return currentInputString;
     }
 
     protected DatabaseFacade getFile() {
@@ -527,4 +508,26 @@ public class Processor extends Observable {
     protected void initialiseNewSearchList() {
         lastSearch = new ArrayList<Task>();
     }
+
+    /*-- OBSOLETE CODE -- 
+    private void updateUIPaneWindow() {
+        updateFloatingAndTimedTasks();
+        setChanged(); notifyObservers("updateui"); 
+        if (LOGGING_ENABLED) {
+            log.info("Updated side panel.");
+        }
+    }
+    
+    /*
+     * This method fetches tasks that have due dates
+     * 
+     * @return List{@literal<Task>} - Tasks which contains time
+     *
+    public List<Task> fetchTimedTasks() {
+        if (LOGGING_ENABLED) {
+            log.info("Fetching Timed Tasks");
+        }
+        return Collections.unmodifiableList(timedTasks);
+    }
+     */
 }

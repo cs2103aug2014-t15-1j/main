@@ -36,11 +36,10 @@ public class CommandUnblock extends Command {
                 break;
 
             default:
-                assert false : "Invalid input - Received: " + param.getName();
+                assert false : "Invalid constructor param - Received: " + param.getName();
         }
     }
 
-    // TODO: Change to empty get()?
     @Override
     public String get(String field) {
         switch (field) {

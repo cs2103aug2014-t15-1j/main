@@ -694,7 +694,7 @@ public class LogicUnitTest {
     
     @Test
     public void testFetchKeys() {
-        assertTrue(processor.fetchInputDownKey() instanceof String);
-        assertTrue(processor.fetchInputUpKey() instanceof String);
+        assertTrue(processor.fetchNextCommand() instanceof String);
+        assertTrue(processor.fetchPreviousCommand() instanceof String);
     }
 }

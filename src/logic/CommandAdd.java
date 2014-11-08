@@ -51,7 +51,8 @@ public class CommandAdd extends Command {
                 break;
 
             default:
-                assert false : "Invalid input - Received: " + param.getName();
+                assert false : "Invalid constructor param - Received: " +
+                               param.getName();
         }
     }
 
@@ -65,24 +66,32 @@ public class CommandAdd extends Command {
      */
     @Override
     protected Result execute(boolean userInput) {
-        boolean success = false;
-        List<Task> list = new ArrayList<Task>();
         if (Processor.LOGGING_ENABLED) {
             Processor.getLogger().info("Executing 'Add' Command...");
         }
+
+        boolean success = false;
+        List<Task> list = new ArrayList<Task>();
+
         boolean isBlock = isBlocked();
         if (!isBlock) {
-            Task newTask = new Task(name, start, due, completedOn, tags,
-                    TaskType.TODO);
-            success = Processor.getInstance().getFile().add(newTask);
-            list.add(newTask);
-        }
-        if (isBlock) {
+            success = addNewTask(list);
+        } else {
             throw new Error(ERROR_BLOCK_ADD);
         }
+
         assert (list.size() == 1);
         String displayTab = getDisplayTab(list.get(0));
         return new Result(list, success, getType(), false, displayTab);
+    }
+
+    private boolean addNewTask(List<Task> list) {
+        boolean success = false;
+        Task newTask = new Task(name, start, due, completedOn, tags,
+                TaskType.TODO);
+        success = Processor.getInstance().getFile().add(newTask);
+        list.add(newTask);
+        return success;
     }
 
     /**
@@ -107,10 +116,11 @@ public class CommandAdd extends Command {
     }
 
     /**
-     * This method checks if the current CommandAdd object is trying to add to
-     * to a date range that is blocked.
+     * This method checks if the current <code>CommandAdd</code> object is trying to add to
+     * to a date that is blocked. Returns True if this object overlaps
+     * with one or more <code>Block Task</code>.
      * 
-     * @return boolean - {@code True} if overlaps
+     * @return boolean
      */
     private boolean overlapsWithBlockTask(Task blockDate) {
         if (!start.isEmpty() && !due.isEmpty()) {
@@ -164,7 +174,6 @@ public class CommandAdd extends Command {
                 return this.due.toString();
 
             default:
-                System.out.println("Add: Get's got a problem!");
                 return null;
         }
     }

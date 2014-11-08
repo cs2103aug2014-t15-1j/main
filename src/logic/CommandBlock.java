@@ -50,12 +50,16 @@ public class CommandBlock extends Command {
                 break;
 
             default:
-                assert false : "Invalid input - Received: " + param.getName();
+                assert false : "Invalid constructor param - Received: " +
+                               param.getName();
         }
     }
 
     /**
-     * Executes Block Command
+     * This method executes the Block Command. It adds a <code>Task</code> with
+     * <code>TaskType.BLOCK</code>. This <code>Task</code> is intended to
+     * reserved the specified date range for the user and prevents the user to
+     * add any other Task to the same date range.
      * 
      * @param userInput
      * @return {@link logic.Result#Result(List, boolean, CommandType, boolean)
@@ -101,8 +105,8 @@ public class CommandBlock extends Command {
     }
 
     /**
-     * Executes complement for 'block' operation of a task<br>
-     * This method deletes the newly added BlockTask to the Todo List
+     * This method executes the complement operation for 'block' of a
+     * <code>Task</code>.<br> It deletes the last added <code>Block Task</code>.
      * 
      * @return {@link logic.Result#Result(List, boolean, CommandType, boolean)
      *         Result}

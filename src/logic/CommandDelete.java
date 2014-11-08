@@ -53,7 +53,8 @@ public class CommandDelete extends Command {
                 break;
 
             default:
-                assert false : "Invalid input - Received: " + param.getName();
+                assert false : "Invalid constructor param - Received: " +
+                               param.getName();
         }
     }
 
@@ -98,23 +99,24 @@ public class CommandDelete extends Command {
                 break;
 
             default:
-                assert false : "Invalid input - Received: " + rangeType;
+                assert false : "Invalid rangeType - Received: " + rangeType;
         }
 
-        return new Result(list, success, this.getType(), confirmation, DISPLAY_TAB_NO_CHANGE);
+        return new Result(list, success, this.getType(), confirmation,
+                DISPLAY_TAB_NO_CHANGE);
     }
 
     /** Deletes Task using Id */
     private boolean deleteTaskUsingID(List<Task> list) {
         Processor processor = Processor.getInstance();
-        Task t = processor.getFile().getTask(Integer.parseInt(id));
+        Task task = processor.fetchTaskById(Integer.parseInt(id));
 
-        if (t == null) {
+        if (task == null) {
             return false;
         } else {
-            boolean success = processor.getFile().delete(t);
+            boolean success = processor.getFile().delete(task);
             if (success) {
-                list.add(t);
+                list.add(task);
             }
             return success;
         }
@@ -139,9 +141,10 @@ public class CommandDelete extends Command {
     }
 
     /**
-     * Executes "Restore" operation<br>
-     * Restores a deleted Task<br>
-     * Allows restore {@literal<id>}, restore search
+     * This method executes the "Restore" operation.<br>
+     * It restores a deleted <code>Task</code>.<br>
+     * Does <i>restore {@literal<id>}</i> or <i> restore search</i> depending on the
+     * <code>CommandDelete</code> object
      * 
      * @return {@link logic.Result#Result(List, boolean, CommandType, boolean)
      *         Result}

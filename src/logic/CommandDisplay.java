@@ -32,15 +32,25 @@ public class CommandDisplay extends Command {
                 break;
 
             default:
-                assert false : "Invalid input - Received: " + param.getName();
+                assert false : "Invalid constructor param - Received: " +
+                               param.getName();
         }
     }
 
     /**
-     * Executes "display" operation Allows display, display <id>, display search
-     * Allows show, show <id>, show search
+     * This method executes the "display" operation. It displays a list of <code>Task</code>.
+     * Depending on the rangeType specified, the display tab will differ from one another.
+     * <p>
+     * Allows <i>display</i>, <i>display {@literal <id>}</i>, <i>display
+     * {@literal <rangeType>}</i>
+     * <br>
+     * Allows <i>show</i>, <i>show {@literal <id>}</i>, <i>show
+     * {@literal <rangeType>}</i>
      * 
-     * @return Result
+     * @param userInput - Default is True (When user entered a command)
+     * 
+     * @return {@link logic.Result#Result(List, boolean, CommandType, boolean)
+     *         Result}
      */
     @Override
     protected Result execute(boolean userInput) {
@@ -52,7 +62,7 @@ public class CommandDisplay extends Command {
         List<Task> list = new ArrayList<Task>();
         boolean success = true;
         String displayTab = DISPLAY_TAB_RESULT;
-        
+
         switch (rangeType) {
             case RANGE_TYPE_ALL:
                 displayTab = DISPLAY_TAB_ALL;
@@ -105,7 +115,7 @@ public class CommandDisplay extends Command {
                 break;
 
             default:
-                assert false : "Invalid input - Received: " + rangeType;
+                assert false : "Invalid rangeType - Received: " + rangeType;
 
         }
 

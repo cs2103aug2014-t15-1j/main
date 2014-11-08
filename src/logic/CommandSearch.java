@@ -9,11 +9,11 @@ import database.Task;
 public class CommandSearch extends Command {
 
     private List<String> tags = new ArrayList<String>();
-    
+
     private List<String> keywords = new ArrayList<String>();
-    
+
     private String date = "";
-    
+
     private String status = "todo";
 
     public CommandSearch(List<TaskParam> content) {
@@ -66,30 +66,42 @@ public class CommandSearch extends Command {
     public List<String> getTags() {
         return this.tags;
     }
-    
+
     @Override
     public List<String> getKeywords() {
         return this.keywords;
     }
 
     /**
-     * Executes "search" operation Allows search <date> <key1> <key2> #tag1
-     * #tag2
+     * Executes "search" operation.
+     * <p>
+     * It will perform search operation based on the criteria of the search.
+     * Criteria of search can include <u>Keywords</u> and <u>Date</u> and <u>Tags</u><br>
+     * <code>Task</code> will have to meet all the specified criterias.<br>
      * 
-     * @return Result
+     * @return {@link logic.Result#Result(List, boolean, CommandType, boolean)
+     *         Result}
      */
     @Override
     protected Result execute(boolean userInput) {
         if (Processor.LOGGING_ENABLED) {
             Processor.getLogger().info("Executing 'Search' Command...");
         }
-        
+
         Processor.getInstance().initialiseNewSearchList();
         searchUsingDateAndKeyAndTags(date, keywords, tags);
         return new Result(Processor.getInstance().fetchLastSearch(), true,
                 getType(), DISPLAY_TAB_RESULT);
     }
 
+    /**
+     * This method adds Tasks that matches the search criteria into the search
+     * list
+     * 
+     * @param date
+     * @param keywords
+     * @param tags
+     */
     private void searchUsingDateAndKeyAndTags(String date,
                                               List<String> keywords,
                                               List<String> tags) {
@@ -98,33 +110,44 @@ public class CommandSearch extends Command {
             List<Task> searchRange = getSearchBoundary(status);
 
             for (Task task : searchRange) {
-                int found = criteriaCount;
-                if (date != "") {
-                    if (task.getSummary().contains(date)) {
-                        found--;
-                    }
-                }
-                if (!keywords.isEmpty()) {
-                    for (String keyword : keywords) {
-                        if (task.getSummary().toLowerCase().contains(keyword)) {
-                            found--;
-                            break;
-                        }
-                    }
-                }
-                if (!tags.isEmpty()) {
-                    for (String tag : tags) {
-                        if (task.getSummary().toLowerCase().contains(tag)) {
-                            found--;
-                            break;
-                        }
-                    }
-                }
-                if (found == 0) {
-                    Processor.getInstance().fetchLastSearch().add(task);
+                addTaskMatchingCriteria(date, keywords, tags, criteriaCount,
+                                        task);
+            }
+        }
+    }
+
+    private void addTaskMatchingCriteria(String date, List<String> keywords,
+                                         List<String> tags, int criteriaCount,
+                                         Task task) {
+        int found = criteriaCount;
+        found = getMatchingDateCount(date, task, found);
+        found = getMatchingCount(keywords, task, found);
+        found = getMatchingCount(tags, task, found);
+        // Meets all criteria
+        if (found == 0) {
+            Processor.getInstance().fetchLastSearch().add(task);
+        }
+    }
+
+    private int getMatchingDateCount(String date, Task task, int found) {
+        if (date != "") {
+            if (task.getSummary().contains(date)) {
+                found--;
+            }
+        }
+        return found;
+    }
+
+    private int getMatchingCount(List<String> list, Task task, int found) {
+        if (!list.isEmpty()) {
+            for (String key : list) {
+                if (task.getSummary().toLowerCase().contains(key)) {
+                    found--;
+                    break;
                 }
             }
         }
+        return found;
     }
 
     private int getCriteriaCount(String date, List<String> keywords,
@@ -163,7 +186,8 @@ public class CommandSearch extends Command {
                 break;
 
             default:
-                break;
+                assert false : "Invalid search range boundary - Received: " +
+                               status;
         }
         return searchRange;
     }

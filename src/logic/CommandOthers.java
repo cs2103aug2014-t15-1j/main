@@ -20,7 +20,7 @@ public class CommandOthers extends Command {
     public CommandOthers(String type) {
         assert (type != null);
         assert (!type.isEmpty());
-        
+
         switch (type.toLowerCase()) {
             case STR_EXIT:
                 this.type = CommandType.EXIT;
@@ -41,9 +41,9 @@ public class CommandOthers extends Command {
             case STR_HELP:
                 this.type = CommandType.HELP;
                 break;
-                
+
             default:
-                assert false : "Invalid input - Received: " + type;
+                assert false : "Invalid command type - Received: " + type;
         }
     }
 
@@ -66,6 +66,7 @@ public class CommandOthers extends Command {
                 return new Result(null, true, getType(), DISPLAY_TAB_NO_CHANGE);
 
             default:
+                assert false : "Invalid command type - Received: " + getType();
                 return new Result();
         }
     }
@@ -101,10 +102,12 @@ public class CommandOthers extends Command {
     }
 
     /**
-     * Executes "redo" operation Applicable for 'Add', 'Edit', 'Delete',
-     * 'Restore', 'Block', 'Unblock', 'Done', 'Todo'
+     * This method executes the "redo" operation. It is applicable for 'Add',
+     * 'Edit', 'Delete', 'Restore', 'Block', 'Unblock', 'Done', 'Todo'
+     * operations.
      * 
-     * @return true/false on whether operation is performed
+     * @return {@link logic.Result#Result(List, boolean, CommandType, boolean)
+     *         Result}
      */
     protected Result executeRedo() {
         if (Processor.LOGGING_ENABLED) {
@@ -122,14 +125,12 @@ public class CommandOthers extends Command {
     }
 
     /**
-     * This method pushes command to the respective stack after undo/redo If
-     * undo/redo operation is unsuccessful, command is pushed back to the stack
-     * it was popped from
+     * This method pushes command to the respective stack after undo/redo
+     * operation. Unsuccessful operations are taken into account.
      * 
-     * @param cmd
-     * @param success
-     * @param redo
-     *            - true for redo operations, false for undo operations
+     * @param cmd - <code>Command</code> object
+     * @param success - True if operation is successful.
+     * @param redo - True for "redo" operations, False for "undo" operations.
      */
     private void modifyHistory(Command cmd, boolean success, boolean redo) {
         Processor processor = Processor.getInstance();

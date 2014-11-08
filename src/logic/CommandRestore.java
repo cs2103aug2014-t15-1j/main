@@ -44,7 +44,7 @@ public class CommandRestore extends Command {
                 break;
 
             default:
-                assert false : "Invalid input - Received: " + param.getName();
+                assert false : "Invalid constructor param - Received: " + param.getName();
         }
     }
 
@@ -67,10 +67,13 @@ public class CommandRestore extends Command {
     }
 
     /**
-     * Executes "Restore" operation Restores a deleted Task Allows restore <id>,
-     * restore search
+     * This method executes the "Restore" operation.<br>
+     * It restores a deleted <code>Task</code>.<br>
+     * Does <i>restore {@literal<id>}</i> or <i> restore search</i> depending on the
+     * <code>CommandDelete</code> object
      * 
-     * @return true/false on whether operation is performed
+     * @return {@link logic.Result#Result(List, boolean, CommandType, boolean)
+     *         Result}
      */
     @Override
     protected Result execute(boolean userInput) {
@@ -94,7 +97,7 @@ public class CommandRestore extends Command {
                 break;
 
             default:
-                success = false;
+                assert false : "Invalid rangeType - Received: " + rangeType;
 
         }
         return new Result(list, success, getType(), DISPLAY_TAB_NO_CHANGE);
@@ -139,10 +142,12 @@ public class CommandRestore extends Command {
     }
 
     /**
-     * Executes "delete" operation Deletes a task Allows delete <id>, delete
-     * search, delete all
+     * Executes "delete" operation<br>
+     * Deletes a task<br>
+     * Allows delete {@literal<id>}, delete search, delete all
      * 
-     * @return Result
+     * @return {@link logic.Result#Result(List, boolean, CommandType, boolean)
+     *         Result}
      */
     @Override
     protected Result executeComplement() {

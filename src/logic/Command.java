@@ -39,7 +39,7 @@ public abstract class Command {
     protected static final String DELETE_DUE = "due";
     protected static final String DELETE_START = "start";
     protected static final String DELETE_TAGS = "tags";
-    
+
     protected static final String DISPLAY_TAB_ALL = "all";
     protected static final String DISPLAY_TAB_TODAY = "today";
     protected static final String DISPLAY_TAB_TOMORROW = "tomorrow";
@@ -47,9 +47,9 @@ public abstract class Command {
     protected static final String DISPLAY_TAB_SOMEDAY = "someday";
     protected static final String DISPLAY_TAB_RESULT = "result";
     protected static final String DISPLAY_TAB_NO_CHANGE = "nochange";
-    
+
     protected static final String ERROR_BLOCK_ADD = "Unable to add Task, this clashes with a Block Task!";
-    
+
     public CommandType getType() {
         assert this.type != null : "CommandType cannot be null!";
         return this.type;
@@ -83,6 +83,17 @@ public abstract class Command {
         this.type = type;
     }
 
+    /**
+     * This method returns the appropriate tab to change to for a Task. <br>
+     * For <code>Tasks</code> that have <code>due</code> dates due today, it
+     * should switch to the <code>"today"</code> tab. Else, it should switch to
+     * the <code>"all"</code> tab.
+     * <p>
+     * <i>Currently used only in the deletion of Task</i>
+     * 
+     * @param toDelete - Task
+     * @return String
+     */
     protected String getDisplayTab(Task toDelete) {
         String displayTab = DISPLAY_TAB_ALL;
         String todayDate = Parser.getCurrDateStr();

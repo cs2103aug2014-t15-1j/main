@@ -32,14 +32,6 @@ public class CommandDone extends Command {
         this(content, false);
     }
 
-    /**
-     * This method constructs the CommandDone object <p>
-     * @param List
-     *            {@literal<TaskParam>} content - Expected to contain TaskParam
-     *            object <br>
-     *            boolean isComplement - True if it is a child of another
-     *            Command object
-     */
     protected CommandDone(List<TaskParam> content, boolean isComplement) {
         assert (content != null);
         assert (!content.isEmpty());
@@ -86,14 +78,15 @@ public class CommandDone extends Command {
     }
 
     /**
-     * Executes "done" operation
+     * This method executes the "done" operation
      * <p>
      * This is executed using the command:<br>
-     * "done {@literal<id>}" or "done {@literal<date>}"
+     * <i>done {@literal<id>}</i> or <i>done {@literal<date>}</i>
      * <p>
-     * This method marks either one/several Tasks as 'done'
+     * This method marks either one/several Tasks as "done"
      * 
-     * @return Result
+     * @return {@link logic.Result#Result(List, boolean, CommandType, boolean)
+     *         Result}
      */
     @Override
     protected Result execute(boolean userInput) {
@@ -102,7 +95,7 @@ public class CommandDone extends Command {
         }
         List<Task> list = new ArrayList<Task>();
         boolean success = false;
-        
+
         switch (rangeType) {
             case RANGE_TYPE_ID:
                 success = doneById(list);
@@ -113,7 +106,7 @@ public class CommandDone extends Command {
                 break;
 
             default:
-                break;
+                assert false : "Invalid input - Received: " + rangeType;
 
         }
 
@@ -151,11 +144,12 @@ public class CommandDone extends Command {
     }
 
     /**
-     * Executes "todo" operation
+     * This method executes the "todo" operation
      * <p>
-     * Marks a 'done' task as 'todo'
+     * Marks a "done" task as "todo"
      * 
-     * @return Result
+     * @return {@link logic.Result#Result(List, boolean, CommandType, boolean)
+     *         Result}
      */
     @Override
     protected Result executeComplement() {
@@ -170,8 +164,8 @@ public class CommandDone extends Command {
      * This method fetches a list of Tasks which are done in the last 'done'
      * operation
      * <p>
-     * For "done {@literal<id>}", the list will contain only one Task.<br>
-     * For "done {@literal<date>}", the list will contain only several Tasks.
+     * For <i>done {@literal<id>}</i>, the list will contain only one Task.<br>
+     * For <i>done {@literal<date>}</i>, the list will contain only several Tasks.
      * 
      * @return List{@literal<Task>}
      */

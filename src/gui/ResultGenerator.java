@@ -130,14 +130,14 @@ public class ResultGenerator {
      * Returns a previous input entered by user. Traverses up input history
      */
     public static String getUpKeyInput() {
-        return processor.fetchInputUpKey();
+        return processor.fetchPreviousCommand();
     }
 
     /**
      * Returns a previous input entered by user. Traverses down input history
      */
     public static String getDownKeyInput() {
-        return processor.fetchInputDownKey();
+        return processor.fetchNextCommand();
     }
 
     public static List<Task> getAllTasks() {

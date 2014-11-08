@@ -53,7 +53,7 @@ public class CommandEdit extends Command {
                 break;
 
             default:
-                assert false : "Invalid input - Received: " + param.getName();
+                assert false : "Invalid constructor param - Received: " + param.getName();
         }
     }
 
@@ -73,7 +73,6 @@ public class CommandEdit extends Command {
                 return this.due.toString();
 
             default:
-                System.out.println("Edit get's got a problem!");
                 return null;
         }
     }
@@ -90,7 +89,7 @@ public class CommandEdit extends Command {
     }
 
     /**
-     * Executes "edit" operation Allow edit/deletion of parameters of a Task
+     * Executes "edit" operation performs edit/deletion of parameters of a Task
      * 
      * @return Result
      */
@@ -109,25 +108,7 @@ public class CommandEdit extends Command {
             Task existingTask = processor.getFile().getTask(taskId);
             if (existingTask != null) {
                 Task oldTask = new Task(existingTask);
-                for (String deleteParam : delete) {
-                    switch (deleteParam) {
-                        case DELETE_NAME:
-                            name = null;
-                            break;
-
-                        case DELETE_DUE:
-                            due = null;
-                            break;
-
-                        case DELETE_START:
-                            start = null;
-                            break;
-
-                        case DELETE_TAGS:
-                            tags = null;
-                            break;
-                    }
-                }
+                updateDeletedParam();
                 success = processor.getFile().edit(existingTask, name, start,
                                                    due, tags);
                 if (success) {
@@ -136,6 +117,31 @@ public class CommandEdit extends Command {
             }
         }
         return new Result(list, success, getType(), DISPLAY_TAB_NO_CHANGE);
+    }
+
+    private void updateDeletedParam() {
+        for (String deleteParam : delete) {
+            switch (deleteParam) {
+                case DELETE_NAME:
+                    name = null;
+                    break;
+
+                case DELETE_DUE:
+                    due = null;
+                    break;
+
+                case DELETE_START:
+                    start = null;
+                    break;
+
+                case DELETE_TAGS:
+                    tags = null;
+                    break;
+                
+                default:
+                    assert false : "Invalid delete param - Received: " + deleteParam;
+            }
+        }
     }
 
     private int getTaskId() {
