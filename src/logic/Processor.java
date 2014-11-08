@@ -10,7 +10,7 @@ import java.util.logging.Formatter;
 import java.util.logging.Logger;
 
 import objects.DatabaseFacadeStub;
-import parser.DateParser;
+import parser.Parser;
 import parser.Parser;
 import database.DatabaseFacade;
 import database.DateTime;
@@ -380,8 +380,8 @@ public class Processor extends Observable {
         if (LOGGING_ENABLED) {
             log.info("Fetching Today Tasks");
         }
-        String todayDateStr = DateParser.getCurrDateStr();
-        DateTime todayDate = new DateTime(DateParser.getCurrDateStr(), "2359");
+        String todayDateStr = Parser.getCurrDateStr();
+        DateTime todayDate = new DateTime(Parser.getCurrDateStr(), "2359");
         List<Task> output = new ArrayList<Task>();
         for (Task task : file.getAllTasks()) {
             if (task.getStart().getDate().equals(todayDateStr) ||
@@ -410,7 +410,7 @@ public class Processor extends Observable {
         if (LOGGING_ENABLED) {
             log.info("Fetching Tomorrow Tasks");
         }
-        String tmrDateStr = DateParser.getTmrDateStr();
+        String tmrDateStr = Parser.getTmrDateStr();
         DateTime tmrDate = new DateTime(tmrDateStr, "2359");
         List<Task> output = new ArrayList<Task>();
         for (Task task : file.getAllTasks()) {
@@ -438,9 +438,9 @@ public class Processor extends Observable {
         }
         // Anything that falls after tomorrow but is earlier than 15 days later
         // is "within the next 2 weeks"
-        String tmrDate = DateParser.getDateFromNowStr(2);
+        String tmrDate = Parser.getDateFromNowStr(2);
         DateTime tmr = new DateTime(tmrDate, "2359");
-        String fifteenDaysLaterDate = DateParser.getDateFromNowStr(15);
+        String fifteenDaysLaterDate = Parser.getDateFromNowStr(15);
         DateTime fifteenDaysLater = new DateTime(fifteenDaysLaterDate, "0000");
 
         List<Task> output = new ArrayList<Task>();

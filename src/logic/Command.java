@@ -2,7 +2,7 @@ package logic;
 
 import java.util.List;
 
-import parser.DateParser;
+import parser.Parser;
 import database.Task;
 
 public abstract class Command {
@@ -85,7 +85,7 @@ public abstract class Command {
 
     protected String getDisplayTab(Task toDelete) {
         String displayTab = DISPLAY_TAB_ALL;
-        String todayDate = DateParser.getCurrDateStr();
+        String todayDate = Parser.getCurrDateStr();
         if (toDelete.getDue().getDate().equals(todayDate) ||
             toDelete.getStart().getDate().equals(todayDate)) {
             displayTab = DISPLAY_TAB_TODAY;

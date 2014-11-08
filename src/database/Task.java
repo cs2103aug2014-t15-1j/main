@@ -3,7 +3,7 @@ package database;
 import java.util.List;
 import java.util.ArrayList;
 
-import parser.DateParser;
+import parser.Parser;
 
 /**
  * A Task object contains attributes to store a task's unique ID, description,
@@ -380,7 +380,7 @@ public class Task implements Comparable<Task> {
     public void setType(TaskType type) {
         this.type = type;
         if (type == TaskType.DONE && completedOn.isEmpty()) {
-            completedOn = new DateTime(DateParser.getCurrDateTime());
+            completedOn = new DateTime(Parser.getCurrDateTime());
             assert completedOn.getDate().matches(DateTime.getDatePattern());
             assert completedOn.getTime().matches(DateTime.getTimePattern());
         } else if (type == TaskType.TODO || type == TaskType.BLOCK) {

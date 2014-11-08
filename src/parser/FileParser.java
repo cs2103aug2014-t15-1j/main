@@ -51,7 +51,7 @@ public class FileParser {
     /**
      * See {@link Parser#parseToTask(String)}.
      */
-    public static Task parse(String text) {
+    static Task parse(String text) {
         String[] textItems = removeEmptyStrings(text.split(" "));
 
         // Params correspond to: name, start, due, completed, type

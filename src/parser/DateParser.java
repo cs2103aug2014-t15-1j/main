@@ -38,7 +38,7 @@ public class DateParser {
      * @return <code>DateTime</code> object containing date in
      *         <code>dd/MM/yyyy</code> and time in <code>HHmm</code>
      */
-    public static DateTime getCurrDateTime() {
+    static DateTime getCurrDateTime() {
         Calendar cal = Calendar.getInstance();
         String[] date = FORMAT_DATE_TIME.format(cal.getTime()).split(" ");
         return new DateTime(date[0], date[1]);
@@ -52,7 +52,7 @@ public class DateParser {
      * @return <code>String</code> object containing date in
      *         <code>dd/MM/yyyy</code> and time in <code>HHmm</code>
      */
-    public static String getCurrDateTimeStr() {
+    static String getCurrDateTimeStr() {
         return getCurrDateTime().toString();
     }
 
@@ -63,7 +63,7 @@ public class DateParser {
      * 
      * @return <code>String</code> object containing time in <code>HHmm</code>
      */
-    public static String getCurrTimeStr() {
+    static String getCurrTimeStr() {
         String currDate = getCurrDateTimeStr();
         String[] dateFields = currDate.split(" ");
         return dateFields[1];
@@ -77,7 +77,7 @@ public class DateParser {
      * @return <code>String</code> object containing date in
      *         <code>dd/MM/yyyy</code>
      */
-    public static String getCurrDateStr() {
+    static String getCurrDateStr() {
         String currDate = getCurrDateTimeStr();
         String[] dateFields = currDate.split(" ");
         return dateFields[0];
@@ -91,7 +91,7 @@ public class DateParser {
      * @return <code>String</code> object containing date in
      *         <code>dd/MM/yyyy</code>
      */
-    public static String getTmrDateStr() {
+    static String getTmrDateStr() {
         String today = getCurrDateStr();
         return getNextDayStr(today);
     }
@@ -105,7 +105,7 @@ public class DateParser {
      * @return <code>String</code> object containing date in
      *         <code>dd/MM/yyyy</code>
      */
-    public static String getDateFromNowStr(int numDaysLater) {
+    static String getDateFromNowStr(int numDaysLater) {
         String date = getCurrDateStr();
         for (int i = 0; i < numDaysLater; i++) {
             date = getNextDayStr(date);
@@ -193,7 +193,7 @@ public class DateParser {
      * <li>Time and Date: HHmm dd/MM/yyyy
      * </ol>
      */
-    public static boolean isValidDateTime(String str) {
+    static boolean isValidDateTime(String str) {
         String[] strFields = str.split(" ");
 
         boolean validNumOfTerms = strFields.length > 0 && strFields.length <= 2;
@@ -243,7 +243,7 @@ public class DateParser {
      * @return <code>DateTime</code> object containing date in
      *         <code>dd/MM/yyyy</code> and time in <code>HHmm</code>
      */
-    public static DateTime parseToDateTime(String str) {
+    static DateTime parseToDateTime(String str) {
         if (str == null || str.isEmpty()) {
             return new DateTime();
         }
@@ -398,7 +398,7 @@ public class DateParser {
      *            A <code>String</code> containing only an integer of the format
      *            <code>HHmm</code>
      */
-    public static boolean isValidTime(String timeStr) {
+    static boolean isValidTime(String timeStr) {
         try {
             String hoursStr = timeStr.substring(0, 2);
             String minStr = timeStr.substring(2, 4);
@@ -423,7 +423,7 @@ public class DateParser {
      * Checks if the input <code>String</code> is in the accepted date format
      * <code>dd/MM/yyyy</code>.
      */
-    public static boolean isValidDate(String str) {
+    static boolean isValidDate(String str) {
         return isValidWordDate(str) || isValidNumericalDate(str);
     }
 
@@ -597,7 +597,7 @@ public class DateParser {
     /**
 
      */
-    public static boolean containsDate(String str) {
+    static boolean containsDate(String str) {
         String[] strFields = str.split(" ");
 
         for (int i = 0; i < strFields.length; i++) {
@@ -614,7 +614,7 @@ public class DateParser {
      * @param str
      * @return
      */
-    public static String getFirstDate(String str) {
+    static String getFirstDate(String str) {
         assert containsDate(str) : "this method should be called only after checking if there's a date";
         String[] strFields = str.split(" ");
 
@@ -630,7 +630,7 @@ public class DateParser {
     /**
 
      */
-    public static boolean containsTime(String str) {
+    static boolean containsTime(String str) {
         String[] strFields = str.split(" ");
 
         for (int i = 0; i < strFields.length; i++) {
@@ -647,7 +647,7 @@ public class DateParser {
      * @param str
      * @return
      */
-    public static String getFirstTime(String str) {
+    static String getFirstTime(String str) {
         String[] strFields = str.split(" ");
 
         for (int i = 0; i < strFields.length; i++) {

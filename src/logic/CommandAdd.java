@@ -3,7 +3,7 @@ package logic;
 import java.util.List;
 import java.util.ArrayList;
 
-import parser.DateParser;
+import parser.Parser;
 import parser.objects.TaskParam;
 import database.DateTime;
 import database.Task;
@@ -39,11 +39,11 @@ public class CommandAdd extends Command {
                 break;
 
             case PARAM_START:
-                this.start = DateParser.parseToDateTime(param.getField());
+                this.start = Parser.parseToDateTime(param.getField());
                 break;
 
             case PARAM_DUE:
-                this.due = DateParser.parseToDateTime(param.getField());
+                this.due = Parser.parseToDateTime(param.getField());
                 break;
 
             case PARAM_TAG:

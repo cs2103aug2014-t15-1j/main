@@ -68,7 +68,7 @@ public class InputParser {
      *             when a user input is invalid. The exception will contain a
      *             message related to the error.
      */
-    public static Command parse(String input) throws IllegalArgumentException {
+    static Command parse(String input) throws IllegalArgumentException {
         // Note: The parser is built to analyse input on a word-by-word basis.
         assert (input != null);
 

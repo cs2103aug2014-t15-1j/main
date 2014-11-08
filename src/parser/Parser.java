@@ -1,31 +1,17 @@
 package parser;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Scanner;
-
 import logic.Command;
-import logic.CommandAdd;
-import logic.CommandBlock;
-import logic.CommandDelete;
-import logic.CommandDisplay;
-import logic.CommandDone;
-import logic.CommandEdit;
-import logic.CommandOthers;
-import logic.CommandRestore;
-import logic.CommandSearch;
-import logic.CommandTodo;
-import logic.CommandUnblock;
 import database.DateTime;
 import database.Task;
-import database.TaskType;
 
 /**
- * This class is the interface/facade for all other parsing methods. These
- * include parsing from user input, parsing from file, as well as date-related
- * methods. The facade pattern is used to simplify interactions with the parser
- * package.
+ * This class is the facade for all other parsing methods. These include parsing
+ * from user input, parsing from file, as well as date-related methods. The
+ * facade pattern is used to simplify interactions with the parser package.
+ * <p>
+ * The Parser classes (DateParser, etc.) have been kept as static classes
+ * because they store no instance data at all. There is no benefit in making
+ * them instance objects; in fact, doing so will complicate code unnecessarily.
  * 
  * @author Yeo Zi Xian, Justin (A0116208N)
  *
@@ -61,6 +47,140 @@ public class Parser {
      */
     public static Task parseToTask(String text) {
         return FileParser.parse(text);
+    }
+
+    /**
+     * Checks and then parses the input <code>String</code> into a
+     * <code>DateTime</code> object. The date/time must be in one of four
+     * formats (below). An <code>IllegalArgumentException</code> will be thrown
+     * if the input is not one of the following formats, or if the date/time
+     * values are invalid (e.g. 40/01/2014 2401).
+     * <ol>
+     * Formats accepted:
+     * <li>Date only: dd/MM/yyyy
+     * <li>Time only: HHmm
+     * <li>Date and Time: dd/MM/yyyy HHmm
+     * <li>Time and Date: HHmm dd/MM/yyyy
+     * </ol>
+     * 
+     * @return <code>DateTime</code> object containing date in
+     *         <code>dd/MM/yyyy</code> and time in <code>HHmm</code>
+     */
+    public static DateTime parseToDateTime(String str) {
+        return DateParser.parseToDateTime(str);
+    }
+
+    /**
+     * Returns the current date and time in a <code>DateTime</code> object.
+     * <p>
+     * <i>Uses the default system settings for date and time.</i>
+     * 
+     * @return <code>DateTime</code> object containing date in
+     *         <code>dd/MM/yyyy</code> and time in <code>HHmm</code>
+     */
+    public static DateTime getCurrDateTime() {
+        return DateParser.getCurrDateTime();
+    }
+
+    /**
+     * Returns the current date and time in a <code>String</code>.
+     * <p>
+     * <i>Uses the default system settings for date and time.</i>
+     * 
+     * @return <code>String</code> object containing date in
+     *         <code>dd/MM/yyyy</code> and time in <code>HHmm</code>
+     */
+    public static String getCurrDateTimeStr() {
+        return DateParser.getCurrDateTimeStr();
+    }
+
+    /**
+     * Returns the current time in a <code>String</code> object.
+     * <p>
+     * <i>Uses the default system settings for time.</i>
+     * 
+     * @return <code>String</code> object containing time in <code>HHmm</code>
+     */
+    public static String getCurrTimeStr() {
+        return DateParser.getCurrTimeStr();
+    }
+
+    /**
+     * Returns the current date in a <code>String</code>.
+     * <p>
+     * <i>Uses the default system settings for date.</i>
+     * 
+     * @return <code>String</code> object containing date in
+     *         <code>dd/MM/yyyy</code>
+     */
+    public static String getCurrDateStr() {
+        return DateParser.getCurrDateStr();
+    }
+
+    /**
+     * Returns tomorrow's date in a <code>String</code>.
+     * <p>
+     * <i>Uses the default system settings for date.</i>
+     * 
+     * @return <code>String</code> object containing date in
+     *         <code>dd/MM/yyyy</code>
+     */
+    public static String getTmrDateStr() {
+        return DateParser.getTmrDateStr();
+    }
+
+    /**
+     * Returns the date of the day that is <code>numDaysLater</code> days from
+     * today, in a <code>String</code> object.
+     * <p>
+     * <i>Uses the default system settings for date.</i>
+     * 
+     * @return <code>String</code> object containing date in
+     *         <code>dd/MM/yyyy</code> or "today"/"tomorrow"/"tmr".
+     */
+    public static String getDateFromNowStr(int numDaysLater) {
+        return DateParser.getDateFromNowStr(numDaysLater);
+    }
+
+    /**
+     * Checks if the input <code>String</code> is in the accepted date format
+     * <code>dd/MM/yyyy</code>.
+     */
+    public static boolean isValidDate(String str) {
+        return DateParser.isValidDate(str);
+    }
+
+    /**
+     * Checks if the input <code>String</code> is a valid time. This method
+     * assumes the 24HR time format, i.e. 0000-2359.
+     * 
+     * <p>
+     * <i> The input should be an integer String. </i>
+     * 
+     * @param timeStr
+     *            A <code>String</code> containing only an integer of the format
+     *            <code>HHmm</code>
+     */
+    public static boolean isValidTime(String timeStr) {
+        return DateParser.isValidTime(timeStr);
+    }
+
+    /**
+     * Checks if the input <code>String</code> can be parsed into a
+     * <code>DateTime</code> object. The date/time must be in one of four
+     * formats (below).
+     * <ol>
+     * Formats accepted:
+     * <li>Date only: dd/MM/yyyy
+     * <li>Time only: HHmm
+     * <li>Date and Time: dd/MM/yyyy HHmm
+     * <li>Time and Date: HHmm dd/MM/yyyy
+     * </ol>
+     * <p>
+     * Alternatives for date include "today", "tomorrow" and "tmr"
+     */
+    public static boolean isValidDateTime(String str) {
+        return DateParser.isValidDateTime(str);
     }
 
 }
