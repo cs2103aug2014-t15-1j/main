@@ -141,13 +141,13 @@ public class DatabaseLogic {
      *            The task's unique ID.
      * @return Task object of matching ID, or null if task is not in the list.
      */
-    public Task searchTaskById(List<Task> tasks, int id) {
-        for (Task task : tasks) {
+    public Task searchTaskById(int id) {
+        for (Task task : allTasks) {
             if (task.getId() == id) {
                 return task;
             }
         }
-        return null;
+        return null; // Invalid id
     }
 
     public String getAllTaskInfo() {

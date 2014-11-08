@@ -103,7 +103,7 @@ public class DatabaseFacade {
      * @return Task object of matching ID, or null if task is not in the list.
      */
     public Task getTask(int id) {
-        return databaseLogic.searchTaskById(getAllTasks(), id);
+        return databaseLogic.searchTaskById(id);
     }
 
     /**
@@ -120,7 +120,7 @@ public class DatabaseFacade {
         String allTaskInfo = databaseLogic.getAllTaskInfo();
         return taskWriter.write(allTaskInfo);
     }
-    
+
     /**
      * Adds a new to-do task to lists and file. Populates relevant lists, and
      * updates file with new information.
@@ -159,9 +159,9 @@ public class DatabaseFacade {
      *            New tags to append with, if any.
      * @return True, if file has been successfully updated with edit.
      */
-    public boolean edit(int id, String name, DateTime start,
-                                  DateTime due, List<String> tags) {
-        Task task = databaseLogic.searchTaskById(databaseLogic.getAllTasks(), id);
+    public boolean edit(int id, String name, DateTime start, DateTime due,
+                        List<String> tags) {
+        Task task = getTask(id);
         boolean success = databaseLogic.edit(task, name, start, due, tags);
         if (success) {
             return updateFile();
@@ -189,8 +189,8 @@ public class DatabaseFacade {
      *            New tags to append with, if any.
      * @return True, if file has been successfully updated with edit.
      */
-    public boolean edit(Task task, String name, DateTime start,
-                                  DateTime due, List<String> tags) {
+    public boolean edit(Task task, String name, DateTime start, DateTime due,
+                        List<String> tags) {
         boolean success = databaseLogic.edit(task, name, start, due, tags);
         if (success) {
             return updateFile();
@@ -210,7 +210,7 @@ public class DatabaseFacade {
      * @return True, if file has been successfully updated with delete.
      */
     public boolean delete(int id) {
-        Task task = databaseLogic.searchTaskById(getAllTasks(), id);
+        Task task = getTask(id);
         boolean success = databaseLogic.delete(task);
         if (success) {
             return updateFile();
@@ -248,7 +248,7 @@ public class DatabaseFacade {
      * @return True, if file has been successfully updated with restore.
      */
     public boolean restore(int id) {
-        Task task = databaseLogic.searchTaskById(getDeletedTasks(), id);
+        Task task = getTask(id);
         boolean success = databaseLogic.restore(task);
         if (success) {
             return updateFile();
@@ -288,7 +288,7 @@ public class DatabaseFacade {
      * @return True, if file has been successfully updated with wipe.
      */
     public boolean permanentlyDelete(int id) {
-        Task task = databaseLogic.searchTaskById(getAllTasks(), id);
+        Task task = getTask(id);
         boolean success = databaseLogic.permanentlyDelete(task);
         if (success) {
             return updateFile();
@@ -344,7 +344,7 @@ public class DatabaseFacade {
      * @return True, if file has been successfully updated with change.
      */
     public boolean markToDo(int id) {
-        Task task = databaseLogic.searchTaskById(getAllTasks(), id);
+        Task task = getTask(id);
         boolean success = databaseLogic.markToDo(task);
         if (success) {
             return updateFile();
@@ -383,7 +383,7 @@ public class DatabaseFacade {
      * @return True, if file has been successfully updated with change.
      */
     public boolean markDone(int id) {
-        Task task = databaseLogic.searchTaskById(getAllTasks(), id);
+        Task task = getTask(id);
         boolean success = databaseLogic.markDone(task);
         if (success) {
             return updateFile();
