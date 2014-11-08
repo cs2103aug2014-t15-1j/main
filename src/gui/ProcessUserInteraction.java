@@ -12,26 +12,27 @@ import org.eclipse.swt.widgets.Text;
 
 //@author A0118846W
 public class ProcessUserInteraction {
-    
+
     private static final String CONFIRM = "yes";
     private static final String NO_CONFIRM = "no";
-    
+
     private static final String CODE_HELP = "Help";
     private static final String CODE_EXIT = "exit";
-    
+
     private static final String ASK_CONFIRM_DELETE = "This will erase all data, PERMANENTLY.  Key 'y' to continue or 'n' to abort";
     private static final String INVALID_INPUT = "Invalid Input.";
     private static final String SUCCESSFUL_DELETE_ALL = "Erased all data!";
     private static final String UNSUCCESSFUL_DELETE_ALL = "Did not delete anything";
-    
+
     private static final String COMMAND_FORMAT_ADD = "add [name] due [DD/MM/YYYY hhmm] start [DD/MM/YYYY hhmm] #tag";
     private static final String COMMAND_FORMAT_BLOCK = "block [DD/MM/YYYY hhmm] to [DD/MM/YYYY hhmm]";
     private static final String COMMAND_FORMAT_DISPLAY = "display";
     private static final String COMMAND_FORMAT_DISPLAY_BLOCK = "%1$s block";
     private static final String COMMAND_FORMAT_DISPLAY_DONE = "%1$s done";
-    private static final String COMMAND_FORMAT_DISPLAY_UPCOMING = "%1$s upcoming";
+    private static final String COMMAND_FORMAT_DISPLAY_SOMEDAY = "%1$s someday";
     private static final String COMMAND_FORMAT_DISPLAY_TODAY = "%1$s today";
     private static final String COMMAND_FORMAT_DISPLAY_TOMORROW = "%1$s tomorrow";
+    private static final String COMMAND_FORMAT_DISPLAY_UPCOMING = "%1$s upcoming";
     private static final String COMMAND_FORMAT_DONE = "done [id]";
     private static final String COMMAND_FORMAT_DELETE = "delete [id]";
     private static final String COMMAND_FORMAT_EXIT = "exit";
@@ -46,23 +47,23 @@ public class ProcessUserInteraction {
     private static final String COMMAND_FORMAT_TODO = "todo [id]";
     private static final String COMMAND_FORMAT_UNBLOCK = "unblock [DD/MM/YYYY hhmm] to [DD/MM/YYYY hhmm]";
     private static final String COMMAND_FORMAT_UNDO = "undo";
-    
+
     private static ResultGenerator resultGenerator;
     private Text commandLine;
     private StyledText feedback;
     private boolean isReplyToConfrimation = false;
     private Display display;
     private Shell shell;
-    
-    public ProcessUserInteraction(){
+
+    public ProcessUserInteraction() {
         commandLine = FeedbackAndInput.getCommandLine();
-        feedback =  FeedbackAndInput.getFeedback();
+        feedback = FeedbackAndInput.getFeedback();
         display = commandLine.getDisplay();
         shell = commandLine.getShell();
         resultGenerator = ResultGenerator.getInstance();
         addListeners();
     }
-    
+
     private void addListeners() {
         addShellListeners();
         addCommandLineListeners();
@@ -73,12 +74,12 @@ public class ProcessUserInteraction {
     }
 
     private void addHelpListener() {
-        display.addFilter(SWT.KeyDown, new Listener(){
-            public void handleEvent(Event event){
-                if(event.keyCode == SWT.F1){
-                   openHelpDialog();
-                }else{
-                    if(HelpDialog.getShell() != null && isDialogOpen()){
+        display.addFilter(SWT.KeyDown, new Listener() {
+            public void handleEvent(Event event) {
+                if (event.keyCode == SWT.F1) {
+                    openHelpDialog();
+                } else {
+                    if (HelpDialog.getShell() != null && isDialogOpen()) {
                         Shell helpDialogShell = HelpDialog.getShell();
                         helpDialogShell.close();
                         helpDialogShell.dispose();
@@ -95,10 +96,10 @@ public class ProcessUserInteraction {
 
         addListenerProcessInput();
     }
-    
+
     /**
-     * Adds listeners to erases all text from commandLine when a single key is entered.
-     * Only works at start of application
+     * Adds listeners to erases all text from commandLine when a single key is
+     * entered. Only works at start of application
      */
     private void addListenerRemoveText() {
         commandLine.addListener(SWT.KeyDown, new Listener() {
@@ -114,7 +115,7 @@ public class ProcessUserInteraction {
             }
         });
     }
-    
+
     /**
      * Adds listeners to every key entered by user
      */
@@ -140,9 +141,10 @@ public class ProcessUserInteraction {
             }
         });
     }
-    
+
     /**
-     * Adds listener to process any text input entered by the user into commandLine, everytime ENTER is pressed
+     * Adds listener to process any text input entered by the user into
+     * commandLine, everytime ENTER is pressed
      */
     private void addListenerProcessInput() {
         commandLine.addListener(SWT.DefaultSelection, new Listener() {
@@ -150,17 +152,17 @@ public class ProcessUserInteraction {
             public void handleEvent(Event event) {
                 String input = commandLine.getText();
                 commandLine.setText("");
-                try{
-                if (isReplyToConfrimation) {
-                    processReply(input);
-                } else if (input.trim().isEmpty()) {
-                    // do nothing, if input is empty
-                } else {
-                    processInput(input);
-                }
-                }catch(Exception e){
+                try {
+                    if (isReplyToConfrimation) {
+                        processReply(input);
+                    } else if (input.trim().isEmpty()) {
+                        // do nothing, if input is empty
+                    } else {
+                        processInput(input);
+                    }
+                } catch (Exception e) {
                     e.printStackTrace();
-                  feedback.setText(e.getMessage());
+                    feedback.setText(e.getMessage());
                 }
             }
         });
@@ -217,8 +219,7 @@ public class ProcessUserInteraction {
         Images.disposeAllImages();
         System.exit(0);
     }
-    
-    
+
     protected void giveCommandFormatHint(String input) {
 
         if (input.isEmpty()) {
@@ -295,63 +296,77 @@ public class ProcessUserInteraction {
                 return;
 
         }
-    }
-    // tabs done, block, upcoming, today, tomorrow
+    } 
+
     private void displayWhichTab(String input) {
         String word = getFirstWord(input);
         input = removefirstWord(input);
-        if(input.isEmpty() || word.isEmpty() || word.equalsIgnoreCase(COMMAND_FORMAT_DISPLAY)|| word.equalsIgnoreCase(COMMAND_FORMAT_SHOW)){
-            return;
+        if (input.isEmpty() || word.isEmpty() ||
+            !word.equalsIgnoreCase(COMMAND_FORMAT_DISPLAY) &&
+            !word.equalsIgnoreCase(COMMAND_FORMAT_SHOW)) {
+            return; 
         }
-        
-        if(!isOutOfBounds(input, 0)){
-            switch(Character.toLowerCase(input.charAt(0))){
+
+        if (!isOutOfBounds(input, 0)) {
+            switch (Character.toLowerCase(input.charAt(0))) {
                 case 'b':
-                    feedback.setText(String.format(COMMAND_FORMAT_DISPLAY_BLOCK, word));
-                    break;
+                    feedback.setText(String
+                            .format(COMMAND_FORMAT_DISPLAY_BLOCK, word));
+                    return;
                 case 'd':
-                    feedback.setText(String.format(COMMAND_FORMAT_DISPLAY_DONE, word));
-                    break;
-                case 'u':
-                    feedback.setText(String.format(COMMAND_FORMAT_DISPLAY_UPCOMING, word));
-                    break;
+                    feedback.setText(String.format(COMMAND_FORMAT_DISPLAY_DONE,
+                                                   word));
+                    return;
+                case  's':
+                    feedback.setText(String.format(COMMAND_FORMAT_DISPLAY_SOMEDAY,
+                                                   word));
+                    return;
                 case 't':
-                    if(!isOutOfBounds(input, 2) && (Character.toLowerCase(input.charAt(2))) == 'd'){
-                        feedback.setText(String.format(COMMAND_FORMAT_DISPLAY_TODAY, word));
-                    }else{
-                        feedback.setText(String.format(COMMAND_FORMAT_DISPLAY_TOMORROW, word));
+                    if (!isOutOfBounds(input, 2) &&
+                        (Character.toLowerCase(input.charAt(2))) == 'd') {
+                        feedback.setText(String
+                                .format(COMMAND_FORMAT_DISPLAY_TODAY, word));
+                    } else {
+                        feedback.setText(String
+                                .format(COMMAND_FORMAT_DISPLAY_TOMORROW, word));
                     }
-                    break;
+
+                    return;
+                case 'u':
+                    feedback.setText(String
+                            .format(COMMAND_FORMAT_DISPLAY_UPCOMING, word));
+                    return;
                 default:
                     return;
             }
         }
-        
+
     }
 
     private String getFirstWord(String line) {
-        int index = line.trim().indexOf(" ");
-        if(index == -1){
+        int index = line.trim().indexOf(' ');
+        if (index == -1) {
             return "";
         }
         return line.subSequence(0, index).toString();
     }
 
     private String removefirstWord(String line) {
+        int index = line.indexOf(' ');
+        if(index == -1){
+            return "";
+        }
         
-       int index = line.trim().indexOf(" ");
-       if(index == -1){
-           return "";
-       }
-       line.subSequence(index, line.length());
-       line.toString().trim();
-       return line;
+        return line.substring(index).trim();
     }
 
     /**
      * Checks to see if index is out of bounds in the string
-     * @param input String to check
-     * @param index index to check
+     * 
+     * @param input
+     *            String to check
+     * @param index
+     *            index to check
      * @return true if its out bounds, false otherwise
      */
     protected boolean isOutOfBounds(String input, int index) {
@@ -360,25 +375,24 @@ public class ProcessUserInteraction {
         }
         return false;
     }
-    
 
     private void openHelpDialog() {
-        if(!isDialogOpen()){
+        if (!isDialogOpen()) {
             Shell dialogShell = new Shell(Display.getCurrent());
             dialogShell.setData("ID");
             HelpDialog dialog = new HelpDialog(dialogShell);
             dialog.open();
             dialogShell.setData("different");
         }
-        
+
     }
 
     private boolean isDialogOpen() {
         Shell[] shells = Display.getCurrent().getShells();
         int size = shells.length;
-        for(int index = 0; index < size; index++){
+        for (int index = 0; index < size; index++) {
             String data = (String) shells[index].getData();
-            if(data != null && data.equals("ID")){
+            if (data != null && data.equals("ID")) {
                 return true;
             }
         }

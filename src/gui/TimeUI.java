@@ -42,7 +42,7 @@ public class TimeUI{
                 parent.getDisplay().timerExec(1000, this);
                 Calendar cal = Calendar.getInstance();
                 SimpleDateFormat formatTime = new SimpleDateFormat("EEEE h:mm:ss");
-                SimpleDateFormat formatDate = new SimpleDateFormat("dd MMMM YYYY, zz");
+                SimpleDateFormat formatDate = new SimpleDateFormat("dd MMMM YYYY zz");
                 Date now = cal.getTime();
                 String timeNow = formatTime.format(now).toString();
                 String dateNow = formatDate.format(now);
