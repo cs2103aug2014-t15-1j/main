@@ -82,6 +82,8 @@ public class ResultGenerator {
             return processResult(result, input);
         } catch (IllegalArgumentException e) {
             return e.getMessage();
+        } catch (Error e) {
+            return e.getMessage();
         }
 
     }

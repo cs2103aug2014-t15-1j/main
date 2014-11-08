@@ -192,7 +192,7 @@ public class Processor {
      * @return {@link logic.Result#Result(List, boolean, CommandType, boolean)
      *         Result}
      */
-    protected Result processCommand(Command cmd, boolean userInput) {
+    protected Result processCommand(Command cmd, boolean userInput) throws Error {
         if (cmd == null || cmd.getType() == null) {
             if (LOGGING_ENABLED) {
                 log.warning("Error in the input, unable to perform operation.");
