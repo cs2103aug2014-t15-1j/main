@@ -59,7 +59,18 @@ public class TableManagement {
     public void updateTable(List<Task> tasks, int index) {
         tables.get(index).setInput(tasks);
     }
-
+    
+    public void updateResultTable(List<Task> tasks){
+        tables.get(INDEX_RESULT).setInput(tasks);
+        folder.setSelection(INDEX_RESULT);
+    }
+    
+    public void updateTableByName(String tabName, List<Task> tasks){
+        int index = getTableIndex(tabName);
+        tables.get(index).setInput(tasks);
+        folder.setSelection(index);
+    }
+    
     public void setTableSelectionByIndex(int index) {
         if (folder == null) {
             return;
@@ -117,10 +128,28 @@ public class TableManagement {
 
         tableViewer.getTable().setSelection(indexToSelect);
     }
+    
+    private int getTableIndex(String tabName){
+        if (tabName.equals(TAB_NAME_TODAY)) {
+            return INDEX_TODAY;
+        } else if (tabName.equals(TAB_NAME_TOMORROW)) {
+            return INDEX_TOMORROW;
+        } else if (tabName.equals(TAB_NAME_UPCOMING)) {
+            return INDEX_UPCOMING;
+        } else if (tabName.equals(TAB_NAME_SOMEDAY)) {
+            return INDEX_SOMEDAY;
+        } else if (tabName.equals(TAB_NAME_RESULT)) {
+            return INDEX_RESULT;
+        }
 
+        // default
+        return INDEX_ALL;
+    }
+    
     private TableViewer getTable(String tabName) {
         if (tabName.equals(TAB_NAME_TODAY)) {
             folder.setSelection(INDEX_TODAY);
+            return tables.get(INDEX_TODAY);
         } else if (tabName.equals(TAB_NAME_TOMORROW)) {
             folder.setSelection(INDEX_TOMORROW);
             return tables.get(INDEX_TOMORROW);

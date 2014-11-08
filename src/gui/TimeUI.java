@@ -33,7 +33,7 @@ public class TimeUI{
         time = new StyledText(parent, SWT.CENTER | SWT.MULTI | SWT.READ_ONLY);
         setLayout();
         time.setWordWrap(true);
-        time.setText("Time now is   :  10 : 45 " + LINE_SEPARATOR +" Saturday  ");
+       time.setText("Time now is   :  10 : 45 " + LINE_SEPARATOR +" Saturday  date place holder");
         format(parent.getDisplay());
         Runnable timer = new Runnable(){
             public void run(){
@@ -42,7 +42,7 @@ public class TimeUI{
                 parent.getDisplay().timerExec(1000, this);
                 Calendar cal = Calendar.getInstance();
                 SimpleDateFormat formatTime = new SimpleDateFormat("EEEE h:mm:ss");
-                SimpleDateFormat formatDate = new SimpleDateFormat("d MMMM YYYY, zz");
+                SimpleDateFormat formatDate = new SimpleDateFormat("dd MMMM YYYY, zz");
                 Date now = cal.getTime();
                 String timeNow = formatTime.format(now).toString();
                 String dateNow = formatDate.format(now);
@@ -92,8 +92,6 @@ public class TimeUI{
     private void setColour(Display display) {
         Color color = display.getSystemColor(SWT.COLOR_BLACK);
         time.setForeground(color);
-        //color = display.getSystemColor(SWT.COLOR_WHITE);
-        //time.setBackground(color);
         Color bg = new Color(Display.getCurrent(),252,252,247);
         time.setBackground(bg);
     }

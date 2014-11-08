@@ -359,21 +359,6 @@ public class TableUI{
 
         table.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-        table.addListener(SWT.RESIZE, new Listener() {
-
-            @Override
-            public void handleEvent(Event event) {
-                switch (event.type) {
-                    case SWT.RESIZE:
-                      //  resizeCol();
-                        break;
-
-                    default:
-                        break;
-                }
-            }
-        });
-
     }
 
     protected boolean isOverdue(DateTime date) {
@@ -392,39 +377,6 @@ public class TableUI{
         return today;
     }
 
-    protected void resizeCol() {
-        Table table = tableViewer.getTable();
-        int totalColWidth = 0;
-
-        for (int index = 0; index < table.getColumnCount() - 1; index++) {
-            totalColWidth = table.getColumn(index).getWidth();
-        }
-
-        TableColumn nameCol = table.getColumn(1);
-        TableColumn tagsCol = table.getColumn(4);
-
-        TableColumn lastCol = table.getColumn(table.getColumnCount() - 1);
-        lastCol.pack();
-        nameCol.pack();
-        tagsCol.pack();
-
-        Rectangle tableArea = table.getClientArea();
-
-        Point size = table.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-        int width = tableArea.width - 2 * table.getBorderWidth() -
-                    folder.getBorderWidth();
-
-        if (size.y > tableArea.height + table.getHeaderHeight()) {
-            Point vertScrollWidth = table.getVerticalBar().getSize();
-            width = width - vertScrollWidth.x;
-        }
-
-        if (totalColWidth < tableArea.width) {
-            nameCol.setWidth((width - totalColWidth) / 4);
-            tagsCol.setWidth((width - totalColWidth) / 4);
-        }
-
-    }
 
     private TableViewerColumn setColumnHeader(String headerName, int colWidth) {
         TableViewerColumn columnViewer = new TableViewerColumn(tableViewer, SWT.LEFT);

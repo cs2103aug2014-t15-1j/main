@@ -259,7 +259,8 @@ public class ResultGenerator {
     private void processDisplay(Result result){
         refreshTables();
         String tabToSelect = result.getDisplayTab();
-        tableManagement.setTableSelectionByName(tabToSelect);
+        List<Task> outputs = result.getTasks();
+        tableManagement.updateTableByName(tabToSelect, outputs);
     }
 
     private void refreshTables() {
