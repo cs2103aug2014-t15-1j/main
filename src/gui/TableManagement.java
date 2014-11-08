@@ -38,7 +38,11 @@ public class TableManagement {
         folder = TableComposite.getTabFolder();
         tables = TableComposite.getTables();
     }
-
+    
+    /**
+     * Updates all the information in all tables, except for the result table. 
+     * It then sets the tab selection to show All table
+     */
     public void refreshTables() {
         List<Task> all = ResultGenerator.getAllTasks();
         List<Task> todays = ResultGenerator.getTodayTasks();
@@ -54,10 +58,6 @@ public class TableManagement {
         
         // default selection
         folder.setSelection(INDEX_ALL);
-    }
-
-    public void updateTable(List<Task> tasks, int index) {
-        tables.get(index).setInput(tasks);
     }
     
     public void updateResultTable(List<Task> tasks){
@@ -77,39 +77,39 @@ public class TableManagement {
         }
         folder.setSelection(index);
     }
-
+    
+    /**
+     * Selects a table tab by a specific name
+     * @param tabName
+     */
     public void setTableSelectionByName(String tabName) {
-        String tabNameToCompare = tabName.toLowerCase();
-
+        int index = getTableIndex(tabName);
         if (folder == null) {
             return;
         }
-
-        if (tabNameToCompare.equals(TAB_NAME_TODAY)) {
-            folder.setSelection(INDEX_TODAY);
-        } else if (tabNameToCompare.equals(TAB_NAME_TOMORROW)) {
-            folder.setSelection(INDEX_TOMORROW);
-        } else if (tabNameToCompare.equals(TAB_NAME_UPCOMING)) {
-            folder.setSelection(INDEX_UPCOMING);
-        } else if (tabNameToCompare.equals(TAB_NAME_SOMEDAY)) {
-            folder.setSelection(INDEX_SOMEDAY);
-        } else if (tabNameToCompare.equals(TAB_NAME_RESULT)) {
-            folder.setSelection(INDEX_RESULT);
-        } else {
-            // default
-            folder.setSelection(INDEX_ALL);
-        }
+        
+        folder.setSelection(index);
     }
     
+    /**
+     * Selects a specific table element in the table
+     * @param taskToSelect task that is to be selected
+     * @param tabName tabName of the table where the task should be selected from
+     */
     public void setTableSelectionByTask(Task taskToSelect, String tabName) {
-        TableViewer table = getTable(tabName);
+        int index = getTableIndex(tabName);
+        TableViewer table = tables.get(index);
         List<Task> tasks = getTableContent(taskToSelect);
         if (tasks == null) {
             return;
         }
         setElementSelection(taskToSelect, tasks, table);
     }
-
+    
+    private void updateTable(List<Task> tasks, int index) {
+        tables.get(index).setInput(tasks);
+    }
+    
     /**
      * Selects an element in the table. Default selection is the first element
      */
@@ -146,29 +146,6 @@ public class TableManagement {
         return INDEX_ALL;
     }
     
-    private TableViewer getTable(String tabName) {
-        if (tabName.equals(TAB_NAME_TODAY)) {
-            folder.setSelection(INDEX_TODAY);
-            return tables.get(INDEX_TODAY);
-        } else if (tabName.equals(TAB_NAME_TOMORROW)) {
-            folder.setSelection(INDEX_TOMORROW);
-            return tables.get(INDEX_TOMORROW);
-        } else if (tabName.equals(TAB_NAME_UPCOMING)) {
-            folder.setSelection(INDEX_UPCOMING);
-            return tables.get(INDEX_UPCOMING);
-        } else if (tabName.equals(TAB_NAME_SOMEDAY)) {
-            folder.setSelection(INDEX_SOMEDAY);
-            return tables.get(INDEX_SOMEDAY);
-        } else if (tabName.equals(TAB_NAME_RESULT)) {
-            folder.setSelection(INDEX_RESULT);
-            return tables.get(INDEX_RESULT);
-        }
-
-        // default
-        folder.setSelection(INDEX_ALL);
-        return tables.get(INDEX_ALL);
-    }
-
     private List<Task> getTableContent(Task task) {
         List<Task> today = ResultGenerator.getTodayTasks();
         List<Task> tomorrow = ResultGenerator.getTomorrowsTasks();

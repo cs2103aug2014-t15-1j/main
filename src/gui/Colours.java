@@ -2,7 +2,10 @@ package gui;
 
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Display;
-
+/**
+ * This class contains colours that was used throughout the application.
+ */
+//@author A0118846W
 public class Colours {
     
     private static Color deletedColor;

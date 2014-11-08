@@ -39,6 +39,7 @@ public class Fonts {
                 SWT.BOLD | SWT.UNDERLINE_SINGLE) };
         registry.put("title", fontData);
         
+        // adds fonts specific to screen resolution
         int screenWidth = Display.getCurrent().getBounds().width;
         if (screenWidth>= 1920) {
             fontData = new FontData[] { new FontData("Impact", 18, SWT.NORMAL) };

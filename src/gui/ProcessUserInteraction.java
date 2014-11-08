@@ -57,11 +57,14 @@ public class ProcessUserInteraction {
     private void addHelpListener() {
         display.addFilter(SWT.KeyDown, new Listener(){
             public void handleEvent(Event event){
-                if (isDialogOpen()){
-                    HelpDialog.getHelpDialog().dispose();
-                }
                 if(event.keyCode == SWT.F1){
                    openHelpDialog();
+                }else{
+                    if(HelpDialog.getShell() != null && isDialogOpen()){
+                        Shell helpDialogShell = HelpDialog.getShell();
+                        helpDialogShell.close();
+                        helpDialogShell.dispose();
+                    }
                 }
             }
         });
@@ -160,7 +163,8 @@ public class ProcessUserInteraction {
                     processInput(input);
                 }
                 }catch(Exception e){
-                    feedback.setText(e.getMessage());
+                    e.printStackTrace();
+                  feedback.setText(e.getMessage());
                 }
             }
         });
@@ -319,10 +323,9 @@ public class ProcessUserInteraction {
 
     private boolean isDialogOpen() {
         Shell[] shells = Display.getCurrent().getShells();
-        int size = shells.length; // 3 shells with help open
+        int size = shells.length;
         for(int index = 0; index < size; index++){
             String data = (String) shells[index].getData();
-            // Second item is "ID"
             if(data != null && data.equals("ID")){
                 return true;
             }

@@ -24,7 +24,6 @@ public class HelpDialog extends Dialog {
     
 
     private Image image;
-    
     private static Shell helpShell;
     
     /**
@@ -36,10 +35,18 @@ public class HelpDialog extends Dialog {
     }
     
     /**
+     * Returns the instance of shell object used to create the dialog
+     * @return shell used to create dialog
+     */
+    public static Shell getShell() {
+        return helpShell;
+    }
+    
+    /**
      * Opens the help dialog
      */
     public void open() {
-        Shell shell = new Shell(getParent(), SWT.NO_TRIM );
+        Shell shell = new Shell(getParent(), SWT.NO_TRIM | SWT.APPLICATION_MODAL);
 
         shell.setLayout(new GridLayout());
 
@@ -48,8 +55,6 @@ public class HelpDialog extends Dialog {
         
         shell.pack();
         centerDialogInScreen(shell);
-        helpShell = shell;
-        
         shell.open();
         
         Display display = getParent().getDisplay();
@@ -60,7 +65,6 @@ public class HelpDialog extends Dialog {
             }
         }
         
-        image.dispose();
     }
 
    
@@ -77,10 +81,7 @@ public class HelpDialog extends Dialog {
     }
 
     private void getHelpImage(Composite parent) {
-        InputStream stream = getClass()
-                .getResourceAsStream("/resource/Helpsheet2.png");
-        ImageData imageData = new ImageData(stream);
-        image = new Image(parent.getDisplay(), imageData);
+        image = Images.getRegistry().get("help");
     }
     
     private void centerDialogInScreen(Shell shell) {
@@ -93,13 +94,11 @@ public class HelpDialog extends Dialog {
     private void addCloseListener(final Shell shell) {
         shell.addKeyListener(new KeyAdapter() {
             public void keyPressed(KeyEvent event) {
+                shell.close();
                 shell.dispose();
             }
         });
         
     }
     
-    public static Shell getHelpDialog() {
-        return helpShell;
-    }
 }

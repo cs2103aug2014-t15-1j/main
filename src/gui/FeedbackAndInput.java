@@ -21,11 +21,14 @@ public class FeedbackAndInput extends Composite{
     private static final String WELCOME_MESSAGE = "Welcome.";
     
     private FontRegistry registry;
-    private static FeedbackAndInput feedbackAndInput;
-    
     private static Text commandLine;
     private static StyledText feedback;
-
+    
+    /**
+     * Creates the FeedbackAndInput Composite and its children
+     * @param parent Composite where FeedbackInput Composite is located
+     * @param style  Style that FeedbackInput Composite will use
+     */
     public FeedbackAndInput(Composite parent, int style) {
         super(parent, style);
         setLayout();
@@ -77,18 +80,17 @@ public class FeedbackAndInput extends Composite{
         feedback.setLayoutData(gridData);
 
         feedback.setFont(registry.get("feedback"));
+        
         Color color = this.getDisplay().getSystemColor(SWT.COLOR_WHITE);
+        feedback.setForeground(color);
         
         feedback.setEnabled(false);
-        
-        feedback.setForeground(color);
     }
     
 
     private void formatCommandLine() {
         Display display = this.getDisplay();
         Color black = display.getSystemColor(SWT.COLOR_BLACK);
-        Color white = display.getSystemColor(SWT.COLOR_WHITE);
         Color bg = new Color(Display.getCurrent(), 242, 255, 237);
         commandLine.setBackground(bg);
         commandLine.setForeground(black);

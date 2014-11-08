@@ -48,21 +48,9 @@ public class Images {
                     .createFromFile(getClass(), "/resource/bg1920.png");
             registry.put("main", id);
         }
-
-        id = ImageDescriptor.createFromFile(getClass(),
-                                            "/resource/resultBg.png");
-        registry.put("result", id);
-
-        id = ImageDescriptor.createFromFile(getClass(),
-                                            "/resource/sidepanelbg.png");
-        registry.put("sidepane", id);
-
-        id = ImageDescriptor
-                .createFromFile(getClass(), "/resource/Someday.png");
-        registry.put("someday", id);
-        id = ImageDescriptor.createFromFile(getClass(),
-                                            "/resource/UpcomingTask.png");
-        registry.put("upcoming", id);
+        
+        id = ImageDescriptor.createFromFile(getClass(), "/resource/Helpsheet.png");
+        registry.put("help", id);
     }
 
 }
