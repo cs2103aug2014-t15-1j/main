@@ -44,12 +44,12 @@ public class Colours {
     }
     
     private void createColours(Display display){
-        deletedColor = new Color(display,  178, 40, 7);   
-        todoColor = new Color(display, 137, 255, 14);
+        deletedColor = new Color(display,  255, 0, 0);   
+        todoColor = new Color(display, 146, 217, 110);
         tabFolderColor = new Color(display, 220, 220, 220);
-        overdueColor = new Color(display, 255, 0, 0);
-        blockDateColor = new Color(display, 13, 255, 250);
-        doneColor = new Color(display, 212, 127, 22);
+        overdueColor = new Color(display, 255, 49, 117);
+        blockDateColor = new Color(display, 107, 229, 252);
+        doneColor = new Color(display, 252, 183, 117);
     } 
     
     public static void disposeAllColours(){

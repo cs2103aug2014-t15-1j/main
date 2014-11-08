@@ -26,10 +26,11 @@ public class TableManagement {
     private static final String TAB_NAME_SOMEDAY = "someday";
     private static final String TAB_NAME_RESULT = "result";
 
-    private static CTabFolder folder= TableComposite.getTabFolder();
+    private static CTabFolder folder;
     private static List<TableViewer> tables;
 
     public TableManagement() {
+        folder= TableComposite.getTabFolder();
         tables = TableComposite.getTables();
     }
     
