@@ -313,6 +313,19 @@ public class DateTime implements Comparable<DateTime> {
         assert otherDateTime.toString().matches(DATE_TIME_PATTERN) : "dateTime's attributes must have correct format and value";
         return (this.compareTo(otherDateTime) == EARLIER);
     }
+    
+    /**
+     * Compares this <code>DateTime</code> with an input <code>DateTime</code>.<br>
+     * Returns <code>true</code> if it is later than the other
+     * <code>DateTime</code>.
+     * 
+     * @author Yeo Zi Xian, Justin
+     */
+    public boolean isLaterThan(DateTime otherDateTime) {
+        assert otherDateTime != null : "dateTime mustn't be null";
+        assert otherDateTime.toString().matches(DATE_TIME_PATTERN) : "dateTime's attributes must have correct format and value";
+        return (this.compareTo(otherDateTime) == LATER);
+    }
 
     /** @return Date, format: "DD/MM/YYYY" or empty String. */
     public String getDate() {
