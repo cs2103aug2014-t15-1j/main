@@ -82,6 +82,7 @@ public class HelpDialog extends Dialog {
 
     private void getHelpImage(Composite parent) {
         image = Images.getRegistry().get("help");
+        
     }
     
     private void centerDialogInScreen(Shell shell) {
