@@ -141,7 +141,7 @@ public class ResultGenerator {
     }
 
     public static List<Task> getAllTasks() {
-        List<Task> all = processor.fetchTimedTasks();
+        List<Task> all = processor.fetchAllTasks();
         return all;
     }
 
@@ -212,7 +212,7 @@ public class ResultGenerator {
                     return FEEDBACK_DELETE_CONFRIMATION;
                 }
                 refreshTables();
-                return feedbackMessage(outputs, FEEDBACK_DELETE);
+                return FEEDBACK_DELETE_CONFRIMATION;
 
             case EDIT:
                 refreshTables();

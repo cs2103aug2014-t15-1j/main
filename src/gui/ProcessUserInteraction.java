@@ -1,9 +1,6 @@
 package gui;
 
-import logic.Processor;
-
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
@@ -20,13 +17,12 @@ public class ProcessUserInteraction {
     private static final String INVALID_INPUT = "Invalid Input.";
     private static final String SUCCESSFUL_DELETE_ALL = "Erased all data!";
     private static final String UNSUCCESSFUL_DELETE_ALL = "Did not delete anything";
-    
-    
 
     private static final String CONFIRM = "yes";
     private static final String NO_CONFIRM = "no";
-
-    private static String CODE_EXIT = "exit";
+    
+    private static final String CODE_HELP = "Help";
+    private static final String CODE_EXIT = "exit";
     
     private static ResultGenerator resultGenerator;
     private Text commandLine;
@@ -51,7 +47,6 @@ public class ProcessUserInteraction {
 
     private void addShellListeners() {
         addHelpListener();
-//        addChangeTabListener();
     }
 
     private void addHelpListener() {
@@ -69,29 +64,6 @@ public class ProcessUserInteraction {
             }
         });
     }
-
-//    // OBSOLETE
-//    private void addChangeTabListener() {
-//        display.addFilter(SWT.KeyDown, new Listener() {
-//
-//            public void handleEvent(Event event) {
-//                if ( ( (event.stateMask & SWT.CTRL) == SWT.CTRL) &&
-//                    (event.keyCode == 'd') ) {
-//                    changeTabs();
-//                }
-//            }
-//        });
-//    }
-//
-//    private void changeTabs() {
-//        CTabFolder folder = TableComposite.getFolder();
-//        int index = folder.getSelectionIndex();
-//        if (index == 0) {
-//            folder.setSelection(1);
-//        } else {
-//            folder.setSelection(0);
-//        }
-//    }
 
     private void addCommandLineListeners() {
         addListenerRemoveText();
@@ -207,7 +179,7 @@ public class ProcessUserInteraction {
             feedback.setText(ASK_CONFIRM_DELETE);
             isReplyToConfrimation = true;
 
-        } else if (output.equals("Help")) {
+        } else if (output.equals(CODE_HELP)) {
             openHelpDialog();
 
         } else {
