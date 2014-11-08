@@ -13,16 +13,39 @@ import org.eclipse.swt.widgets.Text;
 //@author A0118846W
 public class ProcessUserInteraction {
     
-    private static final String ASK_CONFIRM_DELETE = "This will erase all data, PERMANENTLY.  Key 'y' to continue or 'n' to abort";
-    private static final String INVALID_INPUT = "Invalid Input.";
-    private static final String SUCCESSFUL_DELETE_ALL = "Erased all data!";
-    private static final String UNSUCCESSFUL_DELETE_ALL = "Did not delete anything";
-
     private static final String CONFIRM = "yes";
     private static final String NO_CONFIRM = "no";
     
     private static final String CODE_HELP = "Help";
     private static final String CODE_EXIT = "exit";
+    
+    private static final String ASK_CONFIRM_DELETE = "This will erase all data, PERMANENTLY.  Key 'y' to continue or 'n' to abort";
+    private static final String INVALID_INPUT = "Invalid Input.";
+    private static final String SUCCESSFUL_DELETE_ALL = "Erased all data!";
+    private static final String UNSUCCESSFUL_DELETE_ALL = "Did not delete anything";
+    
+    private static final String COMMAND_FORMAT_ADD = "add [name] due [DD/MM/YYYY hhmm] start [DD/MM/YYYY hhmm] #tag";
+    private static final String COMMAND_FORMAT_BLOCK = "block [DD/MM/YYYY hhmm] to [DD/MM/YYYY hhmm]";
+    private static final String COMMAND_FORMAT_DISPLAY = "display";
+    private static final String COMMAND_FORMAT_DISPLAY_BLOCK = "%1$s block";
+    private static final String COMMAND_FORMAT_DISPLAY_DONE = "%1$s done";
+    private static final String COMMAND_FORMAT_DISPLAY_UPCOMING = "%1$s upcoming";
+    private static final String COMMAND_FORMAT_DISPLAY_TODAY = "%1$s today";
+    private static final String COMMAND_FORMAT_DISPLAY_TOMORROW = "%1$s tomorrow";
+    private static final String COMMAND_FORMAT_DONE = "done [id]";
+    private static final String COMMAND_FORMAT_DELETE = "delete [id]";
+    private static final String COMMAND_FORMAT_EXIT = "exit";
+    private static final String COMMAND_FORMAT_EDIT = "edit [id] <parameter>  [value]";
+    private static final String COMMAND_FORMAT_GOTTA = "gotta [name] by [date] tag";
+    private static final String COMMAND_FORMAT_HELP = "help";
+    private static final String COMMAND_FORMAT_REDO = "redo [id]";
+    private static final String COMMAND_FORMAT_RESET = "reset";
+    private static final String COMMAND_FORMAT_RESTORE = "restore [id]";
+    private static final String COMMAND_FORMAT_SHOW = "show";
+    private static final String COMMAND_FORMAT_SEARCH = "search [id]";
+    private static final String COMMAND_FORMAT_TODO = "todo [id]";
+    private static final String COMMAND_FORMAT_UNBLOCK = "unblock [DD/MM/YYYY hhmm] to [DD/MM/YYYY hhmm]";
+    private static final String COMMAND_FORMAT_UNDO = "undo";
     
     private static ResultGenerator resultGenerator;
     private Text commandLine;
@@ -205,71 +228,126 @@ public class ProcessUserInteraction {
         Character firstLetter = input.charAt(0);
         switch (Character.toLowerCase(firstLetter)) {
             case 'a':
-                feedback.setText("add [name] due [DD/MM/YYYY hhmm] start [DD/MM/YYYY hhmm] #tag");
+                feedback.setText(COMMAND_FORMAT_ADD);
                 return;
             case 'b':
-                feedback.setText("block [DD/MM/YYYY hhmm] to [DD/MM/YYYY hhmm]");
+                feedback.setText(COMMAND_FORMAT_BLOCK);
                 return;
             case 'd':
                 if (!isOutOfBounds(input, 1) &&
                     Character.toLowerCase(input.charAt(1)) == 'i') {
-                    feedback.setText("display");
+                    feedback.setText(COMMAND_FORMAT_DISPLAY);
+                    displayWhichTab(input);
                     return;
                 } else if (!isOutOfBounds(input, 1) &&
                            Character.toLowerCase(input.charAt(1)) == 'o') {
-                    feedback.setText("done [id]");
+                    feedback.setText(COMMAND_FORMAT_DONE);
                     return;
                 }
-                feedback.setText("delete [id] ");
+                feedback.setText(COMMAND_FORMAT_DELETE);
 
                 return;
             case 'e':
                 if (!isOutOfBounds(input, 1) &&
                     Character.toLowerCase(input.charAt(1)) == 'x') {
-                    feedback.setText("exit");
+                    feedback.setText(COMMAND_FORMAT_EXIT);
                     return;
                 }
-                feedback.setText("edit [id] <parameter>  [value]");
+                feedback.setText(COMMAND_FORMAT_EDIT);
                 return;
+            case 'g':
+                feedback.setText(COMMAND_FORMAT_GOTTA);
             case 'h':
-                feedback.setText("help");
+                feedback.setText(COMMAND_FORMAT_HELP);
                 return;
             case 'r':
                 if (!isOutOfBounds(input, 2) &&
                     Character.toLowerCase(input.charAt(2)) == 'd') {
-                    feedback.setText("redo [id]");
+                    feedback.setText(COMMAND_FORMAT_REDO);
                     return;
                 } else if (!isOutOfBounds(input, 3) &&
                            (Character.toLowerCase(input.charAt(3)) == 'e')) {
-                    feedback.setText("reset");
+                    feedback.setText(COMMAND_FORMAT_RESET);
                     return;
                 }
-                feedback.setText("restore [id]");
+                feedback.setText(COMMAND_FORMAT_RESTORE);
 
                 return;
             case 's':
                 if (!isOutOfBounds(input, 1) &&
                     Character.toLowerCase(input.charAt(1)) == 'h') {
-                    feedback.setText("show");
+                    feedback.setText(COMMAND_FORMAT_SHOW);
+                    displayWhichTab(input);
                     return;
                 }
-                feedback.setText("search [id]");
+                feedback.setText(COMMAND_FORMAT_SEARCH);
                 return;
             case 't':
-                feedback.setText("todo [id]");
+                feedback.setText(COMMAND_FORMAT_TODO);
                 return;
             case 'u':
                 if (!isOutOfBounds(input, 2) &&
                     (Character.toLowerCase(input.charAt(2)) == 'b')) {
-                    feedback.setText("unblock [DD/MM/YYYY hhmm] to [DD/MM/YYYY hhmm]");
+                    feedback.setText(COMMAND_FORMAT_UNBLOCK);
                     return;
                 }
-                feedback.setText("undo");
+                feedback.setText(COMMAND_FORMAT_UNDO);
                 return;
 
         }
     }
-    
+    // tabs done, block, upcoming, today, tomorrow
+    private void displayWhichTab(String input) {
+        String word = getFirstWord(input);
+        input = removefirstWord(input);
+        if(input.isEmpty() || word.isEmpty() || word.equalsIgnoreCase(COMMAND_FORMAT_DISPLAY)|| word.equalsIgnoreCase(COMMAND_FORMAT_SHOW)){
+            return;
+        }
+        
+        if(!isOutOfBounds(input, 0)){
+            switch(Character.toLowerCase(input.charAt(0))){
+                case 'b':
+                    feedback.setText(String.format(COMMAND_FORMAT_DISPLAY_BLOCK, word));
+                    break;
+                case 'd':
+                    feedback.setText(String.format(COMMAND_FORMAT_DISPLAY_DONE, word));
+                    break;
+                case 'u':
+                    feedback.setText(String.format(COMMAND_FORMAT_DISPLAY_UPCOMING, word));
+                    break;
+                case 't':
+                    if(!isOutOfBounds(input, 2) && (Character.toLowerCase(input.charAt(2))) == 'd'){
+                        feedback.setText(String.format(COMMAND_FORMAT_DISPLAY_TODAY, word));
+                    }else{
+                        feedback.setText(String.format(COMMAND_FORMAT_DISPLAY_TOMORROW, word));
+                    }
+                    break;
+                default:
+                    return;
+            }
+        }
+        
+    }
+
+    private String getFirstWord(String line) {
+        int index = line.trim().indexOf(" ");
+        if(index == -1){
+            return "";
+        }
+        return line.subSequence(0, index).toString();
+    }
+
+    private String removefirstWord(String line) {
+        
+       int index = line.trim().indexOf(" ");
+       if(index == -1){
+           return "";
+       }
+       line.subSequence(index, line.length());
+       line.toString().trim();
+       return line;
+    }
+
     /**
      * Checks to see if index is out of bounds in the string
      * @param input String to check
