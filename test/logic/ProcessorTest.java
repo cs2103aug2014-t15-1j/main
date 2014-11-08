@@ -150,12 +150,15 @@ public class ProcessorTest {
         assertTrue(equalsObj(r15.getTasks().get(0), testTask11));
         
         //Test Edit of Delete:
-            //Delete start
-            //Delete due
-            //Delete tag
-        TestProcessor.processInput("edit 1 delete due");
-        
-        
+        //Delete tag
+        Result r16 = TestProcessor.processInput("edit 1 delete tags");
+        assertTrue(equalsObj(r16.getTasks().get(0), testTask9));
+        //Delete due
+        Result r17 = TestProcessor.processInput("edit 1 delete due");
+        assertTrue(equalsObj(r17.getTasks().get(0), testTask8));
+        //Delete start
+        Result r18 = TestProcessor.processInput("edit 1 delete start");
+        assertTrue(equalsObj(r18.getTasks().get(0), testTask7));
 	}
 
 	@Test

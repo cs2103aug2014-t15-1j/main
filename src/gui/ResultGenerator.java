@@ -307,6 +307,7 @@ public class ResultGenerator {
 
     private void refreshTables() {
         tableManagement.refreshTables();
+       
     }
 
     private void setTableSelectionByName(String tabName) {

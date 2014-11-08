@@ -56,6 +56,9 @@ public class TableManagement {
         updateTable(upcoming, INDEX_UPCOMING);
         updateTable(floating, INDEX_SOMEDAY);
         
+    }
+
+    public void setDefaultSelection() {
         // default selection
         folder.setSelection(INDEX_ALL);
     }
