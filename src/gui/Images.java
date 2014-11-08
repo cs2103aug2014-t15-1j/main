@@ -35,6 +35,7 @@ public class Images {
         
         // Background Image is free for commercial use.
         // Taken from http://pixabay.com/en/tinker-color-share-many-colorful-451275/
+        // (Any queries ask Justin)
         if (screenWidth<=1280) {
             id = ImageDescriptor
                     .createFromFile(getClass(), "/resource/bg1280.png");

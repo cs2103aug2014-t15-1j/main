@@ -50,7 +50,7 @@ public class TitleLabel extends Composite {
 
     private void createContents(Composite parent) {
         createTitle(parent);
-        createButton(parent);
+        createCloseButton(parent);
     }
 
     /**
@@ -58,7 +58,7 @@ public class TitleLabel extends Composite {
      * 
      * @author Yeo Zi Xian, Justin & Ter Yao Xiang
      */
-    private void createButton(Composite parent) {
+    private void createCloseButton(Composite parent) {
         Button button = new Button(parent, SWT.PUSH);
         button.setText(" X ");
         button.setCursor(new Cursor(Display.getCurrent(), SWT.CURSOR_HAND));

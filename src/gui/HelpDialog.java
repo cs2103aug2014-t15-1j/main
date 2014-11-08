@@ -77,9 +77,23 @@ public class HelpDialog extends Dialog {
     }
 
     private void getHelpImage(Composite parent) {
-        InputStream stream = getClass()
-                .getResourceAsStream("/resource/Helpsheet2.png");
-        ImageData imageData = new ImageData(stream);
+        InputStream stream;
+        ImageData imageData;
+        
+        // Load help image based on screen size
+        int screenWidth = Display.getCurrent().getBounds().width;
+        if (screenWidth<1920) {
+            stream = getClass()
+                    .getResourceAsStream("/resource/helpsheet1280.png");
+        } else if (screenWidth <3840) {
+            stream = getClass()
+                    .getResourceAsStream("/resource/helpsheet1920.png");
+        } else {
+            stream = getClass()
+                    .getResourceAsStream("/resource/helpsheet3840.png");
+        }
+        imageData = new ImageData(stream);
+        
         image = new Image(parent.getDisplay(), imageData);
     }
     

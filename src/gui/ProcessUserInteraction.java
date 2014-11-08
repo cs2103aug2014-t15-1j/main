@@ -51,7 +51,7 @@ public class ProcessUserInteraction {
 
     private void addShellListeners() {
         addHelpListener();
-        addChangeTabListener();
+//        addChangeTabListener();
     }
 
     private void addHelpListener() {
@@ -67,27 +67,28 @@ public class ProcessUserInteraction {
         });
     }
 
-    private void addChangeTabListener() {
-        display.addFilter(SWT.KeyDown, new Listener() {
-
-            public void handleEvent(Event event) {
-                if ( ( (event.stateMask & SWT.CTRL) == SWT.CTRL) &&
-                    (event.keyCode == 'd') ) {
-                    changeTabs();
-                }
-            }
-        });
-    }
-
-    private void changeTabs() {
-        CTabFolder folder = TableComposite.getFolder();
-        int index = folder.getSelectionIndex();
-        if (index == 0) {
-            folder.setSelection(1);
-        } else {
-            folder.setSelection(0);
-        }
-    }
+//    // OBSOLETE
+//    private void addChangeTabListener() {
+//        display.addFilter(SWT.KeyDown, new Listener() {
+//
+//            public void handleEvent(Event event) {
+//                if ( ( (event.stateMask & SWT.CTRL) == SWT.CTRL) &&
+//                    (event.keyCode == 'd') ) {
+//                    changeTabs();
+//                }
+//            }
+//        });
+//    }
+//
+//    private void changeTabs() {
+//        CTabFolder folder = TableComposite.getFolder();
+//        int index = folder.getSelectionIndex();
+//        if (index == 0) {
+//            folder.setSelection(1);
+//        } else {
+//            folder.setSelection(0);
+//        }
+//    }
 
     private void addCommandLineListeners() {
         addListenerRemoveText();
