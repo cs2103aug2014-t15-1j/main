@@ -279,6 +279,24 @@ public class Processor extends Observable {
     }
 
     /**
+     * This method fetches all the tasks (inclusive of todo, done, block).
+     * 
+     * @return List{@literal<Task>} - All Tasks
+     */
+    public List<Task> fetchAllTasks() {
+        return file.getAllTasks();
+    }
+
+    /**
+     * This method fetches the task by Id.
+     * 
+     * @return {@link database.Task#Task(String, DateTime, DateTime, DateTime, List, database.TaskType) Task}
+     */
+    public Task fetchTaskById(int taskId) {
+        return processor.getFile().getTask(taskId);
+    }
+    
+    /**
      * This method fetches tasks that have due dates
      * 
      * @return List{@literal<Task>} - Tasks which contains time

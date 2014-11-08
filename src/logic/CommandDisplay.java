@@ -56,12 +56,12 @@ public class CommandDisplay extends Command {
         switch (rangeType) {
             case RANGE_TYPE_ALL:
                 displayTab = DISPLAY_TAB_ALL;
-                list = processor.getFile().getAllTasks();
+                list = processor.fetchAllTasks();
                 break;
 
             case RANGE_TYPE_ID:
                 int taskId = Integer.parseInt(id);
-                list.add(processor.getFile().getTask(taskId));
+                list.add(processor.fetchTaskById(taskId));
                 break;
 
             case RANGE_TYPE_BLOCK:
