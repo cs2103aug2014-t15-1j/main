@@ -22,7 +22,7 @@ import org.eclipse.swt.widgets.Shell;
 //@author A0118846W
 public class HelpDialog extends Dialog {
     
-//    private static final String CLOSE_LABEL_TEXT = "To close press ESC";
+
     private Image image;
     
     private static Shell helpShell;
@@ -65,20 +65,8 @@ public class HelpDialog extends Dialog {
 
    
     private void createContents(Composite parent) {
-//        createCloseLabel(parent);
         drawHelpImage(parent);
     }
-    
-    
-//    private void createCloseLabel(Composite parent) {
-//        Label label = new Label(parent, SWT.NONE);
-//        label.setText(CLOSE_LABEL_TEXT);
-//        FontRegistry registry = Fonts.getRegistry();
-//        label.setFont(registry.get("label"));
-//
-//        GridData data = new GridData(GridData.FILL_BOTH);
-//        label.setData(data);
-//    }
 
     private void drawHelpImage(Composite parent) {
         getHelpImage(parent);
@@ -103,18 +91,6 @@ public class HelpDialog extends Dialog {
     }
     
     private void addCloseListener(final Shell shell) {
-//        Control[] controls = shell.getChildren();
-//
-//        for (int index = 0; index < controls.length; index++) {
-//            controls[index].addKeyListener(new KeyAdapter() {
-//
-//                public void keyPressed(KeyEvent event) {
-//                    if (event.character == SWT.ESC) {
-//                        shell.close();
-//                    }
-//                }
-//            });
-//        }
         shell.addKeyListener(new KeyAdapter() {
             public void keyPressed(KeyEvent event) {
                 shell.dispose();

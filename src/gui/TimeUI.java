@@ -1,5 +1,6 @@
 package gui;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Observable;
@@ -20,10 +21,8 @@ import parser.DateParser;
  * The singleton pattern is used, so every instance of this class refers to the same instance
  */
 public class TimeUI{
-    // use swt timer
-    // refresh table every minute
-    // key up
-    // toggle visibility
+    private static final String LINE_SEPARATOR = System
+            .getProperty("line.separator");
     private StyledText time;
     private  static TimeUI timeUI;
     /**
@@ -31,10 +30,10 @@ public class TimeUI{
      * @param parent Composite where TimeUI is located
      */
     private TimeUI(final Composite parent){
-        time = new StyledText(parent, SWT.CENTER | SWT.MULTI | SWT.H_SCROLL);
+        time = new StyledText(parent, SWT.CENTER | SWT.MULTI | SWT.READ_ONLY);
         setLayout();
         time.setWordWrap(true);
-        time.setText("  Time now is   :  ");
+        time.setText("Time now is   :  10 : 45 " + LINE_SEPARATOR +" Saturday  ");
         format(parent.getDisplay());
         Runnable timer = new Runnable(){
             public void run(){
@@ -42,8 +41,13 @@ public class TimeUI{
                     
                 parent.getDisplay().timerExec(1000, this);
                 Calendar cal = Calendar.getInstance();
-                String timeNow = cal.getTime().toString();
-                time.setText(timeNow);
+                SimpleDateFormat formatTime = new SimpleDateFormat("EEEE h:mm:ss");
+                SimpleDateFormat formatDate = new SimpleDateFormat("d MMMM YYYY, zz");
+                Date now = cal.getTime();
+                String timeNow = formatTime.format(now).toString();
+                String dateNow = formatDate.format(now);
+                String dateTime = timeNow + LINE_SEPARATOR + dateNow;
+                time.setText(dateTime);
                 
                 if (cal.get(Calendar.SECOND) == 0) {
                     
