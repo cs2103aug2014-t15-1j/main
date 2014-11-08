@@ -1,7 +1,17 @@
 Modify background ### start:  due: 07/11/2014 1000 completed:  #cs2103 type: TODO
 Stabilise functions ### start:  due: 07/11/2014 2359 completed:  #cs2103 type: TODO
 start on documentation ### start: 07/11/2014 due:  completed:  #cs2103 type: TODO
+do work ### start:  due: 08/11/2014 completed:  type: TODO
+test start ### start: 08/11/2014 due:  completed:  type: TODO
+photoshoot ### start: 09/11/2014 0900 due: 09/11/2014 2359 completed:  type: TODO
+sleep more ### start:  due: 09/11/2014 completed:  type: TODO
 Read that essay thing for monday ### start:  due: 10/11/2014 1200 completed:  #cs2101 type: TODO
+finish CS2103 project manual ### start:  due: 10/11/2014 completed:  #cs2103 type: TODO
+study for finals ### start:  due: 22/11/2014 completed:  type: TODO
+finish studying for finals ### start:  due: 23/11/2014 completed:  type: TODO
 Do CS2103 Homework ### start:  due:  completed:  type: TODO
 Do CS2103 Homework ### start:  due:  completed:  type: TODO
- ### start: 08/11/2014 1106 due: 08/11/2014 1107 completed:  type: BLOCK
+floating task ### start:  due:  completed:  type: TODO
+weird overdue task ### start: 08/11/2014 due: 09/11/2014 2359 completed: 08/11/2014 1211 type: DONE
+end-tmr task ### start:  due: 09/11/2014 2359 completed: 08/11/2014 1212 type: DONE
+test end ### start: 08/11/2014 1106 due: 08/11/2014 1107 completed:  type: BLOCK

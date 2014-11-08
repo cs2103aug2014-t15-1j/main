@@ -147,7 +147,7 @@ public class Processor extends Observable {
      * This methods processes the input by the user
      * 
      * @param String
-     * @return  {@link logic.Result#Result(List, boolean, CommandType, boolean)
+     * @return {@link logic.Result#Result(List, boolean, CommandType, boolean)
      *         Result}
      */
     public Result processInput(String input) throws IllegalArgumentException {
@@ -372,7 +372,7 @@ public class Processor extends Observable {
     }
 
     /**
-     * This method fetches tasks that have due dates today
+     * This method fetches tasks that start or end today
      * 
      * @return List{@literal<Task>} - Tasks which start/due today
      */
@@ -384,10 +384,17 @@ public class Processor extends Observable {
         DateTime todayDate = new DateTime(DateParser.getCurrDateStr(), "2359");
         List<Task> output = new ArrayList<Task>();
         for (Task task : file.getAllTasks()) {
-            if (task.getStart().getDate().toString().equals(todayDateStr) ||
-                task.getDue().getDate().toString().equals(todayDateStr)) {
+            if (task.getStart().getDate().equals(todayDateStr) ||
+                task.getDue().getDate().equals(todayDateStr)) {
                 output.add(task);
-            } else if (!task.getDue().isEarlierThan(todayDate)) {
+                // If floating tasks should be added to today list
+                // } else if (task.getDue().isEmpty() &&
+                // task.getStart().isEmpty()) {
+                // output.add(task);
+                // System.out.println("Added: " + task);
+                // }
+            } else if (!task.getDue().isEarlierThan(todayDate) &&
+                       !task.getStart().isEarlierThan(todayDate)) {
                 break;
             }
         }
@@ -395,9 +402,9 @@ public class Processor extends Observable {
     }
 
     /**
-     * This method fetches tasks that have due dates tomorrow
+     * This method fetches tasks that have start/due dates tomorrow
      * 
-     * @return List{@literal<Task>} - Tasks which are due tomorrow
+     * @return List{@literal<Task>} - Tasks which have start/due tomorrow
      */
     public List<Task> fetchTomorrowTasks() {
         if (LOGGING_ENABLED) {
@@ -410,7 +417,8 @@ public class Processor extends Observable {
             if (task.getStart().getDate().toString().equals(tmrDateStr) ||
                 task.getDue().getDate().toString().equals(tmrDateStr)) {
                 output.add(task);
-            } else if (!task.getDue().isEarlierThan(tmrDate)) {
+            } else if (!task.getDue().isEarlierThan(tmrDate) &&
+                       !task.getStart().isEarlierThan(tmrDate)) {
                 break;
             }
         }
@@ -418,28 +426,44 @@ public class Processor extends Observable {
     }
 
     /**
-     * This method fetches tasks that have due dates tomorrow
+     * This method fetches tasks that have start/due dates within the next 2
+     * weeks, but do not fall in today or tomorrow.
      * 
-     * @return List{@literal<Task>} - Tasks which are due tomorrow
+     * @return List{@literal<Task>} - Tasks which have start/due within the next
+     *         2 weeks
      */
     public List<Task> fetchNextWeekTasks() {
         if (LOGGING_ENABLED) {
             log.info("Fetching Next Week Tasks");
         }
-        String twoDaysLaterDate = DateParser.getDateFromNowStr(2);
-        DateTime twoDaysLater = new DateTime(twoDaysLaterDate, "2359");
-
-        String sevenDaysLaterDate = DateParser.getDateFromNowStr(7);
-        DateTime sevenDaysLater = new DateTime(sevenDaysLaterDate, "2359");
+        // Anything that falls after tomorrow but is earlier than 15 days later
+        // is "within the next 2 weeks"
+        String tmrDate = DateParser.getDateFromNowStr(2);
+        DateTime tmr = new DateTime(tmrDate, "2359");
+        String fifteenDaysLaterDate = DateParser.getDateFromNowStr(15);
+        DateTime fifteenDaysLater = new DateTime(fifteenDaysLaterDate, "0000");
 
         List<Task> output = new ArrayList<Task>();
         for (Task task : file.getAllTasks()) {
-            if (!task.getDue().isEarlierThan(twoDaysLater) &&
-                task.getDue().isEarlierThan(sevenDaysLater)) {
+            DateTime currDue = task.getDue();
+            DateTime currStart = task.getStart();
+            if (dateIsBetween(tmr, fifteenDaysLater, currDue) ||
+                dateIsBetween(tmr, fifteenDaysLater, currStart)) {
                 output.add(task);
             }
         }
         return output;
+    }
+
+    /**
+     * Returns true if input <code>date</code> is later than
+     * <code>rangeStartEx</code> and is earlier than <code>rangeEndEx</code>.
+     * <p>
+     * <i>Note that the range is "exclusive"; dates equal to start/end DateTimes are <u>not</u> considered "between" them.</i>
+     */
+    private boolean dateIsBetween(DateTime rangeStartEx, DateTime rangeEndEx,
+                                  DateTime date) {
+        return date.isLaterThan(rangeStartEx) && date.isEarlierThan(rangeEndEx);
     }
 
     /**
