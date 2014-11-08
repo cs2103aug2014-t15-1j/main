@@ -17,6 +17,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import database.DateTime;
 import database.Task;
 import database.TaskType;
 
@@ -38,8 +39,10 @@ public class ResultGeneratorTest {
        tags.add("");
        outputsToDo.add(new TaskStub("name", new DateTimeStub("", ""),
                                 new DateTimeStub("", ""), new DateTimeStub("", ""), tags,  TaskType.TODO));
-       outputsDate.add(new TaskStub("", new DateTimeStub("06/11/2014", "2200"),
+       
+       outputsDate.add(new TaskStub("block", new DateTimeStub("06/11/2014", "2200"),
                                     new DateTimeStub("08/11/2014", "1400"), new DateTimeStub("", ""), tags,  TaskType.BLOCK));
+       
        outputsDone.add(new TaskStub("name", new DateTimeStub("06/11/2014", "2200"),
                                     new DateTimeStub("08/11/2014", "1400"), new DateTimeStub("08/11/2014", "1400"), tags,  TaskType.DONE));
    }
@@ -105,8 +108,8 @@ public class ResultGeneratorTest {
         test_Search();
         tearDown();
        
-       setUp();
-       test_Todo();
+        setUp();
+        test_Todo();
         tearDown();
         
         setUp();
@@ -437,6 +440,7 @@ public class ResultGeneratorTest {
         String actual = resultGenerator
                 .processResult(result,
                                "block 06/11/2014 2200 to 08/11/2014 1400");
+
         String expected = "BLOCKED: 06/11/2014 2200 to 08/11/2014 1400";
         assertEquals(expected, actual);
         
@@ -462,7 +466,7 @@ public class ResultGeneratorTest {
         int ID = task.getId();
         ResultStub result = new ResultStub(outputsToDo, true, CommandType.RESTORE, false, "todo");
         String actual = resultGenerator.processResult(result, "restore" + ID);
-        String expected = "Restored name";
+        String expected = "Restored name.";
         assertEquals(expected, actual);
         
     }

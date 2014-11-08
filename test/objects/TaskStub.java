@@ -27,8 +27,9 @@ public class TaskStub extends Task {
     private boolean deleted = false;
     private TaskType taskType = TaskType.TODO;
 
-    public TaskStub(String name, DateTime due, DateTime start, DateTime completedOn,
-            List<String> tags, TaskType taskType) {
+    public TaskStub(String name, DateTime start, DateTime due,
+                    DateTime completedOn, List<String> tags, TaskType type){
+        super(name,  start, due, completedOn,  tags, type);
         setName(name);
         setDue(due);
         setStart(start);
@@ -36,8 +37,8 @@ public class TaskStub extends Task {
         setTags(tags);
         setTaskType(taskType);
     }
-
-    public TaskStub(Task existingTask) {
+    
+    public TaskStub(TaskStub existingTask) {
         this.ID = existingTask.getId();
         this.name = existingTask.getName();
         this.due = existingTask.getDue();
@@ -46,6 +47,7 @@ public class TaskStub extends Task {
         this.deleted = existingTask.isDeleted();
         this.done = existingTask.isDone();
     }
+    
     /*** ACCESSORS ***/
 
     public static int getNewId() {
