@@ -41,18 +41,16 @@ public class Fonts {
         
         // adds fonts specific to screen resolution
         int screenWidth = Display.getCurrent().getBounds().width;
-        System.out.println(screenWidth);
         if (screenWidth>= 1920) {
             fontData = new FontData[] { new FontData("Impact", 18, SWT.NORMAL) };
             registry.put("haystack title", fontData);
             
             // TODO: Re-check font compatibility
-            fontData = new FontData[] { new FontData("Consolas", 12, SWT.NONE) };
+            fontData = new FontData[] { new FontData("Consolas", 10, SWT.NONE) };
             registry.put("table", fontData);
             
-            fontData = new FontData[] { new FontData("Consolas", 12, SWT.BOLD) };
+            fontData = new FontData[] { new FontData("Consolas", 10, SWT.BOLD) };
             registry.put("table status", fontData);
-            System.out.println("Screen width identified as >=1920");
         } else {
             fontData = new FontData[] { new FontData("Impact", 16, SWT.NORMAL) };
             registry.put("haystack title", fontData);

@@ -36,14 +36,14 @@ public class Images {
         // Background Image is free for commercial use.
         // Taken from http://pixabay.com/en/tinker-color-share-many-colorful-451275/
         // (Any queries ask Justin)
-        if (screenWidth<=1280) {
+        if (screenWidth<1920) {
             id = ImageDescriptor
                     .createFromFile(getClass(), "/resource/bg1280.png");
             registry.put("main", id);
             
             id = ImageDescriptor.createFromFile(getClass(), "/resource/helpsheet1280.png");
             registry.put("help", id);
-        } else if (screenWidth<=1920) {
+        } else if (screenWidth<3840) {
             id = ImageDescriptor
                     .createFromFile(getClass(), "/resource/bg1920.png");
             registry.put("main", id);
