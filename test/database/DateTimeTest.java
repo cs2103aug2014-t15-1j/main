@@ -398,6 +398,22 @@ public class DateTimeTest {
         assertFalse("dT2 is not earlier than dT1", dT2.isEarlierThan(dT1));
         assertFalse("dT1 is not earlier than itself", dT1.isEarlierThan(dT1));
     }
+    
+    /**
+     * Checks if isLaterThan function returns correct boolean values and
+     * reflexivity.
+     */
+    @Test
+    public void testIsLaterThan() {
+        String date1 = "10/10/2010";
+        String date2 = "11/11/2011";
+        DateTime dT1 = new DateTime(date1, "");
+        DateTime dT2 = new DateTime(date2, "");
+
+        assertTrue("dT2 is later than dT1", dT2.isLaterThan(dT1));
+        assertFalse("dT1 is not later than dT2", dT1.isLaterThan(dT2));
+        assertFalse("dT2 is not later than itself", dT2.isLaterThan(dT2));
+    }
 
     /**
      * Checks if resetDate function sets date attributes to empty value, without
