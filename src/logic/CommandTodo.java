@@ -8,6 +8,13 @@ import parser.objects.TaskParam;
 import database.DateTime;
 import database.Task;
 
+/**
+ * This class extends abstract class Command. CommandTodo class is associated
+ * with operations related to the done/todo operations
+ * 
+ * @author A0110751W
+ *
+ */
 public class CommandTodo extends Command {
 
     private String rangeType = "";
@@ -89,9 +96,7 @@ public class CommandTodo extends Command {
      */
     @Override
     protected Result execute(boolean userInput) {
-        if (Processor.LOGGING_ENABLED) {
-            Processor.getLogger().info("Executing 'Todo' Command...");
-        }
+        Processor.log("Executing 'Todo' Command...");
 
         Result result = new Result(null, false, getType(),
                 DISPLAY_TAB_NO_CHANGE);
@@ -113,18 +118,10 @@ public class CommandTodo extends Command {
     }
 
     private Result todoById() {
-        Processor processor = Processor.getInstance();
         List<Task> list = new ArrayList<Task>();
         boolean success = false;
         try {
-            int taskId = Integer.parseInt(id);
-            Task task = processor.getFile().getTask(taskId);
-            if (task != null) {
-                success = processor.getFile().markToDo(task);
-                if (success) {
-                    list.add(task);
-                }
-            }
+            success = markTaskAsTodo(list);
         } catch (NumberFormatException e) {
             if (Processor.LOGGING_ENABLED) {
                 Processor.getLogger().warning("Error parsing Integer!");
@@ -132,6 +129,17 @@ public class CommandTodo extends Command {
         }
 
         return new Result(list, success, getType(), DISPLAY_TAB_NO_CHANGE);
+    }
+
+    private boolean markTaskAsTodo(List<Task> list) {
+        Processor processor = Processor.getInstance();
+        int taskId = Integer.parseInt(id);
+        Task task = processor.getFile().getTask(taskId);
+        boolean success = processor.getFile().markToDo(task);
+        if (success) {
+            list.add(task);
+        }
+        return success;
     }
 
     private Result todoByDate() {
@@ -148,11 +156,12 @@ public class CommandTodo extends Command {
     }
 
     /**
-     * Executes "done" operation
+     * This method executes the "done" operation
      * <p>
-     * Marks a task as 'done'
+     * Refer to {@link logic.CommandDone#execute(boolean)
+     * CommandDone.execute(boolean)}
      * 
-     * @return {@link logic.Result#Result(List, boolean, CommandType, boolean)
+     * @return {@link logic.Result#Result(List, boolean, CommandType, boolean, String)
      *         Result}
      */
     @Override

@@ -59,49 +59,85 @@ public class DatabaseFacadeStub extends DatabaseFacade {
 
     @Override
     public boolean add(Task task) {
-        return true;
+        if (task != null) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override
     public boolean edit(Task task, String name, DateTime due, DateTime start,
                         List<String> tags) {
-        return true;
+        if (task != null) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override
     public boolean edit(int id, String name, DateTime due, DateTime start,
                         List<String> tags) {
-        return true;
+        if (id > 0) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override
     public boolean delete(Task task) {
-        return true;
+        if (task != null) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override
     public boolean delete(int id) {
-        return true;
+        if (id > 0) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override
     public boolean restore(Task task) {
-        return true;
+        if (task != null) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override
     public boolean restore(int id) {
-        return true;
+        if (id > 0) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override
     public boolean permanentlyDelete(Task task) {
-        return true;
+        if (task != null) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override
     public boolean permanentlyDelete(int id) {
-        return true;
+        if (id > 0) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override
@@ -111,21 +147,37 @@ public class DatabaseFacadeStub extends DatabaseFacade {
 
     @Override
     public boolean markToDo(Task task) {
-        return true;
+        if (task != null) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override
     public boolean markToDo(int id) {
-        return true;
+        if (id > 0) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override
     public boolean markDone(Task task) {
-        return true;
+        if (task != null) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override
     public boolean markDone(int id) {
-        return true;
+        if (id > 0) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

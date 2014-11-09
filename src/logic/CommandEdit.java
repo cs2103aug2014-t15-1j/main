@@ -8,6 +8,13 @@ import parser.objects.TaskParam;
 import database.DateTime;
 import database.Task;
 
+/**
+ * This class extends abstract class Command. CommandEdit performs operations
+ * related to the changing of Task parameters (excludes it's 'done' status).
+ * 
+ * @author A0110751W
+ *
+ */
 public class CommandEdit extends Command {
 
     private String id = "";
@@ -53,7 +60,8 @@ public class CommandEdit extends Command {
                 break;
 
             default:
-                assert false : "Invalid constructor param - Received: " + param.getName();
+                assert false : "Invalid constructor param - Received: " +
+                               param.getName();
         }
     }
 
@@ -89,34 +97,38 @@ public class CommandEdit extends Command {
     }
 
     /**
-     * Executes "edit" operation performs edit/deletion of parameters of a Task
+     * This method executes the "edit" operation. It performs edit/deletion of
+     * parameters of a Task
      * 
-     * @return Result
+     * @return {@link logic.Result#Result(List, boolean, CommandType, boolean, String)
+     *         Result}
      */
     @Override
     protected Result execute(boolean userInput) {
-        if (Processor.LOGGING_ENABLED) {
-            Processor.getLogger().info("Executing 'Edit' Command...");
-        }
+        Processor.log("Executing 'Edit' Command...");
         Processor processor = Processor.getInstance();
         List<Task> list = new ArrayList<Task>();
         boolean success = false;
 
         int taskId = getTaskId();
-
-        if (taskId > 0) {
-            Task existingTask = processor.getFile().getTask(taskId);
-            if (existingTask != null) {
-                Task oldTask = new Task(existingTask);
-                updateDeletedParam();
-                success = processor.getFile().edit(existingTask, name, start,
-                                                   due, tags);
-                if (success) {
-                    updateProcessorInfo(list, oldTask, existingTask);
-                }
-            }
+        Task existingTask = processor.getFile().getTask(taskId);
+        
+        if (existingTask != null) {
+            Task oldTask = new Task(existingTask);
+            updateDeletedParam();
+            success = canEditTask(list, existingTask, oldTask);
         }
         return new Result(list, success, getType(), DISPLAY_TAB_NO_CHANGE);
+    }
+
+    private boolean canEditTask(List<Task> list, Task existingTask, Task oldTask) {
+        Processor processor = Processor.getInstance();
+        boolean success = processor.getFile().edit(existingTask, name, start,
+                                                   due, tags);
+        if (success) {
+            updateProcessorInfo(list, oldTask, existingTask);
+        }
+        return success;
     }
 
     private void updateDeletedParam() {
@@ -137,9 +149,10 @@ public class CommandEdit extends Command {
                 case DELETE_TAGS:
                     tags = null;
                     break;
-                
+
                 default:
-                    assert false : "Invalid delete param - Received: " + deleteParam;
+                    assert false : "Invalid delete param - Received: " +
+                                   deleteParam;
             }
         }
     }
@@ -156,13 +169,19 @@ public class CommandEdit extends Command {
         return taskId;
     }
 
-    private void updateProcessorInfo(List<Task> list, Task oldTask, Task existingTask) {
+    private void updateProcessorInfo(List<Task> list, Task oldTask,
+                                     Task existingTask) {
         Processor processor = Processor.getInstance();
         processor.getEditedTaskHistory().push(oldTask);
         list.add(existingTask);
     }
 
-    /** Undo the 'Edit' Command */
+    /**
+     * This method reverts the last 'Edit' operation performed.
+     * 
+     * @return {@link logic.Result#Result(List, boolean, CommandType, String)
+     *         Result}
+     */
     @Override
     protected Result executeComplement() {
         Processor processor = Processor.getInstance();

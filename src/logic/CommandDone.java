@@ -9,10 +9,10 @@ import database.DateTime;
 import database.Task;
 
 /**
- * This class extends abstract class Command CommandDone class is used to
- * complete operations related to the done/todo operations
+ * This class extends abstract class Command. CommandDone class is associated
+ * with operations related to the done/todo operations
  * 
- * @author Ter Yao Xiang
+ * @author A0110751W
  *
  */
 public class CommandDone extends Command {
@@ -85,14 +85,12 @@ public class CommandDone extends Command {
      * <p>
      * This method marks either one/several Tasks as "done"
      * 
-     * @return {@link logic.Result#Result(List, boolean, CommandType, boolean)
+     * @return {@link logic.Result#Result(List, boolean, CommandType, boolean, String)
      *         Result}
      */
     @Override
     protected Result execute(boolean userInput) {
-        if (Processor.LOGGING_ENABLED) {
-            Processor.getLogger().info("Executing 'Done' Command...");
-        }
+        Processor.log("Executing 'Done' Command...");
         List<Task> list = new ArrayList<Task>();
         boolean success = false;
 
@@ -115,38 +113,49 @@ public class CommandDone extends Command {
 
     private boolean doneById(List<Task> list) {
         Processor processor = Processor.getInstance();
-        boolean success = false;
         int taskId = Integer.parseInt(id);
         Task task = processor.getFile().getTask(taskId);
-        if (task != null) {
-            success = processor.getFile().markDone(task);
-            if (success) {
-                list.add(task);
-            }
+        boolean success = processor.getFile().markDone(task);
+        if (success) {
+            list.add(task);
         }
         return success;
     }
 
     private boolean doneByDate(List<Task> list) {
-        Processor processor = Processor.getInstance();
         boolean success = false;
+        selectTasks(list);
+        if (list.size() > 0) {
+            success = true;
+        }
+        markSelectedTasksAsDone(list);
+        return success;
+    }
+
+    private void selectTasks(List<Task> list) {
+        Processor processor = Processor.getInstance();
         for (Task task : processor.getFile().getToDoTasks()) {
             if (task.getDue().getDate().equals(this.dateTime.getDate())) {
                 list.add(task);
-                success = true;
             }
         }
+    }
+
+    private void markSelectedTasksAsDone(List<Task> list) {
+        Processor processor = Processor.getInstance();
         for (Task task : list) {
             lastTasksRange.add(task);
             processor.getFile().markDone(task);
         }
-        return success;
     }
 
     /**
      * This method executes the "todo" operation
      * <p>
      * Marks a "done" task as "todo"
+     * <p>
+     * Refer to {@link logic.CommandTodo#execute(boolean)
+     * CommandTodo.execute(boolean)}
      * 
      * @return {@link logic.Result#Result(List, boolean, CommandType, boolean)
      *         Result}
@@ -165,7 +174,8 @@ public class CommandDone extends Command {
      * operation
      * <p>
      * For <i>done {@literal<id>}</i>, the list will contain only one Task.<br>
-     * For <i>done {@literal<date>}</i>, the list will contain only several Tasks.
+     * For <i>done {@literal<date>}</i>, the list will contain only several
+     * Tasks.
      * 
      * @return List{@literal<Task>}
      */

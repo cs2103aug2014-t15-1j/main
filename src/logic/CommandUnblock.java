@@ -6,7 +6,8 @@ import java.util.List;
 import parser.objects.TaskParam;
 import database.Task;
 
-/** OBSOLETE CLASS
+/**
+ * OBSOLETE CLASS
  * 
  * @author Yao Xiang
  *
@@ -23,7 +24,7 @@ public class CommandUnblock extends Command {
         assert (content != null);
         assert (!content.isEmpty());
         this.type = CommandType.UNBLOCK;
-        
+
         for (TaskParam param : (List<TaskParam>) content) {
             constructUsingParam(param);
         }
@@ -36,7 +37,8 @@ public class CommandUnblock extends Command {
                 break;
 
             default:
-                assert false : "Invalid constructor param - Received: " + param.getName();
+                assert false : "Invalid constructor param - Received: " +
+                               param.getName();
         }
     }
 
@@ -59,9 +61,7 @@ public class CommandUnblock extends Command {
      */
     @Override
     protected Result execute(boolean userInput) {
-        if (Processor.LOGGING_ENABLED) {
-            Processor.getLogger().info("Executing 'Unblock' Command...");
-        }
+        Processor.log("Executing 'Unblock' Command...");
         Processor processor = Processor.getInstance();
         boolean success = false;
         int unblockId = Integer.parseInt(id);
@@ -76,7 +76,8 @@ public class CommandUnblock extends Command {
             }
         }
 
-        return new Result(outputs, success, CommandType.UNBLOCK, DISPLAY_TAB_NO_CHANGE);
+        return new Result(outputs, success, CommandType.UNBLOCK,
+                DISPLAY_TAB_NO_CHANGE);
     }
 
     @Override
@@ -88,7 +89,8 @@ public class CommandUnblock extends Command {
         success = processor.getFile().restore(unblockId);
         Task blockDate = processor.getFile().getTask(unblockId);
         outputs.add(blockDate);
-        return new Result(outputs, success, CommandType.BLOCK, DISPLAY_TAB_NO_CHANGE);
+        return new Result(outputs, success, CommandType.BLOCK,
+                DISPLAY_TAB_NO_CHANGE);
     }
 
     @Override

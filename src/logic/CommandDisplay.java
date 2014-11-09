@@ -6,6 +6,13 @@ import java.util.List;
 import database.Task;
 import parser.objects.TaskParam;
 
+/**
+ * This class extends Command and does the display operations. The display
+ * ranges from a single Task to upcoming/todo Tasks.
+ * 
+ * @author A0110751W
+ *
+ */
 public class CommandDisplay extends Command {
 
     private String rangeType = "";
@@ -38,25 +45,24 @@ public class CommandDisplay extends Command {
     }
 
     /**
-     * This method executes the "display" operation. It displays a list of <code>Task</code>.
-     * Depending on the rangeType specified, the display tab will differ from one another.
+     * This method executes the "display" operation. It displays a list of
+     * <code>Task</code>. Depending on the rangeType specified, the display tab
+     * will differ from one another.
      * <p>
      * Allows <i>display</i>, <i>display {@literal <id>}</i>, <i>display
-     * {@literal <rangeType>}</i>
-     * <br>
+     * {@literal <rangeType>}</i> <br>
      * Allows <i>show</i>, <i>show {@literal <id>}</i>, <i>show
      * {@literal <rangeType>}</i>
      * 
-     * @param userInput - Default is True (When user entered a command)
+     * @param userInput
+     *            - Default is True (When user entered a command)
      * 
-     * @return {@link logic.Result#Result(List, boolean, CommandType, boolean)
+     * @return {@link logic.Result#Result(List, boolean, CommandType, boolean, String)
      *         Result}
      */
     @Override
     protected Result execute(boolean userInput) {
-        if (Processor.LOGGING_ENABLED) {
-            Processor.getLogger().info("Executing 'Display' Command...");
-        }
+        Processor.log("Executing 'Display' Command...");
 
         Processor processor = Processor.getInstance();
         List<Task> list = new ArrayList<Task>();

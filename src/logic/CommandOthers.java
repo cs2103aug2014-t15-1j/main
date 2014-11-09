@@ -1,5 +1,7 @@
 package logic;
 
+import java.util.List;
+
 /**
  * This Command object encompasses the commands that need no other parameter
  * inputs.
@@ -10,60 +12,61 @@ package logic;
  *
  */
 
+
 public class CommandOthers extends Command {
-    private static final String STR_HELP = "help";
-    private static final String STR_RESET = "reset";
-    private static final String STR_UNDO = "undo";
-    private static final String STR_REDO = "redo";
-    private static final String STR_EXIT = "exit";
+    private static final String TYPE_HELP = "help";
+    private static final String TYPE_RESET = "reset";
+    private static final String TYPE_UNDO = "undo";
+    private static final String TYPE_REDO = "redo";
+    private static final String TYPE_EXIT = "exit";
 
     public CommandOthers(String type) {
         assert (type != null);
         assert (!type.isEmpty());
 
         switch (type.toLowerCase()) {
-            case STR_EXIT:
+            case TYPE_EXIT:
                 this.type = CommandType.EXIT;
                 break;
 
-            case STR_REDO:
+            case TYPE_REDO:
                 this.type = CommandType.REDO;
                 break;
 
-            case STR_UNDO:
+            case TYPE_UNDO:
                 this.type = CommandType.UNDO;
                 break;
 
-            case STR_RESET:
+            case TYPE_RESET:
                 this.type = CommandType.RESET;
                 break;
 
-            case STR_HELP:
+            case TYPE_HELP:
                 this.type = CommandType.HELP;
                 break;
 
             default:
-                assert false : "Invalid command type - Received: " + type;
+                assert false : "Invalid constructor param - Received: " + type;
         }
     }
 
     @Override
     protected Result execute(boolean userInput) {
         switch (getType()) {
-            case REDO:
-                return executeRedo();
-
             case UNDO:
                 return executeUndo();
 
+            case REDO:
+                return executeRedo();
+
             case EXIT:
-                return new Result(null, true, getType(), DISPLAY_TAB_NO_CHANGE);
+                return executeExit();
 
             case RESET:
-                return new Result(null, true, getType(), DISPLAY_TAB_ALL);
+                return executeReset();
 
             case HELP:
-                return new Result(null, true, getType(), DISPLAY_TAB_NO_CHANGE);
+                return executeHelp();
 
             default:
                 assert false : "Invalid command type - Received: " + getType();
@@ -72,33 +75,34 @@ public class CommandOthers extends Command {
     }
 
     protected Result executeUndo() {
-        if (Processor.LOGGING_ENABLED) {
-            Processor.getLogger().info("Executing 'Undo' Command...");
-        }
+        Processor.log("Executing 'Undo' Command...");
         Processor processor = Processor.getInstance();
         Result r = new Result(null, false, CommandType.UNDO, "");
         if (!processor.getBackwardCommandHistory().isEmpty()) {
             Command backwardCommand = processor.getBackwardCommandHistory()
                     .pop();
-            switch (backwardCommand.getType()) {
-                case ADD:
-                case EDIT:
-                case DELETE:
-                case RESTORE:
-                case BLOCK:
-                case UNBLOCK:
-                case TODO:
-                case DONE:
-                    r = backwardCommand.executeComplement();
-                    break;
-
-                default:
-                    return new Result(null, false, null, "");
-            }
+            r = executeComplement(backwardCommand);
             modifyHistory(backwardCommand, r.isSuccess(), false);
         }
         r.setCommandType(CommandType.UNDO);
         return r;
+    }
+
+    private Result executeComplement(Command backwardCommand) {
+        switch (backwardCommand.getType()) {
+            case ADD:
+            case EDIT:
+            case DELETE:
+            case RESTORE:
+            case BLOCK:
+            case UNBLOCK:
+            case TODO:
+            case DONE:
+                return backwardCommand.executeComplement();
+
+            default:
+                return new Result(null, false, null, "");
+        }
     }
 
     /**
@@ -106,13 +110,11 @@ public class CommandOthers extends Command {
      * 'Edit', 'Delete', 'Restore', 'Block', 'Unblock', 'Done', 'Todo'
      * operations.
      * 
-     * @return {@link logic.Result#Result(List, boolean, CommandType, boolean)
+     * @return {@link logic.Result#Result(List, boolean, CommandType, boolean, String)
      *         Result}
      */
     protected Result executeRedo() {
-        if (Processor.LOGGING_ENABLED) {
-            Processor.getLogger().info("Executing 'Redo' Command...");
-        }
+        Processor.log("Executing 'Redo' Command...");
         Processor processor = Processor.getInstance();
         if (!processor.getForwardCommandHistory().isEmpty()) {
             Command forwardCommand = processor.getForwardCommandHistory().pop();
@@ -121,16 +123,19 @@ public class CommandOthers extends Command {
             result.setCommandType(CommandType.REDO);
             return result;
         }
-        return new Result(null, false, getType(), DISPLAY_TAB_NO_CHANGE);
+        return new Result(null, false, getType(), false, DISPLAY_TAB_NO_CHANGE);
     }
 
     /**
      * This method pushes command to the respective stack after undo/redo
      * operation. Unsuccessful operations are taken into account.
      * 
-     * @param cmd - <code>Command</code> object
-     * @param success - True if operation is successful.
-     * @param redo - True for "redo" operations, False for "undo" operations.
+     * @param cmd
+     *            - <code>Command</code> object
+     * @param success
+     *            - True if operation is successful.
+     * @param redo
+     *            - True for "redo" operations, False for "undo" operations.
      */
     private void modifyHistory(Command cmd, boolean success, boolean redo) {
         Processor processor = Processor.getInstance();
@@ -139,6 +144,18 @@ public class CommandOthers extends Command {
         } else {
             processor.getForwardCommandHistory().push(cmd);
         }
+    }
+
+    private Result executeExit() {
+        return new Result(null, true, getType(), DISPLAY_TAB_NO_CHANGE);
+    }
+
+    private Result executeReset() {
+        return new Result(null, true, getType(), DISPLAY_TAB_ALL);
+    }
+
+    private Result executeHelp() {
+        return new Result(null, true, getType(), DISPLAY_TAB_NO_CHANGE);
     }
 
     @Override

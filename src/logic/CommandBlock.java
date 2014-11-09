@@ -9,6 +9,14 @@ import database.DateTime;
 import database.Task;
 import database.TaskType;
 
+/**
+ * This class extends Command and performs the addition of new Tasks (with
+ * TaskType TaskType.BLOCK). Each of these Task should not be allowed to have
+ * overlapping date range with another Task with TaskType TaskType.BLOCK.
+ * 
+ * @author A0110751W
+ *
+ */
 public class CommandBlock extends Command {
 
     private String name = "";
@@ -58,55 +66,74 @@ public class CommandBlock extends Command {
     /**
      * This method executes the Block Command. It adds a <code>Task</code> with
      * <code>TaskType.BLOCK</code>. This <code>Task</code> is intended to
-     * reserved the specified date range for the user and prevents the user to
-     * add any other Task to the same date range.
+     * reserved the specified date range for the user and will prevents the user
+     * from adding any other Task to the same date range.
      * 
      * @param userInput
-     * @return {@link logic.Result#Result(List, boolean, CommandType, boolean)
-     *         Result}
+     * @return{@link logic.Result#Result(List, boolean, CommandType, boolean,
+     *               String) Result}
      */
     @Override
     protected Result execute(boolean userInput) {
-        if (Processor.LOGGING_ENABLED) {
-            Processor.getLogger().info("Executing 'Block' Command...");
-        }
+        Processor.log("Executing 'Block' Command...");
         Processor processor = Processor.getInstance();
         List<Task> blockRange = processor.fetchBlockTasks();
-        boolean success = true;
 
         List<Task> outputs = new ArrayList<Task>();
+        boolean noOverlap = hasNoOverlapWithBlockTasks(blockRange, outputs);
+        return addBlockTask(outputs, noOverlap);
+    }
 
+    private boolean hasNoOverlapWithBlockTasks(List<Task> blockRange,
+                                               List<Task> outputs) {
+        boolean success = true;
         for (Task blockedDate : blockRange) {
-            if (from.compareTo(blockedDate.getStart()) <= 0 &&
-                to.compareTo(blockedDate.getDue()) >= 0) {
-                success = false;
+            if (hasOverlaps(blockedDate)) {
                 outputs.add(blockedDate);
-                break;
-            } else if (blockedDate.getStart().compareTo(from) <= 0 &&
-                       blockedDate.getDue().compareTo(to) >= 0) {
                 success = false;
-                outputs.add(blockedDate);
                 break;
             }
         }
+        return success;
+    }
 
+    private boolean hasOverlaps(Task blockedDate) {
+        boolean overlap = false;
+        if (from.isEarlierThan(blockedDate.getStart()) &&
+            to.isLaterThan(blockedDate.getDue())) {
+            overlap = true;
+        } else if (blockedDate.getStart().isEarlierThan(from) &&
+                   blockedDate.getDue().isLaterThan(to)) {
+            overlap = true;
+        } else if (from.getDate().equals(blockedDate.getStart().getDate()) || to.getDate().equals(blockedDate.getDue().getDate())) {
+            overlap = true;
+        }
+        return overlap;
+    }
+
+    private Result addBlockTask(List<Task> outputs, boolean noOverlap)
+            throws Error {
+        Processor processor = Processor.getInstance();
+        boolean success = false;
         String displayTab = "";
-        if (success) {
+
+        if (noOverlap) {
             Task currBlock = new Task(name, from, to, new DateTime(), tags,
                     TaskType.BLOCK);
-            processor.getFile().add(currBlock);
+            success = processor.getFile().add(currBlock);
             outputs.add(currBlock);
             displayTab = getDisplayTab(currBlock);
         } else {
-            throw new Error("This Task overlaps with another Block Task");
+            throw new Error("This Task overlaps with another Block Task!");
         }
 
         return new Result(outputs, success, CommandType.BLOCK, displayTab);
     }
-
+    
     /**
      * This method executes the complement operation for 'block' of a
-     * <code>Task</code>.<br> It deletes the last added <code>Block Task</code>.
+     * <code>Task</code>.<br>
+     * It deletes the last added <code>Block Task</code>.
      * 
      * @return {@link logic.Result#Result(List, boolean, CommandType, boolean)
      *         Result}

@@ -6,6 +6,13 @@ import java.util.ArrayList;
 import parser.objects.TaskParam;
 import database.Task;
 
+/**
+ * This class extends abstract class Command. CommandSearch performs search operations.
+ * Allows searching of Tasks through the use of Keywords and Dates and Tags.
+ * 
+ * @author A0110751W
+ *
+ */
 public class CommandSearch extends Command {
 
     private List<String> tags = new ArrayList<String>();
@@ -76,7 +83,8 @@ public class CommandSearch extends Command {
      * Executes "search" operation.
      * <p>
      * It will perform search operation based on the criteria of the search.
-     * Criteria of search can include <u>Keywords</u> and <u>Date</u> and <u>Tags</u><br>
+     * Criteria of search can include <u>Keywords</u> and <u>Date</u> and
+     * <u>Tags</u><br>
      * <code>Task</code> will have to meet all the specified criterias.<br>
      * 
      * @return {@link logic.Result#Result(List, boolean, CommandType, boolean)
@@ -84,9 +92,7 @@ public class CommandSearch extends Command {
      */
     @Override
     protected Result execute(boolean userInput) {
-        if (Processor.LOGGING_ENABLED) {
-            Processor.getLogger().info("Executing 'Search' Command...");
-        }
+        Processor.log("Executing 'Search' Command...");
 
         Processor.getInstance().initialiseNewSearchList();
         searchUsingDateAndKeyAndTags(date, keywords, tags);
@@ -141,7 +147,7 @@ public class CommandSearch extends Command {
     private int getMatchingCount(List<String> list, Task task, int found) {
         if (!list.isEmpty()) {
             for (String key : list) {
-                if (task.getSummary().toLowerCase().contains(key)) {
+                if (task.getSummary().toLowerCase().contains(key.toLowerCase())) {
                     found--;
                     break;
                 }

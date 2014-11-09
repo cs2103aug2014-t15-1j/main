@@ -5,10 +5,19 @@ import java.util.List;
 import parser.Parser;
 import database.Task;
 
+/**
+ * This is an abstract class Command, for the implementation of Command Pattern.
+ * Different command type will be categorised and extends this class.
+ * This class also contains the common parameters used in the Command classes.
+ * 
+ * @author A0110751W
+ *
+ */
 public abstract class Command {
 
     protected CommandType type = null;
 
+    /** Parameters used in the construction of Command object */
     protected static final String PARAM_ID = "id";
     protected static final String PARAM_NAME = "name";
     protected static final String PARAM_DUE = "due";
@@ -22,6 +31,13 @@ public abstract class Command {
     protected static final String PARAM_STATUS = "status";
     protected static final String PARAM_WORD = "word";
 
+    /** Parameters applicable to CommandDelete only: */
+    protected static final String DELETE_NAME = "name";
+    protected static final String DELETE_DUE = "due";
+    protected static final String DELETE_START = "start";
+    protected static final String DELETE_TAGS = "tags";
+
+    /** Different Range Types available */
     protected static final String RANGE_TYPE_ALL = "all";
     protected static final String RANGE_TYPE_BLOCK = "block";
     protected static final String RANGE_TYPE_SEARCH = "search";
@@ -35,11 +51,7 @@ public abstract class Command {
     protected static final String RANGE_TYPE_SOMEDAY = "someday";
     protected static final String RANGE_TYPE_UPCOMING = "upcoming";
 
-    protected static final String DELETE_NAME = "name";
-    protected static final String DELETE_DUE = "due";
-    protected static final String DELETE_START = "start";
-    protected static final String DELETE_TAGS = "tags";
-
+    /** Display Tabs */
     protected static final String DISPLAY_TAB_ALL = "all";
     protected static final String DISPLAY_TAB_TODAY = "today";
     protected static final String DISPLAY_TAB_TOMORROW = "tomorrow";
@@ -48,6 +60,7 @@ public abstract class Command {
     protected static final String DISPLAY_TAB_RESULT = "result";
     protected static final String DISPLAY_TAB_NO_CHANGE = "nochange";
 
+    /** Error messages */
     protected static final String ERROR_BLOCK_ADD = "Unable to add Task, this clashes with a Block Task!";
 
     public CommandType getType() {
@@ -89,16 +102,18 @@ public abstract class Command {
      * should switch to the <code>"today"</code> tab. Else, it should switch to
      * the <code>"all"</code> tab.
      * <p>
-     * <i>Currently used only in the deletion of Task</i>
+     * <i>Currently used only when dealing with only one Task in an
+     * operation.</i>
      * 
-     * @param toDelete - Task
+     * @param task
+     *            - Task
      * @return String
      */
-    protected String getDisplayTab(Task toDelete) {
+    protected String getDisplayTab(Task task) {
         String displayTab = DISPLAY_TAB_ALL;
         String todayDate = Parser.getCurrDateStr();
-        if (toDelete.getDue().getDate().equals(todayDate) ||
-            toDelete.getStart().getDate().equals(todayDate)) {
+        if (task.getDue().getDate().equals(todayDate) ||
+            task.getStart().getDate().equals(todayDate)) {
             displayTab = DISPLAY_TAB_TODAY;
         }
         return displayTab;

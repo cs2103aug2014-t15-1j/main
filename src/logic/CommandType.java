@@ -1,7 +1,8 @@
 package logic;
 
 /**
- * List below are the Command Type available for the different operations<br>
+ * List below are the Command Type available for the different operations:
+ * <p>
  * HELP - Displays a list of Commands to user<br>
  * ADD - Add a Task<br>
  * EDIT - Edit an existing Task<br>
@@ -16,7 +17,9 @@ package logic;
  * UNDO - Undo last action<br>
  * REDO - Redo last action undone<br>
  * EXIT - Exits from program<br>
- * ERROR - Error found in the command entered (Wrong format)<br>
+ * RESET - Wipes all existing data<br>
+ * 
+ * @author A0110751W
  */
 public enum CommandType {
     HELP, ADD, EDIT, DELETE, RESTORE, SEARCH, DISPLAY, BLOCK, UNBLOCK, DONE, TODO, UNDO, REDO, EXIT, RESET;

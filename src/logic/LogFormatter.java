@@ -6,6 +6,12 @@ import java.util.Date;
 import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
 
+/**
+ * Formatter for the Logger. Overrides <code>format</code> method
+ * 
+ * @author A0110751W
+ *
+ */
 public class LogFormatter extends Formatter {
 
     private static final DateFormat df = new SimpleDateFormat(

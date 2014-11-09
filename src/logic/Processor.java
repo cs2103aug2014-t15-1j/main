@@ -74,7 +74,11 @@ public class Processor {
     /** Stores input string for 'down' key **/
     private Stack<String> inputStringForwardHistory;
 
-    /** Default Constructor for Processor */
+    /**
+     * Default Constructor for Processor.
+     * <p>
+     * Injects dependency to the UI
+     */
     private Processor() {
         this(IS_UNIT_TEST);
     }
@@ -202,21 +206,24 @@ public class Processor {
             Result result = cmd.execute(userInput);
             if (result.isSuccess() && !result.needsConfirmation() && userInput) {
                 updateCommandHistory(cmd);
-                if (LOGGING_ENABLED) {
-                    log.info(result.getCommandType() +
-                             " Command executed successfully");
-                }
+                log(result.getCommandType() + " Command executed successfully");
             }
             updateFloatingTasksList();
             return result;
         }
     }
 
+    protected static void log(String output) {
+        if (LOGGING_ENABLED) {
+            log.info(output);
+        }
+    }
+
     /**
-     * This method updates the command history. Only commands that modifies <code>Task</code>
-     * objects will be added into the history. Forward command history will be
-     * cleared when a <code>Command</code> is added, similar to how a web browser history
-     * works.
+     * This method updates the command history. Only commands that modifies
+     * <code>Task</code> objects will be added into the history. Forward command
+     * history will be cleared when a <code>Command</code> is added, similar to
+     * how a web browser history works.
      * 
      * @param cmd
      */
@@ -323,9 +330,7 @@ public class Processor {
      * @return List{@literal<Task>} - Someday/Floating tasks
      */
     public List<Task> fetchFloatingTasks() {
-        if (LOGGING_ENABLED) {
-            log.info("Fetching Floating Tasks");
-        }
+        log("Fetching Floating Tasks");
         return Collections.unmodifiableList(floatingTasks);
     }
 
@@ -335,9 +340,7 @@ public class Processor {
      * @return List{@literal<Task>} - {@code Todo} tasks
      */
     public List<Task> fetchToDoTasks() {
-        if (LOGGING_ENABLED) {
-            log.info("Fetching Todo Tasks");
-        }
+        log("Fetching Todo Tasks");
         return file.getToDoTasks();
     }
 
@@ -347,9 +350,7 @@ public class Processor {
      * @return List{@literal<Task>} - {@code Done} tasks
      */
     public List<Task> fetchDoneTasks() {
-        if (LOGGING_ENABLED) {
-            log.info("Fetching Done Tasks");
-        }
+        log("Fetching Done Tasks");
         return file.getDoneTasks();
     }
 
@@ -359,9 +360,7 @@ public class Processor {
      * @return List{@literal<Task>} - {@code Deleted} tasks
      */
     public List<Task> fetchDeletedTasks() {
-        if (LOGGING_ENABLED) {
-            log.info("Fetching Deleted Tasks");
-        }
+        log("Fetching Deleted Tasks");
         return file.getDeletedTasks();
     }
 
@@ -371,9 +370,7 @@ public class Processor {
      * @return List{@literal<Task>} - {@code Block} tasks
      */
     public List<Task> fetchBlockTasks() {
-        if (LOGGING_ENABLED) {
-            log.info("Fetching Block Tasks");
-        }
+        log("Fetching Block Tasks");
         return file.getBlockTasks();
     }
 
@@ -383,28 +380,28 @@ public class Processor {
      * @return List{@literal<Task>} - Tasks which start/due today
      */
     public List<Task> fetchTodayTasks() {
-        if (LOGGING_ENABLED) {
-            log.info("Fetching Today Tasks");
-        }
+        log("Fetching Today Tasks");
         String todayDateStr = Parser.getCurrDateStr();
         DateTime todayDate = new DateTime(Parser.getCurrDateStr(), "2359");
         List<Task> output = new ArrayList<Task>();
         for (Task task : file.getAllTasks()) {
-            if (task.getStart().getDate().equals(todayDateStr) ||
-                task.getDue().getDate().equals(todayDateStr)) {
+            if (hasSameDueOrStart(todayDateStr, task)) {
                 output.add(task);
-                // [May consider adding floating tasks to today list]
-                // } else if (task.getDue().isEmpty() &&
-                // task.getStart().isEmpty()) {
-                // output.add(task);
-                // System.out.println("Added: " + task);
-                // }
-            } else if (!task.getDue().isEarlierThan(todayDate) &&
-                       !task.getStart().isEarlierThan(todayDate)) {
+            } else if (isLaterThanDate(todayDate, task)) {
                 break;
             }
         }
         return output;
+    }
+
+    private boolean hasSameDueOrStart(String dateStr, Task task) {
+        return task.getStart().getDate().equals(dateStr) ||
+                task.getDue().getDate().equals(dateStr);
+    }
+
+    private boolean isLaterThanDate(DateTime date, Task task) {
+        return !task.getDue().isEarlierThan(date) &&
+                   !task.getStart().isEarlierThan(date);
     }
 
     /**
@@ -413,18 +410,14 @@ public class Processor {
      * @return List{@literal<Task>} - Tasks which have start/due tomorrow
      */
     public List<Task> fetchTomorrowTasks() {
-        if (LOGGING_ENABLED) {
-            log.info("Fetching Tomorrow Tasks");
-        }
+        log("Fetching Tomorrow Tasks");
         String tmrDateStr = Parser.getTmrDateStr();
         DateTime tmrDate = new DateTime(tmrDateStr, "2359");
         List<Task> output = new ArrayList<Task>();
         for (Task task : file.getAllTasks()) {
-            if (task.getStart().getDate().toString().equals(tmrDateStr) ||
-                task.getDue().getDate().toString().equals(tmrDateStr)) {
+            if (hasSameDueOrStart(tmrDateStr, task)) {
                 output.add(task);
-            } else if (!task.getDue().isEarlierThan(tmrDate) &&
-                       !task.getStart().isEarlierThan(tmrDate)) {
+            } else if (isLaterThanDate(tmrDate, task)) {
                 break;
             }
         }
@@ -439,9 +432,7 @@ public class Processor {
      *         2 weeks
      */
     public List<Task> fetchNextWeekTasks() {
-        if (LOGGING_ENABLED) {
-            log.info("Fetching Next Week Tasks");
-        }
+        log("Fetching Next Week Tasks");
         // Anything that falls after tomorrow but is earlier than 15 days later
         // is "within the next 2 weeks"
         String tmrDate = Parser.getDateFromNowStr(2);

@@ -10,9 +10,11 @@ import database.Task;
 import database.TaskType;
 
 /**
- * This Command performs the Addition of new Tasks
+ * This class extends Command and is associated with the Add Operation. It
+ * supports the addition of new Tasks as well as the deletion of that newly
+ * added task.
  * 
- * @author Yao Xiang
+ * @author A0110751W
  *
  */
 public class CommandAdd extends Command {
@@ -61,15 +63,12 @@ public class CommandAdd extends Command {
      * This method adds a new Task to the Todo List; goes through a check to
      * certify whether it can be added.
      * 
-     * @return {@link logic.Result#Result(List, boolean, CommandType, boolean)
+     * @return {@link logic.Result#Result(List, boolean, CommandType, boolean, String)
      *         Result}
      */
     @Override
     protected Result execute(boolean userInput) {
-        if (Processor.LOGGING_ENABLED) {
-            Processor.getLogger().info("Executing 'Add' Command...");
-        }
-
+        Processor.log("Executing 'Add' Command...");
         boolean success = false;
         List<Task> list = new ArrayList<Task>();
 
@@ -82,6 +81,7 @@ public class CommandAdd extends Command {
 
         assert (list.size() == 1);
         String displayTab = getDisplayTab(list.get(0));
+
         return new Result(list, success, getType(), false, displayTab);
     }
 
@@ -116,9 +116,9 @@ public class CommandAdd extends Command {
     }
 
     /**
-     * This method checks if the current <code>CommandAdd</code> object is trying to add to
-     * to a date that is blocked. Returns True if this object overlaps
-     * with one or more <code>Block Task</code>.
+     * This method checks if the current <code>CommandAdd</code> object is
+     * trying to add to to a date that is blocked. Returns True if this object
+     * overlaps with one or more <code>Block Task</code>.
      * 
      * @return boolean
      */
@@ -127,12 +127,17 @@ public class CommandAdd extends Command {
             return !(due.isEarlierThan(blockDate.getStart()) || !start
                     .isEarlierThan(blockDate.getDue()));
         } else if (!start.isEmpty()) {
-            return !(start.isEarlierThan(blockDate.getStart()) || !start
-                    .isEarlierThan(blockDate.getDue()));
+            return hasOverlaps(start, blockDate);
         } else {
-            return !(due.isEarlierThan(blockDate.getStart()) || due
-                    .isLaterThan(blockDate.getDue()));
+            return hasOverlaps(due, blockDate);
         }
+    }
+
+    private boolean hasOverlaps(DateTime date, Task blockDate) {
+        return (date.getDate().equals(blockDate.getDue().getDate()) || date
+                .getDate().equals(blockDate.getStart().getDate())) ||
+               (date.isLaterThan(blockDate.getStart()) && date
+                       .isEarlierThan(blockDate.getDue()));
     }
 
     /**
@@ -146,12 +151,10 @@ public class CommandAdd extends Command {
     protected Result executeComplement() {
         Processor processor = Processor.getInstance();
         List<Task> tasks = new ArrayList<Task>();
-        boolean success = false;
 
         int taskId = processor.fetchToDoTasks().size() - 1;
         Task toDelete = processor.fetchToDoTasks().get(taskId);
-
-        success = processor.getFile().permanentlyDelete(toDelete);
+        boolean success = processor.getFile().permanentlyDelete(toDelete);
 
         if (success) {
             tasks.add(toDelete);

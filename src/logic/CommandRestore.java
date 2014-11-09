@@ -6,6 +6,13 @@ import java.util.List;
 import parser.objects.TaskParam;
 import database.Task;
 
+/**
+ * This class extends abstract class Command. CommandRestore performs operations
+ * related to the restoration of deleted Tasks only.
+ * 
+ * @author A0110751W
+ *
+ */
 public class CommandRestore extends Command {
 
     protected String rangeType = "";
@@ -22,7 +29,7 @@ public class CommandRestore extends Command {
     protected CommandRestore(List<TaskParam> content, boolean isComplement) {
         assert (content != null);
         assert (!content.isEmpty());
-        
+
         this.type = CommandType.RESTORE;
 
         for (TaskParam param : content) {
@@ -44,7 +51,8 @@ public class CommandRestore extends Command {
                 break;
 
             default:
-                assert false : "Invalid constructor param - Received: " + param.getName();
+                assert false : "Invalid constructor param - Received: " +
+                               param.getName();
         }
     }
 
@@ -69,18 +77,15 @@ public class CommandRestore extends Command {
     /**
      * This method executes the "Restore" operation.<br>
      * It restores a deleted <code>Task</code>.<br>
-     * Does <i>restore {@literal<id>}</i> or <i> restore search</i> depending on the
-     * <code>CommandDelete</code> object
+     * Does <i>restore {@literal<id>}</i> or <i> restore search</i> depending on
+     * the <code>CommandDelete</code> object
      * 
-     * @return {@link logic.Result#Result(List, boolean, CommandType, boolean)
+     * @return {@link logic.Result#Result(List, boolean, CommandType, boolean, String)
      *         Result}
      */
     @Override
     protected Result execute(boolean userInput) {
-        if (Processor.LOGGING_ENABLED) {
-            Processor.getLogger().info("Executing 'Restore' Command...");
-        }
-        Processor processor = Processor.getInstance();
+        Processor.log("Executing 'Restore' Command...");
         List<Task> list = new ArrayList<Task>();
         boolean success = false;
         switch (rangeType) {
@@ -89,10 +94,7 @@ public class CommandRestore extends Command {
                 break;
 
             case RANGE_TYPE_SEARCH:
-                if (userInput) {
-                    processor.getBackwardSearchListHistory()
-                            .push(processor.fetchLastSearch());
-                }
+                updateSearchListHistory(userInput);
                 success = restoreUsingSearch(list);
                 break;
 
@@ -101,6 +103,14 @@ public class CommandRestore extends Command {
 
         }
         return new Result(list, success, getType(), DISPLAY_TAB_NO_CHANGE);
+    }
+
+    private void updateSearchListHistory(boolean userInput) {
+        Processor processor = Processor.getInstance();
+        if (userInput) {
+            processor.getBackwardSearchListHistory()
+                    .push(processor.fetchLastSearch());
+        }
     }
 
     /** Restores a deleted Task using Id */
@@ -126,12 +136,7 @@ public class CommandRestore extends Command {
             List<Task> restoreList = processor.getBackwardSearchListHistory()
                     .pop();
             if (restoreList != null) {
-                for (Task t : restoreList) {
-                    boolean success = processor.getFile().restore(t);
-                    if (success) {
-                        list.add(t);
-                    }
-                }
+                restoreLastSearch(list, processor, restoreList);
             }
             processor.getForwardSearchListHistory().push(restoreList);
         } catch (NullPointerException e) {
@@ -139,6 +144,16 @@ public class CommandRestore extends Command {
             return false;
         }
         return true;
+    }
+
+    private void restoreLastSearch(List<Task> list, Processor processor,
+                                   List<Task> restoreList) {
+        for (Task t : restoreList) {
+            boolean success = processor.getFile().restore(t);
+            if (success) {
+                list.add(t);
+            }
+        }
     }
 
     /**

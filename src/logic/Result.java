@@ -5,40 +5,60 @@ import java.util.List;
 import database.Task;
 
 /**
- * A Result object contains the necessary information of an operation. It is
- * being returned from Processor via processInput(String)
+ * A Result object contains the necessary information of an operation. These
+ * information that is being held inside the Result object consists of <i>the
+ * Task(s) affected</i>, the <i>successfulness of the operation performed</i>,
+ * the <i>type of operation</i> performed, the <i>display tab that the UI should
+ * switch to</i> after the operation and whether the <i>operation requires a
+ * confirmation check</i> from the user. <br>
+ * It is being returned from Processor via processInput(String).
  *
  * @author Ter Yao Xiang
  */
 public class Result {
 
-    // Contains Task/BlockDate Objects that are affected in an operation
+    // Contains Task Objects that are affected in an operation
     private List<Task> outputs;
 
     // True if the operation performed is successful, else False.
     private boolean success;
 
-    // The type of command being executed in the operation
-    // cmdType == CommandType.ERROR if unable to parse command
-    // TODO: Include error encountered in Result?
     private CommandType cmdType;
 
     private boolean confirmation;
-    
+
     private String displayTab;
 
-    /** Dummy Constructor for Result */
+    /**
+     * Default Constructor for Result.
+     * <p>
+     * Used as an invalid Result
+     * 
+     */
     public Result() {
         this(null, false, null, false, null);
     }
 
     /**
-     * Main Constructor for Result Object
+     * Constructor for Result Object
      * <p>
-     * Calls {@link #Result(List, boolean, CommandType, boolean, ResultType)
-     * Overloaded Constructor}
+     * Calls {@link #Result(List, boolean, CommandType, boolean, displayTab)
+     * Result(List, boolean, CommandType, boolean, false, displayTab)}<br>
+     * <code> </code>
+     * <p>
+     * 
+     * @param outputs
+     *            - Contains relevant outputs for the user
+     * @param success
+     *            - {@code true} if operation is successful, else {@code false}.
+     * @param cmdType
+     *            - CommandType of the operation performed.
+     * @param displayTab
+     *            - The tab that the result is suppose to be displayed on.
+     *
      */
-    public Result(List<Task> outputs, boolean success, CommandType cmdType, String displayTab) {
+    public Result(List<Task> outputs, boolean success, CommandType cmdType,
+            String displayTab) {
         this(outputs, success, cmdType, false, displayTab);
     }
 
@@ -63,7 +83,7 @@ public class Result {
         this.success = success;
         this.cmdType = cmdType;
         this.confirmation = confirmation;
-        this.displayTab  = displayTab;
+        this.displayTab = displayTab;
     }
 
     /** Accessors */
@@ -90,7 +110,8 @@ public class Result {
     public String getDisplayTab() {
         return displayTab;
     }
-    // Mutators
+
+    /** Mutators */
     public void setSuccess(boolean success) {
         this.success = success;
     }
