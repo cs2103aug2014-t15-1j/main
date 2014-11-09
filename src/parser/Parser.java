@@ -66,6 +66,7 @@ public class Parser {
      * @return <code>DateTime</code> object containing date in
      *         <code>dd/MM/yyyy</code> and time in <code>HHmm</code>
      */
+    // TODO: Add chain of @See
     public static DateTime parseToDateTime(String str) {
         return DateParser.parseToDateTime(str);
     }
@@ -136,7 +137,7 @@ public class Parser {
      * <i>Uses the default system settings for date.</i>
      * 
      * @return <code>String</code> object containing date in
-     *         <code>dd/MM/yyyy</code> or "today"/"tomorrow"/"tmr".
+     *         <code>dd/MM/yyyy</code>.
      */
     public static String getDateFromNowStr(int numDaysLater) {
         return DateParser.getDateFromNowStr(numDaysLater);
@@ -152,14 +153,10 @@ public class Parser {
 
     /**
      * Checks if the input <code>String</code> is a valid time. This method
-     * assumes the 24HR time format, i.e. 0000-2359.
+     * assumes the 24HR time format, i.e. 0000-2359, or the word format "now".
      * 
      * <p>
      * <i> The input should be an integer String. </i>
-     * 
-     * @param timeStr
-     *            A <code>String</code> containing only an integer of the format
-     *            <code>HHmm</code>
      */
     public static boolean isValidTime(String timeStr) {
         return DateParser.isValidTime(timeStr);
@@ -178,6 +175,7 @@ public class Parser {
      * </ol>
      * <p>
      * Alternatives for date include "today", "tomorrow" and "tmr"
+     * Alternatives for time include "now".
      */
     public static boolean isValidDateTime(String str) {
         return DateParser.isValidDateTime(str);

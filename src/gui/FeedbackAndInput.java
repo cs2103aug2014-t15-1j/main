@@ -17,8 +17,8 @@ import org.eclipse.swt.widgets.Text;
 //@author A0118846W
 public class FeedbackAndInput extends Composite{
 
-    private static final String MESSAGE_TYPE_HERE = "Type here";
-    private static final String WELCOME_MESSAGE = "Welcome.";
+    private static final String MESSAGE_TYPE_HERE = "Welcome to Haystack! Type here.";
+    private static final String WELCOME_MESSAGE = "Don't know where to start? Press F1 for help!";
     
     private FontRegistry registry;
     private static Text commandLine;

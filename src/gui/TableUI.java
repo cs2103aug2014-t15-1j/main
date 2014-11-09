@@ -38,14 +38,14 @@ import database.Task;
 public class TableUI{
     
     private static final String HEADER_NAME_ID = "Id";
-    private static final String HEADER_NAME_NAME = "Name";
+    private static final String HEADER_NAME_NAME = "Task Description";
     private static final String HEADER_NAME_DUE = "Due/End";
     private static final String HEADER_NAME_START = "Start";
     private static final String HEADER_NAME_TAGS = "Tags";
     private static final String HEADER_NAME_STATUS = "Status";
     private static final String PARA_STATUS_BLOCK = "Blocked Date";
 
-    private static final String CELL_EMPTY_DATE = "empty";
+    private static final String CELL_EMPTY_DATE = "-";
 
     private static final String PARA_STATUS_DELETED = "Deleted";
     private static final String PARA_STATUS_TODO = "To do";

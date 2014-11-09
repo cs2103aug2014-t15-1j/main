@@ -4,9 +4,6 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import database.DateTime;
-import database.Task;
-
 /**
  * Test Class for FileParser. All methods are called via the Parser class as
  * testing the facade separately will cause unnecessary double-work.
@@ -20,45 +17,96 @@ import database.Task;
  */
 public class TestFileParser {
 
+    /**
+     * Tests parsing from stored data.
+     * <p>
+     * <i>Pre-condition: the data should have been formatted properly by
+     * database.</i>
+     */
     @Test
     public void testParseToTask() {
         System.out.println("\n>> Testing parseToTask()...");
-
-        // Test parsing from stored data
-        // Pre-cond: the data should have been formatted properly by Storage
 
         String result;
         String task;
 
         // Test full input
-        task = tempTaskToString(Parser
+        task = Parser
                 .parseToTask("do homework ### start: 20/04/2014 due: 20/04/2014 0300 "
-                             + "completed: 22/04/2014 1800 #cs2103 #todo type: done\n"));
-        result = "\n[[ Task ]]" + "\nName: do homework" + "\nStart: 20/04/2014"
-                 + "\nDue: 20/04/2014 0300" + "\nCompleted: 22/04/2014 1800"
-                 + "\nTags: [#cs2103, #todo]" + "\nStatus: done";
+                                     + "completed: 22/04/2014 1800 #cs2103 #todo type: done\n")
+                .toString();
+        result = "do homework ### start: 20/04/2014 due: 20/04/2014 0300 "
+                 + "completed: 22/04/2014 1800 #cs2103 #todo type: DONE";
+        assertEquals(result, task);
+
+        // Test block task (ensure that merging BlockDate into Tasks was
+        // successful)
+        task = Parser
+                .parseToTask("do homework ### start: 20/04/2014 0000 due: 20/04/2014 0300 "
+                                     + "completed: 22/04/2014 1800 #cs2103 #todo type: block\n")
+                .toString();
+        result = "do homework ### start: 20/04/2014 0000 due: 20/04/2014 0300 "
+                 + "completed: 22/04/2014 1800 #cs2103 #todo type: BLOCK";
+        assertEquals(result, task);
+        
+        // Test user-input "keyword"s
+        task = Parser
+                .parseToTask("start: due: completed: ### start: due:  "
+                                     + "completed:  ### #### type: todo\n")
+                .toString();
+        result = "start: due: completed: ### start:  due:  "
+                 + "completed:  ### #### type: TODO";
         assertEquals(result, task);
 
         // Test "empty" input
-        task = tempTaskToString(Parser
-                .parseToTask("### start: due: completed: type: todo\n"));
-        result = "\n[[ Task ]]" + "\nName: " + "\nStart: " + "\nDue: "
-                 + "\nCompleted: " + "\nTags: []" + "\nStatus: todo";
+        task = Parser.parseToTask("### start: due: completed: type: todo\n")
+                .toString();
+        result = " ### start:  due:  completed:  type: TODO";
         assertEquals(result, task);
 
         System.out.println("...success!");
     }
 
-    private static String tempTaskToString(Task task) {
-        String fullInfo = "\n[[ Task ]]";
-        fullInfo += "\nName: " + task.getName();
-        fullInfo += "\nStart: " + task.getStart();
-        fullInfo += "\nDue: " + task.getDue();
-        fullInfo += "\nCompleted: " + task.getCompletedOn();
-        fullInfo += "\nTags: " + task.getTags();
-        fullInfo += "\nStatus: ";
-        fullInfo += task.isDone() ? "done" : "todo";
+    /**
+     * Missing any of the keywords, including the breakpoint "###" will cause
+     * errors in the Parser.
+     */
+    @Test(expected = AssertionError.class)
+    public void failParseMissingKeywords() {
+        System.out
+                .println("\n>> Failing parseToTask() with missing keywords...");
 
-        return fullInfo;
+        Parser.parseToTask("do work start: 20/04/2014 due: 20/04/2014 0300 "
+                           + "completed: 22/04/2014 1800 #cs2103 #todo type: done\n");
+
+        System.out.println("...test failed!");
+    }
+
+    /**
+     * Having too many keywords will create problems in the Parser.
+     */
+    @Test(expected = AssertionError.class)
+    public void failParseExtraKeywords() {
+        System.out
+                .println("\n>> Failing parseToTask() with extra keywords...");
+
+        Parser.parseToTask("work ### start: 20/04/2014 due: 20/04/2014 "
+                           + "completed:  #cs2103 type: todo type: done\n");
+
+        System.out.println("...test failed!");
+    }
+    
+    /**
+     * Having incorrect input for fields will create problems in the program itself.
+     */
+    @Test(expected = AssertionError.class)
+    public void failParseInvalidFields() {
+        System.out
+                .println("\n>> Failing parseToTask() with invalid input...");
+
+        Parser.parseToTask("work ### start: fail 20/04/2014 due: 20/04/2014 "
+                           + "completed: #cs2103 type: todo\n");
+
+        System.out.println("...test failed!");
     }
 }

@@ -2,12 +2,19 @@ package parser;
 
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Scanner;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
 import database.DateTime;
 
 public class DateParser {
+
+    private static final String TYPE_TIME_NOW = "now";
+
+    private static final int LENGTH_DATE_LONG = 3;
+
+    private static final int LENGTH_DATE_SHORT = 2;
 
     /** <i>Everything began with 1819...</i> */
     private static final int YEAR_MINIMUM = 1819;
@@ -131,6 +138,7 @@ public class DateParser {
         }
     }
 
+    /** Returns the current year in a four-digit String. */
     private static String getCurrYearStr() {
         String currDate = getCurrDateStr();
         String[] dateFields = currDate.split("/");
@@ -194,21 +202,21 @@ public class DateParser {
 
             case TYPE_TIME_ONLY:
                 date = getCurrDateStr();
-                time = str;
+                time = formatTime(str);
                 break;
 
             case TYPE_DATE_TIME:
                 dateFields = str.split(" ");
                 assert (dateFields.length == 2);
                 date = formatDate(dateFields[0]);
-                time = dateFields[1];
+                time = formatTime(dateFields[1]);
                 break;
 
             case TYPE_TIME_DATE:
                 dateFields = str.split(" ");
                 assert (dateFields.length == 2);
                 date = formatDate(dateFields[1]);
-                time = dateFields[0];
+                time = formatTime(dateFields[0]);
                 break;
 
             default:
@@ -255,6 +263,10 @@ public class DateParser {
         }
     }
 
+    /**
+     * Converts an input date, which may be in word or short form, to the
+     * program-wide standard of "dd/MM/yyyy".
+     */
     private static String formatDate(String str) {
         String result = str;
         if (isValidWordDate(str)) {
@@ -283,15 +295,32 @@ public class DateParser {
 
         return result;
     }
-
-    private static boolean isMissingYear(String str) {
-        String[] dateFields = str.split("/");
-        assert (dateFields.length == 2 || dateFields.length == 3);
-        return dateFields.length == 2;
+    
+    /**
+     * Converts an input time, which may be "now" or 24Hr time, to 24Hr time.
+     */
+    private static String formatTime(String str) {
+        String result = str;
+        if (isValidWordTime(str)) {
+            result = getCurrTimeStr();
+        }
+        return result;
     }
 
+    /**
+     * Returns true if the input str is of the format d/M, where d can be
+     * extended to dd and M can be MM.
+     */
+    private static boolean isMissingYear(String str) {
+        String[] dateFields = str.split("/");
+        assert (dateFields.length == LENGTH_DATE_SHORT || dateFields.length == LENGTH_DATE_LONG);
+        return dateFields.length == LENGTH_DATE_SHORT;
+    }
+
+    /** Splits a date from the format of dd/MM/yyyy to an int array of size 3. */
     private static int[] splitDateToIntArray(String str) {
         assert (isValidNumericalDate(str));
+        assert (!isMissingYear(str));
         String[] strArr = splitDateToStrArray(str);
         int[] intArr = new int[] { Integer.parseInt(strArr[0]),
                                   Integer.parseInt(strArr[1]),
@@ -299,13 +328,15 @@ public class DateParser {
         return intArr;
     }
 
+    /**
+     * Splits a date from the format of "dd/MM/yyyy" to a String array {dd, MM,
+     * yyyy}.
+     */
     private static String[] splitDateToStrArray(String str) {
         return str.split("/");
     }
 
-    /**
-     * Checks if the input array contains only 1 item.
-     */
+    /** Checks if the input array contains only 1 item. */
     private static <E> boolean isSingleItemArray(E[] array) {
         return array.length == 1;
     }
@@ -320,6 +351,22 @@ public class DateParser {
 
     /** See {@link Parser#isValidTime(String)}. */
     static boolean isValidTime(String timeStr) {
+        return isValidWordTime(timeStr) || isValidNumericalTime(timeStr);
+    }
+
+    /**
+     * Checks if the input <code>timeStr</code> is a valid word-based time. This
+     * method currently only accepts "now" as a valid word-based time.
+     */
+    private static boolean isValidWordTime(String timeStr) {
+        return timeStr.equalsIgnoreCase(TYPE_TIME_NOW);
+    }
+
+    /**
+     * Checks if the input <code>timeStr</code> is a valid numerical time. This
+     * method assumes the 24HR time format, i.e. 0000-2359.
+     */
+    private static boolean isValidNumericalTime(String timeStr) {
         try {
             String hoursStr = timeStr.substring(0, 2);
             String minStr = timeStr.substring(2, 4);
@@ -345,13 +392,18 @@ public class DateParser {
         return isValidWordDate(str) || isValidNumericalDate(str);
     }
 
+    /**
+     * Checks if <code>str</code> is one of the words that are accepted as
+     * substitutes for dates.
+     */
     private static boolean isValidWordDate(String str) {
         return Arrays.asList(LIST_DATE_WORDS).contains(str.toLowerCase());
     }
 
     /**
-     * @param str
-     * @return
+     * Checks if the input <code>str</code> is a valid numerical date. The
+     * allowed formats include day/month, as well as day/month/year formats,
+     * where leading zeroes can be ignored and year can be truncated.
      */
     private static boolean isValidNumericalDate(String str) {
         boolean result;
@@ -367,15 +419,16 @@ public class DateParser {
 
             if (components.length == 2) {
                 year = getCurrYearStr();
-                hasValidCompLengths = (day.length() >= 1 && day.length() <= 2) &&
-                                      (month.length() >= 1 && month.length() <= 2);
+                hasValidCompLengths = lengthIsBetweenInc(1, 2, day) &&
+                                      lengthIsBetweenInc(1, 2, month);
                 hasValidIntComp = isValidMonth(month) &&
                                   isValidDay(day, month, year);
             } else if (components.length == 3) {
                 year = components[2];
-                hasValidCompLengths = (day.length() >= 1 && day.length() <= 2) &&
-                                      (month.length() >= 1 && month.length() <= 2) &&
-                                      (year.length() == 2 || year.length() == 4);
+                hasValidCompLengths = lengthIsBetweenInc(1, 2, day) &&
+                                      lengthIsBetweenInc(1, 2, month) &&
+                                      lengthIsBetweenInc(2, 4, year) &&
+                                      year.length() != 3;
                 hasValidIntComp = isValidYear(year) && isValidMonth(month) &&
                                   isValidDay(day, month, year);
             }
@@ -386,6 +439,15 @@ public class DateParser {
         }
 
         return result;
+    }
+
+    /**
+     * Checks if the length of <code>str</code> is between
+     * <code>rangeStartInc</code> and <code>rangeEndInc</code>, inclusive.
+     */
+    private static boolean lengthIsBetweenInc(int rangeStartInc,
+                                              int rangeEndInc, String str) {
+        return str.length() >= rangeStartInc && str.length() <= rangeEndInc;
     }
 
     /**
@@ -412,9 +474,6 @@ public class DateParser {
      * The input <code>year</code> is required to determine the number of days
      * in February (leap years).
      * 
-     * @param day
-     * @param month
-     * @param year
      * @return <code>true</code> if the day is valid, <br>
      *         <code>false</code> otherwise.
      */
@@ -481,7 +540,7 @@ public class DateParser {
         }
     }
 
-    // TODO
+    /** Checks if the input <code>int</code> is a valid calendar month number. */
     private static boolean isValidMonth(int month) {
         return month > 0 && month <= 12;
     }
@@ -499,7 +558,6 @@ public class DateParser {
     private static boolean isValidYear(String yearStr) {
         try {
             int yearNum = Integer.parseInt(yearStr);
-            // TODO: Magic strings in year, month, day
             if (yearStr.length() == 4) {
                 return yearNum >= YEAR_MINIMUM;
             } else if (yearStr.length() == 2) {
@@ -512,9 +570,7 @@ public class DateParser {
         }
     }
 
-    /**
-
-     */
+    /** Returns true if <code>str</code> contains a valid date. */
     static boolean containsDate(String str) {
         String[] strFields = str.split(" ");
 
@@ -528,9 +584,9 @@ public class DateParser {
     }
 
     /**
-     * 
-     * @param str
-     * @return
+     * Returns the first valid date String found in <code>str</code>. Should
+     * only be called if <code>str</code> {@link #containsDate(String) contains
+     * a Date}.
      */
     static String getFirstDate(String str) {
         assert containsDate(str) : "this method should be called only after checking if there's a date";
@@ -545,9 +601,7 @@ public class DateParser {
         return null;
     }
 
-    /**
-
-     */
+    /** Returns true if <code>str</code> contains a valid time. */
     static boolean containsTime(String str) {
         String[] strFields = str.split(" ");
 
@@ -561,20 +615,43 @@ public class DateParser {
     }
 
     /**
-     * 
-     * @param str
-     * @return
+     * Returns the first valid time String found in <code>str</code>. Should
+     * only be called if <code>str</code> {@link #containsTime(String) contains
+     * a Time}.
      */
     static String getFirstTime(String str) {
+        assert containsTime(str) : "this method should be called only after checking if there's a time";
         String[] strFields = str.split(" ");
 
         for (int i = 0; i < strFields.length; i++) {
             if (isValidTime(strFields[i])) {
-                return formatDate(strFields[i]);
+                return formatTime(strFields[i]);
             }
         }
 
         return null;
+    }
+
+    // FOR TESTING PURPOSES (Exploratory)
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        System.out.println("Input as a DateTime:");
+        String input = "";
+        while (!input.equals("exit")) {
+            input = sc.nextLine();
+            try {
+                if (!input.equals("exit")) {
+                    System.out.println(parseToDateTime(input));
+                } else {
+                    System.out.println("End of test.");
+                }
+            } catch (Exception e) {
+                System.out.println("Error: " + e.getMessage());
+            }
+        }
+
+        sc.close();
     }
 
 }

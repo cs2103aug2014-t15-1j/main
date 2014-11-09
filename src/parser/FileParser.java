@@ -26,8 +26,7 @@ public class FileParser {
     private static final String KEYWORD_TYPE = "type:";
 
     /** Stores the list of accepted keywords, excluding KEYWORD_BREAKPOINT */
-    private static final String[] LIST_KEYWORDS = { KEYWORD_BREAKPOINT,
-                                                   KEYWORD_START, KEYWORD_DUE,
+    private static final String[] LIST_KEYWORDS = { KEYWORD_START, KEYWORD_DUE,
                                                    KEYWORD_COMPLETED,
                                                    KEYWORD_TYPE };
 
@@ -55,14 +54,14 @@ public class FileParser {
         String[] textItems = removeEmptyStrings(text.split(" "));
 
         // Params correspond to: name, start, due, completed, type
-        String[] params = new String[] { STR_INIT, STR_INIT, STR_INIT,
-                                        STR_INIT, STR_INIT };
+        String[] params = newArrOfEmptyStr(5);
         List<String> tags = new ArrayList<String>();
 
+        // Sort out data
         collectParams(textItems, params, tags);
-        DateTime[] dateTimes = convertToDt(params);
+        DateTime[] dateTimes = convertToDateTimes(params);
 
-        // Convert param inputs for Task constructor
+        // Assign parameter inputs for Task constructor
         String name = params[INDEX_NAME];
         DateTime start = dateTimes[INDEX_START_DT];
         DateTime due = dateTimes[INDEX_DUE_DT];
@@ -71,6 +70,18 @@ public class FileParser {
 
         Task newTask = new Task(name, start, due, completed, tags, type);
         return newTask;
+    }
+
+    /**
+     * Returns a String array of size <code>size</code> filled with empty
+     * Strings ("").
+     */
+    private static String[] newArrOfEmptyStr(int size) {
+        String[] arr = new String[size];
+        for (int i = 0; i < size; i++) {
+            arr[i] = STR_INIT;
+        }
+        return arr;
     }
 
     /**
@@ -108,12 +119,11 @@ public class FileParser {
 
         for (int i = 0; i < textItems.length; i++) {
             String currWord = textItems[i];
-            if (isValidKeyword(currWord)) {
-                if (!breakPointMet) {
-                    breakPointMet = true;
-                } else {
-                    fieldIndex++;
-                }
+            if (!breakPointMet && currWord.equals(KEYWORD_BREAKPOINT)) {
+                breakPointMet = true;
+            } else if (breakPointMet && isValidKeyword(currWord)) {
+                fieldIndex++;
+                assert (fieldIndex < 5) : "Too many parameters for TaskParser!";
             } else if (breakPointMet && hasValidHashTag(currWord)) {
                 tags.add(currWord);
             } else {
@@ -122,7 +132,6 @@ public class FileParser {
             }
         }
 
-        assert (fieldIndex < 5) : "Too many parameters for TaskParser!";
         assert (fieldIndex == 4) : "TaskParser is missing parameter names.";
     }
 
@@ -140,7 +149,7 @@ public class FileParser {
      * 
      * @return A DateTime array containing the converted parameters.
      */
-    private static DateTime[] convertToDt(String[] params) {
+    private static DateTime[] convertToDateTimes(String[] params) {
         List<DateTime> converted = new ArrayList<DateTime>();
 
         for (int i = 0; i < params.length; i++) {
@@ -149,7 +158,7 @@ public class FileParser {
                 if (currDtStr.isEmpty()) {
                     converted.add(new DateTime());
                 } else {
-                    assert (DateParser.isValidDateTime(currDtStr));
+                    assert (DateParser.isValidDateTime(currDtStr)) : "Invalid DateTime saved!";
                     converted.add(DateParser.parseToDateTime(currDtStr));
                 }
             }
