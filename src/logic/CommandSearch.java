@@ -69,12 +69,10 @@ public class CommandSearch extends Command {
         }
     }
 
-    @Override
     public List<String> getTags() {
         return this.tags;
     }
 
-    @Override
     public List<String> getKeywords() {
         return this.keywords;
     }

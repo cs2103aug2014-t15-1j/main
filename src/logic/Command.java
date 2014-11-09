@@ -1,7 +1,5 @@
 package logic;
 
-import java.util.List;
-
 import parser.Parser;
 import database.Task;
 
@@ -69,18 +67,6 @@ public abstract class Command {
     }
 
     public String get(String str) {
-        return null;
-    }
-
-    public List<String> getTags() {
-        return null;
-    }
-
-    public List<String> getKeywords() {
-        return null;
-    }
-
-    public List<String> getDelete() {
         return null;
     }
 

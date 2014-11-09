@@ -181,7 +181,6 @@ public class CommandAdd extends Command {
         }
     }
 
-    @Override
     public List<String> getTags() {
         return this.tags;
     }

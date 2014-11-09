@@ -90,11 +90,7 @@ public class Result {
     public List<Task> getTasks() {
         return outputs;
     }
-
-    public List<Task> getBlockedDates() {
-        return outputs;
-    }
-
+    
     public boolean isSuccess() {
         return success;
     }

@@ -454,7 +454,7 @@ public class ProcessorTest {
     public void testAddWithBlock() throws Exception {
         TestProcessor
                 .processInput("block Block1 from 09/10/2014 to 09/10/2014");
-        Result r1 = TestProcessor.processInput("add Task2 due 09/10/2014");
+        TestProcessor.processInput("add Task2 due 09/10/2014");
     }
 
     @Test

@@ -85,13 +85,11 @@ public class CommandEdit extends Command {
         }
     }
 
-    @Override
     public List<String> getTags() {
         return this.tags;
     }
 
     /** Returns delete parameter names (Task fields to delete). */
-    @Override
     public List<String> getDelete() {
         return this.delete;
     }
