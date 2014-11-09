@@ -410,4 +410,44 @@ public class DatabaseFacade {
             return false;
         }
     }
+
+    /**
+     * Marks Task object based on ID provided in argument as block type. If Task
+     * was deleted, restore it, and mark as block type. Updates task lists and
+     * file.
+     * 
+     * Overloaded function.
+     * 
+     * @param id
+     *            The ID of the Task object to be marked as block type.
+     * @return True, if file has been successfully updated with change.
+     */
+    public boolean markBlock(int id) {
+        Task task = getTask(id);
+        boolean success = databaseLogic.markBlock(task);
+        if (success) {
+            return updateFile();
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Marks Task object provided in argument as block type. If Task was
+     * deleted, restore it, and mark as block type. Updates task lists and file.
+     * 
+     * Overloaded function.
+     * 
+     * @param task
+     *            The Task object to be marked as block type.
+     * @return True, if file has been successfully updated with change.
+     */
+    public boolean markBlock(Task task) {
+        boolean success = databaseLogic.markBlock(task);
+        if (success) {
+            return updateFile();
+        } else {
+            return false;
+        }
+    }
 }

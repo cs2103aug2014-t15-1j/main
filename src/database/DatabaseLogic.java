@@ -19,7 +19,7 @@ import java.util.ArrayList;
 
 public class DatabaseLogic {
 
-    /** Exclusively contains undeleted to-do tasks. */
+    /** Exclusively contains undeleted todo tasks. */
     private static List<Task> toDoTasks = new ArrayList<Task>();
 
     /** Exclusively contains undeleted done tasks. */
@@ -28,7 +28,7 @@ public class DatabaseLogic {
     /** Exclusively contains undeleted block tasks. */
     private static List<Task> blockTasks = new ArrayList<Task>();
 
-    /** Exclusively contains deleted to-do and deleted done tasks. */
+    /** Exclusively contains deleted todo, done, and block tasks. */
     private static List<Task> deletedTasks = new ArrayList<Task>();
 
     /**
@@ -37,20 +37,13 @@ public class DatabaseLogic {
      */
     private static List<Task> allTasks = new ArrayList<Task>();
 
-    /**
-     * Default constructor.
-     * 
-     * Checks if task file exists and allTasks list is empty before populating
-     * list. If allTasks list is already populated, it signals that other
-     * DataFile instances exist, and avoids populating task lists with duplicate
-     * Task objects from file.
-     */
+    /** Default constructor. */
     public DatabaseLogic() {
     }
 
     /**
-     * Populates task lists with data from system file. Deleted tasks are not
-     * written to file, hence the deleted task list is not populated.
+     * Populates Task lists. Deleted tasks are not written to file, hence the
+     * deleted task list is not populated.
      * 
      * Benefits from branch prediction because of the order in which tasks are
      * written to the file. See {@link updateTaskFile()}.
@@ -219,7 +212,7 @@ public class DatabaseLogic {
      * @return True, if file has been successfully updated.
      */
     public boolean edit(Task task, String name, DateTime start, DateTime due,
-                          List<String> tags) {
+                        List<String> tags) {
         if (task == null) {
             return false; // Invalid ID
         }
@@ -386,8 +379,6 @@ public class DatabaseLogic {
                 blockTasks.remove(task);
                 break;
             default:
-                // TODO toss exception?
-                assert false;
                 break;
         }
         task.setType(TaskType.TODO);
@@ -419,11 +410,40 @@ public class DatabaseLogic {
                 blockTasks.remove(task);
                 break;
             default:
-                // TODO toss exception?
-                assert false;
                 break;
         }
         task.setType(TaskType.DONE);
         return doneTasks.add(task);
+    }
+
+    /**
+     * Marks Task object provided in argument as block type. If Task was
+     * deleted, restore it, and mark as block type. Removes object from to-do or
+     * deleted list, adds to block list, and updates file.
+     * 
+     * @param task
+     *            The Task object to mark as block type.
+     * @return True, if file has been successfully updated with change.
+     */
+    public boolean markBlock(Task task) {
+        if (task == null || (task.isBlock() && !task.isDeleted())) {
+            return false; // Invalid ID or is undeleted block task
+        }
+
+        if (task.isDeleted()) {
+            return restore(task);
+        }
+        switch (task.getType()) {
+            case TODO:
+                toDoTasks.remove(task);
+                break;
+            case DONE:
+                doneTasks.remove(task);
+                break;
+            default:
+                break;
+        }
+        task.setType(TaskType.BLOCK);
+        return blockTasks.add(task);
     }
 }
