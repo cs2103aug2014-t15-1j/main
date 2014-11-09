@@ -346,15 +346,15 @@ public class TableUI{
             }
             
             
-            @Override
-            public Font getFont(Object element){
-                if(element instanceof Task){
-                    Task task = (Task) element;
-                    Display display = Display.getCurrent();
-                    return registry.get("table element");
-                }
-                return null;
-            }
+//            @Override
+//            public Font getFont(Object element){
+//                if(element instanceof Task){
+//                    Task task = (Task) element;
+//                    Display display = Display.getCurrent();
+//                    return registry.get("table element");
+//                }
+//                return null;
+//            }
         });
 
         table.setLayoutData(new GridData(GridData.FILL_BOTH));

@@ -9,7 +9,7 @@ import database.DateTime;
 
 public class DateParser {
 
-    /** Everything began with 1819. */
+    /** <i>Everything began with 1819...</i> */
     private static final int YEAR_MINIMUM = 1819;
 
     private static final String TYPE_TIME_DATE = "time-date";
@@ -30,81 +30,39 @@ public class DateParser {
     private static final DateFormat FORMAT_DATE_TIME = new SimpleDateFormat(
             "dd/MM/yyyy HHmm");
 
-    /**
-     * Returns the current date and time in a <code>DateTime</code> object.
-     * <p>
-     * <i>Uses the default system settings for date and time.</i>
-     * 
-     * @return <code>DateTime</code> object containing date in
-     *         <code>dd/MM/yyyy</code> and time in <code>HHmm</code>
-     */
+    /** See {@link Parser#getCurrDateTime()}. */
     static DateTime getCurrDateTime() {
         Calendar cal = Calendar.getInstance();
         String[] date = FORMAT_DATE_TIME.format(cal.getTime()).split(" ");
         return new DateTime(date[0], date[1]);
     }
 
-    /**
-     * Returns the current date and time in a <code>String</code>.
-     * <p>
-     * <i>Uses the default system settings for date and time.</i>
-     * 
-     * @return <code>String</code> object containing date in
-     *         <code>dd/MM/yyyy</code> and time in <code>HHmm</code>
-     */
+    /** See {@link Parser#getCurrDateTimeStr()}. */
     static String getCurrDateTimeStr() {
         return getCurrDateTime().toString();
     }
 
-    /**
-     * Returns the current time in a <code>String</code> object.
-     * <p>
-     * <i>Uses the default system settings for time.</i>
-     * 
-     * @return <code>String</code> object containing time in <code>HHmm</code>
-     */
+    /** See {@link Parser#getCurrTimeStr()}. */
     static String getCurrTimeStr() {
         String currDate = getCurrDateTimeStr();
         String[] dateFields = currDate.split(" ");
         return dateFields[1];
     }
 
-    /**
-     * Returns the current date in a <code>String</code>.
-     * <p>
-     * <i>Uses the default system settings for date.</i>
-     * 
-     * @return <code>String</code> object containing date in
-     *         <code>dd/MM/yyyy</code>
-     */
+    /** See {@link Parser#getCurrDateStr()}. */
     static String getCurrDateStr() {
         String currDate = getCurrDateTimeStr();
         String[] dateFields = currDate.split(" ");
         return dateFields[0];
     }
 
-    /**
-     * Returns tomorrow's date in a <code>String</code>.
-     * <p>
-     * <i>Uses the default system settings for date.</i>
-     * 
-     * @return <code>String</code> object containing date in
-     *         <code>dd/MM/yyyy</code>
-     */
+    /** See {@link Parser#getTmrDateStr()}. */
     static String getTmrDateStr() {
         String today = getCurrDateStr();
         return getNextDayStr(today);
     }
 
-    /**
-     * Returns the date of the day that is <code>numDaysLater</code> days from
-     * today, in a <code>String</code> object.
-     * <p>
-     * <i>Uses the default system settings for date.</i>
-     * 
-     * @return <code>String</code> object containing date in
-     *         <code>dd/MM/yyyy</code>
-     */
+    /** See {@link Parser#getDateFromNowStr(int)}. */
     static String getDateFromNowStr(int numDaysLater) {
         String date = getCurrDateStr();
         for (int i = 0; i < numDaysLater; i++) {
@@ -181,18 +139,7 @@ public class DateParser {
         return year;
     }
 
-    /**
-     * Checks if the input <code>String</code> can be parsed into a
-     * <code>DateTime</code> object. The date/time must be in one of four
-     * formats (below).
-     * <ol>
-     * Formats accepted:
-     * <li>Date only: dd/MM/yyyy
-     * <li>Time only: HHmm
-     * <li>Date and Time: dd/MM/yyyy HHmm
-     * <li>Time and Date: HHmm dd/MM/yyyy
-     * </ol>
-     */
+    /** See {@link Parser#isValidDateTime(String)}. */
     static boolean isValidDateTime(String str) {
         String[] strFields = str.split(" ");
 
@@ -226,23 +173,7 @@ public class DateParser {
                !containsNonDateTime;
     }
 
-    /**
-     * Checks and then parses the input <code>String</code> into a
-     * <code>DateTime</code> object. The date/time must be in one of four
-     * formats (below). An <code>IllegalArgumentException</code> will be thrown
-     * if the input is not one of the following formats, or if the date/time
-     * values are invalid (e.g. 40/01/2014 2401).
-     * <ol>
-     * Formats accepted:
-     * <li>Date only: dd/MM/yyyy
-     * <li>Time only: HHmm
-     * <li>Date and Time: dd/MM/yyyy HHmm
-     * <li>Time and Date: HHmm dd/MM/yyyy
-     * </ol>
-     * 
-     * @return <code>DateTime</code> object containing date in
-     *         <code>dd/MM/yyyy</code> and time in <code>HHmm</code>
-     */
+    /** See {@link Parser#parseToDateTime(String)}. */
     static DateTime parseToDateTime(String str) {
         if (str == null || str.isEmpty()) {
             return new DateTime();
@@ -387,17 +318,7 @@ public class DateParser {
         return isValidDate(dateFields[0]);
     }
 
-    /**
-     * Checks if the input <code>String</code> is a valid time. This method
-     * assumes the 24HR time format, i.e. 0000-2359.
-     * 
-     * <p>
-     * <i> The input should be an integer String. </i>
-     * 
-     * @param timeStr
-     *            A <code>String</code> containing only an integer of the format
-     *            <code>HHmm</code>
-     */
+    /** See {@link Parser#isValidTime(String)}. */
     static boolean isValidTime(String timeStr) {
         try {
             String hoursStr = timeStr.substring(0, 2);
@@ -419,10 +340,7 @@ public class DateParser {
         }
     }
 
-    /**
-     * Checks if the input <code>String</code> is in the accepted date format
-     * <code>dd/MM/yyyy</code>.
-     */
+    /** See {@link Parser#isValidDate(String)}. */
     static boolean isValidDate(String str) {
         return isValidWordDate(str) || isValidNumericalDate(str);
     }

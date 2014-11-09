@@ -39,7 +39,6 @@ public class MainScreen {
                 display.sleep();
         }
         
-        display.dispose();
         disposeResources(display);
     }
 

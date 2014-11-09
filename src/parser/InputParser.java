@@ -33,7 +33,6 @@ public class InputParser {
     private static final String TYPE_DISPLAY = "display";
     private static final String TYPE_SHOW = "show";
     private static final String TYPE_BLOCK = "block";
-//    private static final String TYPE_UNBLOCK = "unblock";
     private static final String TYPE_DONE = "done";
     private static final String TYPE_TODO = "todo";
     private static final String TYPE_UNDO = "undo";
@@ -103,9 +102,6 @@ public class InputParser {
 
                 case TYPE_BLOCK:
                     return parseBlock(commandParams);
-
-                    // case TYPE_UNBLOCK:
-                    // return parseUnblock(commandParams);
 
                 case TYPE_DONE:
                     return parseDone(commandParams);
@@ -222,25 +218,6 @@ public class InputParser {
 
         return new CommandDone(doneFields);
     }
-
-    // /* UNBLOCK HAS BEEN REMOVED */
-    // private static Command parseUnblock(String[] commandParams) {
-    // List<TaskParam> unblockFields = new ArrayList<TaskParam>();
-    //
-    // try {
-    // String firstWord = commandParams[0];
-    // if (isInteger(firstWord)) {
-    // addTaskParamToFields(unblockFields, "id", firstWord);
-    // } else {
-    // throw new IllegalArgumentException(
-    // "Invalid argument for unblock");
-    // }
-    // } catch (ArrayIndexOutOfBoundsException e) {
-    // throw new IllegalArgumentException("No arguments for unblock");
-    // }
-    //
-    // return new CommandUnblock(unblockFields);
-    // }
 
     private static Command parseBlock(String[] commandParams) {
         if (commandParams.length == 0) {
@@ -832,9 +809,8 @@ public class InputParser {
     }
 
     /**
-     * @param fields
-     * @param field
-     * @param content
+     * Gets the TaskParam of the name <code>field</code> from the list
+     * <code>fields</code>, and adds the input <code>content</code> to it.
      */
     private static void addToFieldParam(List<TaskParam> fields, String field,
                                         String content) {
@@ -842,10 +818,8 @@ public class InputParser {
     }
 
     /**
-     * @param fields
-     * @param paramName
-     * @param paramField
-     * @return
+     * Adds a new TaskParam with the name <code>paramName</code> and content
+     * <code>paramField</code> to the input <code>fields</code>.
      */
     private static boolean addTaskParamToFields(List<TaskParam> fields,
                                                 String paramName,
@@ -883,6 +857,7 @@ public class InputParser {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
 
+        System.out.println("Input as a user would:");
         String input = "";
         while (!input.equals("exit")) {
             input = sc.nextLine();
