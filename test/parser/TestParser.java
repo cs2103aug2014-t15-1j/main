@@ -9,8 +9,11 @@ import database.Task;
 
 public class TestParser {
 
-    // Consider using object.equals() to test assertEquals()
-    // Rejected: Errors in constructor will not be caught
+    // Assertions must be enabled: Check that the run configurations (of this
+    // test class or test suite) and make sure it includes VM argument "-ea".
+
+    // Considered using object.equals() to test assertEquals(), but will not use
+    // this as errors in constructor or formatting will not be caught
 
     @Test
     public void testCommand() {
@@ -613,39 +616,6 @@ public class TestParser {
 
         // Spaces
         Parser.parse("block      ");
-
-        System.out.println("...success!");
-    }
-
-    @Test
-    public void testCmdUnblock() {
-        System.out.println("\n>> Testing Unblock Command...");
-
-        String result;
-        String cmd;
-
-        // ID, extra numbers/words, mixed caps
-        result = "\n[[ CMD-UNBLOCK: ]]" + "\nid: 1";
-        cmd = Parser.parse("unBLock 1 3 four").toString();
-        assertEquals("Todo: id, extra, caps", result, cmd);
-
-        System.out.println("...success!");
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void failCmdUnblockEmpty() {
-        System.out.println("\n>> Failing Unblock Command with spaces...");
-
-        Parser.parse("unblock      ");
-
-        System.out.println("...success!");
-    }
-
-    public void failCmdUnblockInvalid() {
-        System.out
-                .println("\n>> Failing Unblock Command with an invalid term...");
-
-        Parser.parse("unblock one");
 
         System.out.println("...success!");
     }
