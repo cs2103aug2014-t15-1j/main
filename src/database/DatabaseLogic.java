@@ -65,7 +65,8 @@ public class DatabaseLogic {
                     blockTasks.add(task);
                     break;
                 default:
-                    // TODO toss an exception?
+                    assert false : "Is not todo, done, or block type Task object";
+                    break;
             }
         }
     }
@@ -185,8 +186,7 @@ public class DatabaseLogic {
             case BLOCK:
                 return blockTasks.add(task);
             default:
-                // TODO toss exception?
-                assert false;
+                assert false : "Is not todo, done, or block type Task object";
                 return false;
         }
     }
@@ -266,8 +266,7 @@ public class DatabaseLogic {
             case BLOCK:
                 return blockTasks.remove(task);
             default:
-                // TODO toss exception?
-                assert false;
+                assert false : "Is not todo, done, or block type Task object";
                 return false;
         }
     }
@@ -295,8 +294,7 @@ public class DatabaseLogic {
             case BLOCK:
                 return blockTasks.add(task);
             default:
-                // TODO toss exception?
-                assert false;
+                assert false : "Is not todo, done, or block type Task object";
                 return false;
         }
     }
@@ -317,17 +315,20 @@ public class DatabaseLogic {
 
         Task.decrementId();
         allTasks.remove(task);
-        switch (task.getType()) {
-            case TODO:
-                return toDoTasks.remove(task);
-            case DONE:
-                return doneTasks.remove(task);
-            case BLOCK:
-                return blockTasks.remove(task);
-            default:
-                // TODO toss exception?
-                assert task.isDeleted();
-                return deletedTasks.remove(task);
+        if (task.isDeleted()) {
+            return deletedTasks.remove(task);
+        } else {
+            switch (task.getType()) {
+                case TODO:
+                    return toDoTasks.remove(task);
+                case DONE:
+                    return doneTasks.remove(task);
+                case BLOCK:
+                    return blockTasks.remove(task);
+                default:
+                    assert false : "Is not todo, done, or block type Task object";
+                    return false;
+            }
         }
     }
 
@@ -379,6 +380,7 @@ public class DatabaseLogic {
                 blockTasks.remove(task);
                 break;
             default:
+                assert false : "Is not todo, done, or block type Task object";
                 break;
         }
         task.setType(TaskType.TODO);
@@ -410,6 +412,7 @@ public class DatabaseLogic {
                 blockTasks.remove(task);
                 break;
             default:
+                assert false : "Is not todo, done, or block type Task object";
                 break;
         }
         task.setType(TaskType.DONE);
@@ -441,6 +444,7 @@ public class DatabaseLogic {
                 doneTasks.remove(task);
                 break;
             default:
+                assert false : "Is not todo, done, or block type Task object";
                 break;
         }
         task.setType(TaskType.BLOCK);
