@@ -174,25 +174,36 @@ public class TaskTest {
         tags.add("#tests4lyfe");
         TaskType type = TaskType.DONE;
 
-        // Different values
+        // Empty values
         String emptyName = "";
         DateTime emptyDateTime = new DateTime();
         List<String> emptyTags = new ArrayList<>();
-        TaskType toDoType = TaskType.TODO;
 
         Task task1 = new Task(name, start, due, completedOn, tags, type);
         Task task2 = new Task(name, start, due, completedOn, tags, type);
-        Task task3 = new Task(emptyName, start, due, completedOn, tags, type);
-        Task task4 = new Task(name, emptyDateTime, due, completedOn, tags, type);
-        Task task5 = new Task(name, start, emptyDateTime, completedOn, tags,
-                type);
-        Task task6 = new Task(name, start, due, emptyDateTime, tags, type);
-        Task task7 = new Task(name, start, due, completedOn, emptyTags, type);
-        Task task8 = new Task(name, start, due, completedOn, tags, toDoType);
+
+        Task task3 = new Task(task1);
+        task3.setName(emptyName);
+
+        Task task4 = new Task(task1);
+        task4.setStart(emptyDateTime);
+
+        Task task5 = new Task(task1);
+        task5.setDue(emptyDateTime);
+
+        Task task6 = new Task(task1);
+        task6.setType(TaskType.TODO);
+        task6.setType(TaskType.DONE);
+
+        Task task7 = new Task(task1);
+        task7.setTags(emptyTags);
+
+        Task task8 = new Task(task1);
+        task8.setType(TaskType.BLOCK);
 
         assertFalse("Different types", task1.equals(new DateTime()));
         assertTrue("Equals to self", task1.equals(task1));
-        assertTrue("Equal values", task1.equals(task2));
+        assertFalse("Not equal to similar object", task1.equals(task2));
         assertFalse("Different name", task1.equals(task3));
         assertFalse("Different start", task1.equals(task4));
         assertFalse("Different due", task1.equals(task5));
@@ -228,11 +239,11 @@ public class TaskTest {
         Task task3 = new Task("", start, due, completedOn, tags, type);
 
         // Testing equal self, i.e. consistent value across different calls.
-        assertTrue("Equal values", task1.equals(task1));
+        assertTrue("Equal to self", task1.equals(task1));
         assertEquals("Equal hashcodes", task1.hashCode(), task1.hashCode());
 
         // Testing equal values.
-        assertTrue("Equal values", task1.equals(task2));
+        assertFalse("Not equal to similar object", task1.equals(task2));
         assertEquals("Equal hashcodes", task1.hashCode(), task2.hashCode());
 
         // Testing non-equal values.
@@ -403,10 +414,10 @@ public class TaskTest {
         List<String> tags = new ArrayList<>();
         tags.add("#tests4lyfe");
         TaskType type = TaskType.DONE;
-        
+
         Task task = new Task(name, start, due, completedOn, tags, type);
         assertFalse("Task is not deleted", task.isDeleted());
-        
+
         task.setDeleted(true);
         assertTrue("Task is deleted", task.isDeleted());
     }
@@ -420,17 +431,17 @@ public class TaskTest {
         List<String> tags = new ArrayList<>();
         tags.add("#tests4lyfe");
         TaskType type = TaskType.DONE;
-        
+
         Task task = new Task(name, start, due, completedOn, tags, type);
         assertFalse("Not floating task", task.isFloating());
-        
+
         task.resetStart();
         assertFalse("Not floating task", task.isFloating());
-        
+
         task.setStart(start);
         task.resetDue();
         assertFalse("Not floating task", task.isFloating());
-        
+
         task.resetStart();
         assertTrue("Is floating task", task.isFloating());
     }
