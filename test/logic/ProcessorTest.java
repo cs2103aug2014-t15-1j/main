@@ -48,6 +48,7 @@ public class ProcessorTest {
 
     @Before
     public void initialiseProcessor() {
+        Processor.IS_UNIT_TEST = false;
         testTags.clear();
         TestProcessor = Processor.reset();
     }

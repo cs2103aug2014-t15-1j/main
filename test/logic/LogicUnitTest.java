@@ -563,6 +563,7 @@ public class LogicUnitTest {
         assertNotNull(cmd.toString());
     }
 
+    //CommandUnblock class is obsolete. 
     @Test
     public void testUnblockCommand() {
         List<TaskParam> contents = new ArrayList<TaskParam>();
