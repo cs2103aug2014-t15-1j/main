@@ -27,7 +27,6 @@ import org.eclipse.swt.widgets.TableColumn;
 /**
  * TableUI table interface located that is located in a Tab Folder.
  * This class is shows the default format of building the table
- * The singleton pattern is used so that only one interface of the table is used.
  */
 public class TableUI{
     
@@ -130,7 +129,6 @@ public class TableUI{
             public Color getForeground(Object element){
                 if(element instanceof Task){
                     Task task = (Task) element;
-                    Display display = Display.getCurrent();
                     DateTime due = task.getDue();
                     if(due == null){
                         return Display.getCurrent().getSystemColor(SWT.COLOR_BLACK);
@@ -162,7 +160,6 @@ public class TableUI{
             public Color getForeground(Object element){
                 if(element instanceof Task){
                     Task task = (Task) element;
-                    Display display = Display.getCurrent();
                     DateTime due = task.getDue();
                     if(due == null){
                         return Display.getCurrent().getSystemColor(SWT.COLOR_BLACK);
@@ -197,7 +194,6 @@ public class TableUI{
             public Color getForeground(Object element){
                 if(element instanceof Task){
                     Task task = (Task) element;
-                    Display display = Display.getCurrent();
                     DateTime due = task.getDue();
                     if(due == null){
                         return Display.getCurrent().getSystemColor(SWT.COLOR_BLACK);
@@ -233,7 +229,6 @@ public class TableUI{
             public Color getForeground(Object element){
                 if(element instanceof Task){
                     Task task = (Task) element;
-                    Display display = Display.getCurrent();
                     DateTime due = task.getDue();
                     if(due == null){
                         return Display.getCurrent().getSystemColor(SWT.COLOR_BLACK);
@@ -270,7 +265,6 @@ public class TableUI{
             public Color getForeground(Object element){
                 if(element instanceof Task){
                     Task task = (Task) element;
-                    Display display = Display.getCurrent();
                     DateTime due = task.getDue();
                     if(due == null){
                         return Display.getCurrent().getSystemColor(SWT.COLOR_BLACK);
@@ -323,16 +317,6 @@ public class TableUI{
                 return Display.getCurrent().getSystemColor(SWT.COLOR_WHITE);
             }
             
-            
-//            @Override
-//            public Font getFont(Object element){
-//                if(element instanceof Task){
-//                    Task task = (Task) element;
-//                    Display display = Display.getCurrent();
-//                    return registry.get("table element");
-//                }
-//                return null;
-//            }
         });
 
         table.setLayoutData(new GridData(GridData.FILL_BOTH));

@@ -59,7 +59,7 @@ public class MainScreen {
      * Disposes all the resources used by the application
      */
  // @author A0118846W
-    public static void disposeResources(Display display) {
+private static void disposeResources(Display display) {
         display.dispose();
         Images.disposeAllImages();
         TableColours.disposeAllColours();

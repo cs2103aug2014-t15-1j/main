@@ -8,7 +8,8 @@ import logic.Result;
 
 /**
  * Processes the Result objects returned by logic.Processor to update the
- * graphical user interface accordingly.
+ * graphical user interface accordingly. The singleton pattern is applied
+ * so that every instance of this class refers to the same instance
  */
 //@author A0118846W
 public class ResultGenerator {
@@ -138,14 +139,14 @@ public class ResultGenerator {
     /**
      * Returns a previous input entered by user. Traverses up input history
      */
-    public static String getUpKeyInput() {
+    public  String getUpKeyInput() {
         return processor.fetchPreviousCommand();
     }
 
     /**
      * Returns a previous input entered by user. Traverses down input history
      */
-    public static String getDownKeyInput() {
+    public  String getDownKeyInput() {
         return processor.fetchNextCommand();
     }
     
@@ -153,7 +154,7 @@ public class ResultGenerator {
      * Gets tasks needed to update the table in the all tab
      * @return tasks that the table needs to be updated with
      */
-    public static List<Task> getAllTasks() {
+    public  List<Task> getAllTasks() {
         List<Task> all = processor.fetchAllTasks();
         return all;
     }
@@ -162,7 +163,7 @@ public class ResultGenerator {
      * Gets tasks needed to update the table in the today tab
      * @return tasks that the table needs to be updated with
      */
-    public static List<Task> getTodayTasks() {
+    public  List<Task> getTodayTasks() {
         return processor.fetchTodayTasks();
     }
     
@@ -170,7 +171,7 @@ public class ResultGenerator {
      * Gets tasks needed to update the table in the tomorrow tab
      * @return tasks that the table needs to be updated with
      */
-    public static List<Task> getTomorrowsTasks() {
+    public  List<Task> getTomorrowsTasks() {
         return processor.fetchTomorrowTasks();
     }
     
@@ -178,7 +179,7 @@ public class ResultGenerator {
      * Gets tasks needed to update the table in the upcoming tab
      * @return tasks that the table needs to be updated with
      */
-    public static List<Task> getUpcomingTasks() {
+    public  List<Task> getUpcomingTasks() {
         return processor.fetchNextWeekTasks();
     }
     
@@ -186,7 +187,7 @@ public class ResultGenerator {
      * Gets tasks needed to update the table in the floating tab
      * @return tasks that the table needs to be updated with
      */
-    public static List<Task> getFloatingTasks() {
+    public  List<Task> getFloatingTasks() {
         return processor.fetchFloatingTasks();
     }
     

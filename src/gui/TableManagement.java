@@ -35,6 +35,8 @@ public class TableManagement {
     // A List containing the table viewers of all the tables
     private static List<TableViewer> tables;
     
+    private static ResultGenerator resultGenerator = ResultGenerator.getInstance();
+    
     /**
      * Creates an instance of the TableManagement class
      */
@@ -48,11 +50,11 @@ public class TableManagement {
      * It then sets the tab selection to show All table
      */
     public void refreshTables() {
-        List<Task> all = ResultGenerator.getAllTasks();
-        List<Task> todays = ResultGenerator.getTodayTasks();
-        List<Task> tomorrow = ResultGenerator.getTomorrowsTasks();
-        List<Task> upcoming = ResultGenerator.getUpcomingTasks();
-        List<Task> floating = ResultGenerator.getFloatingTasks();
+        List<Task> all = resultGenerator.getAllTasks();
+        List<Task> todays = resultGenerator.getTodayTasks();
+        List<Task> tomorrow = resultGenerator.getTomorrowsTasks();
+        List<Task> upcoming = resultGenerator.getUpcomingTasks();
+        List<Task> floating = resultGenerator.getFloatingTasks();
 
         updateTable(all, INDEX_ALL);
         updateTable(todays, INDEX_TODAY);
@@ -164,15 +166,15 @@ public class TableManagement {
     private List<Task> getTableContent(int index){
         switch(index){
             case INDEX_TODAY:
-                return ResultGenerator.getTodayTasks();
+                return resultGenerator.getTodayTasks();
             case INDEX_TOMORROW:
-                return ResultGenerator.getTomorrowsTasks();
+                return resultGenerator.getTomorrowsTasks();
             case INDEX_UPCOMING:
-                return ResultGenerator.getUpcomingTasks();
+                return resultGenerator.getUpcomingTasks();
             case INDEX_SOMEDAY:
-                return ResultGenerator.getFloatingTasks();
+                return resultGenerator.getFloatingTasks();
             default:
-                return ResultGenerator.getAllTasks();
+                return resultGenerator.getAllTasks();
         }
     }
     

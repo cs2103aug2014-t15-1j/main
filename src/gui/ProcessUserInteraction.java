@@ -149,10 +149,10 @@ public class ProcessUserInteraction {
                     String output = "";
                     switch (e.keyCode) {
                         case SWT.ARROW_UP:
-                            output = ResultGenerator.getUpKeyInput();
+                            output = resultGenerator.getUpKeyInput();
                             break;
                         case SWT.ARROW_DOWN:
-                            output = ResultGenerator.getDownKeyInput();
+                            output = resultGenerator.getDownKeyInput();
                             break;
                         default:
                             // ignore
