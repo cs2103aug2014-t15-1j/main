@@ -1,3 +1,4 @@
+//@author A0116373J
 package database;
 
 import java.io.File;
@@ -6,9 +7,6 @@ import java.io.IOException;
 
 /**
  * This class is in charge of writing task data to file.
- * 
- * @author A0116373J
- * 
  */
 
 public class TaskWriter {

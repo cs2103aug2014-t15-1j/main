@@ -1,3 +1,4 @@
+//@author A0118846W
 package gui;
 
 import org.eclipse.jface.resource.FontRegistry;
@@ -14,7 +15,6 @@ import org.eclipse.swt.widgets.Text;
  * FeedbackAndInput Composite contains controls that are involved in taking user input and
  * displaying feedback. The children of FeedbackAndInput are BlockLabelUI, commandLine and feedback
  */
-//@author A0118846W
 public class FeedbackAndInput extends Composite{
 
     private static final String MESSAGE_TYPE_HERE = "Welcome to Haystack! Type here.";

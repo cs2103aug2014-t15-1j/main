@@ -1,3 +1,4 @@
+//@author A0116208N
 package parser;
 
 import objects.DateTime;
@@ -14,7 +15,6 @@ import logic.Command;
  * them instance objects; in fact, doing so will complicate code unnecessarily.
  * 
  */
-//@author A0116208N
 public class Parser {
 
     /**

@@ -1,3 +1,4 @@
+//@author A0116373J
 package database;
 
 import java.util.List;
@@ -12,9 +13,6 @@ import objects.Task;
  * DatabaseFacade serves as the Application Program Interface (API) to the
  * database component, by hiding complexities and providing a simplified
  * interface to the larger body of code.
- * 
- * @author A0116373J
- * 
  */
 
 public class DatabaseFacade {

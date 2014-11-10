@@ -1,3 +1,4 @@
+//@author A0116208N
 package parser;
 
 import java.util.List;
@@ -23,7 +24,6 @@ import logic.CommandTodo;
  * The InputParser handles the parsing of Strings input by the user. It is
  * mostly self-contained, but relies on DateParser for date-related methods.
  */
-//@author A0116208N
 public class InputParser {
 
     // All possible Command types (in string)

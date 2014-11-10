@@ -1,3 +1,4 @@
+//@author A0116208N
 package parser;
 
 import java.util.List;
@@ -14,7 +15,6 @@ import database.TaskType;
  * which it uses to create Tasks. It relies on the DateParser for date-related
  * methods.
  */
-//@author A0116208N
 public class FileParser {
 
     /** Used to initialise string values to empty string */

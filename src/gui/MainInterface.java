@@ -1,3 +1,4 @@
+//@author A0118846W
 package gui;
 
 import org.eclipse.swt.layout.GridData;
@@ -8,7 +9,6 @@ import org.eclipse.swt.widgets.Composite;
  * The Composite that contains the programs main user interfaces. The children of this composite include 
  * the TableComposite and the FeedBackAndInput Composite
  */
-//@author A0118846W
 public class MainInterface extends Composite {
 
     private static final int NUM_COLS_COMPOSITE = 1;

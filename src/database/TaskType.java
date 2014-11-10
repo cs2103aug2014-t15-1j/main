@@ -1,3 +1,4 @@
+//@author A0116373J
 package database;
 
 /**
@@ -7,9 +8,6 @@ package database;
  * <li>DONE
  * <li>BLOCK
  * </ul>
- * 
- * @author Pierce Anderson Fu
- * 
  */
 
 public enum TaskType {

@@ -1,3 +1,4 @@
+//@author A0118846W
 package gui;
 
 import java.text.SimpleDateFormat;
@@ -15,7 +16,6 @@ import org.eclipse.swt.widgets.Display;
 /**
  * ClockUI is the user interface that shows the system time.
  */
-// @author A0118846W
 public class ClockUI{
     private static final String LINE_SEPARATOR = System
             .getProperty("line.separator");

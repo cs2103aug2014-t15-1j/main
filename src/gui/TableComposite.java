@@ -1,3 +1,4 @@
+//@author A0118846W
 package gui;
 
 import java.util.ArrayList;
@@ -40,7 +41,7 @@ public class TableComposite extends Composite {
      * @param style
      *            Style that the TableComposite should follow
      */
-    // @author A0118846W
+    //@author A0118846W
     public TableComposite(Composite parent, int style) {
         super(parent, SWT.NONE);
         setLayout();
@@ -50,7 +51,7 @@ public class TableComposite extends Composite {
     /**
      * Returns the tab folder used to contain the tables
      */
-    // @author A0118846W
+    //@author A0118846W
     public static CTabFolder getTabFolder() {
         assert (tabFolder != null);
         return tabFolder;
@@ -59,7 +60,7 @@ public class TableComposite extends Composite {
     /**
      * Returns the list of tableViewers that was used to create the tables
      */
-    // @author A0118846W
+    //@author A0118846W
     public static List<TableViewer> getTables() {
         return tables;
     }
@@ -67,7 +68,7 @@ public class TableComposite extends Composite {
     /**
      * Creates the layout of the composite which contains the table
      */
-    // @author A0118846W
+    //@author A0118846W
     private void setLayout() {
         GridLayout layout = new GridLayout();
         this.setLayout(layout);
@@ -79,7 +80,7 @@ public class TableComposite extends Composite {
      * Creates the tab folder containing all the tables and adds all the tables
      * to it
      */
-    // @author A0118846W
+    //@author A0118846W
     private void createContents(Composite parent) {
         tabFolder = new CTabFolder(this, SWT.NONE);
         tabFolder.setLayoutData(new GridData(GridData.FILL_BOTH));
@@ -121,6 +122,7 @@ public class TableComposite extends Composite {
         return tableUI;
     }
 
+    //@author A116208N
     /**
      * Adds a listener to the tab folder containing the tables. Thus the user
      * can traverse between tabs by pressing F2 and F3

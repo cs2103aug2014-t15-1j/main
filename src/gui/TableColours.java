@@ -1,3 +1,4 @@
+//@author A0118846W
 package gui;
 
 import org.eclipse.swt.graphics.Color;
@@ -5,7 +6,6 @@ import org.eclipse.swt.widgets.Display;
 /**
  * This class contains colours that was used in the table.
  */
-//@author A0118846W
 public class TableColours {
     
     private static Color deletedColor;

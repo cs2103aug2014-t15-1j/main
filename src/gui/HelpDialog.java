@@ -1,3 +1,4 @@
+//@author A0118846W
 package gui;
 
 import org.eclipse.swt.SWT;
@@ -16,7 +17,6 @@ import org.eclipse.swt.widgets.Shell;
 /**
  * HelpDialog is the Dialog which contains an image showing all the commands the user can input
  */
-//@author A0118846W
 public class HelpDialog extends Dialog {
     
 

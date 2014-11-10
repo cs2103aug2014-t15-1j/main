@@ -1,3 +1,4 @@
+//@author A0118846W
 package gui;
 
 import org.eclipse.swt.SWT;
@@ -13,7 +14,6 @@ import org.eclipse.swt.widgets.Text;
  *This class processes the input entered by the user into the commandLine interface. 
  *It calls other relevant classes to process the input by the user and displays the feedback
  */
-//@author A0118846W
 public class ProcessUserInteraction {
 
     private static final String CONFIRM = "yes";

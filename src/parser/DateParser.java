@@ -1,3 +1,4 @@
+//@author A0116208N
 package parser;
 
 import java.util.Arrays;
@@ -14,7 +15,6 @@ import objects.DateTime;
  * Strings to DateTimes. It does not call any other classes' methods, but uses
  * the DateTime object.
  */
-//@author A0116208N
 public class DateParser {
 
     // Date formats (i.e. inclusive of day and month only? Or with year?)

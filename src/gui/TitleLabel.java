@@ -1,3 +1,4 @@
+//@author A0118846W
 package gui;
 
 import org.eclipse.jface.resource.FontRegistry;
@@ -27,7 +28,7 @@ public class TitleLabel extends Composite {
      * @param parent Composite where TitleLabel is located
      * @param style  Style that TitleLabel has
      */
-    // @author A0118846W
+    //@author A0118846W
     public TitleLabel(Composite parent, int style) {
         super(parent, SWT.NONE);
         setLayout(parent);
@@ -37,7 +38,7 @@ public class TitleLabel extends Composite {
      * Sets the layout of the TitleLabel Composite
      * @param parent Composite where the Title Label is located
      */
-    // @author A0118846W
+    //@author A0118846W
     private void setLayout(Composite parent) {
         GridLayout layout = new GridLayout();
         layout.numColumns = NUM_COLS_SCREEN;
@@ -48,16 +49,15 @@ public class TitleLabel extends Composite {
         this.setLayoutData(gridData);
     }
     
-    // @author A0118846W
+    //@author A0118846W
     private void createContents(Composite parent) {
         createTitle(parent);
         createCloseButton(parent);
     }
 
+    //@author A0116208N
     /**
      * Creates a close button for the program.
-     * 
-     * @author Yeo Zi Xian, Justin & Ter Yao Xiang
      */
     private void createCloseButton(Composite parent) {
         Button button = new Button(parent, SWT.PUSH);
@@ -77,7 +77,7 @@ public class TitleLabel extends Composite {
         
     }
     
-   // @author A0118846W
+   //@author A0118846W
     private void createTitle(Composite parent) {
         getFontRegistry();
         Label title = new Label(this, SWT.SINGLE | SWT.CENTER);
@@ -89,7 +89,7 @@ public class TitleLabel extends Composite {
         color.dispose();
     }
     
-     // @author A0118846W
+     //@author A0118846W
     private void getFontRegistry() {
         registry = Fonts.getRegistry();
     }

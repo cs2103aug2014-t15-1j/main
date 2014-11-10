@@ -1,3 +1,4 @@
+//@author A0116373J
 package objects;
 
 /**
@@ -6,9 +7,6 @@ package objects;
  * split into day, month, and year integer attributes for easier management.
  * 
  * Date and time formats, respectively: "DD/MM/YYYY" and "HHMM".
- * 
- * @author A0116373J
- * 
  */
 
 public class DateTime implements Comparable<DateTime> {

@@ -1,3 +1,4 @@
+//@author A0116373J
 package objects;
 
 import java.util.List;
@@ -10,9 +11,6 @@ import parser.Parser;
  * A Task object contains attributes to store a task's unique id, description,
  * start date and time, due date and time, completed date and time, relevant
  * tags to ease searching and categorizing, task type, and deletion state.
- * 
- * @author A0116373J
- * 
  */
 
 public class Task implements Comparable<Task> {

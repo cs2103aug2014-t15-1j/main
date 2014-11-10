@@ -1,3 +1,4 @@
+//@author A0118846W
 package gui;
 
 import java.util.List;
@@ -11,7 +12,6 @@ import logic.Result;
  * graphical user interface accordingly. The singleton pattern is applied
  * so that every instance of this class refers to the same instance
  */
-//@author A0118846W
 public class ResultGenerator {
     private static final String NO_NAME = "empty task";
     

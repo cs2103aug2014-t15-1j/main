@@ -1,3 +1,4 @@
+//@author A0118846W
 package gui;
 
 import org.eclipse.swt.SWT;
@@ -23,7 +24,7 @@ public class SidePane extends Composite {
      * @param style
      *            Style that SidePane should have
      */
-    // @author A0118846W
+    //@author A0118846W
     public SidePane(Composite parent, int style) {
         super(parent, style);
         setDimensions(parent);
@@ -31,13 +32,13 @@ public class SidePane extends Composite {
         createChildren();
     }
 
-    
+    //@author A0116208N
     private void setDimensions(Composite parent) {
         int shellWidth = parent.getSize().x;
         this.setSize((int) (shellWidth * 0.8), MIN_HEIGHT_SIDE_PANE);
     }
 
-    // @author A0118846W
+    //@author A0118846W
     private void setLayout(Composite parent) {
         GridLayout sidePaneLayout = new GridLayout();
         sidePaneLayout.numColumns = 1;
@@ -45,13 +46,13 @@ public class SidePane extends Composite {
         this.setLayoutData(new GridData(GridData.FILL_VERTICAL));
     }
 
-    // @author A0118846W
+    //@author A0118846W
     private void createChildren() {
         addCalendar();
         new ClockUI(this);
     }
 
-    // @author A0118846W
+    //@author A0118846W
     private void addCalendar() {
         new DateTime(this, SWT.CALENDAR);
 

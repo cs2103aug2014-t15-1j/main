@@ -1,3 +1,4 @@
+//@author A0118846W
 package gui;
 
 import org.eclipse.jface.resource.FontRegistry;
@@ -9,7 +10,6 @@ import org.eclipse.swt.widgets.Display;
 /**
  * This class contains all the fonts used through out the application.
  */
-// @author A0118846W
 public class Fonts {
     private static FontRegistry registry;
 

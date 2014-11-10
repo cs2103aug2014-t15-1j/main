@@ -1,5 +1,5 @@
+//@author A0118846W
 package gui;
-
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
@@ -24,7 +24,7 @@ public class MainScreen {
     /**
      * Runs and initializes the application
      */
- // @author A0118846W
+ //@author A0118846W
     public static void run() {
         Display display = new Display();
         Shell shell = new Shell(display, SWT.NO_TRIM);
@@ -45,7 +45,7 @@ public class MainScreen {
      * Starts the application
      * @param shell window containing the application
      */
- // @author A0118846W
+ //@author A0118846W
     public static void runProgram(Shell shell) {
         initialiseResources(shell);
         createDragControls(shell);
@@ -58,20 +58,21 @@ public class MainScreen {
     /** 
      * Disposes all the resources used by the application
      */
- // @author A0118846W
+ //@author A0118846W
 private static void disposeResources(Display display) {
         display.dispose();
         Images.disposeAllImages();
         TableColours.disposeAllColours();
     }
     
- // @author A0118846W
+ //@author A0118846W
     private static void initialiseResources(Shell shell) {
         new Images(shell);
         new Fonts(shell);
         new TableColours(shell.getDisplay());
     }
 
+    //@author A0116208N-reused
     /**
      * Create drag controls along the shell's borders.
      * 
@@ -107,12 +108,13 @@ private static void disposeResources(Display display) {
         shell.addListener(SWT.MouseMove, l);
     }
     
- // @author A0118846W
+ //@author A0118846W
     private static void initialiseProgram() {
         ResultGenerator resultGen = ResultGenerator.getInstance();
         resultGen.start();
     }
 
+    //@author A0116208N
     private static void configureShell(Shell shell) {
         Display display = shell.getDisplay();
         Rectangle bounds = display.getBounds();
@@ -125,14 +127,14 @@ private static void disposeResources(Display display) {
         setLayout(shell);
     }
     
- // @author A0118846W
+ //@author A0118846W
     private static void createContents(Shell shell) {
         new TitleLabel(shell, shell.getStyle());
         new SidePane(shell, shell.getStyle());
         new MainInterface(shell, shell.getStyle());
     }
     
-    // @author A0118846W
+    //@author A0118846W
     private static void setBackGround(Shell parent) {
 
         parent.setImage(Images.getRegistry().get("icon"));

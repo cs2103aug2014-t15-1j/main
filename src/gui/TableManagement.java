@@ -1,3 +1,4 @@
+//@author A0118846W
 package gui;
 
 import java.util.List;
@@ -9,7 +10,6 @@ import org.eclipse.swt.custom.CTabFolder;
 /**
  *This class manages the selection and updating of the Tables used to display the users task information
  */
-//@author A0118846W
 public class TableManagement {
     // The index numbers of the different tables 
     private static final int INDEX_ALL = 0;

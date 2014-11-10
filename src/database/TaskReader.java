@@ -1,3 +1,4 @@
+//@author A0116373J
 package database;
 
 import java.io.File;
@@ -13,9 +14,6 @@ import parser.Parser;
 /**
  * This class is in charge of reading task data from file, and returning a list
  * of Task objects. Only run once at instantiation of the DatabaseFacade class.
- * 
- * @author A0116373J
- * 
  */
 
 public class TaskReader {
