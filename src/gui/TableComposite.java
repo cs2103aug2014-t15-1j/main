@@ -108,7 +108,7 @@ public class TableComposite extends Composite {
      * @param folder folder containing all tabs
      * @param tabLabel String containing tab name
      */
-    //@author A0118846
+    //@author A0118846W
     private void createTabItem(CTabFolder folder, String tabLabel) {
         CTabItem item = new CTabItem(tabFolder, SWT.NONE);
         item.setText(tabLabel);
