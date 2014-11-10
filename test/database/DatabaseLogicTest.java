@@ -1,3 +1,5 @@
+//@author A0116373J
+
 package database;
 
 import static org.junit.Assert.*;
@@ -12,8 +14,6 @@ import org.junit.Test;
 
 /**
  * Unit tests for the DatabaseLogic class.
- * 
- * @author A0116373J
  */
 
 public class DatabaseLogicTest {

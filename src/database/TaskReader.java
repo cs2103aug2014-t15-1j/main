@@ -1,3 +1,5 @@
+//@author A0116373J
+
 package database;
 
 import java.io.File;
@@ -7,19 +9,24 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import logic.Log;
 import objects.Task;
 import parser.Parser;
 
 /**
  * This class is in charge of reading task data from file, and returning a list
  * of Task objects. Only run once at instantiation of the DatabaseFacade class.
- * 
- * @author A0116373J
- * 
  */
 
 public class TaskReader {
 
+    /** For logging purposes */
+    private static void log(String output) {
+        if (Log.LOGGING_ENABLED) {
+            Log.getLogger().info(output);
+        }
+    }
+    
     /** The file object to read from. */
     private File file;
 
@@ -64,6 +71,7 @@ public class TaskReader {
 
                 return tasksFromFile;
             } catch (FileNotFoundException e) {
+                log("File not found exception");
                 System.out.println("File not found: " + e);
                 e.printStackTrace();
             }
@@ -71,6 +79,7 @@ public class TaskReader {
             try {
                 file.createNewFile();
             } catch (IOException e) {
+                log("IOException, cannot create new file");
                 System.out.println("Unhandled IOException: " + e);
                 e.printStackTrace();
             }

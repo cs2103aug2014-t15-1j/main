@@ -1,3 +1,5 @@
+//@author A0116373J
+
 package objects;
 
 import static org.junit.Assert.*;
@@ -8,8 +10,6 @@ import org.junit.Test;
 
 /**
  * Unit tests for the DateTime class.
- * 
- * @author A0116373J
  */
 
 public class DateTimeTest {

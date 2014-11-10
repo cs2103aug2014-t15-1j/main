@@ -1,3 +1,5 @@
+//@author A0116373J
+
 package database;
 
 import java.util.Collections;
@@ -15,9 +17,6 @@ import objects.Task;
  * are created, all task data in lists and on file will still be synchronized.
  * For more details, view GitHub issue #64
  * (https://github.com/cs2103aug2014-t15-1j/main/issues/64).
- * 
- * @author A0116373J
- * 
  */
 
 public class DatabaseLogic {

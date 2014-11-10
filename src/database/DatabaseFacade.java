@@ -1,7 +1,10 @@
+//@author A0116373J
+
 package database;
 
 import java.util.List;
 
+import logic.Log;
 import objects.DateTime;
 import objects.Task;
 
@@ -12,13 +15,17 @@ import objects.Task;
  * DatabaseFacade serves as the Application Program Interface (API) to the
  * database component, by hiding complexities and providing a simplified
  * interface to the larger body of code.
- * 
- * @author A0116373J
- * 
  */
 
 public class DatabaseFacade {
 
+    /** For logging purposes */
+    private static void log(String output) {
+        if (Log.LOGGING_ENABLED) {
+            Log.getLogger().info(output);
+        }
+    }
+    
     /** Name of file to write tasks to. */
     private final static String FILENAME = "data_tasks.txt";
 
@@ -40,10 +47,12 @@ public class DatabaseFacade {
      * file.
      */
     public DatabaseFacade() {
+        log("Instantiating DatabaseFacade");
         databaseLogic = new DatabaseLogic();
         taskReader = new TaskReader(FILENAME);
         taskWriter = new TaskWriter(FILENAME);
         if (databaseLogic.getAllTasks().isEmpty()) {
+            log("Populating DatabaseLogic Task lists");
             databaseLogic.populateTaskLists(taskReader.read());
         }
     }
@@ -112,6 +121,7 @@ public class DatabaseFacade {
      * @return True, if successfully written to file.
      */
     private boolean updateFile() {
+        log("Updating file data");
         String allTaskInfo = databaseLogic.getAllTaskInfo();
         return taskWriter.write(allTaskInfo);
     }
@@ -124,6 +134,7 @@ public class DatabaseFacade {
      * @return True, if successfully added to data structure and file.
      */
     public boolean add(Task task) {
+        log("Adding Task:" + task);
         boolean logicSuccess = databaseLogic.add(task);
         return logicSuccess && updateFile();
     }
@@ -178,6 +189,7 @@ public class DatabaseFacade {
      */
     public boolean edit(Task task, String name, DateTime start, DateTime due,
                         List<String> tags) {
+        log("Editing Task: " + task);
         boolean logicSuccess = databaseLogic.edit(task, name, start, due, tags);
         return logicSuccess && updateFile();
     }
@@ -210,6 +222,7 @@ public class DatabaseFacade {
      *         file.
      */
     public boolean delete(Task task) {
+        log("Deleting Task: " + task);
         boolean logicSuccess = databaseLogic.delete(task);
         return logicSuccess && updateFile();
     }
@@ -242,6 +255,7 @@ public class DatabaseFacade {
      *         file.
      */
     public boolean restore(Task task) {
+        log("Restoring Task: " + task);
         boolean logicSuccess = databaseLogic.restore(task);
         return logicSuccess && updateFile();
     }
@@ -276,6 +290,7 @@ public class DatabaseFacade {
      *         file permanently.
      */
     public boolean permanentlyDelete(Task task) {
+        log("Permanently deleting Task: " + task);
         boolean logicSuccess = databaseLogic.permanentlyDelete(task);
         return logicSuccess && updateFile();
     }
@@ -288,6 +303,7 @@ public class DatabaseFacade {
      * @return True, if successfully permanently cleared of all Task data.
      */
     public boolean resetData() {
+        log("Clearing all Task data");
         boolean logicSuccess = databaseLogic.permanentlyDeleteAllTasks();
         return logicSuccess && updateFile();
     }
@@ -322,6 +338,7 @@ public class DatabaseFacade {
      *         file as todo.
      */
     public boolean markToDo(Task task) {
+        log("Mark todo Task: " + task);
         boolean logicSuccess = databaseLogic.markToDo(task);
         return logicSuccess && updateFile();
     }
@@ -356,6 +373,7 @@ public class DatabaseFacade {
      *         file as done.
      */
     public boolean markDone(Task task) {
+        log("Mark done Task: " + task);
         boolean logicSuccess = databaseLogic.markDone(task);
         return logicSuccess && updateFile();
     }
@@ -390,6 +408,7 @@ public class DatabaseFacade {
      *         file as block.
      */
     public boolean markBlock(Task task) {
+        log("Mark block Task: " + task);
         boolean logicSuccess = databaseLogic.markBlock(task);
         return logicSuccess && updateFile();
     }

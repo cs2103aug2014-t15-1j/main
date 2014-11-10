@@ -1,3 +1,5 @@
+//@author A0116373J
+
 package database;
 
 import static org.junit.Assert.*;
@@ -14,8 +16,6 @@ import java.util.Scanner;
 
 /**
  * Unit tests for the TaskWriter class.
- * 
- * @author A0116373J
  */
 
 public class TaskWriterTest {

@@ -1,14 +1,13 @@
+//@author A0116373J
+
 package objects;
 
 /**
- * The DateTime class encapsulates date and time attributes in a single package.
+ * The DateTime class encapsulates date and time attributes in a single class.
  * Date and time attributes are managed as Strings. Date String is internally
  * split into day, month, and year integer attributes for easier management.
  * 
  * Date and time formats, respectively: "DD/MM/YYYY" and "HHMM".
- * 
- * @author A0116373J
- * 
  */
 
 public class DateTime implements Comparable<DateTime> {
@@ -146,6 +145,7 @@ public class DateTime implements Comparable<DateTime> {
         }
     }
 
+    // @author A0116208N
     /**
      * Compares this <code>DateTime</code> with an input <code>DateTime</code><br>
      * Returns 1 if it is later (larger) than the other <code>DateTime</code>, 0
@@ -157,8 +157,6 @@ public class DateTime implements Comparable<DateTime> {
      *         <li>0 if they are the same date and time,
      *         <li>-1 if this <DateTime> is earlier.
      *         </ul>
-     * 
-     * @author A0116208N
      */
     @Override
     public int compareTo(DateTime otherDateTime) {
@@ -223,6 +221,7 @@ public class DateTime implements Comparable<DateTime> {
         return EQUAL;
     }
 
+    // @author A0116373J
     /**
      * Indicates whether some other object is "equal to" this one.
      * 
@@ -260,8 +259,6 @@ public class DateTime implements Comparable<DateTime> {
      * 
      * @returns True if this object is the same as the obj argument; false
      *          otherwise.
-     * 
-     * @author A0116373J
      */
     @Override
     public boolean equals(Object obj) {
@@ -307,12 +304,11 @@ public class DateTime implements Comparable<DateTime> {
         return date.hashCode() + time.hashCode();
     }
 
+    // @author A0116208N
     /**
      * Compares this <code>DateTime</code> with an input <code>DateTime</code>.<br>
      * Returns <code>true</code> if it is earlier than the other
      * <code>DateTime</code>.
-     * 
-     * @author A0116208N
      */
     public boolean isEarlierThan(DateTime otherDateTime) {
         assert otherDateTime != null : "dateTime mustn't be null";
@@ -331,12 +327,11 @@ public class DateTime implements Comparable<DateTime> {
         return (this.compareTo(otherDateTime) == LATER);
     }
 
+    //@author A0116373J
     /**
      * Date getter.
      * 
      * @return Date, format: "DD/MM/YYYY" or empty String.
-     * 
-     * @author A0116373J
      */
     public String getDate() {
         return date;
