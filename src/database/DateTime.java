@@ -3,7 +3,7 @@ package database;
 /**
  * The DateTime class encapsulates date and time attributes in a single package.
  * Date and time attributes are managed as Strings. Date String is internally
- * split into day, month, and year integer attributes for easier access.
+ * split into day, month, and year integer attributes for easier management.
  * 
  * Date and time formats, respectively: "DD/MM/YYYY" and "HHMM".
  * 
@@ -78,6 +78,7 @@ public class DateTime implements Comparable<DateTime> {
         assert time != null : "time mustn't be null";
         assert date.matches(DATE_PATTERN) : "date must have correct format and value";
         assert time.matches(TIME_PATTERN) : "time must have correct format and value";
+
         this.date = date;
         this.time = time;
         if (!date.isEmpty()) {
@@ -112,6 +113,7 @@ public class DateTime implements Comparable<DateTime> {
     public DateTime(DateTime dateTime) {
         assert dateTime != null : "dateTime mustn't be null";
         assert dateTime.toString().matches(DATE_TIME_PATTERN) : "dateTime's attributes must have correct format and value";
+
         this.date = dateTime.date;
         this.day = dateTime.day;
         this.month = dateTime.month;
@@ -119,6 +121,7 @@ public class DateTime implements Comparable<DateTime> {
         this.time = dateTime.time;
     }
 
+    /** Checks if DateTime object has empty attributes. */
     public boolean isEmpty() {
         return date.isEmpty() && time.isEmpty();
     }
@@ -161,6 +164,7 @@ public class DateTime implements Comparable<DateTime> {
     public int compareTo(DateTime otherDateTime) {
         assert otherDateTime != null : "dateTime mustn't be null";
         assert otherDateTime.toString().matches(DATE_TIME_PATTERN) : "dateTime's attributes must have correct format and value";
+
         int day1 = this.day;
         int mth1 = this.month;
         int yr1 = this.year;
@@ -328,6 +332,8 @@ public class DateTime implements Comparable<DateTime> {
     }
 
     /**
+     * Date getter.
+     * 
      * @return Date, format: "DD/MM/YYYY" or empty String.
      * 
      * @author A0116373J
@@ -337,6 +343,8 @@ public class DateTime implements Comparable<DateTime> {
     }
 
     /**
+     * Date setter.
+     * 
      * @param date
      *            Format: "DD/MM/YYYY" or empty String.
      */
@@ -401,12 +409,18 @@ public class DateTime implements Comparable<DateTime> {
         year = 0;
     }
 
-    /** @return Time, format: "HHMM" or empty String. */
+    /**
+     * Time getter.
+     * 
+     * @return Time, format: "HHMM" or empty String.
+     */
     public String getTime() {
         return time;
     }
 
     /**
+     * Time setter.
+     * 
      * @param time
      *            Format: "HHMM" or empty String.
      */

@@ -6,10 +6,9 @@ import java.util.ArrayList;
 import parser.Parser;
 
 /**
- * A Task object contains attributes to store a task's unique ID, description,
- * due date and time, scheduled starting date and time, scheduled ending date
- * and time, relevant tags to ease searching and categorizing, completion state,
- * and deletion state.
+ * A Task object contains attributes to store a task's unique id, description,
+ * start date and time, due date and time, completed date and time, relevant
+ * tags to ease searching and categorizing, task type, and deletion state.
  * 
  * @author A0116373J
  * 
@@ -18,12 +17,12 @@ import parser.Parser;
 public class Task implements Comparable<Task> {
 
     /**
-     * Unique ID for each new Task object. Increments at new Task instantiation.
+     * Unique id for each new Task object. Increments at new Task instantiation.
      * Should be decremented when undoing an object creation.
      */
     private static int newId = 1;
 
-    /** ID is set at object instantiation. */
+    /** Id is set at object instantiation. */
     private final int ID;
 
     /** Description of task. */
@@ -41,7 +40,7 @@ public class Task implements Comparable<Task> {
     /** Each stored tag contains a # before the word. */
     private List<String> tags = new ArrayList<String>();
 
-    /** Tasks are created as to-do by default. */
+    /** Tasks can be of todo, done, or block type. */
     private TaskType type = TaskType.TODO;
 
     /** Deleted status takes precedence over type. */
@@ -53,9 +52,7 @@ public class Task implements Comparable<Task> {
     }
 
     /**
-     * Constructor.
-     * 
-     * Used when creating a new Task. Increments ID counter.
+     * Constructor. Used when creating a new Task. Increments ID counter.
      * 
      * @param name
      *            Task description.
@@ -85,6 +82,7 @@ public class Task implements Comparable<Task> {
             assert !start.isEmpty() : "Block types must have start";
             assert !due.isEmpty() : "Block types must have due";
         }
+
         this.ID = newId++;
         this.name = name;
         this.start = new DateTime(start);
@@ -103,6 +101,8 @@ public class Task implements Comparable<Task> {
      *            The existing Task object to create a deep copy from.
      */
     public Task(Task task) {
+        assert task != null : "Cannot clone null";
+        
         ID = task.ID;
         name = task.name;
         start = new DateTime(task.start);
@@ -114,16 +114,16 @@ public class Task implements Comparable<Task> {
     }
 
     /**
-     * Compares this Task object with the specified Task object for order.
+     * Compares this Task object with the argument Task object for ordering.
      * Returns a negative integer, zero, or a positive integer if this object's
-     * DateTime is less earlier than, equal to, or later than that of the
-     * specified object. Start DateTimes are first used in the comparison if
-     * they are not empty, otherwise due DateTimes are used. Implementation is
-     * dependent on DateTime's compareTo().
+     * DateTime is earlier than, equal to, or later than that of the specified
+     * object. Start DateTimes are first used in the comparison if they are not
+     * empty, otherwise due DateTimes are used. Implementation is dependent on
+     * DateTime's compareTo().
      * 
      * @return A negative integer, zero, or a positive integer if this object's
-     *         date is less earlier than, equal to, or later than that of the
-     *         specified object.
+     *         date is earlier than, equal to, or later than that of the
+     *         argument object.
      */
     @Override
     public int compareTo(Task otherTask) {
@@ -139,7 +139,7 @@ public class Task implements Comparable<Task> {
     }
 
     /**
-     * Indicates whether some other object is "equal to" this one.
+     * Indicates whether some other object is "equal to" this Task object.
      * 
      * The equals method implements an equivalence relation on non-null object
      * references:
@@ -168,7 +168,6 @@ public class Task implements Comparable<Task> {
      * whenever this method is overridden, so as to maintain the general
      * contract for the hashCode method, which states that equal objects must
      * have equal hash codes.
-     * 
      * 
      * @param obj
      *            The reference object with which to compare.
@@ -225,10 +224,10 @@ public class Task implements Comparable<Task> {
     }
 
     /**
-     * Converts Task object to a single String to write to system file.
-     * Parameter text are added to aid in parsing text when reading from file.
+     * Converts Task object to a single String. Parameters are added to aid in
+     * parsing text when reading from file.
      * 
-     * @return String to write to system file for storage.
+     * @return Task object in String format with parameters.
      */
     @Override
     public String toString() {
@@ -260,7 +259,7 @@ public class Task implements Comparable<Task> {
      * Stores searchable Task attributes in a single String. To be processed by
      * a search function matching search terms.
      * 
-     * @return String containing searchable Task attributes.
+     * @return String containing searchable Task object attributes.
      */
     public String getSummary() {
         String summary = name + " ";
@@ -271,6 +270,11 @@ public class Task implements Comparable<Task> {
         return summary;
     }
 
+    /**
+     * Task object id getter.
+     * 
+     * @return Task object's id.
+     */
     public int getId() {
         return ID;
     }
@@ -285,10 +289,21 @@ public class Task implements Comparable<Task> {
         newId = 1;
     }
 
+    /**
+     * Task object name getter.
+     * 
+     * @return Task object's name.
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Task object name setter
+     * 
+     * @param name
+     *            The new name to set the Task object to.
+     */
     public void setName(String name) {
         this.name = name;
     }
@@ -298,11 +313,22 @@ public class Task implements Comparable<Task> {
         name = "";
     }
 
+    /**
+     * Task object start getter.
+     * 
+     * @return Task object's start.
+     */
     public DateTime getStart() {
         DateTime copyOfStart = new DateTime(start);
         return copyOfStart;
     }
 
+    /**
+     * Task object start setter.
+     * 
+     * @param start
+     *            The new start to set the Task object to.
+     */
     public void setStart(DateTime start) {
         this.start = new DateTime(start);
     }
@@ -312,11 +338,22 @@ public class Task implements Comparable<Task> {
         start.resetDateTime();
     }
 
+    /**
+     * Task object due getter.
+     * 
+     * @return Task object's due.
+     */
     public DateTime getDue() {
         DateTime copyOfDue = new DateTime(due);
         return copyOfDue;
     }
 
+    /**
+     * Task object due setter.
+     * 
+     * @param due
+     *            The new due to set the Task object to.
+     */
     public void setDue(DateTime due) {
         this.due = new DateTime(due);
     }
@@ -326,11 +363,21 @@ public class Task implements Comparable<Task> {
         due.resetDateTime();
     }
 
+    /**
+     * Task object completedOn getter.
+     * 
+     * @return Task object's completedOn.
+     */
     public DateTime getCompletedOn() {
         DateTime copyOfCompletedOn = new DateTime(completedOn);
         return copyOfCompletedOn;
     }
 
+    /**
+     * Task object tags getter.
+     * 
+     * @return Task object's tags.
+     */
     public List<String> getTags() {
         List<String> copyOfTags = new ArrayList<String>();
         copyOfTags.addAll(tags);
@@ -338,8 +385,10 @@ public class Task implements Comparable<Task> {
     }
 
     /**
+     * Task object tags setter.
+     * 
      * @param tags
-     *            List of tags to append to existing list of tags.
+     *            The new tags to set the Task object to.
      */
     public void setTags(List<String> tags) {
         this.tags.clear();
@@ -351,22 +400,37 @@ public class Task implements Comparable<Task> {
         tags.clear();
     }
 
+    /** Checks if is todo type */
     public boolean isToDo() {
         return type == TaskType.TODO;
     }
 
+    /** Checks if is done type */
     public boolean isDone() {
         return type == TaskType.DONE;
     }
 
+    /** Checks if is block type */
     public boolean isBlock() {
         return type == TaskType.BLOCK;
     }
 
+    /**
+     * Task object type getter.
+     * 
+     * @return Task object's type.
+     */
     public TaskType getType() {
         return type;
     }
 
+    /**
+     * Task object type setter. If set to done, completedOn is set to that
+     * instant. If set to todo or block, completedOn is reset.
+     * 
+     * @param type
+     *            The new type to set the Task object to.
+     */
     public void setType(TaskType type) {
         this.type = type;
         if (type == TaskType.DONE && completedOn.isEmpty()) {
@@ -377,14 +441,22 @@ public class Task implements Comparable<Task> {
         }
     }
 
+    /** Checks if is deleted */
     public boolean isDeleted() {
         return deleted;
     }
 
+    /**
+     * Task object deleted setter.
+     * 
+     * @param deleted
+     *            The deleted status to set the Task object to.
+     */
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;
     }
 
+    /** Checks if is floating task, i.e. has no start or end date. */
     public boolean isFloating() {
         return start.isEmpty() && due.isEmpty();
     }
