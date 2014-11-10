@@ -5,7 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 /**
- * This class is in charge of writing task info to file.
+ * This class is in charge of writing task data to file.
  * 
  * @author A0116373J
  * 

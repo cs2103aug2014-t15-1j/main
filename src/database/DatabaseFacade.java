@@ -9,6 +9,10 @@ import objects.Task;
  * This facade class handles the classes involved in reading and writing of
  * tasks to the file for storage, and managing the data structure of tasks.
  * 
+ * DatabaseFacade serves as the Application Program Interface (API) to the
+ * database component, by hiding complexities and providing a simplified
+ * interface to the larger body of code.
+ * 
  * @author A0116373J
  * 
  */
