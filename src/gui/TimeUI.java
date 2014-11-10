@@ -20,6 +20,7 @@ import parser.DateParser;
  * TimeUI is the user interface that shows the system time.
  * The singleton pattern is used, so every instance of this class refers to the same instance
  */
+// @author A0118846W
 public class TimeUI{
     private static final String LINE_SEPARATOR = System
             .getProperty("line.separator");
@@ -35,6 +36,14 @@ public class TimeUI{
         time.setWordWrap(true);
        time.setText("Time now is   :  10 : 45 " + LINE_SEPARATOR +" Saturday  date place holder");
         format(parent.getDisplay());
+        startTimer(parent);
+    }
+    
+    /**
+     * Starts and runs the clock continuously until the program is closed
+     * @param parent shell where the timer is located
+     */
+    private void startTimer(final Composite parent) {
         Runnable timer = new Runnable(){
             public void run(){
                 if(!parent.getShell().isDisposed()){

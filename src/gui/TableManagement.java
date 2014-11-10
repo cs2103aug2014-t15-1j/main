@@ -18,6 +18,7 @@ public class TableManagement {
     private static final int INDEX_UPCOMING = 3;
     private static final int INDEX_SOMEDAY = 4;
     private static final int INDEX_RESULT = 5;
+    private static final int INDEX_NO_CHANGE = -1;
 
     private static final String TAB_NAME_ALL = "all";
     private static final String TAB_NAME_TODAY = "today";
@@ -25,6 +26,7 @@ public class TableManagement {
     private static final String TAB_NAME_UPCOMING = "upcoming";
     private static final String TAB_NAME_SOMEDAY = "someday";
     private static final String TAB_NAME_RESULT = "result";
+    private static final String TAB_NAME_NO_CHANGE = "nochange";
 
     private static CTabFolder folder;
     private static List<TableViewer> tables;
@@ -88,7 +90,9 @@ public class TableManagement {
         if (folder == null) {
             return;
         }
-        
+        if (index == INDEX_NO_CHANGE){
+            return;
+        }
         folder.setSelection(index);
     }
     
@@ -99,8 +103,12 @@ public class TableManagement {
      */
     public void setTableSelectionByTask(Task taskToSelect, String tabName) {
         int index = getTableIndex(tabName);
+        if(index== INDEX_NO_CHANGE){
+            index = folder.getSelectionIndex();
+        }
+        folder.setSelection(index);
         TableViewer table = tables.get(index);
-        List<Task> tasks = getTableContent(taskToSelect);
+        List<Task> tasks = getTableContent(index);
         if (tasks == null) {
             return;
         }
@@ -141,10 +149,27 @@ public class TableManagement {
             return INDEX_SOMEDAY;
         } else if (tabName.equals(TAB_NAME_RESULT)) {
             return INDEX_RESULT;
+        }else if(tabName.equals(TAB_NAME_NO_CHANGE)){
+            return INDEX_NO_CHANGE;
         }
 
         // default
         return INDEX_ALL;
+    }
+    
+    private List<Task> getTableContent(int index){
+        switch(index){
+            case INDEX_TODAY:
+                return ResultGenerator.getTodayTasks();
+            case INDEX_TOMORROW:
+                return ResultGenerator.getTomorrowsTasks();
+            case INDEX_UPCOMING:
+                return ResultGenerator.getUpcomingTasks();
+            case INDEX_SOMEDAY:
+                return ResultGenerator.getFloatingTasks();
+            default:
+                return ResultGenerator.getAllTasks();
+        }
     }
     
     private List<Task> getTableContent(Task task) {

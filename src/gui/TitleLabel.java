@@ -20,7 +20,6 @@ import org.eclipse.swt.widgets.Label;
 /**
  * This Composite contains the title of the program.
  */
-//@author A0118846W
 public class TitleLabel extends Composite {
 
     private static final String LABEL_TEXT = "      Haystack";
@@ -32,12 +31,14 @@ public class TitleLabel extends Composite {
      * @param parent Composite where TitleLabel is located
      * @param style  Style that TitleLabel has
      */
+    // @author A0118846W
     public TitleLabel(Composite parent, int style) {
         super(parent, SWT.NONE);
         setLayout(parent);
         createContents(parent);
     }
-
+    
+    // @author A0118846W
     private void setLayout(Composite parent) {
         GridLayout layout = new GridLayout();
         layout.numColumns = NUM_COLS_SCREEN;
@@ -47,7 +48,8 @@ public class TitleLabel extends Composite {
         gridData.horizontalAlignment = SWT.LEFT;
         this.setLayoutData(gridData);
     }
-
+    
+    // @author A0118846W
     private void createContents(Composite parent) {
         createTitle(parent);
         createCloseButton(parent);
@@ -75,7 +77,8 @@ public class TitleLabel extends Composite {
         });
         
     }
-
+    
+   // @author A0118846W
     private void createTitle(Composite parent) {
         getFontRegistry();
         Label title = new Label(this, SWT.SINGLE | SWT.CENTER);
@@ -86,7 +89,8 @@ public class TitleLabel extends Composite {
         title.setForeground(color);
         color.dispose();
     }
-
+    
+     // @author A0118846W
     private void getFontRegistry() {
         registry = Fonts.getRegistry();
     }
