@@ -130,12 +130,8 @@ public class DatabaseFacade {
      * @return True, if successfully written to file.
      */
     public boolean add(Task task) {
-        boolean success = databaseLogic.add(task);
-        if (success) {
-            return updateFile();
-        } else {
-            return false;
-        }
+        boolean logicSuccess = databaseLogic.add(task);
+        return logicSuccess && updateFile();
     }
 
     /**
@@ -162,12 +158,8 @@ public class DatabaseFacade {
     public boolean edit(int id, String name, DateTime start, DateTime due,
                         List<String> tags) {
         Task task = getTask(id);
-        boolean success = databaseLogic.edit(task, name, start, due, tags);
-        if (success) {
-            return updateFile();
-        } else {
-            return false;
-        }
+        boolean logicSuccess = databaseLogic.edit(task, name, start, due, tags);
+        return logicSuccess && updateFile();
     }
 
     /**
@@ -191,12 +183,8 @@ public class DatabaseFacade {
      */
     public boolean edit(Task task, String name, DateTime start, DateTime due,
                         List<String> tags) {
-        boolean success = databaseLogic.edit(task, name, start, due, tags);
-        if (success) {
-            return updateFile();
-        } else {
-            return false;
-        }
+        boolean logicSuccess = databaseLogic.edit(task, name, start, due, tags);
+        return logicSuccess && updateFile();
     }
 
     /**
@@ -211,12 +199,8 @@ public class DatabaseFacade {
      */
     public boolean delete(int id) {
         Task task = getTask(id);
-        boolean success = databaseLogic.delete(task);
-        if (success) {
-            return updateFile();
-        } else {
-            return false;
-        }
+        boolean logicSuccess = databaseLogic.delete(task);
+        return logicSuccess && updateFile();
     }
 
     /**
@@ -229,12 +213,8 @@ public class DatabaseFacade {
      * @return True, if file has been successfully updated with delete.
      */
     public boolean delete(Task task) {
-        boolean success = databaseLogic.delete(task);
-        if (success) {
-            return updateFile();
-        } else {
-            return false;
-        }
+        boolean logicSuccess = databaseLogic.delete(task);
+        return logicSuccess && updateFile();
     }
 
     /**
@@ -249,12 +229,8 @@ public class DatabaseFacade {
      */
     public boolean restore(int id) {
         Task task = getTask(id);
-        boolean success = databaseLogic.restore(task);
-        if (success) {
-            return updateFile();
-        } else {
-            return false;
-        }
+        boolean logicSuccess = databaseLogic.restore(task);
+        return logicSuccess && updateFile();
     }
 
     /**
@@ -268,12 +244,8 @@ public class DatabaseFacade {
      * @return True, if file has been successfully updated with restore.
      */
     public boolean restore(Task task) {
-        boolean success = databaseLogic.restore(task);
-        if (success) {
-            return updateFile();
-        } else {
-            return false;
-        }
+        boolean logicSuccess = databaseLogic.restore(task);
+        return logicSuccess && updateFile();
     }
 
     /**
@@ -289,12 +261,8 @@ public class DatabaseFacade {
      */
     public boolean permanentlyDelete(int id) {
         Task task = getTask(id);
-        boolean success = databaseLogic.permanentlyDelete(task);
-        if (success) {
-            return updateFile();
-        } else {
-            return false;
-        }
+        boolean logicSuccess = databaseLogic.permanentlyDelete(task);
+        return logicSuccess && updateFile();
     }
 
     /**
@@ -309,12 +277,8 @@ public class DatabaseFacade {
      * @return True, if file has been successfully updated with wipe.
      */
     public boolean permanentlyDelete(Task task) {
-        boolean success = databaseLogic.permanentlyDelete(task);
-        if (success) {
-            return updateFile();
-        } else {
-            return false;
-        }
+        boolean logicSuccess = databaseLogic.permanentlyDelete(task);
+        return logicSuccess && updateFile();
     }
 
     /**
@@ -325,12 +289,8 @@ public class DatabaseFacade {
      * @return True, if successfully cleared file of data.
      */
     public boolean resetData() {
-        boolean success = databaseLogic.permanentlyDeleteAllTasks();
-        if (success) {
-            return updateFile();
-        } else {
-            return false;
-        }
+        boolean logicSuccess = databaseLogic.permanentlyDeleteAllTasks();
+        return logicSuccess && updateFile();
     }
 
     /**
@@ -345,12 +305,8 @@ public class DatabaseFacade {
      */
     public boolean markToDo(int id) {
         Task task = getTask(id);
-        boolean success = databaseLogic.markToDo(task);
-        if (success) {
-            return updateFile();
-        } else {
-            return false;
-        }
+        boolean logicSuccess = databaseLogic.markToDo(task);
+        return logicSuccess && updateFile();
     }
 
     /**
@@ -364,12 +320,8 @@ public class DatabaseFacade {
      * @return True, if file has been successfully updated with change.
      */
     public boolean markToDo(Task task) {
-        boolean success = databaseLogic.markToDo(task);
-        if (success) {
-            return updateFile();
-        } else {
-            return false;
-        }
+        boolean logicSuccess = databaseLogic.markToDo(task);
+        return logicSuccess && updateFile();
     }
 
     /**
@@ -384,12 +336,8 @@ public class DatabaseFacade {
      */
     public boolean markDone(int id) {
         Task task = getTask(id);
-        boolean success = databaseLogic.markDone(task);
-        if (success) {
-            return updateFile();
-        } else {
-            return false;
-        }
+        boolean logicSuccess = databaseLogic.markDone(task);
+        return logicSuccess && updateFile();
     }
 
     /**
@@ -400,15 +348,11 @@ public class DatabaseFacade {
      * 
      * @param task
      *            The Task object to be marked as done.
-     * @return True, if file has been successfully updated with change.
+     * @return True, if file has been successfully updated with change. 
      */
     public boolean markDone(Task task) {
-        boolean success = databaseLogic.markDone(task);
-        if (success) {
-            return updateFile();
-        } else {
-            return false;
-        }
+        boolean logicSuccess = databaseLogic.markDone(task);
+        return logicSuccess && updateFile();
     }
 
     /**
@@ -424,12 +368,8 @@ public class DatabaseFacade {
      */
     public boolean markBlock(int id) {
         Task task = getTask(id);
-        boolean success = databaseLogic.markBlock(task);
-        if (success) {
-            return updateFile();
-        } else {
-            return false;
-        }
+        boolean logicSuccess = databaseLogic.markBlock(task);
+        return logicSuccess && updateFile();
     }
 
     /**
@@ -443,11 +383,7 @@ public class DatabaseFacade {
      * @return True, if file has been successfully updated with change.
      */
     public boolean markBlock(Task task) {
-        boolean success = databaseLogic.markBlock(task);
-        if (success) {
-            return updateFile();
-        } else {
-            return false;
-        }
+        boolean logicSuccess = databaseLogic.markBlock(task);
+        return logicSuccess && updateFile();
     }
 }
