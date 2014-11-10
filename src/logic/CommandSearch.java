@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 import objects.Task;
-import parser.objects.TaskParam;
+import objects.TaskParam;
 
 /**
  * This class extends abstract class Command. CommandSearch performs search operations.

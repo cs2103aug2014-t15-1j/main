@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import objects.Task;
-import parser.objects.TaskParam;
+import objects.TaskParam;
 
 /**
  * OBSOLETE CLASS

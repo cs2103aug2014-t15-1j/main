@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.Scanner;
 
 import objects.DateTime;
-import parser.objects.TaskParam;
+import objects.TaskParam;
 import logic.Command;
 import logic.CommandAdd;
 import logic.CommandBlock;

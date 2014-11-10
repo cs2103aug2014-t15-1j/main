@@ -5,12 +5,11 @@ import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import objects.TaskParam;
 import objects.TaskParamStub;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import parser.objects.TaskParam;
 
 /** 
  * Unit Testing for Logic Component.

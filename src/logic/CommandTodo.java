@@ -5,8 +5,8 @@ import java.util.List;
 
 import objects.DateTime;
 import objects.Task;
+import objects.TaskParam;
 import parser.Parser;
-import parser.objects.TaskParam;
 
 /**
  * This class extends abstract class Command. CommandTodo class is associated

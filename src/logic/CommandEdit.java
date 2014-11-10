@@ -5,8 +5,8 @@ import java.util.ArrayList;
 
 import objects.DateTime;
 import objects.Task;
+import objects.TaskParam;
 import parser.Parser;
-import parser.objects.TaskParam;
 
 /**
  * This class extends abstract class Command. CommandEdit performs operations
