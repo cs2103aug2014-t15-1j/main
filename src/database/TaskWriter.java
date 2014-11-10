@@ -5,7 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 /**
- * In charge of writing task info to file.
+ * This class is in charge of writing task info to file.
  * 
  * @author A0116373J
  * 
@@ -13,7 +13,7 @@ import java.io.IOException;
 
 public class TaskWriter {
 
-    /** The file object to read from. */
+    /** The file object to write to. */
     private File file;
 
     /**
@@ -24,7 +24,12 @@ public class TaskWriter {
     private TaskWriter() {
     }
 
-    /** Constructor. Creates file with provided filename if it does not exist. */
+    /**
+     * Constructor. Creates file with provided filename if it does not exist.
+     * 
+     * @param filename
+     *            The name of the file to write to.
+     */
     public TaskWriter(String filename) {
         this();
         file = new File(filename);
@@ -32,14 +37,14 @@ public class TaskWriter {
             try {
                 file.createNewFile();
             } catch (IOException e) {
-                // TODO Auto-generated catch block
+                System.out.println("Unhandled IOException: " + e);
                 e.printStackTrace();
             }
         }
     }
 
     /**
-     * Writes String containing task info to system file.
+     * Writes String containing task info to file.
      * 
      * @param allTaskInfo
      *            Info of tasks to write to file.
@@ -52,7 +57,7 @@ public class TaskWriter {
             newFile.close();
             return true;
         } catch (IOException e) {
-            // TODO Auto-generated catch block
+            System.out.println("Unhandled IOException: " + e);
             e.printStackTrace();
             return false;
         }

@@ -139,7 +139,7 @@ public class DatabaseLogic {
     /**
      * Converts all Task objects into a single String. For writing to file.
      * 
-     * @return allTaskInfo A single String containing all Task objects' info.
+     * @return A single String containing all Task objects' info.
      */
     public String getAllTaskInfo() {
         String allTaskInfo = getTaskInfo(toDoTasks);

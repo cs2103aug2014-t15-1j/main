@@ -10,8 +10,8 @@ import java.util.Scanner;
 import parser.Parser;
 
 /**
- * In charge of reading task info from file, and returning a list of Task
- * objects. Only run once at instantiation of DataFile class.
+ * This class is in charge of reading task info from file, and returning a list
+ * of Task objects. Only run once at instantiation of the DatabaseFacade class.
  * 
  * @author A0116373J
  * 
@@ -30,7 +30,12 @@ public class TaskReader {
     private TaskReader() {
     }
 
-    /** Constructor. */
+    /**
+     * Constructor.
+     * 
+     * @param filename
+     *            The name of the file to read from.
+     */
     public TaskReader(String filename) {
         this();
         file = new File(filename);
@@ -47,6 +52,7 @@ public class TaskReader {
             try {
                 List<Task> tasksFromFile = new ArrayList<Task>();
 
+                // Read tasks from file
                 Scanner scanner = new Scanner(file);
                 while (scanner.hasNextLine()) {
                     String unparsedText = scanner.nextLine();
@@ -57,14 +63,14 @@ public class TaskReader {
 
                 return tasksFromFile;
             } catch (FileNotFoundException e) {
-                // TODO Auto-generated catch block
+                System.out.println("File not found: " + e);
                 e.printStackTrace();
             }
-        } else {
+        } else { // File does not exist
             try {
                 file.createNewFile();
             } catch (IOException e) {
-                // TODO Auto-generated catch block
+                System.out.println("Unhandled IOException: " + e);
                 e.printStackTrace();
             }
         }
@@ -72,7 +78,7 @@ public class TaskReader {
     }
 
     /**
-     * Checks if file with provided filename exists.
+     * Checks if file exists. Filename is provided in constructor.
      * 
      * @return True if file exists.
      */
