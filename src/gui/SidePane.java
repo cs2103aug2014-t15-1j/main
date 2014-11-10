@@ -48,7 +48,7 @@ public class SidePane extends Composite {
     // @author A0118846W
     private void createChildren() {
         addCalendar();
-        new TimeUI(this);
+        new ClockUI(this);
     }
 
     // @author A0118846W

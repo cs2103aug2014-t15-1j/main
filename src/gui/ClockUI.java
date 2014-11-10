@@ -13,19 +13,19 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 
 /**
- * TimeUI is the user interface that shows the system time.
+ * ClockUI is the user interface that shows the system time.
  */
 // @author A0118846W
-public class TimeUI{
+public class ClockUI{
     private static final String LINE_SEPARATOR = System
             .getProperty("line.separator");
     private StyledText time;
     
     /**
-     * Creates an instance of TimeUI
-     * @param parent Composite where TimeUI is located
+     * Creates an instance of ClockUI
+     * @param parent Composite where ClockUI is located
      */
-    public TimeUI(final Composite parent){
+    public ClockUI(final Composite parent){
         time = new StyledText(parent, SWT.CENTER | SWT.MULTI | SWT.READ_ONLY);
         setLayout();
         time.setWordWrap(true);
@@ -67,7 +67,7 @@ public class TimeUI{
     }
     
     private void format(Display display) {
-         setFontOfTimeUI();        
+         setFontOfClockUI();        
          setColour(display);
     }
 
@@ -78,7 +78,7 @@ public class TimeUI{
         time.setBackground(bg);
     }
 
-    private void setFontOfTimeUI() {
+    private void setFontOfClockUI() {
         FontRegistry registry = getFontRegistry();
         time.setFont(registry.get("time"));
     }
