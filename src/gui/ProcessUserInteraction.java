@@ -9,7 +9,10 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-
+/**
+ *This class processes the input entered by the user into the commandLine interface. 
+ *It calls other relevant classes to process the input by the user and displays the feedback
+ */
 //@author A0118846W
 public class ProcessUserInteraction {
 
@@ -19,11 +22,13 @@ public class ProcessUserInteraction {
     private static final String CODE_HELP = "Help";
     private static final String CODE_EXIT = "exit";
 
+    // Feedback messages to be displayed to the user
     private static final String ASK_CONFIRM_DELETE = "This will erase all data, PERMANENTLY.  Key 'y' to continue or 'n' to abort";
     private static final String INVALID_INPUT = "Invalid Input.";
     private static final String SUCCESSFUL_DELETE_ALL = "Erased all data!";
     private static final String UNSUCCESSFUL_DELETE_ALL = "Did not delete anything";
 
+    // command formats that displayed to the user while typing
     private static final String COMMAND_FORMAT_ADD = "add [name] due [DD/MM/YYYY hhmm] start [DD/MM/YYYY hhmm] #tag";
     private static final String COMMAND_FORMAT_BLOCK = "block [DD/MM/YYYY hhmm] to [DD/MM/YYYY hhmm]";
     private static final String COMMAND_FORMAT_DISPLAY = "display";
@@ -48,12 +53,19 @@ public class ProcessUserInteraction {
     private static final String COMMAND_FORMAT_UNBLOCK = "unblock [DD/MM/YYYY hhmm] to [DD/MM/YYYY hhmm]";
     private static final String COMMAND_FORMAT_UNDO = "undo";
 
-    private static ResultGenerator resultGenerator;
+    // The interface where the user enters commands
     private Text commandLine;
+    // The interface the displays feedback on the status of the user's commands
     private StyledText feedback;
-    private boolean isReplyToConfrimation = false;
+
+    // display containing the program
     private Display display;
+
+    // shell containing the program
     private Shell shell;
+
+    private static ResultGenerator resultGenerator;
+    private boolean isReplyToConfrimation = false;
 
     public ProcessUserInteraction() {
         commandLine = FeedbackAndInput.getCommandLine();
@@ -63,16 +75,23 @@ public class ProcessUserInteraction {
         resultGenerator = ResultGenerator.getInstance();
         addListeners();
     }
-
+    
     private void addListeners() {
         addShellListeners();
         addCommandLineListeners();
     }
-
+    
+    
+    /**
+     * adds listeners that are activated anywhere within the shell
+     */
     private void addShellListeners() {
         addHelpListener();
     }
-
+    
+    /**
+     * adds listener to open the help dialog when f1 is entered by the user
+     */
     private void addHelpListener() {
         display.addFilter(SWT.KeyDown, new Listener() {
             public void handleEvent(Event event) {
@@ -88,7 +107,10 @@ public class ProcessUserInteraction {
             }
         });
     }
-
+    
+    /**
+     * adds all the listeners to the command line interface
+     */
     private void addCommandLineListeners() {
         addListenerRemoveText();
 
@@ -144,7 +166,7 @@ public class ProcessUserInteraction {
 
     /**
      * Adds listener to process any text input entered by the user into
-     * commandLine, everytime ENTER is pressed
+     * commandLine, every time ENTER is pressed
      */
     private void addListenerProcessInput() {
         commandLine.addListener(SWT.DefaultSelection, new Listener() {
@@ -296,7 +318,7 @@ public class ProcessUserInteraction {
                 return;
 
         }
-    } 
+    }
 
     private void displayWhichTab(String input) {
         String word = getFirstWord(input);
@@ -304,7 +326,7 @@ public class ProcessUserInteraction {
         if (input.isEmpty() || word.isEmpty() ||
             !word.equalsIgnoreCase(COMMAND_FORMAT_DISPLAY) &&
             !word.equalsIgnoreCase(COMMAND_FORMAT_SHOW)) {
-            return; 
+            return;
         }
 
         if (!isOutOfBounds(input, 0)) {
@@ -317,9 +339,9 @@ public class ProcessUserInteraction {
                     feedback.setText(String.format(COMMAND_FORMAT_DISPLAY_DONE,
                                                    word));
                     return;
-                case  's':
-                    feedback.setText(String.format(COMMAND_FORMAT_DISPLAY_SOMEDAY,
-                                                   word));
+                case 's':
+                    feedback.setText(String
+                            .format(COMMAND_FORMAT_DISPLAY_SOMEDAY, word));
                     return;
                 case 't':
                     if (!isOutOfBounds(input, 2) &&
@@ -353,10 +375,10 @@ public class ProcessUserInteraction {
 
     private String removefirstWord(String line) {
         int index = line.indexOf(' ');
-        if(index == -1){
+        if (index == -1) {
             return "";
         }
-        
+
         return line.substring(index).trim();
     }
 

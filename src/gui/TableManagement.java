@@ -1,26 +1,27 @@
 package gui;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.custom.CTabFolder;
 
-import database.DateTime;
 import database.Task;
-
+/**
+ *This class manages the selection and updating of the Tables used to display the users task information
+ */
+//@author A0118846W
 public class TableManagement {
+    // The index numbers of the different tables 
     private static final int INDEX_ALL = 0;
     private static final int INDEX_TODAY = 1;
     private static final int INDEX_TOMORROW = 2;
     private static final int INDEX_UPCOMING = 3;
     private static final int INDEX_SOMEDAY = 4;
     private static final int INDEX_RESULT = 5;
+    // This represents that the tab should not change when selected
     private static final int INDEX_NO_CHANGE = -1;
-
-    private static final String TAB_NAME_ALL = "all";
+    
+    // The tab names of the corresponding tables
     private static final String TAB_NAME_TODAY = "today";
     private static final String TAB_NAME_TOMORROW = "tomorrow";
     private static final String TAB_NAME_UPCOMING = "upcoming";
@@ -28,9 +29,15 @@ public class TableManagement {
     private static final String TAB_NAME_RESULT = "result";
     private static final String TAB_NAME_NO_CHANGE = "nochange";
 
+    // The Tab folder that contains all the tables
     private static CTabFolder folder;
+    
+    // A List containing the table viewers of all the tables
     private static List<TableViewer> tables;
-
+    
+    /**
+     * Creates an instance of the TableManagement class
+     */
     public TableManagement() {
         folder= TableComposite.getTabFolder();
         tables = TableComposite.getTables();
@@ -54,31 +61,28 @@ public class TableManagement {
         updateTable(floating, INDEX_SOMEDAY);
         
     }
-
-    public void setDefaultSelection() {
-        // default selection
-        folder.setSelection(INDEX_ALL);
-    }
     
+    /**
+     * Updates the table in the result tab. The method selects a result table
+     * @param tasks Tasks that the table should be updated with
+     */
     public void updateResultTable(List<Task> tasks){
         tables.get(INDEX_RESULT).setInput(tasks);
-        folder.setSelection(INDEX_RESULT);
+        setSelection(INDEX_RESULT);
     }
     
+    /**
+     * Updates a specific table by its tab name. 
+     * @param tabName Tab name of the table to be updates
+     * @param tasks Tasks that tables should be updated with
+     */
     public void updateTableByName(String tabName, List<Task> tasks){
         int index = getTableIndex(tabName);
         tables.get(index).setInput(tasks);
         if(folder == null){
             return;
         }
-        folder.setSelection(index);
-    }
-    
-    public void setTableSelectionByIndex(int index) {
-        if (folder == null) {
-            return;
-        }
-        folder.setSelection(index);
+        setSelection(index);
     }
     
     /**
@@ -93,7 +97,7 @@ public class TableManagement {
         if (index == INDEX_NO_CHANGE){
             return;
         }
-        folder.setSelection(index);
+        setSelection(index);
     }
     
     /**
@@ -106,7 +110,7 @@ public class TableManagement {
         if(index== INDEX_NO_CHANGE){
             index = folder.getSelectionIndex();
         }
-        folder.setSelection(index);
+        setSelection(index);
         TableViewer table = tables.get(index);
         List<Task> tasks = getTableContent(index);
         if (tasks == null) {
@@ -172,84 +176,7 @@ public class TableManagement {
         }
     }
     
-    private List<Task> getTableContent(Task task) {
-        List<Task> today = ResultGenerator.getTodayTasks();
-        List<Task> tomorrow = ResultGenerator.getTomorrowsTasks();
-        List<Task> upcoming = ResultGenerator.getUpcomingTasks();
-        List<Task> floating = ResultGenerator.getFloatingTasks();
-        List<Task> all = ResultGenerator.getAllTasks();
-
-        if (task == null) {
-            return null;
-        }
-
-        DateTime due = task.getDue();
-
-        if (task.isFloating()) {
-            return floating;
-        } else if (isToday(due)) {
-            return today;
-        } else if (isTomorrow(due)) {
-            return tomorrow;
-        } else if (isUpcoming(due)) {
-            return upcoming;
-        } else {
-            return all;
-        }
+    private void setSelection(int index) {
+        folder.setSelection(index);
     }
-
-    private boolean isToday(DateTime date) {
-        DateTime now = getNow();
-        if (!isFloating(date) && isEqualDate(date, now)) {
-            return true;
-        }
-        return false;
-    }
-
-    private boolean isTomorrow(DateTime date) {
-        DateTime tomorrow = getTomorrowDate();
-        if (!isFloating(date) && isEqualDate(date, tomorrow)) {
-            return true;
-        }
-        return false;
-    }
-
-    private boolean isUpcoming(DateTime date) {
-        if (isFloating(date) || isToday(date) || (isTomorrow(date))) {
-            return false;
-        }
-        return true;
-    }
-
-    private boolean isFloating(DateTime date) {
-        if (date == null || date.isEmpty()) {
-            return true;
-        }
-        return false;
-    }
-
-    private boolean isEqualDate(DateTime date, DateTime dateToCompare) {
-        return dateToCompare.getDate().equals(date.getDate());
-    }
-
-    private DateTime getNow() {
-        Date date = new Date();
-        String nowDate = new SimpleDateFormat("dd/MM/YYYY").format(date);
-        String nowTime = new SimpleDateFormat("hhmm").format(date);
-        DateTime now = new DateTime(nowDate, nowTime);
-        return now;
-
-    }
-
-    private DateTime getTomorrowDate() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DAY_OF_YEAR, 1);
-        Date tomorrow = calendar.getTime();
-        String tomorrowDate = new SimpleDateFormat("dd/MM/YYYY")
-                .format(tomorrow);
-        String tomorrowTime = new SimpleDateFormat("hhmm").format(tomorrow);
-        DateTime tomorrowsDate = new DateTime(tomorrowDate, tomorrowTime);
-        return tomorrowsDate;
-    }
-
 }

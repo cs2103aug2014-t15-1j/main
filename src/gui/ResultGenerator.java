@@ -10,11 +10,15 @@ import database.Task;
  * Processes the Result objects returned by logic.Processor to update the
  * graphical user interface accordingly.
  */
+//@author A0118846W
 public class ResultGenerator {
     private static final String NO_NAME = "empty task";
+    
+    // String literal to show the that was command carried out
     private static final String CODE_HELP = "Help";
     private static final String CODE_EXIT = "exit";
     
+    // Feedback messages for tasks completed successfully
     private static final String FEEDBACK_ADD = "Added %1$s";
     private static final String FEEDBACK_BLOCK = "BLOCKED: %1$s to %2$s";
     private static final String FEEDBACK_UNBLOCK = "UNBLOCKED: %1$s to %2$s";
@@ -27,8 +31,11 @@ public class ResultGenerator {
     private static final String FEEDBACK_UNDO = "Command Undone.";
     private static final String FEEDBACK_REDO = "Command Redone.";
     private static final String FEEDBACK_RESTORE = "Restored %1$s.";
+    
+    // Feedback message for tasks completed unsuccessfully
     private static final String FEEDBACK_UNSUCESSFUL = "Not able to process '%1$s'";
     
+    // Feedback messages for tasks that was not fully completed because of the programs configurations
     private static final String FEEDBACK_DISPLAY_NO_TASKS = "No tasks to show.";
     private static final String FEEDBACK_SEARCH_NO_TASKS = "No matches found.";
     private static final String FEEDBACK_ADD_CONFRIMATION = "Unable to add task. Task coincides with a blocked date.";
@@ -141,38 +148,60 @@ public class ResultGenerator {
     public static String getDownKeyInput() {
         return processor.fetchNextCommand();
     }
-
+    
+    /**
+     * Gets tasks needed to update the table in the all tab
+     * @return tasks that the table needs to be updated with
+     */
     public static List<Task> getAllTasks() {
         List<Task> all = processor.fetchAllTasks();
         return all;
     }
-
+    
+    /**
+     * Gets tasks needed to update the table in the today tab
+     * @return tasks that the table needs to be updated with
+     */
     public static List<Task> getTodayTasks() {
         return processor.fetchTodayTasks();
     }
-
+    
+    /**
+     * Gets tasks needed to update the table in the tomorrow tab
+     * @return tasks that the table needs to be updated with
+     */
     public static List<Task> getTomorrowsTasks() {
         return processor.fetchTomorrowTasks();
     }
-
+    
+    /**
+     * Gets tasks needed to update the table in the upcoming tab
+     * @return tasks that the table needs to be updated with
+     */
     public static List<Task> getUpcomingTasks() {
         return processor.fetchNextWeekTasks();
     }
-
+    
+    /**
+     * Gets tasks needed to update the table in the floating tab
+     * @return tasks that the table needs to be updated with
+     */
     public static List<Task> getFloatingTasks() {
         return processor.fetchFloatingTasks();
     }
-
+    
+    /**
+     * Calls the processor class to initialize the rest of the application
+     */
     private void initialiseAppilcation() {
         processor = Processor.getInstance();
     }
-
-    private String feedbackSingleBlock(List<Task> dates, String commandDone) {
-        Task date = dates.get(0);
-        return String.format(commandDone, date.getStart().toString(), date
-                .getDue().toString());
-    }
-
+    
+    /**
+     * Processes a result object which contains information on how a user command was completed
+     * @param result Result object to be processed
+     * @return a String contain messages showing feedback to the user about the command completed
+     */
     private String processTaskBasedResult(Result result) {
         List<Task> outputs = result.getTasks();
         String tabName = result.getDisplayTab();
@@ -286,7 +315,15 @@ public class ResultGenerator {
         int size = outputs.size();
         return String.format(feedback, size);
     }
+    
+    
+    private String feedbackSingleBlock(List<Task> dates, String commandDone) {
+        Task date = dates.get(0);
+        return String.format(commandDone, date.getStart().toString(), date
+                .getDue().toString());
+    }
 
+    
     private boolean checkValidName(Task task) {
         if (isValidString(task.getName())) {
             return false;
@@ -299,7 +336,10 @@ public class ResultGenerator {
         return parameter == null || parameter.isEmpty() ||
                parameter.equals("null");
     }
-
+    
+    /**
+     * This method processes the display command by updating the specific table
+     */
     private void processDisplay(Result result) {
         refreshTables();
         String tabToSelect = result.getDisplayTab();
@@ -315,7 +355,7 @@ public class ResultGenerator {
     private void setTableSelectionByName(String tabName) {
         tableManagement.setTableSelectionByName(tabName);
     }
-
+    
     private void setTableSelectionSingleTask(String tabName, List<Task> outputs) {
         if (outputs == null || outputs.isEmpty()) {
             tableManagement.setTableSelectionByName(tabName);

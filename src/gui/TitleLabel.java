@@ -1,15 +1,11 @@
 package gui;
 
 import org.eclipse.jface.resource.FontRegistry;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Cursor;
-import org.eclipse.swt.graphics.FontData;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -37,7 +33,10 @@ public class TitleLabel extends Composite {
         setLayout(parent);
         createContents(parent);
     }
-    
+    /**
+     * Sets the layout of the TitleLabel Composite
+     * @param parent Composite where the Title Label is located
+     */
     // @author A0118846W
     private void setLayout(Composite parent) {
         GridLayout layout = new GridLayout();

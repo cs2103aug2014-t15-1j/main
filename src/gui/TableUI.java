@@ -14,14 +14,9 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
@@ -34,7 +29,6 @@ import database.Task;
  * This class is shows the default format of building the table
  * The singleton pattern is used so that only one interface of the table is used.
  */
-//@author A0118846W
 public class TableUI{
     
     private static final String HEADER_NAME_ID = "Id";
@@ -51,23 +45,8 @@ public class TableUI{
     private static final String PARA_STATUS_TODO = "To do";
     private static final String PARA_STATUS_DONE = "Done";
 
-    // NOTE: 350 is able to fit up to 20 chars
-    private static final int COL_WIDTH = 175;
-
-    // NOTE: 50 is able to fit ID, two digit numbers, "." - XX.
-    private static final int COL_WIDTH_ID = 35;
-
-    // NOTE:250 is able to fit both date and time - DD/MM/YYYY HHMM
-    private static final int COL_WIDTH_DATE = 150;
-
-    // NOTE: 150 is just right for all statuses - To Do, Done, Deleted
-    private static final int COL_WIDTH_STATUS = 175;
-    
     private static int colourIndex = 1;
-    private static Color[] tableColours = new Color[7];
-
     private TableViewer tableViewer;
-    private CTabFolder folder;
     private static FontRegistry registry;
     
     /**
@@ -75,7 +54,6 @@ public class TableUI{
      * @param parent tab folder where the TaskTableUI is located in
      */
     public TableUI(CTabFolder parent) {
-        folder = parent;
         buildControls(parent);
     }
 
@@ -157,7 +135,7 @@ public class TableUI{
                     if(due == null){
                         return Display.getCurrent().getSystemColor(SWT.COLOR_BLACK);
                     }else if(isOverdue(due) && !task.isDone() ){
-                        return Colours.getOverdueColour();
+                        return TableColours.getOverdueColour();
                     }
                 }
                 return Display.getCurrent().getSystemColor(SWT.COLOR_BLACK);
@@ -189,7 +167,7 @@ public class TableUI{
                     if(due == null){
                         return Display.getCurrent().getSystemColor(SWT.COLOR_BLACK);
                     }else if(isOverdue(due) && !task.isDone() ){
-                        return Colours.getOverdueColour();
+                        return TableColours.getOverdueColour();
                     }
                 }
                 return Display.getCurrent().getSystemColor(SWT.COLOR_BLACK);
@@ -225,7 +203,7 @@ public class TableUI{
                         return Display.getCurrent().getSystemColor(SWT.COLOR_BLACK);
                     }else if(isOverdue(due) && !task.isDone() ){
 
-                        return Colours.getOverdueColour();
+                        return TableColours.getOverdueColour();
                     }
                 }
                 return Display.getCurrent().getSystemColor(SWT.COLOR_BLACK);
@@ -260,7 +238,7 @@ public class TableUI{
                     if(due == null){
                         return Display.getCurrent().getSystemColor(SWT.COLOR_BLACK);
                     }else if(isOverdue(due) && !task.isDone() ){
-                        return Colours.getOverdueColour();
+                        return TableColours.getOverdueColour();
                     }
                 }
                 return Display.getCurrent().getSystemColor(SWT.COLOR_BLACK);
@@ -297,7 +275,7 @@ public class TableUI{
                     if(due == null){
                         return Display.getCurrent().getSystemColor(SWT.COLOR_BLACK);
                     }else if(isOverdue(due) && !task.isDone() ){
-                        return Colours.getOverdueColour();
+                        return TableColours.getOverdueColour();
                     }
                 }
                 return Display.getCurrent().getSystemColor(SWT.COLOR_BLACK);
@@ -333,13 +311,13 @@ public class TableUI{
                 if(element instanceof Task){
                     Task task = (Task) element;
                     if(task.isDeleted()){
-                        return Colours.getDeletedColor();
+                        return TableColours.getDeletedColor();
                     }else if(task.isBlock()){
-                        return Colours.getBlockDateColor();
+                        return TableColours.getBlockDateColor();
                     }else if(task.isToDo()){
-                        return Colours.getToDoColor();
+                        return TableColours.getToDoColor();
                     }else if(task.isDone()){
-                        return Colours.getDoneColor();
+                        return TableColours.getDoneColor();
                     }
                 }
                 return Display.getCurrent().getSystemColor(SWT.COLOR_WHITE);

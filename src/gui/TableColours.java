@@ -3,10 +3,10 @@ package gui;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Display;
 /**
- * This class contains colours that was used throughout the application.
+ * This class contains colours that was used in the table.
  */
 //@author A0118846W
-public class Colours {
+public class TableColours {
     
     private static Color deletedColor;
     private static Color todoColor;
@@ -15,7 +15,7 @@ public class Colours {
     private static Color blockDateColor;
     private static Color doneColor;
     
-    public Colours(Display display){
+    public TableColours(Display display){
         createColours(display);
     }
     
@@ -52,6 +52,9 @@ public class Colours {
         doneColor = new Color(display, 252, 183, 117);
     } 
     
+    /**
+     * Disposes all the colours used in the table
+     */
     public static void disposeAllColours(){
         deletedColor.dispose();
         todoColor.dispose();

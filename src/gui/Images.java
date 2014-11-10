@@ -2,7 +2,6 @@ package gui;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
-import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 /**
@@ -59,6 +58,11 @@ public class Images {
             id = ImageDescriptor.createFromFile(getClass(), "/resource/helpsheet3840.png");
             registry.put("help", id);
         }
+        
+
+        id = ImageDescriptor
+                .createFromFile(getClass(), "/resource/Icon.gif");
+        registry.put("icon", id);
         
     }
 

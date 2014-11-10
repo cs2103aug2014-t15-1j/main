@@ -7,7 +7,6 @@ import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
@@ -17,7 +16,6 @@ import org.eclipse.swt.widgets.Shell;
 /**
  * This class creates and setUps the window for the Haystack application
  */
-// @author A0118846W
 public class MainScreen {
 
     private static final int NUM_COLS_SCREEN = 2;
@@ -26,6 +24,7 @@ public class MainScreen {
     /**
      * Runs and initializes the application
      */
+ // @author A0118846W
     public static void run() {
         Display display = new Display();
         Shell shell = new Shell(display, SWT.NO_TRIM);
@@ -41,22 +40,36 @@ public class MainScreen {
         
         disposeResources(display);
     }
-
-    public static void disposeResources(Display display) {
-        display.dispose();
-        Images.disposeAllImages();
-        Colours.disposeAllColours();
-    }
-
+    
+    /**
+     * Starts the application
+     * @param shell window containing the application
+     */
+ // @author A0118846W
     public static void runProgram(Shell shell) {
-        Images images = new Images(shell);
-        new Fonts(shell);
-        new Colours(shell.getDisplay());
+        initialiseResources(shell);
         createDragControls(shell);
-        configureShell(shell, images);
+        configureShell(shell);
         createContents(shell);
         initialiseProgram();
         new ProcessUserInteraction();
+    }
+    
+    /** 
+     * Disposes all the resources used by the application
+     */
+ // @author A0118846W
+    public static void disposeResources(Display display) {
+        display.dispose();
+        Images.disposeAllImages();
+        TableColours.disposeAllColours();
+    }
+    
+ // @author A0118846W
+    private static void initialiseResources(Shell shell) {
+        new Images(shell);
+        new Fonts(shell);
+        new TableColours(shell.getDisplay());
     }
 
     /**
@@ -93,35 +106,36 @@ public class MainScreen {
         shell.addListener(SWT.MouseUp, l);
         shell.addListener(SWT.MouseMove, l);
     }
-
+    
+ // @author A0118846W
     private static void initialiseProgram() {
         ResultGenerator resultGen = ResultGenerator.getInstance();
         resultGen.start();
     }
 
-    private static void configureShell(Shell shell, Images images) {
+    private static void configureShell(Shell shell) {
         Display display = shell.getDisplay();
         Rectangle bounds = display.getBounds();
         int shellWidth = (int) (bounds.width * 0.8);
         int shellHeight = (int) (bounds.height * 0.8);
 
         shell.setSize(shellWidth, shellHeight);
-        setBackGround(shell, images);
+        setBackGround(shell);
         setPositionToCenterOfScreen(shell);
         setLayout(shell);
     }
-
+    
+ // @author A0118846W
     private static void createContents(Shell shell) {
         new TitleLabel(shell, shell.getStyle());
         new SidePane(shell, shell.getStyle());
         new MainInterface(shell, shell.getStyle());
     }
+    
+    // @author A0118846W
+    private static void setBackGround(Shell parent) {
 
-    private static void setBackGround(Shell parent, Images images) {
-        Display display = parent.getDisplay();
-
-        parent.setImage(new Image(display, MainScreen.class.getClassLoader()
-                .getResourceAsStream("resource/Icon.gif")));
+        parent.setImage(Images.getRegistry().get("icon"));
 
         Image background = Images.getRegistry().get("main");
         ImageData imageData = background.getImageData();
@@ -131,6 +145,12 @@ public class MainScreen {
         parent.setBackgroundMode(SWT.INHERIT_FORCE);
     }
 
+    /**
+     * Sets the position of the application in the center of the device's screen
+     * 
+     * @param shell
+     *            the shell that is to be positioned
+     */
     private static void setPositionToCenterOfScreen(Shell shell) {
 
         Display display = shell.getDisplay();

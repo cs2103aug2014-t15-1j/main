@@ -3,8 +3,6 @@ package gui;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Observable;
-import java.util.Observer;
 
 import org.eclipse.jface.resource.FontRegistry;
 import org.eclipse.swt.SWT;
@@ -14,23 +12,20 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 
-import parser.DateParser;
-
 /**
  * TimeUI is the user interface that shows the system time.
- * The singleton pattern is used, so every instance of this class refers to the same instance
  */
 // @author A0118846W
 public class TimeUI{
     private static final String LINE_SEPARATOR = System
             .getProperty("line.separator");
     private StyledText time;
-    private  static TimeUI timeUI;
+    
     /**
      * Creates an instance of TimeUI
      * @param parent Composite where TimeUI is located
      */
-    private TimeUI(final Composite parent){
+    public TimeUI(final Composite parent){
         time = new StyledText(parent, SWT.CENTER | SWT.MULTI | SWT.READ_ONLY);
         setLayout();
         time.setWordWrap(true);
@@ -71,28 +66,6 @@ public class TimeUI{
         }
     }
     
-    /**
-     * Returns an instance of timeUI, creates an instance if it does not exist
-     * @param parent Composite where timeUI is located
-     * @return an instance of timeUI
-     */
-    public static TimeUI getInstance(Composite parent){
-        if(timeUI == null){
-            timeUI = new TimeUI(parent);
-        }
-        return timeUI;
-    }
-    
-    /**
-     * Returns an instance of timeUI. This method should only be called after timeUI has been created.
-     * Otherwise, an assertion failure will occur
-     * @return an instance of timeUI
-     */
-    public static TimeUI getInstance(){
-        assert(timeUI != null);
-        return timeUI;
-    }
-
     private void format(Display display) {
          setFontOfTimeUI();        
          setColour(display);

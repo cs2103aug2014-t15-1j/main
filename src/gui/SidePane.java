@@ -1,28 +1,29 @@
 package gui;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DateTime;
 
 /**
- * This Composite contains the user interfaces that show additional information about the tasks carried out. 
- * The children of this Composite include TimeUI, Calendar, UpcomingTaskList, FloatingTaskList
+ * This Composite contains the user interfaces that show additional information
+ * about the tasks carried out. The controls include in this Composite include
+ * TimeUI and the Calendar
  */
-//@author A0118846W
 public class SidePane extends Composite {
 
     private static final int MIN_HEIGHT_SIDE_PANE = 500;
-    private TimeUI timeLabel;
-    
+
     /**
      * Creates the SidePane Composite and its children
-     * @param parent Composite where SidePane composite is located in
-     * @param style Style that SidePane should have
+     * 
+     * @param parent
+     *            Composite where SidePane composite is located in
+     * @param style
+     *            Style that SidePane should have
      */
+    // @author A0118846W
     public SidePane(Composite parent, int style) {
         super(parent, style);
         setDimensions(parent);
@@ -30,11 +31,13 @@ public class SidePane extends Composite {
         createChildren();
     }
 
+    
     private void setDimensions(Composite parent) {
         int shellWidth = parent.getSize().x;
-        this.setSize((int)(shellWidth*0.8), MIN_HEIGHT_SIDE_PANE);
+        this.setSize((int) (shellWidth * 0.8), MIN_HEIGHT_SIDE_PANE);
     }
 
+    // @author A0118846W
     private void setLayout(Composite parent) {
         GridLayout sidePaneLayout = new GridLayout();
         sidePaneLayout.numColumns = 1;
@@ -42,15 +45,16 @@ public class SidePane extends Composite {
         this.setLayoutData(new GridData(GridData.FILL_VERTICAL));
     }
 
+    // @author A0118846W
     private void createChildren() {
         addCalendar();
-        TimeUI.getInstance(this);
+        new TimeUI(this);
     }
 
+    // @author A0118846W
     private void addCalendar() {
-        DateTime dt = new DateTime(this, SWT.CALENDAR);
+        new DateTime(this, SWT.CALENDAR);
 
     }
-    
 
 }
