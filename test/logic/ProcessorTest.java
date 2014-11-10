@@ -85,7 +85,7 @@ public class ProcessorTest {
     // Test for 'Add' Command & Inclusive of Undo/Redo
     public void testAdd() throws Exception {
         // Add with name
-        TestProcessor = TestProcessor.reset();
+        TestProcessor = Processor.reset();
         Result r1 = TestProcessor.processInput("add Do CS2103 Homework");
         assertTrue(equalsObj(testTask1, r1.getTasks().get(0)));
         TestProcessor.processInput("undo");
