@@ -1,4 +1,4 @@
-package database;
+package objects;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -10,7 +10,6 @@ import org.junit.runners.Suite;
  */
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses({ TaskReaderTest.class, TaskWriterTest.class,
-                     DatabaseLogicTest.class })
-public class DatabaseTestSuite {
+@Suite.SuiteClasses({ Task.class, DateTime.class })
+public class ObjectsTestSuite {
 }
