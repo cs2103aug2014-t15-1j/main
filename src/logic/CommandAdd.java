@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import objects.DateTime;
 import objects.Task;
 import objects.TaskParam;
+import objects.TaskType;
 import parser.Parser;
-import database.TaskType;
 
 /**
  * This class extends Command and is associated with the Add Operation. It

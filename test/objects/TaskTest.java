@@ -9,8 +9,6 @@ import java.util.ArrayList;
 
 import objects.Task;
 
-import database.TaskType;
-
 import org.junit.Test;
 
 /**

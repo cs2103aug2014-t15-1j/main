@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import objects.DateTime;
 import objects.Task;
+import objects.TaskType;
 
 /**
  * This class handles the logic involved in managing the data structure of

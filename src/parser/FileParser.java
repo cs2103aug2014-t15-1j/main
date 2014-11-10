@@ -8,7 +8,7 @@ import java.util.Scanner;
 
 import objects.DateTime;
 import objects.Task;
-import database.TaskType;
+import objects.TaskType;
 
 /**
  * The FileParser handles parsing Strings that have been stored by Storage,

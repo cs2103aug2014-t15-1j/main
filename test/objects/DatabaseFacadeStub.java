@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import database.DatabaseFacade;
-import database.TaskType;
 
 public class DatabaseFacadeStub extends DatabaseFacade {
 

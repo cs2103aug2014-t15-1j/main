@@ -4,11 +4,10 @@ package logic;
 import static org.junit.Assert.*;
 import objects.DateTime;
 import objects.Task;
+import objects.TaskType;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import database.TaskType;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -12,14 +12,13 @@ import objects.DateTimeStub;
 import objects.ResultStub;
 import objects.Task;
 import objects.TaskStub;
+import objects.TaskType;
 
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import database.TaskType;
 
 /*
  * This class contains the junit tests for the ResultGenerator.java class. 

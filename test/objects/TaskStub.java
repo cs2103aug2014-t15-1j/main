@@ -3,8 +3,6 @@ package objects;
 import java.util.ArrayList;
 import java.util.List;
 
-import database.TaskType;
-
 /*
  * This class is to be used for testing ONLY.
  * TaskStub allows for dependency injection of Task objects.

@@ -7,8 +7,8 @@ import java.util.List;
 import objects.DateTime;
 import objects.Task;
 import objects.TaskParam;
+import objects.TaskType;
 import parser.Parser;
-import database.TaskType;
 
 /**
  * This class extends Command and performs the addition of new Tasks (with

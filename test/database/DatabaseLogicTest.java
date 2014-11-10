@@ -9,6 +9,7 @@ import java.util.List;
 
 import objects.DateTime;
 import objects.Task;
+import objects.TaskType;
 
 import org.junit.Test;
 
