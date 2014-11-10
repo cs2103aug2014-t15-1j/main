@@ -274,12 +274,12 @@ public class TaskTest {
         due = new DateTime();
         completedOn = new DateTime();
         tags.clear();
-        type = TaskType.BLOCK;
+        type = TaskType.TODO;
 
         task = new Task(name, start, due, completedOn, tags, type);
 
         assertEquals("Matches toString pattern",
-                     " ### start:  due:  completed:  type: BLOCK",
+                     " ### start:  due:  completed:  type: TODO",
                      task.toString());
     }
 
