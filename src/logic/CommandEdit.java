@@ -161,8 +161,8 @@ public class CommandEdit extends Command {
         try {
             taskId = Integer.parseInt(id);
         } catch (Exception e) {
-            if (Processor.LOGGING_ENABLED) {
-                Processor.getLogger().warning("Invalid Task Id!");
+            if (Log.LOGGING_ENABLED) {
+                Log.getLogger().warning("Invalid Task Id!");
             }
         }
         return taskId;

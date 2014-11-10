@@ -140,7 +140,7 @@ public class CommandRestore extends Command {
             }
             processor.getForwardSearchListHistory().push(restoreList);
         } catch (NullPointerException e) {
-            Processor.getLogger().severe("backwardSearchListHistory is empty!");
+            Log.getLogger().severe("backwardSearchListHistory is empty!");
             return false;
         }
         return true;

@@ -4,9 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
-import java.util.logging.FileHandler;
-import java.util.logging.Formatter;
-import java.util.logging.Logger;
 
 import objects.DatabaseFacadeStub;
 import objects.DateTime;
@@ -31,11 +28,6 @@ import database.DatabaseFacade;
  */
 
 public class Processor {
-
-    /** Logger for monitoring purposes */
-    protected final static boolean LOGGING_ENABLED = false;
-    private static final Logger log = Logger.getLogger(Processor.class
-            .getName());
 
     protected static boolean IS_UNIT_TEST = false;
 
@@ -90,7 +82,7 @@ public class Processor {
             file = new DatabaseFacade();
         }
         initialiseProcessor();
-        initialiseLogger();
+        Log.initialiseLogger();
         updateFloatingTasksList();
     }
 
@@ -105,19 +97,6 @@ public class Processor {
         inputStringBackwardHistory = new Stack<String>();
         inputStringForwardHistory = new Stack<String>();
         currentInputString = "";
-    }
-
-    private static void initialiseLogger() {
-        if (LOGGING_ENABLED) {
-            try {
-                FileHandler fh = new FileHandler("Processor.log", true);
-                Formatter format = new LogFormatter();
-                fh.setFormatter(format);
-                log.addHandler(fh);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
     }
 
     /**
@@ -157,8 +136,8 @@ public class Processor {
      */
     public Result processInput(String input) throws IllegalArgumentException {
         assert input != null;
-        if (LOGGING_ENABLED) {
-            log.warning("Command entered: " + input);
+        if (Log.LOGGING_ENABLED) {
+            Log.getLogger().warning("Command entered: " + input);
         }
         updateInputHistory(input);
         Command cmd = Parser.parse(input);
@@ -198,8 +177,8 @@ public class Processor {
      */
     protected Result processCommand(Command cmd, boolean userInput) {
         if (cmd == null || cmd.getType() == null) {
-            if (LOGGING_ENABLED) {
-                log.warning("Error in the input, unable to perform operation.");
+            if (Log.LOGGING_ENABLED) {
+                Log.getLogger().warning("Error in the input, unable to perform operation.");
             }
             return new Result(null, false, null, "");
         } else {
@@ -214,8 +193,8 @@ public class Processor {
     }
 
     protected static void log(String output) {
-        if (LOGGING_ENABLED) {
-            log.info(output);
+        if (Log.LOGGING_ENABLED) {
+            Log.getLogger().info(output);
         }
     }
 
@@ -466,10 +445,6 @@ public class Processor {
 
     protected DatabaseFacade getFile() {
         return file;
-    }
-
-    protected static Logger getLogger() {
-        return log;
     }
 
     protected Stack<Task> getEditedTaskHistory() {
