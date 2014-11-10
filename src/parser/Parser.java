@@ -65,7 +65,8 @@ public class Parser {
      * @return <code>DateTime</code> object containing date in
      *         <code>dd/MM/yyyy</code> and time in <code>HHmm</code>
      */
-    // TODO: Add chain of @See
+    // TODO: Add chain of @See for consistency between definition of valid
+    // dates/times
     public static DateTime parseToDateTime(String str) {
         return DateParser.parseToDateTime(str);
     }
@@ -173,8 +174,8 @@ public class Parser {
      * <li>Time and Date: HHmm dd/MM/yyyy
      * </ol>
      * <p>
-     * Alternatives for date include "today", "tomorrow" and "tmr"
-     * Alternatives for time include "now".
+     * Alternatives for date include "today", "tomorrow" and "tmr" Alternatives
+     * for time include "now".
      */
     public static boolean isValidDateTime(String str) {
         return DateParser.isValidDateTime(str);

@@ -312,7 +312,25 @@ public class InputParser {
             String fromDate = DateParser.getFirstDate(fromStr);
             toTp.addToField(fromDate);
         }
-        
+
+        // Check order of date/times; switch if necessary.
+        // While checking, add the times as necessary
+        fromStr = fromTp.getField();
+        toStr = toTp.getField();
+        DateTime fromDt = DateParser.parseToDateTime(fromStr);
+        DateTime toDt = DateParser.parseToDateTime(toStr);
+        if (fromDt.isLaterThan(toDt)) {
+            if (fromDt.getDate().equals(toDt.getDate()) && (!DateParser
+                    .containsTime(fromStr) || !DateParser.containsTime(toStr))) {
+                // If the date is equal and at least one time is missing
+                // Do nothing.
+            } else {
+                fromTp.setField(toStr);
+                toTp.setField(fromStr);
+            }
+
+        }
+
         // Fill in empty times
         fromStr = fromTp.getField();
         toStr = toTp.getField();
@@ -321,17 +339,6 @@ public class InputParser {
         }
         if (!DateParser.containsTime(toStr)) {
             toTp.addToField("2359");
-        }
-
-        // Check order of date/times; switch if necessary.
-        // While checking, add the times as necessary
-        fromStr = fromTp.getField();
-        toStr = toTp.getField();
-        DateTime fromDt = DateParser.parseToDateTime(fromStr);
-        DateTime toDt = DateParser.parseToDateTime(toStr);
-        if (!fromDt.isEarlierThan(toDt) && !fromDt.equals(toDt)) {
-            fromTp.setField(toStr);
-            toTp.setField(fromStr);
         }
 
         removeDuplicates(blockFields);

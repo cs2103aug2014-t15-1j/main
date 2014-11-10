@@ -56,7 +56,7 @@ public class CommandTodo extends Command {
 
             case PARAM_DATE:
                 assert (Parser.isValidDate(param.getField())) : "Invalid date for done";
-                this.dateTime = new DateTime(param.getField(), "");
+                this.dateTime = Parser.parseToDateTime(param.getField());
                 break;
 
             default:
