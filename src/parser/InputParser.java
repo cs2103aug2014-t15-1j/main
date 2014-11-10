@@ -312,6 +312,16 @@ public class InputParser {
             String fromDate = DateParser.getFirstDate(fromStr);
             toTp.addToField(fromDate);
         }
+        
+        // Fill in empty times
+        fromStr = fromTp.getField();
+        toStr = toTp.getField();
+        if (!DateParser.containsTime(fromStr)) {
+            fromTp.addToField("0000");
+        }
+        if (!DateParser.containsTime(toStr)) {
+            toTp.addToField("2359");
+        }
 
         // Check order of date/times; switch if necessary.
         // While checking, add the times as necessary
@@ -322,14 +332,6 @@ public class InputParser {
         if (!fromDt.isEarlierThan(toDt) && !fromDt.equals(toDt)) {
             fromTp.setField(toStr);
             toTp.setField(fromStr);
-        }
-
-        // Fill in empty times
-        if (!DateParser.containsTime(fromStr)) {
-            fromTp.addToField("0000");
-        }
-        if (!DateParser.containsTime(toStr)) {
-            toTp.addToField("2359");
         }
 
         removeDuplicates(blockFields);

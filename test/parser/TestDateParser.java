@@ -4,6 +4,15 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+/**
+ * Test Class for DateParser. All methods are called via the Parser class as
+ * testing the facade separately will cause unnecessary double-work.
+ * <p>
+ * <i>Note that Assertions <strong>must</strong> be enabled for AssertionErrors
+ * to be tested. Check the run configurations (of this test class or test suite)
+ * and make sure it includes VM argument "-ea".</i>
+ */
+//@author A0116208N
 public class TestDateParser {
 
     @Test
@@ -37,6 +46,8 @@ public class TestDateParser {
         assertTrue(Parser.isValidTime("2359"));
         assertFalse(Parser.isValidTime("2400"));
         assertFalse(Parser.isValidTime("0060"));
+        // Other cases
+        assertTrue(Parser.isValidTime("now"));
         // Extreme
         assertFalse(Parser.isValidTime("9999"));
         assertFalse(Parser.isValidTime("abc"));
@@ -172,12 +183,5 @@ public class TestDateParser {
         System.out.println("...success!");
     }
     
-    @Test
-    public void testContains() {
-        System.out.println("\n>> Testing parseToDate...");
-
-        // TODO: contains__ and getFirst__
-        System.out.println("...success!");
-    }
-    
+    // TODO: Test containsDate/Time and getFirstDate/Time methods
 }

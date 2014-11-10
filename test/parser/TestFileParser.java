@@ -11,10 +11,8 @@ import org.junit.Test;
  * <i>Note that Assertions <strong>must</strong> be enabled for AssertionErrors
  * to be tested. Check the run configurations (of this test class or test suite)
  * and make sure it includes VM argument "-ea".</i>
- * 
- * @author Yeo Zi Xian, Justin (A0116208N)
- *
  */
+//@author A0116208N
 public class TestFileParser {
 
     /**
