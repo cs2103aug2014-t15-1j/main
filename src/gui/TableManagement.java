@@ -2,10 +2,10 @@ package gui;
 
 import java.util.List;
 
+import objects.Task;
+
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.custom.CTabFolder;
-
-import database.Task;
 /**
  *This class manages the selection and updating of the Tables used to display the users task information
  */

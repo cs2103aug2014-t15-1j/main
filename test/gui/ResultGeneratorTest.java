@@ -7,8 +7,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import logic.CommandType;
+import objects.DateTime;
 import objects.DateTimeStub;
 import objects.ResultStub;
+import objects.Task;
 import objects.TaskStub;
 
 import org.eclipse.swt.widgets.Display;
@@ -17,8 +19,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import database.DateTime;
-import database.Task;
 import database.TaskType;
 
 /*

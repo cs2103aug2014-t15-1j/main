@@ -6,7 +6,7 @@ import java.util.Scanner;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
-import database.DateTime;
+import objects.DateTime;
 
 public class DateParser {
 

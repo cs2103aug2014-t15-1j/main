@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
 
-import database.DateTime;
-import database.Task;
+import objects.DateTime;
+import objects.Task;
 import database.TaskType;
 
 public class FileParser {

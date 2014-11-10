@@ -1,8 +1,9 @@
-package database;
+package objects;
 
 import java.util.List;
 import java.util.ArrayList;
 
+import database.TaskType;
 import parser.Parser;
 
 /**

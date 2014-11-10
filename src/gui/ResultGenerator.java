@@ -2,9 +2,9 @@ package gui;
 
 import java.util.List;
 
+import objects.Task;
 import logic.Processor;
 import logic.Result;
-import database.Task;
 
 /**
  * Processes the Result objects returned by logic.Processor to update the

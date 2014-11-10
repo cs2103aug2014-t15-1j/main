@@ -5,6 +5,9 @@ import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import objects.DateTime;
+import objects.Task;
+
 import org.junit.Test;
 
 /**

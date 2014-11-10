@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
 
+import objects.DateTime;
 import parser.objects.TaskParam;
 import logic.Command;
 import logic.CommandAdd;
@@ -17,7 +18,6 @@ import logic.CommandOthers;
 import logic.CommandRestore;
 import logic.CommandSearch;
 import logic.CommandTodo;
-import database.DateTime;
 
 // TODO: Class description with reason why it's static
 public class InputParser {

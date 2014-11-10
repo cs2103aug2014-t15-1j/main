@@ -9,10 +9,10 @@ import java.util.logging.Formatter;
 import java.util.logging.Logger;
 
 import objects.DatabaseFacadeStub;
+import objects.DateTime;
+import objects.Task;
 import parser.Parser;
 import database.DatabaseFacade;
-import database.DateTime;
-import database.Task;
 
 //import java.util.Observable; - Observer pattern not implemented
 
@@ -317,7 +317,7 @@ public class Processor {
     /**
      * This method fetches the task by Id.
      * 
-     * @return {@link database.Task#Task(String, DateTime, DateTime, DateTime, List, database.TaskType)
+     * @return {@link objects.Task#Task(String, DateTime, DateTime, DateTime, List, database.TaskType)
      *         Task}
      */
     public Task fetchTaskById(int taskId) {

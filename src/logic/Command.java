@@ -1,7 +1,7 @@
 package logic;
 
+import objects.Task;
 import parser.Parser;
-import database.Task;
 
 /**
  * This is an abstract class Command, for the implementation of Command Pattern.

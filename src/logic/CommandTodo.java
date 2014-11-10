@@ -3,10 +3,10 @@ package logic;
 import java.util.ArrayList;
 import java.util.List;
 
+import objects.DateTime;
+import objects.Task;
 import parser.Parser;
 import parser.objects.TaskParam;
-import database.DateTime;
-import database.Task;
 
 /**
  * This class extends abstract class Command. CommandTodo class is associated

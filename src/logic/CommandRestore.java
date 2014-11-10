@@ -3,8 +3,8 @@ package logic;
 import java.util.ArrayList;
 import java.util.List;
 
+import objects.Task;
 import parser.objects.TaskParam;
-import database.Task;
 
 /**
  * This class extends abstract class Command. CommandRestore performs operations

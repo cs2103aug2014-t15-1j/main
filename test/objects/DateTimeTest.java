@@ -1,6 +1,8 @@
-package database;
+package objects;
 
 import static org.junit.Assert.*;
+import objects.DateTime;
+import objects.Task;
 
 import org.junit.Test;
 

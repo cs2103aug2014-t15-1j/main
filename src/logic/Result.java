@@ -2,7 +2,7 @@ package logic;
 
 import java.util.List;
 
-import database.Task;
+import objects.Task;
 
 /**
  * A Result object contains the necessary information of an operation. These

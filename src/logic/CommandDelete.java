@@ -3,8 +3,8 @@ package logic;
 import java.util.ArrayList;
 import java.util.List;
 
+import objects.Task;
 import parser.objects.TaskParam;
-import database.Task;
 
 /**
  * This class extends Command and performs the deletion of Tasks. Allows

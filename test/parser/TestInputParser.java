@@ -1,11 +1,10 @@
 package parser;
 
 import static org.junit.Assert.*;
+import objects.DateTime;
+import objects.Task;
 
 import org.junit.Test;
-
-import database.DateTime;
-import database.Task;
 
 /**
  * Test Class for InputParser. All methods are called via the Parser class as

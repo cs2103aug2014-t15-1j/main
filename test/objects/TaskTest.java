@@ -1,9 +1,14 @@
-package database;
+package objects;
 
 import static org.junit.Assert.*;
 
 import java.util.List;
 import java.util.ArrayList;
+
+import objects.Task;
+
+
+import database.TaskType;
 
 import org.junit.Test;
 

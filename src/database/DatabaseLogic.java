@@ -4,6 +4,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
 
+import objects.DateTime;
+import objects.Task;
+
 /**
  * This class handles the logic involved in managing the data structure of
  * tasks.

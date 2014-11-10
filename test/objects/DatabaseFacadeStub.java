@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import database.DatabaseFacade;
-import database.DateTime;
-import database.Task;
 import database.TaskType;
 
 public class DatabaseFacadeStub extends DatabaseFacade {

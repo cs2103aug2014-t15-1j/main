@@ -2,7 +2,6 @@ package objects;
 
 import java.util.List;
 
-import database.Task;
 import logic.CommandType;
 import logic.Result;
 

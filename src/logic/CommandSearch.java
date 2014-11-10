@@ -3,8 +3,8 @@ package logic;
 import java.util.List;
 import java.util.ArrayList;
 
+import objects.Task;
 import parser.objects.TaskParam;
-import database.Task;
 
 /**
  * This class extends abstract class Command. CommandSearch performs search operations.

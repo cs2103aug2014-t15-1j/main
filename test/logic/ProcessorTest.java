@@ -1,12 +1,12 @@
 package logic;
 
 import static org.junit.Assert.*;
+import objects.DateTime;
+import objects.Task;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import database.DateTime;
-import database.Task;
 import database.TaskType;
 
 import java.util.ArrayList;
