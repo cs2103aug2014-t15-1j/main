@@ -646,6 +646,7 @@ public class LogicUnitTest {
         contents.add(rangeType);
         CommandDisplay cmd = new CommandDisplay(contents);
         Result result = cmd.execute(true);
+        assertTrue(result.isSuccess());
 
         // RangeType of Search
         contents.remove(rangeType);
@@ -653,6 +654,7 @@ public class LogicUnitTest {
         contents.add(rangeType);
         cmd = new CommandDisplay(contents);
         result = cmd.execute(true);
+        assertTrue(result.isSuccess());
 
         // RangeType of Block Dates
         contents.remove(rangeType);
@@ -660,6 +662,7 @@ public class LogicUnitTest {
         contents.add(rangeType);
         cmd = new CommandDisplay(contents);
         result = cmd.execute(true);
+        assertTrue(result.isSuccess());
 
         // RangeType of Done Tasks
         contents.remove(rangeType);
@@ -667,6 +670,7 @@ public class LogicUnitTest {
         contents.add(rangeType);
         cmd = new CommandDisplay(contents);
         result = cmd.execute(true);
+        assertTrue(result.isSuccess());
 
         // RangeType of Deleted Tasks
         contents.remove(rangeType);
@@ -674,6 +678,7 @@ public class LogicUnitTest {
         contents.add(rangeType);
         cmd = new CommandDisplay(contents);
         result = cmd.execute(true);
+        assertTrue(result.isSuccess());
 
         // RangeType of All Tasks
         contents.remove(rangeType);
@@ -681,6 +686,7 @@ public class LogicUnitTest {
         contents.add(rangeType);
         cmd = new CommandDisplay(contents);
         result = cmd.execute(true);
+        assertTrue(result.isSuccess());
 
         // RangeType of id
         contents.remove(rangeType);
