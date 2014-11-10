@@ -1,3 +1,4 @@
+//@author A0116208N
 package parser;
 
 import static org.junit.Assert.*;
@@ -12,7 +13,6 @@ import org.junit.Test;
  * to be tested. Check the run configurations (of this test class or test suite)
  * and make sure it includes VM argument "-ea".</i>
  */
-//@author A0116208N
 public class TestFileParser {
 
     /**
