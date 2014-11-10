@@ -5,8 +5,8 @@ import parser.Parser;
 
 /**
  * This is an abstract class Command, for the implementation of Command Pattern.
- * Different command type will be categorised and extends this class.
- * This class also contains the common parameters used in the Command classes.
+ * Different command type will be categorised and extends this class. This class
+ * also contains the common parameters used in the Command classes.
  * 
  * @author A0110751W
  *
@@ -70,14 +70,10 @@ public abstract class Command {
         return null;
     }
 
-    protected Result execute(boolean userInput) {
-        return new Result();
-    }
+    abstract protected Result execute(boolean userInput);
 
-    protected Result executeComplement() {
-        return new Result();
-    }
-    
+    abstract protected Result executeComplement();
+
     /**
      * This method returns the appropriate tab to change to for a Task. <br>
      * For <code>Tasks</code> that have <code>due</code> dates due today, it

@@ -147,4 +147,9 @@ public class CommandDisplay extends Command {
     public String toString() {
         return "cmddisplay rangetype: " + this.rangeType + " id: " + this.id;
     }
+
+    @Override
+    protected Result executeComplement() {
+        return new Result();
+    }
 }

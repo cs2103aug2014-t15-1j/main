@@ -162,4 +162,9 @@ public class CommandOthers extends Command {
     public String toString() {
         return "cmdothers type: " + this.type;
     }
+
+    @Override
+    protected Result executeComplement() {
+        return new Result();
+    }
 }

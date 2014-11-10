@@ -209,6 +209,10 @@ public class CommandSearch extends Command {
                " tags: " + this.tags + " keywords: " + this.keywords;
     }
 
+    @Override
+    protected Result executeComplement() {
+        return new Result();
+    }
     /*
      * Obsolete Codes below, due to changing of conditions for Search Command
      * 
