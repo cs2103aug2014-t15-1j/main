@@ -33,7 +33,7 @@ public class ResultGeneratorTest {
     private static List<TaskStub> outputsDone = new ArrayList<TaskStub>();
     private static List<String> tags = new ArrayList<String>();
 
-    @Before
+    
     public void setUp() {
         tags.add("");
         outputsToDo.add(new TaskStub("name", new DateTimeStub("", ""),
@@ -49,7 +49,7 @@ public class ResultGeneratorTest {
                 new DateTimeStub("08/11/2014", "1400"), tags, TaskType.DONE));
     }
 
-    @After
+    
     public void tearDown() {
         outputsToDo.clear();
         outputsDate.clear();
@@ -65,15 +65,12 @@ public class ResultGeneratorTest {
         setUp();
         test_Add();
         tearDown();
-
+        System.out.println(outputsToDo);
         setUp();
         test_Add_Unsucessful();
+        System.out.println(outputsToDo);
         tearDown();
-
-        setUp();
-        test_Add_NullName();
-        tearDown();
-
+        System.out.println(outputsToDo);
         setUp();
         test_Add_NullStringName();
         tearDown();
@@ -174,27 +171,6 @@ public class ResultGeneratorTest {
 
     }
 
-    /**
-     * Tests an invalid Result Object for add command. The Result Object has a
-     * null for task name. Since ResultGenerator.java treats an invalid Result
-     * Object the same for all commands, only one test case for add has been
-     * implemented.
-     */
-    public void test_Add_NullName() {
-
-        List<TaskStub> outputsNullName = new ArrayList<TaskStub>();
-        outputsNullName.add(new TaskStub(null, new DateTimeStub("", ""),
-                new DateTimeStub("", ""), new DateTimeStub("", ""), tags,
-                TaskType.TODO));
-        ResultStub result = new ResultStub(outputsNullName, false,
-                CommandType.ADD, false, "todo");
-        try {
-            resultGenerator.processResult(result, "add name");
-        } catch (NullPointerException error) {
-            assertTrue(error.getMessage().contains("Task name is invalid"));
-        }
-
-    }
 
     /**
      * Tests an invalid Result Object for add command for Task Result Type. The
@@ -249,8 +225,8 @@ public class ResultGeneratorTest {
 
         List<TaskStub> outputsNeedConfirmation = new ArrayList<TaskStub>();
         outputsNeedConfirmation.add(new TaskStub("name", new DateTimeStub("",
-                ""), new DateTimeStub("21/10/2014", "18:53"), new DateTimeStub(
-                "21/10/2014", "21:00"), tags, TaskType.TODO));
+                ""), new DateTimeStub("21/10/2014", "1853"), new DateTimeStub(
+                "21/10/2014", "2100"), tags, TaskType.TODO));
         ResultStub result = new ResultStub(outputsNeedConfirmation, true,
                 CommandType.ADD, true, "todo");
 

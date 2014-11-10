@@ -55,7 +55,6 @@ public class TableComposite extends Composite {
      */
     //@author A0118846W
     public static CTabFolder getTabFolder() {
-        assert (tabFolder != null);
         return tabFolder;
     }
 
