@@ -23,7 +23,7 @@ public class Log {
         }
     }
     
-    protected static Logger getLogger() {
+    public static Logger getLogger() {
         return log;
     }
 
