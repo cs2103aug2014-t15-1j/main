@@ -10,6 +10,6 @@ import org.junit.runners.Suite;
  */
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses({ Task.class, DateTime.class })
+@Suite.SuiteClasses({ TaskTest.class, DateTimeTest.class })
 public class ObjectsTestSuite {
 }

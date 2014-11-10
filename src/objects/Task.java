@@ -103,7 +103,7 @@ public class Task implements Comparable<Task> {
      */
     public Task(Task task) {
         assert task != null : "Cannot clone null";
-        
+
         ID = task.ID;
         name = task.name;
         start = new DateTime(task.start);
@@ -436,7 +436,8 @@ public class Task implements Comparable<Task> {
         this.type = type;
         if (type == TaskType.DONE && completedOn.isEmpty()) {
             completedOn = new DateTime(Parser.getCurrDateTime());
-            assert completedOn.toString().matches(DateTime.getDatePattern()) : "CompletedOn must have correct format & value";
+            assert completedOn.toString()
+                    .matches(DateTime.getDateTimePattern()) : "CompletedOn must have correct format & value";
         } else if (type == TaskType.TODO || type == TaskType.BLOCK) {
             completedOn.resetDateTime();
         }
