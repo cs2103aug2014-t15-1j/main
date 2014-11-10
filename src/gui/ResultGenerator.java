@@ -4,6 +4,7 @@ package gui;
 import java.util.List;
 
 import objects.Task;
+import logic.Log;
 import logic.Processor;
 import logic.Result;
 
@@ -66,6 +67,9 @@ public class ResultGenerator {
      * interface to observe logic.Processor
      */
     public void start() {
+        if(Log.LOGGING_ENABLED){
+            Log.getLogger().info("initialising application" );
+        }
         initialiseAppilcation();
         refreshTables();
     }
@@ -89,6 +93,9 @@ public class ResultGenerator {
             assert (result != null);
             return processResult(result, input);
         } catch (IllegalArgumentException e) {
+            if(Log.LOGGING_ENABLED){
+                Log.getLogger().warning("error in input" + e.getMessage());
+            }
             return e.getMessage();
         } catch (Error e) {
             return e.getMessage();
@@ -297,6 +304,9 @@ public class ResultGenerator {
             case EXIT:
                 return CODE_EXIT;
             default:
+                if(Log.LOGGING_ENABLED){
+                    Log.getLogger().warning("Unknown Command Type" + result.getCommandType());
+                }
                 throw new IllegalArgumentException("Illegal Command Type");
         }
     }

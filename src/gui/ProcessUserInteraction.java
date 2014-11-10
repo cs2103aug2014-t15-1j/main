@@ -1,6 +1,8 @@
 //@author A0118846W
 package gui;
 
+import logic.Log;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.KeyAdapter;
@@ -132,6 +134,7 @@ public class ProcessUserInteraction {
                     case SWT.KeyDown:
                         commandLine.setText("");
                         commandLine.removeListener(SWT.KeyDown, this);
+                        
                         break;
                 }
             }
@@ -174,6 +177,9 @@ public class ProcessUserInteraction {
             public void handleEvent(Event event) {
                 String input = commandLine.getText();
                 commandLine.setText("");
+                if(Log.LOGGING_ENABLED){
+                    Log.getLogger().info("reading user input" + input );
+                }
                 try {
                     if (isReplyToConfrimation) {
                         processReply(input);
@@ -185,6 +191,9 @@ public class ProcessUserInteraction {
                 } catch (Exception e) {
                     e.printStackTrace();
                     feedback.setText(e.getMessage());
+                    if(Log.LOGGING_ENABLED){
+                        Log.getLogger().warning("error in processing input");
+                    }
                 }
             }
         });

@@ -1,3 +1,5 @@
+//@author A0116373J
+
 package objects;
 
 import static org.junit.Assert.*;
@@ -13,9 +15,6 @@ import org.junit.Test;
 
 /**
  * Unit tests for the Task class.
- * 
- * @author A0116373J
- * 
  */
 
 public class TaskTest {

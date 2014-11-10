@@ -1,6 +1,8 @@
 //@author A0118846W
 package gui;
 
+import logic.Log;
+
 import org.eclipse.jface.resource.FontRegistry;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
@@ -52,6 +54,9 @@ public class FeedbackAndInput extends Composite{
     }
     
     private void buildControls() {
+        if(Log.LOGGING_ENABLED){
+            Log.getLogger().info("building commandline input box" );
+        }
         getRegistry();
         buildCommandLineUI();
         buildFeedbackUI();
