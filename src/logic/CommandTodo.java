@@ -124,8 +124,8 @@ public class CommandTodo extends Command {
         try {
             success = markTaskAsTodo(list);
         } catch (NumberFormatException e) {
-            if (Processor.LOGGING_ENABLED) {
-                Processor.getLogger().warning("Error parsing Integer!");
+            if (Log.LOGGING_ENABLED) {
+                Log.getLogger().warning("Error parsing Integer!");
             }
         }
 

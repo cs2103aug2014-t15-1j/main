@@ -129,7 +129,7 @@ public class CommandDelete extends Command {
             }
             processor.getBackwardSearchListHistory().push(deleteList);
         } catch (NullPointerException e) {
-            Processor.getLogger().severe("forwardSearchListHistory is empty!");
+            Log.getLogger().severe("forwardSearchListHistory is empty!");
             return false;
         }
         return true;

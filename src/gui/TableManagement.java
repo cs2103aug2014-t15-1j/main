@@ -69,6 +69,7 @@ public class TableManagement {
      * @param tasks Tasks that the table should be updated with
      */
     public void updateResultTable(List<Task> tasks){
+        assert(tasks!=null);
         tables.get(INDEX_RESULT).setInput(tasks);
         setSelection(INDEX_RESULT);
     }
