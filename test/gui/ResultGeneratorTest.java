@@ -138,7 +138,7 @@ public class ResultGeneratorTest {
         setUp();
         test_Restore();
         tearDown();
-
+        
         shell.dispose();
         display.dispose();
     }

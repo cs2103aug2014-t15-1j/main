@@ -4,6 +4,8 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+import logic.Log;
+
 import org.eclipse.jface.resource.FontRegistry;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
@@ -30,6 +32,9 @@ public class ClockUI{
         setLayout();
         time.setWordWrap(true);
        time.setText("Time now is   :  10 : 45 " + LINE_SEPARATOR +" Saturday  date place holder");
+       if(Log.LOGGING_ENABLED){
+           Log.getLogger().info("setting up clock" );
+       }
         format(parent.getDisplay());
         startTimer(parent);
     }

@@ -1,5 +1,7 @@
 package gui;
 
+import logic.Log;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
@@ -49,6 +51,10 @@ public class HelpDialog extends Dialog {
 
         createContents(shell);
         addCloseListener(shell);
+        
+        if(Log.LOGGING_ENABLED){
+            Log.getLogger().info("opening up help dialog" );
+        }
         
         shell.pack();
         centerDialogInScreen(shell);

@@ -3,6 +3,8 @@ package gui;
 import java.util.ArrayList;
 import java.util.List;
 
+import logic.Log;
+
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
@@ -84,7 +86,11 @@ public class TableComposite extends Composite {
         tabFolder = new CTabFolder(this, SWT.NONE);
         tabFolder.setLayoutData(new GridData(GridData.FILL_BOTH));
         tabFolder.setBackground(TableColours.getTabFolderColour());
-
+        
+        if(Log.LOGGING_ENABLED){
+            Log.getLogger().info("creating tables" );
+        }
+        
         createTabItem(tabFolder, All_TABLE_TAB_LABEL);
         createTabItem(tabFolder, TODAY_TABLE_TAB_LABEL);
         createTabItem(tabFolder, TOMORROW_TABLE_TAB_LABEL);
