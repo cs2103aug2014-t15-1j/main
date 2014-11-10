@@ -7,10 +7,10 @@ import java.util.logging.Logger;
 public class Log {
 
     /** Logger for monitoring purposes */
-    protected final static boolean LOGGING_ENABLED = true;
+    public final static boolean LOGGING_ENABLED = true;
     private static final Logger log = Logger.getLogger("Logger");
     
-    public static void initialiseLogger() {
+    protected static void initialiseLogger() {
         if (LOGGING_ENABLED) {
             try {
                 FileHandler fh = new FileHandler("System.log", true);
