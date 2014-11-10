@@ -40,6 +40,37 @@
 
 
 	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\TableComposite.java
+	 */
+
+    /**
+     * Adds a listener to the tab folder containing the tables. Thus the user
+     * can traverse between tabs by pressing F2 and F3
+     */
+    private void addListener(final CTabFolder folder) {
+        Display display = folder.getDisplay();
+        display.addFilter(SWT.KeyDown, new Listener() {
+
+            public void handleEvent(Event event) {
+                int index = folder.getSelectionIndex();
+                if (event.keyCode == SWT.F3) {
+                    folder.setSelection((index + 1) % NUM_TAB_LABELS);
+                } else if (event.keyCode == SWT.F2) {
+                    folder.setSelection((index + NUM_TAB_LABELS - 1) %
+                                        NUM_TAB_LABELS);
+                }
+            }
+        });
+    }
+}
+
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\TableComposite.java
+
+
+
+
+
+	/**
 	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\TitleLabel.java
 	 */
 
@@ -2275,6 +2306,63 @@ public class Parser {
 
 
 	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\test\AllTests.java
+	 */
+
+import gui.ResultGeneratorTest;
+import logic.LogicUnitTest;
+import logic.ProcessorTest;
+import objects.ObjectsTestSuite;
+
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
+
+import parser.TestDateParser;
+import parser.TestFileParser;
+import parser.TestInputParser;
+import database.DatabaseTestSuite;
+
+@RunWith(Suite.class)
+@SuiteClasses({ DatabaseTestSuite.class, ObjectsTestSuite.class,
+               ResultGeneratorTest.class, LogicUnitTest.class,
+               ProcessorTest.class, TestDateParser.class,
+               TestInputParser.class, TestFileParser.class })
+public class AllTests {
+
+}
+
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\test\AllTests.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\test\parser\TestDateParser.java
+	 */
+
+package parser;
+
+import static org.junit.Assert.*;
+
+import org.junit.Test;
+
+/**
+ * Test Class for DateParser. All methods are called via the Parser class as
+ * testing the facade separately will cause unnecessary double-work.
+ * <p>
+ * <i>Note that Assertions <strong>must</strong> be enabled for AssertionErrors
+ * to be tested. Check the run configurations (of this test class or test suite)
+ * and make sure it includes VM argument "-ea".</i>
+ */
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\test\parser\TestDateParser.java
+
+
+
+
+
+	/**
 	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\test\parser\TestDateParser.java
 	 */
 
@@ -2461,6 +2549,20 @@ public class TestDateParser {
 	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\test\parser\TestFileParser.java
 	 */
 
+package parser;
+
+import static org.junit.Assert.*;
+
+import org.junit.Test;
+
+/**
+ * Test Class for FileParser. All methods are called via the Parser class as
+ * testing the facade separately will cause unnecessary double-work.
+ * <p>
+ * <i>Note that Assertions <strong>must</strong> be enabled for AssertionErrors
+ * to be tested. Check the run configurations (of this test class or test suite)
+ * and make sure it includes VM argument "-ea".</i>
+ */
 public class TestFileParser {
 
     /**
@@ -2567,6 +2669,24 @@ public class TestFileParser {
 	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\test\parser\TestInputParser.java
 	 */
 
+package parser;
+
+import static org.junit.Assert.*;
+
+import org.junit.Test;
+
+/**
+ * Test Class for InputParser. All methods are called via the Parser class as
+ * testing the facade separately will cause unnecessary double-work.
+ * <p>
+ * All test cases use ".toString()". I considered using object.equals() to test
+ * assertEquals(), but did not because errors in constructors or formatting will
+ * not be caught
+ * <p>
+ * <i>Note that Assertions <strong>must</strong> be enabled for AssertionErrors
+ * to be tested. Check the run configurations (of this test class or test suite)
+ * and make sure it includes VM argument "-ea".</i>
+ */
 public class TestInputParser {
 
     @Test
