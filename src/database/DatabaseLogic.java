@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.ArrayList;
 
 /**
- * This class handles the logic involved in reading and writing of tasks to the
- * system file, and managing tasks.
+ * This class handles the logic involved in managing the data structure of
+ * tasks.
  * 
  * Do not apply the singleton pattern to this class. Even if multiple instances
  * are created, all task data in lists and on file will still be synchronized.
@@ -19,21 +19,21 @@ import java.util.ArrayList;
 
 public class DatabaseLogic {
 
-    /** Exclusively contains undeleted todo tasks. */
+    /** Only contains undeleted todo tasks. */
     private static List<Task> toDoTasks = new ArrayList<Task>();
 
-    /** Exclusively contains undeleted done tasks. */
+    /** Only contains undeleted done tasks. */
     private static List<Task> doneTasks = new ArrayList<Task>();
 
-    /** Exclusively contains undeleted block tasks. */
+    /** Only contains undeleted block tasks. */
     private static List<Task> blockTasks = new ArrayList<Task>();
 
-    /** Exclusively contains deleted todo, done, and block tasks. */
+    /** Only contains deleted todo, done, and block tasks. */
     private static List<Task> deletedTasks = new ArrayList<Task>();
 
     /**
      * Contains references to all Task objects in toDoTasks, doneTasks,
-     * blockTasks, and deletedTasks. Does not contain duplicate objects.
+     * blockTasks, and deletedTasks lists. Does not contain duplicate objects.
      */
     private static List<Task> allTasks = new ArrayList<Task>();
 
@@ -42,14 +42,12 @@ public class DatabaseLogic {
     }
 
     /**
-     * Populates Task lists. Deleted tasks are not written to file, hence the
-     * deleted task list is not populated.
+     * Populates Task lists at DatabaseFacade instantiation. Deleted tasks are
+     * not saved to file, hence the deleted task list is not populated.
      * 
-     * Benefits from branch prediction because of the order in which tasks are
-     * written to the file. See {@link updateTaskFile()}.
-     * 
-     * @param file
-     *            The file to read from.
+     * @param tasks
+     *            The list of Tasks objects used to populate the Task lists in
+     *            DatabaseLogic with.
      */
     public void populateTaskLists(List<Task> tasks) {
         allTasks.addAll(tasks);
@@ -72,10 +70,9 @@ public class DatabaseLogic {
     }
 
     /**
-     * Returns a list of to-do Task objects. Exclusively contains undeleted
-     * to-do tasks.
+     * Returns a list of undeleted todo Task objects.
      * 
-     * @return List of to-do Task objects.
+     * @return List of undeleted todo Task objects.
      */
     public List<Task> getToDoTasks() {
         Collections.sort(toDoTasks);
@@ -83,10 +80,9 @@ public class DatabaseLogic {
     }
 
     /**
-     * Returns a list of done Task objects. Exclusively contains undeleted done
-     * tasks.
+     * Returns a list of undeleted done Task objects.
      * 
-     * @return List of done Task objects.
+     * @return List of undeleted done Task objects.
      */
     public List<Task> getDoneTasks() {
         Collections.sort(doneTasks);
@@ -94,10 +90,9 @@ public class DatabaseLogic {
     }
 
     /**
-     * Returns a list of block Task objects. Exclusively contains undeleted
-     * block tasks.
+     * Returns a list of undeleted block Task objects.
      * 
-     * @return List of block Task objects.
+     * @return List of undeleted block Task objects.
      */
     public List<Task> getBlockTasks() {
         Collections.sort(blockTasks);
@@ -105,10 +100,9 @@ public class DatabaseLogic {
     }
 
     /**
-     * Returns a list of deleted Task objects. Exclusively contains deleted
-     * deleted tasks.
+     * Returns a list of deleted todo, done, and block Task objects.
      * 
-     * @return List of deleted Task objects.
+     * @return List of deleted todo, done, and block Task objects.
      */
     public List<Task> getDeletedTasks() {
         Collections.sort(deletedTasks);
@@ -127,13 +121,11 @@ public class DatabaseLogic {
     }
 
     /**
-     * Given id, returns Task object from specified task list.
+     * Given id, returns Task object of matching id.
      * 
-     * @param tasks
-     *            The task list to search from.
      * @param id
-     *            The task's unique ID.
-     * @return Task object of matching ID, or null if task is not in the list.
+     *            The task's unique id.
+     * @return Task object of matching id, or null if id is invalid.
      */
     public Task searchTaskById(int id) {
         for (Task task : allTasks) {
@@ -144,6 +136,11 @@ public class DatabaseLogic {
         return null; // Invalid id
     }
 
+    /**
+     * Converts all Task objects into a single String. For writing to file.
+     * 
+     * @return allTaskInfo A single String containing all Task objects' info.
+     */
     public String getAllTaskInfo() {
         String allTaskInfo = getTaskInfo(toDoTasks);
         allTaskInfo += getTaskInfo(doneTasks);
@@ -152,12 +149,12 @@ public class DatabaseLogic {
     }
 
     /**
-     * Converts Task objects, from specified list, to a single String to write
-     * to system file.
+     * Converts Task objects from specified list into a single String. For
+     * writing to file.
      * 
      * @param tasks
      *            The specified list to get Task objects from.
-     * @return A single String containing all Task info to write to file.
+     * @return A single String containing Task objects' info.
      */
     private String getTaskInfo(List<Task> tasks) {
         String allTaskInfo = "";
@@ -168,16 +165,15 @@ public class DatabaseLogic {
     }
 
     /**
-     * Adds a new to-do task to lists and file. Populates relevant lists, and
-     * updates file with new information.
+     * Adds a new Task object into respective Task lists.
      * 
      * @param task
-     *            New Task object to be written to file.
-     * @return True, if successfully written to file.
+     *            New Task object to be added to Task lists.
+     * @return True, if successfully added to Task lists.
      */
     public boolean add(Task task) {
         assert !allTasks.contains(task) : "Should not add duplicates";
-        assert !task.isDeleted() : "Add is meant to handle new tasks only";
+        assert !task.isDeleted() : "Add is meant to handle new, undeleted tasks only";
 
         allTasks.add(task);
         switch (task.getType()) {
@@ -194,24 +190,22 @@ public class DatabaseLogic {
     }
 
     /**
-     * Updates Task object's attributes with provided arguments. Null arguments
-     * are provided for attributes to reset. Non-empty, non-null arguments are
-     * used to update attributes' data. Empty, non-null arguments are provided
-     * for attributes that are not meant to be changed.
+     * Based on object provided, updates Task object's attributes with provided
+     * arguments. Changes are saved to Task lists. Provide null arguments for
+     * attributes to be reset to empty values. Provide empty arguments for
+     * attributes to keep the same.
      * 
      * @param task
      *            Task object to modify.
      * @param name
      *            New description, if any.
+     * @param start
+     *            New start date and time, if any.
      * @param due
      *            New due date and time, if any.
-     * @param start
-     *            New scheduled start date and time, if any.
-     * @param end
-     *            New scheduled end date and time, if any.
      * @param tags
-     *            New tags to append with, if any.
-     * @return True, if file has been successfully updated.
+     *            New tags, if any.
+     * @return True, if successfully edited Task object in Task lists.
      */
     public boolean edit(Task task, String name, DateTime start, DateTime due,
                         List<String> tags) {
@@ -246,12 +240,12 @@ public class DatabaseLogic {
     }
 
     /**
-     * Deletes Task object provided in argument. Removes object from to-do or
-     * done task list, adds to deleted task list, and updates file.
+     * Based on object provided, deletes undeleted Task object. Remove from
+     * respective Task lists, and add to deleted Task list.
      * 
      * @param task
-     *            The Task object to delete.
-     * @return True, if file has been successfully updated with delete.
+     *            Task object to delete.
+     * @return True, if successfully deleted Task object.
      */
     public boolean delete(Task task) {
         if (task == null || task.isDeleted()) {
@@ -274,12 +268,12 @@ public class DatabaseLogic {
     }
 
     /**
-     * Restores deleted Task object provided in argument. Removes object from
-     * deleted task list, adds to to-do or done task list, and updates file.
+     * Based on object provided, restores deleted Task object. Remove from
+     * deleted Task list, and add to respective Task lists.
      * 
      * @param task
-     *            The Task object to restore.
-     * @return True, if file has been successfully updated with restore.
+     *            Task object to restore.
+     * @return True, if successfully restored Task object.
      */
     public boolean restore(Task task) {
         if (task == null || !task.isDeleted()) {
@@ -302,13 +296,13 @@ public class DatabaseLogic {
     }
 
     /**
-     * Permanently deletes Task object provided in argument. Cannot be undone.
-     * Used when undoing add commands. Decrements Task ID counter. Removes
-     * object from all lists, and updates file.
+     * Based on object provided, permanently deletes Task object. Cannot be
+     * undone. Used when undoing add commands. Decrements Task ID counter.
+     * Remove from every Task list.
      * 
      * @param task
-     *            The Task object to permanently delete.
-     * @return True, if file has been successfully updated with wipe.
+     *            Task object to permanently delete.
+     * @return True, if successfully deleted Task object permanently.
      */
     public boolean permanentlyDelete(Task task) {
         if (task == null) {
@@ -335,11 +329,11 @@ public class DatabaseLogic {
     }
 
     /**
-     * Permanently deletes all tasks in all lists, and clears file of data.
-     * Cannot be undone. User should be prompted for confirmation before
-     * executing this function.
+     * Permanently deletes all Task objects in every Task list. Cannot be
+     * undone. User should be prompted for confirmation before executing this
+     * function.
      * 
-     * @return True, if successfully cleared file of data.
+     * @return True, if successfully permanently cleared of all Task data.
      */
     public boolean permanentlyDeleteAllTasks() {
         Task.resetId();
@@ -352,13 +346,15 @@ public class DatabaseLogic {
     }
 
     /**
-     * Marks Task object provided in argument as to-do. If Task was deleted,
-     * restore it, and mark as to-do. Removes object from done or deleted list,
-     * adds to to-do list, and updates file.
+     * Based on object provided, marks Task object as todo. If Task was deleted,
+     * restores it, and marks as todo. Removed from respective Task lists, and
+     * added to todo Task list.
+     * 
+     * Overloaded function.
      * 
      * @param task
-     *            The Task object to mark as to-do.
-     * @return True, if file has been successfully updated with change.
+     *            Task object to be marked as todo.
+     * @return True, if successfully marked Task object as todo.
      */
     public boolean markToDo(Task task) {
         if (task == null || (task.isToDo() && !task.isDeleted())) {
@@ -366,6 +362,7 @@ public class DatabaseLogic {
         }
 
         if (task.isDeleted()) {
+            task.setType(TaskType.TODO);
             return restore(task);
         }
         switch (task.getType()) {
@@ -384,13 +381,15 @@ public class DatabaseLogic {
     }
 
     /**
-     * Marks Task object provided in argument as done. If Task was deleted,
-     * restore it, and mark as done. Removes object from to-do or deleted list,
-     * adds to done list, and updates file.
+     * Based on object provided, marks Task object as done. If Task was deleted,
+     * restores it, and marks as done. Removed from respective Task lists, and
+     * added to done Task list.
+     * 
+     * Overloaded function.
      * 
      * @param task
-     *            The Task object to mark as done.
-     * @return True, if file has been successfully updated with change.
+     *            Task object to be marked as done.
+     * @return True, if successfully marked Task object as done.
      */
     public boolean markDone(Task task) {
         if (task == null || (task.isDone() && !task.isDeleted())) {
@@ -398,6 +397,7 @@ public class DatabaseLogic {
         }
 
         if (task.isDeleted()) {
+            task.setType(TaskType.DONE);
             return restore(task);
         }
         switch (task.getType()) {
@@ -416,13 +416,15 @@ public class DatabaseLogic {
     }
 
     /**
-     * Marks Task object provided in argument as block type. If Task was
-     * deleted, restore it, and mark as block type. Removes object from to-do or
-     * deleted list, adds to block list, and updates file.
+     * Based on object provided, marks Task object as block. If Task was
+     * deleted, restores it, and marks as block. Removed from respective Task
+     * lists, and added to block Task list.
+     * 
+     * Overloaded function.
      * 
      * @param task
-     *            The Task object to mark as block type.
-     * @return True, if file has been successfully updated with change.
+     *            Task object to be marked as block.
+     * @return True, if successfully marked Task object as block.
      */
     public boolean markBlock(Task task) {
         if (task == null || (task.isBlock() && !task.isDeleted())) {
@@ -430,6 +432,7 @@ public class DatabaseLogic {
         }
 
         if (task.isDeleted()) {
+            task.setType(TaskType.BLOCK);
             return restore(task);
         }
         switch (task.getType()) {

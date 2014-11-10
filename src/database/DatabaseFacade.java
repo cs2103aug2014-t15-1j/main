@@ -3,13 +3,8 @@ package database;
 import java.util.List;
 
 /**
- * This class handles the logic involved in reading and writing of tasks to the
- * system file, and managing tasks.
- * 
- * Do not apply the singleton pattern to this class. Even if multiple instances
- * are created, all task data in lists and on file will still be synchronized.
- * For more details, view GitHub issue #64
- * (https://github.com/cs2103aug2014-t15-1j/main/issues/64).
+ * This facade class handles the classes involved in reading and writing of
+ * tasks to the file for storage, and managing the data structure of tasks.
  * 
  * @author A0116373J
  * 
@@ -17,10 +12,11 @@ import java.util.List;
 
 public class DatabaseFacade {
 
-    private DatabaseLogic databaseLogic;
-
     /** Name of file to write tasks to. */
     private final static String FILENAME = "data_tasks.txt";
+
+    /** Handles task data structure logic. */
+    private DatabaseLogic databaseLogic;
 
     /** Reads from file containing tasks */
     private TaskReader taskReader;
@@ -31,10 +27,10 @@ public class DatabaseFacade {
     /**
      * Default constructor.
      * 
-     * Checks if task file exists and allTasks list is empty before populating
-     * list. If allTasks list is already populated, it signals that other
-     * DataFile instances exist, and avoids populating task lists with duplicate
-     * Task objects from file.
+     * Checks if allTasks list is empty before populating list. If allTasks list
+     * is already populated, it signals that other DatabaseLogic instances
+     * exist, and avoids populating task lists with duplicate Task objects from
+     * file.
      */
     public DatabaseFacade() {
         databaseLogic = new DatabaseLogic();
@@ -46,40 +42,36 @@ public class DatabaseFacade {
     }
 
     /**
-     * Returns a list of to-do Task objects. Exclusively contains undeleted
-     * to-do tasks.
+     * Returns a list of undeleted todo Task objects.
      * 
-     * @return List of to-do Task objects.
+     * @return List of undeleted todo Task objects.
      */
     public List<Task> getToDoTasks() {
         return databaseLogic.getToDoTasks();
     }
 
     /**
-     * Returns a list of done Task objects. Exclusively contains undeleted done
-     * tasks.
+     * Returns a list of undeleted done Task objects.
      * 
-     * @return List of done Task objects.
+     * @return List of undeleted done Task objects.
      */
     public List<Task> getDoneTasks() {
         return databaseLogic.getDoneTasks();
     }
 
     /**
-     * Returns a list of block Task objects. Exclusively contains undeleted
-     * block tasks.
+     * Returns a list of undeleted block Task objects.
      * 
-     * @return List of block Task objects.
+     * @return List of undeleted block Task objects.
      */
     public List<Task> getBlockTasks() {
         return databaseLogic.getBlockTasks();
     }
 
     /**
-     * Returns a list of deleted Task objects. Exclusively contains deleted
-     * deleted tasks.
+     * Returns a list of deleted todo, done, and block Task objects.
      * 
-     * @return List of deleted Task objects.
+     * @return List of deleted todo, done, and block Task objects.
      */
     public List<Task> getDeletedTasks() {
         return databaseLogic.getDeletedTasks();
@@ -96,23 +88,19 @@ public class DatabaseFacade {
     }
 
     /**
-     * Given id, returns Task object. Includes to-do, done, and deleted tasks.
+     * Given id, returns Task object of matching id.
      * 
      * @param id
-     *            The task's unique ID.
-     * @return Task object of matching ID, or null if task is not in the list.
+     *            The task's unique id.
+     * @return Task object of matching id, or null if id is invalid.
      */
     public Task getTask(int id) {
         return databaseLogic.searchTaskById(id);
     }
 
     /**
-     * Writes to system file with current data in to-do and done lists. Deleted
-     * tasks are not written to file.
-     * 
-     * To-do tasks are written first, followed by done tasks, instead of
-     * haphazardly in random order, to aid in branch prediction when reading
-     * from file. See {@link getTasksFromFile(File)}.
+     * Writes all current Task information to file for storage. Deleted tasks
+     * are not stored. Tasks are written in this order: todo, done, block.
      * 
      * @return True, if successfully written to file.
      */
@@ -122,12 +110,11 @@ public class DatabaseFacade {
     }
 
     /**
-     * Adds a new to-do task to lists and file. Populates relevant lists, and
-     * updates file with new information.
+     * Adds a new Task object into Task data structure and file.
      * 
      * @param task
-     *            New Task object to be written to file.
-     * @return True, if successfully written to file.
+     *            New Task object to be added.
+     * @return True, if successfully added to data structure and file.
      */
     public boolean add(Task task) {
         boolean logicSuccess = databaseLogic.add(task);
@@ -135,25 +122,25 @@ public class DatabaseFacade {
     }
 
     /**
-     * Updates Task object's attributes with provided arguments, based on ID
-     * provided. Null arguments are provided for attributes that are not meant
-     * to be changed.
+     * Based on id provided, updates Task object's attributes with provided
+     * arguments. Changes are saved to data structure and file. Provide null
+     * arguments for attributes to be reset to empty values. Provide empty
+     * arguments for attributes to keep the same.
      * 
      * Overloaded function.
      * 
      * @param id
-     *            ID of Task object to modify.
+     *            Id of Task object to modify.
      * @param name
      *            New description, if any.
+     * @param start
+     *            New start date and time, if any.
      * @param due
      *            New due date and time, if any.
-     * @param start
-     *            New scheduled start date and time, if any.
-     * @param end
-     *            New scheduled end date and time, if any.
      * @param tags
-     *            New tags to append with, if any.
-     * @return True, if file has been successfully updated with edit.
+     *            New tags, if any.
+     * @return True, if successfully edited Task object in data structure and
+     *         file.
      */
     public boolean edit(int id, String name, DateTime start, DateTime due,
                         List<String> tags) {
@@ -162,9 +149,10 @@ public class DatabaseFacade {
     }
 
     /**
-     * Updates Task object's attributes with provided arguments. Null arguments
-     * are provided for attributes that are not meant to be changed. Task to
-     * edit is specified by Task object provided in argument.
+     * Based on object provided, updates Task object's attributes with provided
+     * arguments. Changes are saved to data structure and file. Provide null
+     * arguments for attributes to be reset to empty values. Provide empty
+     * arguments for attributes to keep the same.
      * 
      * Overloaded function.
      * 
@@ -175,10 +163,11 @@ public class DatabaseFacade {
      * @param start
      *            New start date and time, if any.
      * @param due
-     *            New end/due date and time, if any.
+     *            New due date and time, if any.
      * @param tags
-     *            New tags to append with, if any.
-     * @return True, if file has been successfully updated with edit.
+     *            New tags, if any.
+     * @return True, if successfully edited Task object in data structure and
+     *         file.
      */
     public boolean edit(Task task, String name, DateTime start, DateTime due,
                         List<String> tags) {
@@ -187,14 +176,15 @@ public class DatabaseFacade {
     }
 
     /**
-     * Deletes Task object based on the ID provided in argument. Updates task
-     * lists and file.
+     * Based on id provided, deletes undeleted Task object. Changes are saved to
+     * data structure and file.
      * 
      * Overloaded function.
      * 
      * @param id
-     *            The ID of the Task object to delete.
-     * @return True, if file has been successfully updated with delete.
+     *            Id of Task object to delete.
+     * @return True, if successfully deleted Task object in data structure and
+     *         file.
      */
     public boolean delete(int id) {
         Task task = getTask(id);
@@ -202,13 +192,15 @@ public class DatabaseFacade {
     }
 
     /**
-     * Deletes Task object provided in argument. Updates task lists and file.
+     * Based on object provided, deletes undeleted Task object. Changes are
+     * saved to data structure and file.
      * 
      * Overloaded function.
      * 
      * @param task
-     *            The Task object to delete.
-     * @return True, if file has been successfully updated with delete.
+     *            Task object to delete.
+     * @return True, if successfully deleted Task object in data structure and
+     *         file.
      */
     public boolean delete(Task task) {
         boolean logicSuccess = databaseLogic.delete(task);
@@ -216,14 +208,15 @@ public class DatabaseFacade {
     }
 
     /**
-     * Restores deleted Task object based on the ID provided in argument.
-     * Updates task lists and file.
+     * Based on id provided, restores deleted Task object. Changes are saved to
+     * data structure and file.
      * 
      * Overloaded function.
      * 
      * @param id
-     *            The ID of the Task object to restore.
-     * @return True, if file has been successfully updated with restore.
+     *            Id of Task object to restore.
+     * @return True, if successfully restored Task object in data structure and
+     *         file.
      */
     public boolean restore(int id) {
         Task task = getTask(id);
@@ -231,14 +224,15 @@ public class DatabaseFacade {
     }
 
     /**
-     * Restores deleted Task object provided in argument. Updates task lists and
-     * file.
+     * Based on object provided, restores deleted Task object. Changes are saved
+     * to data structure and file.
      * 
      * Overloaded function.
      * 
      * @param task
-     *            The Task object to restore.
-     * @return True, if file has been successfully updated with restore.
+     *            Task object to restore.
+     * @return True, if successfully restored Task object in data structure and
+     *         file.
      */
     public boolean restore(Task task) {
         boolean logicSuccess = databaseLogic.restore(task);
@@ -246,15 +240,16 @@ public class DatabaseFacade {
     }
 
     /**
-     * Permanently deletes Task object based on the ID provided in argument.
-     * Cannot be undone. Used when undoing add commands. Decrements Task ID
-     * counter. Updates task lists and file.
+     * Based on id provided, permanently deletes Task object. Cannot be undone.
+     * Used when undoing add commands. Decrements Task ID counter. Changes are
+     * saved to data structure and file.
      * 
      * Overloaded function.
      * 
      * @param id
-     *            The ID of the Task object to permanently delete.
-     * @return True, if file has been successfully updated with wipe.
+     *            Id of Task object to permanently delete.
+     * @return True, if successfully deleted Task object in data structure and
+     *         file permanently.
      */
     public boolean permanentlyDelete(int id) {
         Task task = getTask(id);
@@ -262,15 +257,16 @@ public class DatabaseFacade {
     }
 
     /**
-     * Permanently deletes Task object provided in argument. Cannot be undone.
-     * Used when undoing add commands. Decrements Task ID counter. Updates task
-     * lists and file.
+     * Based on object provided, permanently deletes Task object. Cannot be
+     * undone. Used when undoing add commands. Decrements Task ID counter.
+     * Changes are saved to data structure and file.
      * 
      * Overloaded function.
      * 
      * @param task
-     *            The Task object to permanently delete.
-     * @return True, if file has been successfully updated with wipe.
+     *            Task object to permanently delete.
+     * @return True, if successfully deleted Task object in data structure and
+     *         file permanently.
      */
     public boolean permanentlyDelete(Task task) {
         boolean logicSuccess = databaseLogic.permanentlyDelete(task);
@@ -278,11 +274,11 @@ public class DatabaseFacade {
     }
 
     /**
-     * Permanently deletes all tasks in all lists, and clears file of data.
-     * Cannot be undone. User should be prompted for confirmation before
-     * executing this function.
+     * Permanently deletes all Task objects in data structure and file. Cannot
+     * be undone. User should be prompted for confirmation before executing this
+     * function.
      * 
-     * @return True, if successfully cleared file of data.
+     * @return True, if successfully permanently cleared of all Task data.
      */
     public boolean resetData() {
         boolean logicSuccess = databaseLogic.permanentlyDeleteAllTasks();
@@ -290,14 +286,16 @@ public class DatabaseFacade {
     }
 
     /**
-     * Marks Task object based on ID provided in argument as to-do. If Task was
-     * deleted, restore it, and mark as to-do. Updates task lists and file.
+     * Based on id provided, marks Task object as todo. If Task was deleted,
+     * restores it, and marks as todo. Changes are saved to data structure and
+     * file.
      * 
      * Overloaded function.
      * 
      * @param id
-     *            The ID of the Task object to be marked as to-do.
-     * @return True, if file has been successfully updated with change.
+     *            Id of Task object to be marked as todo.
+     * @return True, if successfully marked Task object in data structure and
+     *         file as todo.
      */
     public boolean markToDo(int id) {
         Task task = getTask(id);
@@ -305,14 +303,16 @@ public class DatabaseFacade {
     }
 
     /**
-     * Marks Task object provided in argument as to-do. If Task was deleted,
-     * restore it, and mark as to-do. Updates task lists and file.
+     * Based on object provided, marks Task object as todo. If Task was deleted,
+     * restores it, and marks as todo. Changes are saved to data structure and
+     * file.
      * 
      * Overloaded function.
      * 
      * @param task
-     *            The Task object to be marked as to-do.
-     * @return True, if file has been successfully updated with change.
+     *            Task object to be marked as todo.
+     * @return True, if successfully marked Task object in data structure and
+     *         file as todo.
      */
     public boolean markToDo(Task task) {
         boolean logicSuccess = databaseLogic.markToDo(task);
@@ -320,14 +320,16 @@ public class DatabaseFacade {
     }
 
     /**
-     * Marks Task object based on ID provided in argument as done. If Task was
-     * deleted, restore it, and mark as done. Updates task lists and file.
+     * Based on id provided, marks Task object as done. If Task was deleted,
+     * restores it, and marks as done. Changes are saved to data structure and
+     * file.
      * 
      * Overloaded function.
      * 
      * @param id
-     *            The ID of the Task object to be marked as done.
-     * @return True, if file has been successfully updated with change.
+     *            Id of Task object to be marked as done.
+     * @return True, if successfully marked Task object in data structure and
+     *         file as done.
      */
     public boolean markDone(int id) {
         Task task = getTask(id);
@@ -335,14 +337,16 @@ public class DatabaseFacade {
     }
 
     /**
-     * Marks Task object provided in argument as done. If Task was deleted,
-     * restore it, and mark as done. Updates task lists and file.
+     * Based on object provided, marks Task object as done. If Task was deleted,
+     * restores it, and marks as done. Changes are saved to data structure and
+     * file.
      * 
      * Overloaded function.
      * 
      * @param task
-     *            The Task object to be marked as done.
-     * @return True, if file has been successfully updated with change.
+     *            Task object to be marked as done.
+     * @return True, if successfully marked Task object in data structure and
+     *         file as done.
      */
     public boolean markDone(Task task) {
         boolean logicSuccess = databaseLogic.markDone(task);
@@ -350,15 +354,16 @@ public class DatabaseFacade {
     }
 
     /**
-     * Marks Task object based on ID provided in argument as block type. If Task
-     * was deleted, restore it, and mark as block type. Updates task lists and
+     * Based on id provided, marks Task object as block. If Task was deleted,
+     * restores it, and marks as block. Changes are saved to data structure and
      * file.
      * 
      * Overloaded function.
      * 
      * @param id
-     *            The ID of the Task object to be marked as block type.
-     * @return True, if file has been successfully updated with change.
+     *            Id of Task object to be marked as block.
+     * @return True, if successfully marked Task object in data structure and
+     *         file as block.
      */
     public boolean markBlock(int id) {
         Task task = getTask(id);
@@ -366,14 +371,16 @@ public class DatabaseFacade {
     }
 
     /**
-     * Marks Task object provided in argument as block type. If Task was
-     * deleted, restore it, and mark as block type. Updates task lists and file.
+     * Based on object provided, marks Task object as block. If Task was
+     * deleted, restores it, and marks as block. Changes are saved to data
+     * structure and file.
      * 
      * Overloaded function.
      * 
      * @param task
-     *            The Task object to be marked as block type.
-     * @return True, if file has been successfully updated with change.
+     *            Task object to be marked as block.
+     * @return True, if successfully marked Task object in data structure and
+     *         file as block.
      */
     public boolean markBlock(Task task) {
         boolean logicSuccess = databaseLogic.markBlock(task);
