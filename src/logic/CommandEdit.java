@@ -25,8 +25,9 @@ public class CommandEdit extends Command {
     private List<String> delete = new ArrayList<String>();
 
     public CommandEdit(List<TaskParam> content) {
-        assert (content != null);
-        assert (!content.isEmpty());
+        assert content != null : "Constructor param is null";
+        assert !content.isEmpty() : "Constructor param is empty";
+        
         this.type = CommandType.EDIT;
         for (TaskParam param : content) {
             constructUsingParam(param);

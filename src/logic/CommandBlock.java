@@ -29,9 +29,9 @@ public class CommandBlock extends Command {
     }
 
     protected CommandBlock(List<TaskParam> content, boolean isComplement) {
-        assert (content != null);
-        assert (!content.isEmpty());
-
+        assert content != null : "Constructor param is null";
+        assert !content.isEmpty() : "Constructor param is empty";
+        
         this.type = CommandType.BLOCK;
 
         for (TaskParam param : content) {

@@ -31,8 +31,9 @@ public class CommandTodo extends Command {
     }
 
     protected CommandTodo(List<TaskParam> content, boolean isComplement) {
-        assert (content != null);
-        assert (!content.isEmpty());
+        assert content != null : "Constructor param is null";
+        assert !content.isEmpty() : "Constructor param is empty";
+        
         this.type = CommandType.TODO;
 
         for (TaskParam param : content) {

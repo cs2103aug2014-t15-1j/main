@@ -27,7 +27,7 @@ public class CommandAdd extends Command {
     private List<String> tags = new ArrayList<String>();
 
     public CommandAdd(List<TaskParam> content) {
-        assert (content != null);
+        assert content != null : "Constructor param is null";
         this.type = CommandType.ADD;
         for (TaskParam param : content) {
             constructUsingParam(param);

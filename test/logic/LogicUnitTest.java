@@ -630,8 +630,39 @@ public class LogicUnitTest {
         contents.add(tag);
         contents.add(word);
 
+        // Search todo Range
         CommandSearch cmd = new CommandSearch(contents);
         Result result = cmd.execute(true);
+        assertTrue(result.isSuccess());
+        assertTrue(cmd.getTags().contains("#CS2103"));
+        assertTrue(cmd.getKeywords().contains("homework"));
+        assertNotNull(cmd.toString());
+        
+        contents.remove(status);
+        status = new TaskParamStub("status", "all");
+        contents.add(status);
+        cmd = new CommandSearch(contents);
+        result = cmd.execute(true);
+        assertTrue(result.isSuccess());
+        assertTrue(cmd.getTags().contains("#CS2103"));
+        assertTrue(cmd.getKeywords().contains("homework"));
+        assertNotNull(cmd.toString());
+
+        contents.remove(status);
+        status = new TaskParamStub("status", "done");
+        contents.add(status);
+        cmd = new CommandSearch(contents);
+        result = cmd.execute(true);
+        assertTrue(result.isSuccess());
+        assertTrue(cmd.getTags().contains("#CS2103"));
+        assertTrue(cmd.getKeywords().contains("homework"));
+        assertNotNull(cmd.toString());
+
+        contents.remove(status);
+        status = new TaskParamStub("status", "deleted");
+        contents.add(status);
+        cmd = new CommandSearch(contents);
+        result = cmd.execute(true);
         assertTrue(result.isSuccess());
         assertTrue(cmd.getTags().contains("#CS2103"));
         assertTrue(cmd.getKeywords().contains("homework"));

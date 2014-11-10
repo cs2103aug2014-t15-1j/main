@@ -24,7 +24,9 @@ public class CommandSearch extends Command {
     private String status = "todo";
 
     public CommandSearch(List<TaskParam> content) {
-        assert (!content.isEmpty());
+        assert content != null : "Constructor param is null";
+        assert !content.isEmpty() : "Constructor param is empty";
+        
         this.type = CommandType.SEARCH;
 
         for (TaskParam param : content) {
