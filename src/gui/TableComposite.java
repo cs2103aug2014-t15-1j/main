@@ -127,7 +127,7 @@ public class TableComposite extends Composite {
         return tableUI;
     }
 
-    //@author A116208N
+    //@author A0116208N
     /**
      * Adds a listener to the tab folder containing the tables. Thus the user
      * can traverse between tabs by pressing F2 and F3
