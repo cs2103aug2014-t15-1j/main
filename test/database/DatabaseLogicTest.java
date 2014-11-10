@@ -7,6 +7,12 @@ import java.util.List;
 
 import org.junit.Test;
 
+/**
+ * Unit tests for the DatabaseLogic class.
+ * 
+ * @author A0116373J
+ */
+
 public class DatabaseLogicTest {
 
     private final DateTime EMPTY_DT = new DateTime();

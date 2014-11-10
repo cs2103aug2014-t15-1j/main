@@ -7,7 +7,7 @@ import java.io.IOException;
 /**
  * In charge of writing task info to file.
  * 
- * @author Pierce Anderson Fu
+ * @author A0116373J
  * 
  */
 

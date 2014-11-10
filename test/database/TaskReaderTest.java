@@ -13,6 +13,12 @@ import java.util.List;
 
 import org.junit.Test;
 
+/**
+ * Unit tests for the TaskReader class.
+ * 
+ * @author A0116373J
+ */
+
 public class TaskReaderTest {
 
     private final String FILENAME = "testFile.txt";

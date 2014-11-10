@@ -7,7 +7,7 @@ package database;
  * 
  * Date and time formats, respectively: "DD/MM/YYYY" and "HHMM".
  * 
- * @author Pierce Anderson Fu
+ * @author A0116373J
  * 
  */
 
@@ -155,7 +155,7 @@ public class DateTime implements Comparable<DateTime> {
      *         <li>-1 if this <DateTime> is earlier.
      *         </ul>
      * 
-     * @author Yeo Zi Xian, Justin & Pierce Anderson Fu
+     * @author A0116208N
      */
     @Override
     public int compareTo(DateTime otherDateTime) {
@@ -256,6 +256,8 @@ public class DateTime implements Comparable<DateTime> {
      * 
      * @returns True if this object is the same as the obj argument; false
      *          otherwise.
+     * 
+     * @author A0116373J
      */
     @Override
     public boolean equals(Object obj) {
@@ -306,7 +308,7 @@ public class DateTime implements Comparable<DateTime> {
      * Returns <code>true</code> if it is earlier than the other
      * <code>DateTime</code>.
      * 
-     * @author Yeo Zi Xian, Justin
+     * @author A0116208N
      */
     public boolean isEarlierThan(DateTime otherDateTime) {
         assert otherDateTime != null : "dateTime mustn't be null";
@@ -318,8 +320,6 @@ public class DateTime implements Comparable<DateTime> {
      * Compares this <code>DateTime</code> with an input <code>DateTime</code>.<br>
      * Returns <code>true</code> if it is later than the other
      * <code>DateTime</code>.
-     * 
-     * @author Yeo Zi Xian, Justin
      */
     public boolean isLaterThan(DateTime otherDateTime) {
         assert otherDateTime != null : "dateTime mustn't be null";
@@ -327,7 +327,11 @@ public class DateTime implements Comparable<DateTime> {
         return (this.compareTo(otherDateTime) == LATER);
     }
 
-    /** @return Date, format: "DD/MM/YYYY" or empty String. */
+    /**
+     * @return Date, format: "DD/MM/YYYY" or empty String.
+     * 
+     * @author A0116373J
+     */
     public String getDate() {
         return date;
     }

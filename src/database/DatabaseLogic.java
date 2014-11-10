@@ -13,7 +13,7 @@ import java.util.ArrayList;
  * For more details, view GitHub issue #64
  * (https://github.com/cs2103aug2014-t15-1j/main/issues/64).
  * 
- * @author Pierce Anderson Fu
+ * @author A0116373J
  * 
  */
 

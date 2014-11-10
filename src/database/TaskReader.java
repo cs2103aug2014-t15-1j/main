@@ -13,7 +13,7 @@ import parser.Parser;
  * In charge of reading task info from file, and returning a list of Task
  * objects. Only run once at instantiation of DataFile class.
  * 
- * @author Pierce Anderson Fu
+ * @author A0116373J
  * 
  */
 

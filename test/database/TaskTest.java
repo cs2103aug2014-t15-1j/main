@@ -10,7 +10,7 @@ import org.junit.Test;
 /**
  * Unit tests for the Task class.
  * 
- * @author Pierce Anderson Fu
+ * @author A0116373J
  * 
  */
 

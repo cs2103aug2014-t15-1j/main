@@ -12,6 +12,12 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Scanner;
 
+/**
+ * Unit tests for the TaskWriter class.
+ * 
+ * @author A0116373J
+ */
+
 public class TaskWriterTest {
 
     private final String FILENAME = "testFile.txt";
