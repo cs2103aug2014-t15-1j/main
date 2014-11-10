@@ -1,3 +1,4 @@
+//@author A0110751W
 package logic;
 
 import java.util.List;
@@ -12,8 +13,6 @@ import parser.Parser;
  * This class extends abstract class Command. CommandEdit performs operations
  * related to the changing of Task parameters (excludes it's 'done' status).
  * 
- * @author A0110751W
- *
  */
 public class CommandEdit extends Command {
 

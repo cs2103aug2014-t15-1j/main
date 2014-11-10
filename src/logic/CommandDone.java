@@ -1,3 +1,4 @@
+//@author A0110751W
 package logic;
 
 import java.util.ArrayList;
@@ -11,8 +12,6 @@ import parser.Parser;
 /**
  * This class extends abstract class Command. CommandDone class is associated
  * with operations related to the done/todo operations
- * 
- * @author A0110751W
  *
  */
 public class CommandDone extends Command {

@@ -1,3 +1,4 @@
+//@author A0110751W
 package logic;
 
 import java.util.List;
@@ -14,8 +15,6 @@ import database.TaskType;
  * supports the addition of new Tasks as well as the deletion of that newly
  * added task.
  * 
- * @author A0110751W
- *
  */
 public class CommandAdd extends Command {
 

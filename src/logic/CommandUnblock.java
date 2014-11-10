@@ -1,3 +1,4 @@
+//@author A0110751W
 package logic;
 
 import java.util.ArrayList;
@@ -9,8 +10,6 @@ import objects.TaskParam;
 /**
  * OBSOLETE CLASS
  * 
- * @author Yao Xiang
- *
  */
 public class CommandUnblock extends Command {
 

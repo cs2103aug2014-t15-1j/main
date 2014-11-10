@@ -1,3 +1,4 @@
+//@author A0110751W
 package logic;
 
 /**
@@ -19,7 +20,6 @@ package logic;
  * EXIT - Exits from program<br>
  * RESET - Wipes all existing data<br>
  * 
- * @author A0110751W
  */
 public enum CommandType {
     HELP, ADD, EDIT, DELETE, RESTORE, SEARCH, DISPLAY, BLOCK, UNBLOCK, DONE, TODO, UNDO, REDO, EXIT, RESET;

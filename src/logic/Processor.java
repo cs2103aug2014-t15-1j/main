@@ -1,3 +1,4 @@
+//@author A0110751W
 package logic;
 
 import java.util.ArrayList;
@@ -24,9 +25,7 @@ import database.DatabaseFacade;
  * <p>
  * Result object is being returned to the user interface for display purposes.
  * 
- * @author Ter Yao Xiang
  */
-
 public class Processor {
 
     protected static boolean IS_UNIT_TEST = false;

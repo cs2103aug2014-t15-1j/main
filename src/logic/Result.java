@@ -1,3 +1,4 @@
+//@author A0110751W
 package logic;
 
 import java.util.List;
@@ -13,7 +14,6 @@ import objects.Task;
  * confirmation check</i> from the user. <br>
  * It is being returned from Processor via processInput(String).
  *
- * @author Ter Yao Xiang
  */
 public class Result {
 

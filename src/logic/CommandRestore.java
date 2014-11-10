@@ -1,3 +1,4 @@
+//@author A0110751W
 package logic;
 
 import java.util.ArrayList;
@@ -10,8 +11,6 @@ import objects.TaskParam;
  * This class extends abstract class Command. CommandRestore performs operations
  * related to the restoration of deleted Tasks only.
  * 
- * @author A0110751W
- *
  */
 public class CommandRestore extends Command {
 

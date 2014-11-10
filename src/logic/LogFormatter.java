@@ -1,3 +1,4 @@
+//@author A0110751W
 package logic;
 
 import java.text.DateFormat;
@@ -9,8 +10,6 @@ import java.util.logging.LogRecord;
 /**
  * Formatter for the Logger. Overrides <code>format</code> method
  * 
- * @author A0110751W
- *
  */
 public class LogFormatter extends Formatter {
 

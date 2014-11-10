@@ -1,3 +1,4 @@
+//@author A0110751W
 package logic;
 
 import java.util.List;
@@ -10,8 +11,6 @@ import objects.TaskParam;
  * This class extends abstract class Command. CommandSearch performs search operations.
  * Allows searching of Tasks through the use of Keywords and Dates and Tags.
  * 
- * @author A0110751W
- *
  */
 public class CommandSearch extends Command {
 

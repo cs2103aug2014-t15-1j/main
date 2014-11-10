@@ -1,3 +1,4 @@
+//@author A0110751W
 package logic;
 
 import java.util.ArrayList;
@@ -10,8 +11,6 @@ import objects.TaskParam;
  * This class extends Command and performs the deletion of Tasks. Allows
  * deletion by Id, by search results or to wipe the file.
  * 
- * @author A0110751W
- *
  */
 public class CommandDelete extends Command {
 

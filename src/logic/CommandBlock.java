@@ -1,3 +1,4 @@
+//@author A0110751W
 package logic;
 
 import java.util.ArrayList;
@@ -13,8 +14,6 @@ import database.TaskType;
  * This class extends Command and performs the addition of new Tasks (with
  * TaskType TaskType.BLOCK). Each of these Task should not be allowed to have
  * overlapping date range with another Task with TaskType TaskType.BLOCK.
- * 
- * @author A0110751W
  *
  */
 public class CommandBlock extends Command {

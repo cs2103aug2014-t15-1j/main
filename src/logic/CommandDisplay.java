@@ -1,3 +1,4 @@
+//@author A0110751W
 package logic;
 
 import java.util.ArrayList;
@@ -9,9 +10,7 @@ import objects.TaskParam;
 /**
  * This class extends Command and does the display operations. The display
  * ranges from a single Task to upcoming/todo Tasks.
- * 
- * @author A0110751W
- *
+
  */
 public class CommandDisplay extends Command {
 

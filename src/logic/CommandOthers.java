@@ -1,3 +1,4 @@
+//@author A0110751W
 package logic;
 
 import java.util.List;
@@ -8,11 +9,7 @@ import java.util.List;
  * <p>
  * The following commands are included: "undo", "redo", "reset", "help", "exit".
  * 
- * @author Justin Yeo Zi Xian & Ter Yao Xiang
- *
  */
-
-
 public class CommandOthers extends Command {
     private static final String TYPE_HELP = "help";
     private static final String TYPE_RESET = "reset";

@@ -1,3 +1,4 @@
+//@author A0110751W
 package logic;
 
 import static org.junit.Assert.*;
@@ -15,7 +16,6 @@ import java.util.List;
 /**
  * Integration Testing Note: Does not include gui
  * 
- * @author Ter Yao Xiang
  */
 
 public class ProcessorTest {

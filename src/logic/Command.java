@@ -1,3 +1,4 @@
+//@author A0110751W
 package logic;
 
 import objects.Task;
@@ -7,10 +8,9 @@ import parser.Parser;
  * This is an abstract class Command, for the implementation of Command Pattern.
  * Different command type will be categorised and extends this class. This class
  * also contains the common parameters used in the Command classes.
- * 
- * @author A0110751W
  *
  */
+
 public abstract class Command {
 
     protected CommandType type = null;
