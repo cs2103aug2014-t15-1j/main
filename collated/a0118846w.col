@@ -1,0 +1,2674 @@
+//@author: a0118846w
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\ClockUI.java
+	 */
+
+package gui;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
+import logic.Log;
+
+import org.eclipse.jface.resource.FontRegistry;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+
+/**
+ * ClockUI is the user interface that shows the system time.
+ */
+public class ClockUI{
+    private static final String LINE_SEPARATOR = System
+            .getProperty("line.separator");
+    private StyledText time;
+    
+    /**
+     * Creates an instance of ClockUI
+     * @param parent Composite where ClockUI is located
+     */
+    public ClockUI(final Composite parent){
+        time = new StyledText(parent, SWT.CENTER | SWT.MULTI | SWT.READ_ONLY);
+        setLayout();
+        time.setWordWrap(true);
+       time.setText("Time now is   :  10 : 45 " + LINE_SEPARATOR +" Saturday  date place holder");
+       if(Log.LOGGING_ENABLED){
+           Log.getLogger().info("setting up clock" );
+       }
+        format(parent.getDisplay());
+        startTimer(parent);
+    }
+    
+    /**
+     * Starts and runs the clock continuously until the program is closed
+     * @param parent shell where the timer is located
+     */
+    private void startTimer(final Composite parent) {
+        Runnable timer = new Runnable(){
+            public void run(){
+                if(parent.isDisposed() || parent.getShell().isDisposed()){
+                return;
+                }
+                parent.getDisplay().timerExec(1000, this);
+                Calendar cal = Calendar.getInstance();
+                SimpleDateFormat formatTime = new SimpleDateFormat("EEEE h:mm:ss");
+                SimpleDateFormat formatDate = new SimpleDateFormat("dd MMMM YYYY zz");
+                Date now = cal.getTime();
+                String timeNow = formatTime.format(now).toString();
+                String dateNow = formatDate.format(now);
+                String dateTime = timeNow + LINE_SEPARATOR + dateNow;
+                time.setText(dateTime);
+                
+                if (cal.get(Calendar.SECOND) == 0) {
+                    
+                    (new TableManagement()).refreshTables();
+                }
+                
+            }
+        };
+        if(!parent.getShell().isDisposed()){
+        parent.getDisplay().timerExec(1000, timer);
+        }
+    }
+    
+    private void format(Display display) {
+         setFontOfClockUI();        
+         setColour(display);
+    }
+
+    private void setColour(Display display) {
+        Color color = display.getSystemColor(SWT.COLOR_BLACK);
+        time.setForeground(color);
+        Color bg = new Color(Display.getCurrent(),252,252,247);
+        time.setBackground(bg);
+    }
+
+    private void setFontOfClockUI() {
+        FontRegistry registry = getFontRegistry();
+        time.setFont(registry.get("time"));
+    }
+    
+    private FontRegistry getFontRegistry(){
+        return Fonts.getRegistry();
+    }
+
+    private void setLayout() {
+       GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
+       gridData.horizontalAlignment = SWT.CENTER;
+       time.setLayoutData(gridData);
+    }
+}
+
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\ClockUI.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\FeedbackAndInput.java
+	 */
+
+package gui;
+
+import logic.Log;
+
+import org.eclipse.jface.resource.FontRegistry;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Text;
+
+/**
+ * FeedbackAndInput Composite contains controls that are involved in taking user input and
+ * displaying feedback. The children of FeedbackAndInput are BlockLabelUI, commandLine and feedback
+ */
+public class FeedbackAndInput extends Composite{
+
+    private static final String MESSAGE_TYPE_HERE = "Welcome to Haystack! Type here.";
+    private static final String WELCOME_MESSAGE = "Don't know where to start? Press F1 for help!";
+    
+    private FontRegistry registry;
+    private static Text commandLine;
+    private static StyledText feedback;
+    
+    /**
+     * Creates the FeedbackAndInput Composite and its children
+     * @param parent Composite where FeedbackInput Composite is located
+     * @param style  Style that FeedbackInput Composite will use
+     */
+    public FeedbackAndInput(Composite parent, int style) {
+        super(parent, style);
+        setLayout();
+        buildControls();
+    }
+    
+    public static Text getCommandLine(){
+        assert(commandLine!=null);
+        return commandLine;
+    }
+    
+    public static StyledText getFeedback(){
+        assert(feedback!= null);
+        return feedback;
+    }
+    
+    private void setLayout() {
+        GridLayout layout = new GridLayout();
+        this.setLayout(layout);
+        this.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+    }
+    
+    private void buildControls() {
+        if(Log.LOGGING_ENABLED){
+            Log.getLogger().info("building commandline input box" );
+        }
+        getRegistry();
+        buildCommandLineUI();
+        buildFeedbackUI();
+    }
+
+    private void getRegistry() {
+        registry = Fonts.getRegistry();
+    }
+    
+    private void buildCommandLineUI() {
+        commandLine = new Text(this, SWT.SINGLE);
+
+        GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
+        commandLine.setLayoutData(gridData);
+
+        commandLine.setText(MESSAGE_TYPE_HERE);
+        formatCommandLine();
+        commandLine.setFocus();
+    }
+
+    private void buildFeedbackUI() {
+        feedback = new StyledText(this, SWT.MULTI);
+        feedback.setText(WELCOME_MESSAGE);
+
+        GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
+        feedback.setLayoutData(gridData);
+
+        feedback.setFont(registry.get("feedback"));
+        
+        Color color = this.getDisplay().getSystemColor(SWT.COLOR_WHITE);
+        feedback.setForeground(color);
+        
+        feedback.setEnabled(false);
+    }
+    
+
+    private void formatCommandLine() {
+        Display display = this.getDisplay();
+        Color black = display.getSystemColor(SWT.COLOR_BLACK);
+        Color bg = new Color(Display.getCurrent(), 242, 255, 237);
+        commandLine.setBackground(bg);
+        commandLine.setForeground(black);
+        commandLine.setFont(registry.get("commandLine"));
+        bg.dispose();
+    }
+}
+
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\FeedbackAndInput.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\Fonts.java
+	 */
+
+package gui;
+
+import org.eclipse.jface.resource.FontRegistry;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+
+/**
+ * This class contains all the fonts used through out the application.
+ */
+public class Fonts {
+    private static FontRegistry registry;
+
+    public Fonts(Composite parent) {
+        registry = new FontRegistry(parent.getDisplay());
+        addSystemFonts();
+    }
+    
+    public static FontRegistry getRegistry() {
+        assert(registry!= null);
+        return registry;
+    }
+/**
+ * Adds the fonts from the system that will be used in the application
+ */
+    private void addSystemFonts() {
+        FontData[] fontData = new FontData[] {new FontData ("Consolas", 12, SWT.BOLD) };
+        registry.put("commandLine", fontData);
+
+        fontData = new FontData[] { new FontData("Consolas", 11, SWT.NORMAL) };
+        registry.put("feedback", fontData);
+        
+        fontData = new FontData[] { new FontData("Consolas", 9,SWT.BOLD)};
+        registry.put("dates", fontData);
+        
+        fontData = new FontData[] { new FontData("Courier New", 10,
+                SWT.BOLD | SWT.UNDERLINE_SINGLE) };
+        registry.put("title", fontData);
+        
+        // adds fonts specific to screen resolution
+        int screenWidth = Display.getCurrent().getBounds().width;
+        if (screenWidth>= 1920) {
+            fontData = new FontData[] { new FontData("Impact", 18, SWT.NORMAL) };
+            registry.put("haystack title", fontData);
+            
+            // TODO: Re-check font compatibility
+            fontData = new FontData[] { new FontData("Consolas", 10, SWT.NONE) };
+            registry.put("table", fontData);
+            
+            fontData = new FontData[] { new FontData("Consolas", 10, SWT.BOLD) };
+            registry.put("table status", fontData);
+        } else {
+            fontData = new FontData[] { new FontData("Impact", 16, SWT.NORMAL) };
+            registry.put("haystack title", fontData);
+            
+            fontData = new FontData[] { new FontData("Consolas", 8, SWT.NONE) };
+            registry.put("table", fontData);
+            
+            fontData = new FontData[] { new FontData("Consolas", 8, SWT.BOLD) };
+            registry.put("table status", fontData);
+        }
+        
+        fontData = new FontData[] { new FontData("Arial", 11, SWT.NORMAL | SWT.BOLD) };
+        registry.put("helpsheet", fontData);
+
+        fontData = new FontData[] { new FontData("Verdana", 12, SWT.BOLD) };
+        registry.put("list headers", fontData);
+        
+        fontData = new FontData[] { new FontData("Tahoma", 10, SWT.CENTER) };
+        registry.put("time", fontData);
+        
+        fontData = new FontData[] { new FontData("Consolas",
+                                                 11, SWT.NORMAL) };
+        registry.put("list", fontData);
+                                                                      
+    }
+}
+
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\Fonts.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\HelpDialog.java
+	 */
+
+package gui;
+
+import logic.Log;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Dialog;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
+
+/**
+ * HelpDialog is the Dialog which contains an image showing all the commands the user can input
+ */
+public class HelpDialog extends Dialog {
+    
+
+    private Image image;
+    private static Shell helpShell;
+    
+    /**
+     * Creates the HelpDialoog and opens it
+     * @param parent shell from which the Dialog is called
+     */
+    public HelpDialog(Shell parent) {
+        super(parent);
+    }
+    
+    /**
+     * Returns the instance of shell object used to create the dialog
+     * @return shell used to create dialog
+     */
+    public static Shell getShell() {
+        return helpShell;
+    }
+    
+    /**
+     * Opens the help dialog
+     */
+    public void open() {
+        Shell shell = new Shell(getParent(), SWT.NO_TRIM | SWT.APPLICATION_MODAL);
+
+        shell.setLayout(new GridLayout());
+
+        createContents(shell);
+        addCloseListener(shell);
+        
+        if(Log.LOGGING_ENABLED){
+            Log.getLogger().info("opening up help dialog" );
+        }
+        
+        shell.pack();
+        centerDialogInScreen(shell);
+        shell.open();
+        
+        Display display = getParent().getDisplay();
+
+        while (!shell.isDisposed()) {
+            if (!display.readAndDispatch()) {
+                display.sleep();
+            }
+        }
+        
+    }
+
+   
+    private void createContents(Composite parent) {
+        drawHelpImage(parent);
+    }
+
+    private void drawHelpImage(Composite parent) {
+        getHelpImage(parent);
+
+        Label aLabel = new Label(parent, SWT.NONE);
+        aLabel.setImage(image);
+        aLabel.setLayoutData(new GridData(GridData.FILL_BOTH));
+    }
+
+    private void getHelpImage(Composite parent) {
+        image = Images.getRegistry().get("help");
+        
+    }
+    
+    private void centerDialogInScreen(Shell shell) {
+        Rectangle mainProgramSize = Display.getCurrent().getPrimaryMonitor()
+                .getBounds();
+        shell.setLocation((mainProgramSize.width - shell.getBounds().width) / 2,
+                          (mainProgramSize.height - shell.getBounds().height) / 2);
+    }
+    
+    private void addCloseListener(final Shell shell) {
+        shell.addKeyListener(new KeyAdapter() {
+            public void keyPressed(KeyEvent event) {
+                shell.close();
+                shell.dispose();
+            }
+        });
+        
+    }
+    
+}
+
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\HelpDialog.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\Images.java
+	 */
+
+package gui;
+
+import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
+/**
+ * The Images class adds all file images into a registry to be used by the application
+ */
+public class Images {
+
+    private static ImageRegistry registry;
+    
+    /**
+     * Initializes the images registry and adds images into the registry 
+     */
+    public Images(Shell shell) {
+        registry = new ImageRegistry(shell.getDisplay());
+        addImagesFromFile();
+    }
+
+    public static void disposeAllImages() {
+        registry.dispose();
+    }
+
+    public static ImageRegistry getRegistry() {
+        return registry;
+    }
+
+    private void addImagesFromFile() {
+        int screenWidth = Display.getCurrent().getBounds().width;
+        ImageDescriptor id;
+        
+        // Background Image is free for commercial use.
+        // Taken from http://pixabay.com/en/tinker-color-share-many-colorful-451275/
+        // (Any queries ask Justin/A0116208N)
+        if (screenWidth<1920) {
+            id = ImageDescriptor
+                    .createFromFile(getClass(), "/resource/bg1280.png");
+            registry.put("main", id);
+            
+            id = ImageDescriptor.createFromFile(getClass(), "/resource/helpsheet1280.png");
+            registry.put("help", id);
+        } else if (screenWidth<3840) {
+            id = ImageDescriptor
+                    .createFromFile(getClass(), "/resource/bg1920.png");
+            registry.put("main", id);
+            
+            id = ImageDescriptor.createFromFile(getClass(), "/resource/helpsheet1920.png");
+            registry.put("help", id);
+        } else {
+            id = ImageDescriptor
+                    .createFromFile(getClass(), "/resource/bg1920.png");
+            registry.put("main", id);
+            
+
+            id = ImageDescriptor.createFromFile(getClass(), "/resource/helpsheet3840.png");
+            registry.put("help", id);
+        }
+        
+
+        id = ImageDescriptor
+                .createFromFile(getClass(), "/resource/Icon.gif");
+        registry.put("icon", id);
+        
+    }
+
+}
+
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\Images.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\MainInterface.java
+	 */
+
+package gui;
+
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Composite;
+
+/**
+ * The Composite that contains the programs main user interfaces. The children of this composite include 
+ * the TableComposite and the FeedBackAndInput Composite
+ */
+public class MainInterface extends Composite {
+
+    private static final int NUM_COLS_COMPOSITE = 1;
+
+    /**
+     * Creates the MainInterface Composite and its children composites
+     * @param parent the Composite where this composite is to be located in
+     * @param style  the style that the composite should follow
+     */
+    public MainInterface(Composite parent, int style) {
+        super(parent, style);
+        setLayout(parent);
+        createContents(parent);
+    }
+    
+    private void setLayout(Composite parent) {
+        GridLayout layout = new GridLayout();
+        layout.numColumns = NUM_COLS_COMPOSITE;
+        this.setLayout(layout);
+        GridData gridData = new GridData(GridData.FILL_BOTH);
+        this.setLayoutData(gridData);
+
+    }
+
+    private void createContents(Composite parent) {
+        new TableComposite(this, this.getStyle());
+        new FeedbackAndInput(this, this.getStyle());
+    }
+
+}
+
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\MainInterface.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\MainScreen.java
+	 */
+
+package gui;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Monitor;
+import org.eclipse.swt.widgets.Shell;
+
+/**
+ * This class creates and setUps the window for the Haystack application
+ */
+public class MainScreen {
+
+    private static final int NUM_COLS_SCREEN = 2;
+    private static final String PROGRAM_NAME = "Haystack";
+
+    /**
+     * Runs and initializes the application
+     */
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\MainScreen.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\MainScreen.java
+	 */
+
+    public static void run() {
+        Display display = new Display();
+        Shell shell = new Shell(display, SWT.NO_TRIM);
+
+        runProgram(shell);
+
+        shell.open();
+
+        while (!shell.isDisposed()) {
+            if (!display.readAndDispatch())
+                display.sleep();
+        }
+        
+        disposeResources(display);
+    }
+    
+    /**
+     * Starts the application
+     * @param shell window containing the application
+     */
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\MainScreen.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\MainScreen.java
+	 */
+
+    public static void runProgram(Shell shell) {
+        initialiseResources(shell);
+        createDragControls(shell);
+        configureShell(shell);
+        createContents(shell);
+        initialiseProgram();
+        new ProcessUserInteraction();
+    }
+    
+    /** 
+     * Disposes all the resources used by the application
+     */
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\MainScreen.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\MainScreen.java
+	 */
+
+private static void disposeResources(Display display) {
+        display.dispose();
+        Images.disposeAllImages();
+        TableColours.disposeAllColours();
+    }
+    
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\MainScreen.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\MainScreen.java
+	 */
+
+    private static void initialiseResources(Shell shell) {
+        new Images(shell);
+        new Fonts(shell);
+        new TableColours(shell.getDisplay());
+    }
+
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\MainScreen.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\MainScreen.java
+	 */
+
+    private static void initialiseProgram() {
+        ResultGenerator resultGen = ResultGenerator.getInstance();
+        resultGen.start();
+    }
+
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\MainScreen.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\MainScreen.java
+	 */
+
+    private static void createContents(Shell shell) {
+        new TitleLabel(shell, shell.getStyle());
+        new SidePane(shell, shell.getStyle());
+        new MainInterface(shell, shell.getStyle());
+    }
+    
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\MainScreen.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\MainScreen.java
+	 */
+
+    private static void setBackGround(Shell parent) {
+
+        parent.setImage(Images.getRegistry().get("icon"));
+
+        Image background = Images.getRegistry().get("main");
+        ImageData imageData = background.getImageData();
+        imageData = imageData.scaledTo(parent.getSize().x, parent.getSize().y);
+        parent.setBackgroundImage(background);
+
+        parent.setBackgroundMode(SWT.INHERIT_FORCE);
+    }
+
+    /**
+     * Sets the position of the application in the center of the device's screen
+     * 
+     * @param shell
+     *            the shell that is to be positioned
+     */
+    private static void setPositionToCenterOfScreen(Shell shell) {
+
+        Display display = shell.getDisplay();
+        Monitor primary = display.getPrimaryMonitor();
+        Rectangle bounds = primary.getBounds();
+        Rectangle rect = shell.getBounds();
+
+        int x = bounds.x + (bounds.width - rect.width) / 2;
+        int y = bounds.y + (bounds.height - rect.height) / 2;
+
+        shell.setLocation(x, y);
+    }
+
+    /**
+     * Sets they layout of the shell window. Its children are arranged based on
+     * this layout
+     * 
+     * @param shell
+     *            window where the main application runs
+     */
+    private static void setLayout(Shell shell) {
+
+        GridLayout layout = new GridLayout();
+        layout.numColumns = NUM_COLS_SCREEN;
+        shell.setLayout(layout);
+        shell.setText(PROGRAM_NAME);
+    }
+
+}
+
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\MainScreen.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\ProcessUserInteraction.java
+	 */
+
+package gui;
+
+import logic.Log;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
+/**
+ *This class processes the input entered by the user into the commandLine interface. 
+ *It calls other relevant classes to process the input by the user and displays the feedback
+ */
+public class ProcessUserInteraction {
+
+    private static final String CONFIRM = "yes";
+    private static final String NO_CONFIRM = "no";
+
+    private static final String CODE_HELP = "Help";
+    private static final String CODE_EXIT = "exit";
+
+    // Feedback messages to be displayed to the user
+    private static final String ASK_CONFIRM_DELETE = "This will erase all data, PERMANENTLY.  Key 'y' to continue or 'n' to abort";
+    private static final String INVALID_INPUT = "Invalid Input.";
+    private static final String SUCCESSFUL_DELETE_ALL = "Erased all data!";
+    private static final String UNSUCCESSFUL_DELETE_ALL = "Did not delete anything";
+
+    // command formats that displayed to the user while typing
+    private static final String COMMAND_FORMAT_ADD = "add [name] due [DD/MM/YYYY hhmm] start [DD/MM/YYYY hhmm] #tag";
+    private static final String COMMAND_FORMAT_BLOCK = "block [DD/MM/YYYY hhmm] to [DD/MM/YYYY hhmm]";
+    private static final String COMMAND_FORMAT_DISPLAY = "display";
+    private static final String COMMAND_FORMAT_DISPLAY_BLOCK = "%1$s block";
+    private static final String COMMAND_FORMAT_DISPLAY_DONE = "%1$s done";
+    private static final String COMMAND_FORMAT_DISPLAY_SOMEDAY = "%1$s someday";
+    private static final String COMMAND_FORMAT_DISPLAY_TODAY = "%1$s today";
+    private static final String COMMAND_FORMAT_DISPLAY_TOMORROW = "%1$s tomorrow";
+    private static final String COMMAND_FORMAT_DISPLAY_UPCOMING = "%1$s upcoming";
+    private static final String COMMAND_FORMAT_DONE = "done [id]";
+    private static final String COMMAND_FORMAT_DELETE = "delete [id]";
+    private static final String COMMAND_FORMAT_EXIT = "exit";
+    private static final String COMMAND_FORMAT_EDIT = "edit [id] <parameter>  [value]";
+    private static final String COMMAND_FORMAT_GOTTA = "gotta [name] by [date] tag";
+    private static final String COMMAND_FORMAT_HELP = "help";
+    private static final String COMMAND_FORMAT_REDO = "redo [id]";
+    private static final String COMMAND_FORMAT_RESET = "reset";
+    private static final String COMMAND_FORMAT_RESTORE = "restore [id]";
+    private static final String COMMAND_FORMAT_SHOW = "show";
+    private static final String COMMAND_FORMAT_SEARCH = "search [id]";
+    private static final String COMMAND_FORMAT_TODO = "todo [id]";
+    private static final String COMMAND_FORMAT_UNBLOCK = "unblock [DD/MM/YYYY hhmm] to [DD/MM/YYYY hhmm]";
+    private static final String COMMAND_FORMAT_UNDO = "undo";
+
+    // The interface where the user enters commands
+    private Text commandLine;
+    // The interface the displays feedback on the status of the user's commands
+    private StyledText feedback;
+
+    // display containing the program
+    private Display display;
+
+    // shell containing the program
+    private Shell shell;
+
+    private static ResultGenerator resultGenerator;
+    private boolean isReplyToConfrimation = false;
+
+    public ProcessUserInteraction() {
+        commandLine = FeedbackAndInput.getCommandLine();
+        feedback = FeedbackAndInput.getFeedback();
+        display = commandLine.getDisplay();
+        shell = commandLine.getShell();
+        resultGenerator = ResultGenerator.getInstance();
+        addListeners();
+    }
+    
+    private void addListeners() {
+        addShellListeners();
+        addCommandLineListeners();
+    }
+    
+    
+    /**
+     * adds listeners that are activated anywhere within the shell
+     */
+    private void addShellListeners() {
+        addHelpListener();
+    }
+    
+    /**
+     * adds listener to open the help dialog when f1 is entered by the user
+     */
+    private void addHelpListener() {
+        display.addFilter(SWT.KeyDown, new Listener() {
+            public void handleEvent(Event event) {
+                if (event.keyCode == SWT.F1) {
+                    openHelpDialog();
+                } else {
+                    if (HelpDialog.getShell() != null && isDialogOpen()) {
+                        Shell helpDialogShell = HelpDialog.getShell();
+                        helpDialogShell.close();
+                        helpDialogShell.dispose();
+                    }
+                }
+            }
+        });
+    }
+    
+    /**
+     * adds all the listeners to the command line interface
+     */
+    private void addCommandLineListeners() {
+        addListenerRemoveText();
+
+        addKeyBoardListener();
+
+        addListenerProcessInput();
+    }
+
+    /**
+     * Adds listeners to erases all text from commandLine when a single key is
+     * entered. Only works at start of application
+     */
+    private void addListenerRemoveText() {
+        commandLine.addListener(SWT.KeyDown, new Listener() {
+            @Override
+            public void handleEvent(Event event) {
+
+                switch (event.type) {
+                    case SWT.KeyDown:
+                        commandLine.setText("");
+                        commandLine.removeListener(SWT.KeyDown, this);
+                        
+                        break;
+                }
+            }
+        });
+    }
+
+    /**
+     * Adds listeners to every key entered by user
+     */
+    private void addKeyBoardListener() {
+        commandLine.addKeyListener(new KeyAdapter() {
+            public void keyReleased(KeyEvent e) {
+                String input = commandLine.getText();
+                if (e.keyCode == SWT.ARROW_UP || e.keyCode == SWT.ARROW_DOWN) {
+                    String output = "";
+                    switch (e.keyCode) {
+                        case SWT.ARROW_UP:
+                            output = resultGenerator.getUpKeyInput();
+                            break;
+                        case SWT.ARROW_DOWN:
+                            output = resultGenerator.getDownKeyInput();
+                            break;
+                        default:
+                            // ignore
+                    }
+                    commandLine.setText(output);
+                }
+                giveCommandFormatHint(input);
+            }
+        });
+    }
+
+    /**
+     * Adds listener to process any text input entered by the user into
+     * commandLine, every time ENTER is pressed
+     */
+    private void addListenerProcessInput() {
+        commandLine.addListener(SWT.DefaultSelection, new Listener() {
+            @Override
+            public void handleEvent(Event event) {
+                String input = commandLine.getText();
+                commandLine.setText("");
+                if(Log.LOGGING_ENABLED){
+                    Log.getLogger().info("reading user input" + input );
+                }
+                try {
+                    if (isReplyToConfrimation) {
+                        processReply(input);
+                    } else if (input.trim().isEmpty()) {
+                        // do nothing, if input is empty
+                    } else {
+                        processInput(input);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    feedback.setText(e.getMessage());
+                    if(Log.LOGGING_ENABLED){
+                        Log.getLogger().warning("error in processing input");
+                    }
+                }
+            }
+        });
+    }
+
+    protected void processReply(String input) {
+        if (!isValidDeleteAll(input)) {
+            feedback.setText(INVALID_INPUT);
+
+        }
+        if (resultGenerator.processDeleteAll(input)) {
+            feedback.setText(SUCCESSFUL_DELETE_ALL);
+        } else {
+            feedback.setText(UNSUCCESSFUL_DELETE_ALL);
+        }
+
+        isReplyToConfrimation = false;
+    }
+
+    private boolean isValidDeleteAll(String input) {
+        String inputLowerCase = input.toLowerCase();
+        if (inputLowerCase.equals(CONFIRM) || inputLowerCase.equals("y")) {
+            return true;
+        }
+
+        if (inputLowerCase.equals(NO_CONFIRM) || inputLowerCase.equals("n")) {
+            return true;
+        }
+
+        return false;
+    }
+
+    protected void processInput(String input) {
+        String output = resultGenerator.sendInput(input);
+
+        if (output.equals(CODE_EXIT)) {
+            exitProgram();
+        } else if (output.equals(ASK_CONFIRM_DELETE)) {
+            feedback.setText(ASK_CONFIRM_DELETE);
+            isReplyToConfrimation = true;
+
+        } else if (output.equals(CODE_HELP)) {
+            openHelpDialog();
+
+        } else {
+
+            feedback.setText(output);
+        }
+    }
+
+    private void exitProgram() {
+        shell.dispose();
+        display.dispose();
+        Images.disposeAllImages();
+        System.exit(0);
+    }
+
+    protected void giveCommandFormatHint(String input) {
+
+        if (input.isEmpty()) {
+            return;
+        }
+
+        Character firstLetter = input.charAt(0);
+        switch (Character.toLowerCase(firstLetter)) {
+            case 'a':
+                feedback.setText(COMMAND_FORMAT_ADD);
+                return;
+            case 'b':
+                feedback.setText(COMMAND_FORMAT_BLOCK);
+                return;
+            case 'd':
+                if (!isOutOfBounds(input, 1) &&
+                    Character.toLowerCase(input.charAt(1)) == 'i') {
+                    feedback.setText(COMMAND_FORMAT_DISPLAY);
+                    displayWhichTab(input);
+                    return;
+                } else if (!isOutOfBounds(input, 1) &&
+                           Character.toLowerCase(input.charAt(1)) == 'o') {
+                    feedback.setText(COMMAND_FORMAT_DONE);
+                    return;
+                }
+                feedback.setText(COMMAND_FORMAT_DELETE);
+
+                return;
+            case 'e':
+                if (!isOutOfBounds(input, 1) &&
+                    Character.toLowerCase(input.charAt(1)) == 'x') {
+                    feedback.setText(COMMAND_FORMAT_EXIT);
+                    return;
+                }
+                feedback.setText(COMMAND_FORMAT_EDIT);
+                return;
+            case 'g':
+                feedback.setText(COMMAND_FORMAT_GOTTA);
+            case 'h':
+                feedback.setText(COMMAND_FORMAT_HELP);
+                return;
+            case 'r':
+                if (!isOutOfBounds(input, 2) &&
+                    Character.toLowerCase(input.charAt(2)) == 'd') {
+                    feedback.setText(COMMAND_FORMAT_REDO);
+                    return;
+                } else if (!isOutOfBounds(input, 3) &&
+                           (Character.toLowerCase(input.charAt(3)) == 'e')) {
+                    feedback.setText(COMMAND_FORMAT_RESET);
+                    return;
+                }
+                feedback.setText(COMMAND_FORMAT_RESTORE);
+
+                return;
+            case 's':
+                if (!isOutOfBounds(input, 1) &&
+                    Character.toLowerCase(input.charAt(1)) == 'h') {
+                    feedback.setText(COMMAND_FORMAT_SHOW);
+                    displayWhichTab(input);
+                    return;
+                }
+                feedback.setText(COMMAND_FORMAT_SEARCH);
+                return;
+            case 't':
+                feedback.setText(COMMAND_FORMAT_TODO);
+                return;
+            case 'u':
+                if (!isOutOfBounds(input, 2) &&
+                    (Character.toLowerCase(input.charAt(2)) == 'b')) {
+                    feedback.setText(COMMAND_FORMAT_UNBLOCK);
+                    return;
+                }
+                feedback.setText(COMMAND_FORMAT_UNDO);
+                return;
+
+        }
+    }
+
+    private void displayWhichTab(String input) {
+        String word = getFirstWord(input);
+        input = removefirstWord(input);
+        if (input.isEmpty() || word.isEmpty() ||
+            !word.equalsIgnoreCase(COMMAND_FORMAT_DISPLAY) &&
+            !word.equalsIgnoreCase(COMMAND_FORMAT_SHOW)) {
+            return;
+        }
+
+        if (!isOutOfBounds(input, 0)) {
+            switch (Character.toLowerCase(input.charAt(0))) {
+                case 'b':
+                    feedback.setText(String
+                            .format(COMMAND_FORMAT_DISPLAY_BLOCK, word));
+                    return;
+                case 'd':
+                    feedback.setText(String.format(COMMAND_FORMAT_DISPLAY_DONE,
+                                                   word));
+                    return;
+                case 's':
+                    feedback.setText(String
+                            .format(COMMAND_FORMAT_DISPLAY_SOMEDAY, word));
+                    return;
+                case 't':
+                    if (!isOutOfBounds(input, 2) &&
+                        (Character.toLowerCase(input.charAt(2))) == 'd') {
+                        feedback.setText(String
+                                .format(COMMAND_FORMAT_DISPLAY_TODAY, word));
+                    } else {
+                        feedback.setText(String
+                                .format(COMMAND_FORMAT_DISPLAY_TOMORROW, word));
+                    }
+
+                    return;
+                case 'u':
+                    feedback.setText(String
+                            .format(COMMAND_FORMAT_DISPLAY_UPCOMING, word));
+                    return;
+                default:
+                    return;
+            }
+        }
+
+    }
+
+    private String getFirstWord(String line) {
+        int index = line.trim().indexOf(' ');
+        if (index == -1) {
+            return "";
+        }
+        return line.subSequence(0, index).toString();
+    }
+
+    private String removefirstWord(String line) {
+        int index = line.indexOf(' ');
+        if (index == -1) {
+            return "";
+        }
+
+        return line.substring(index).trim();
+    }
+
+    /**
+     * Checks to see if index is out of bounds in the string
+     * 
+     * @param input
+     *            String to check
+     * @param index
+     *            index to check
+     * @return true if its out bounds, false otherwise
+     */
+    protected boolean isOutOfBounds(String input, int index) {
+        if (input.length() - 1 < index) {
+            return true;
+        }
+        return false;
+    }
+
+    private void openHelpDialog() {
+        if (!isDialogOpen()) {
+            Shell dialogShell = new Shell(Display.getCurrent());
+            dialogShell.setData("ID");
+            HelpDialog dialog = new HelpDialog(dialogShell);
+            dialog.open();
+            dialogShell.setData("different");
+        }
+
+    }
+
+    private boolean isDialogOpen() {
+        Shell[] shells = Display.getCurrent().getShells();
+        int size = shells.length;
+        for (int index = 0; index < size; index++) {
+            String data = (String) shells[index].getData();
+            if (data != null && data.equals("ID")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+}
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\ProcessUserInteraction.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\ResultGenerator.java
+	 */
+
+package gui;
+
+import java.util.List;
+
+import objects.Task;
+import logic.Log;
+import logic.Processor;
+import logic.Result;
+
+/**
+ * Processes the Result objects returned by logic.Processor to update the
+ * graphical user interface accordingly. The singleton pattern is applied
+ * so that every instance of this class refers to the same instance
+ */
+public class ResultGenerator {
+    private static final String NO_NAME = "empty task";
+    
+    // String literal to show the that was command carried out
+    private static final String CODE_HELP = "Help";
+    private static final String CODE_EXIT = "exit";
+    
+    // Feedback messages for tasks completed successfully
+    private static final String FEEDBACK_ADD = "Added %1$s";
+    private static final String FEEDBACK_BLOCK = "BLOCKED: %1$s to %2$s";
+    private static final String FEEDBACK_UNBLOCK = "UNBLOCKED: %1$s to %2$s";
+    private static final String FEEDBACK_DELETE = "Deleted %1$s";
+    private static final String FEEDBACK_EDIT = "Edited %1$s";
+    private static final String FEEDBACK_DISPLAY = "%1$s task(s) found.";
+    private static final String FEEDBACK_SEARCH = "Found %1$s match(es).";
+    private static final String FEEDBACK_TODO = "Marked %1$s as todo.";
+    private static final String FEEDBACK_DONE = "Marked %1$s as done.";
+    private static final String FEEDBACK_UNDO = "Command Undone.";
+    private static final String FEEDBACK_REDO = "Command Redone.";
+    private static final String FEEDBACK_RESTORE = "Restored %1$s.";
+    
+    // Feedback message for tasks completed unsuccessfully
+    private static final String FEEDBACK_UNSUCESSFUL = "Not able to process '%1$s'";
+    
+    // Feedback messages for tasks that was not fully completed because of the programs configurations
+    private static final String FEEDBACK_DISPLAY_NO_TASKS = "No tasks to show.";
+    private static final String FEEDBACK_SEARCH_NO_TASKS = "No matches found.";
+    private static final String FEEDBACK_ADD_CONFRIMATION = "Unable to add task. Task coincides with a blocked date.";
+    private static final String FEEDBACK_DELETE_CONFRIMATION = "This will erase all data, PERMANENTLY.  Key 'y' to continue or 'n' to abort";
+    private static final String FEEDBACK_BLOCK_CONFRIMATION = "Unable to block date. Date coincides with another blocked date or task.";
+    private static final String FEEDBACK_REDO_CONFRIMATION = "Unable to redo command. Date coincides with another blocked date or task.";
+    
+    private static Processor processor;
+    private static TableManagement tableManagement = new TableManagement();
+    private static ResultGenerator resultGen;
+
+    /**
+     * Returns an instance of ResultGenerator. Creates an instance if it has not
+     * been created
+     * 
+     * @return instance of ResultGenerator
+     */
+    public static ResultGenerator getInstance() {
+        if (resultGen == null) {
+            resultGen = new ResultGenerator();
+        }
+        return resultGen;
+    }
+
+    /**
+     * Initializes the rest of the application and adds the appropriate user
+     * interface to observe logic.Processor
+     */
+    public void start() {
+        if(Log.LOGGING_ENABLED){
+            Log.getLogger().info("initialising application" );
+        }
+        initialiseAppilcation();
+        refreshTables();
+    }
+
+    /**
+     * Processes the users input and returns the appropriate feedback message to
+     * user
+     * 
+     * @param input
+     *            the input entered by the user
+     * @return feedback messages to be displayed to the user
+     */
+    public String sendInput(String input) {
+        if (input.trim().isEmpty()) {
+            return "";
+        }
+
+        Result result = null;
+        try {
+            result = processor.processInput(input);
+            assert (result != null);
+            return processResult(result, input);
+        } catch (IllegalArgumentException e) {
+            if(Log.LOGGING_ENABLED){
+                Log.getLogger().warning("error in input" + e.getMessage());
+            }
+            return e.getMessage();
+        } catch (Error e) {
+            return e.getMessage();
+        }
+
+    }
+
+    /**
+     * Processes the confirmation input entered by the user. If input is 'y' or
+     * 'yes', all tasks will be deleted. Otherwise, nothing is deleted
+     * 
+     * @param input
+     *            input entered by user
+     * @return true if successfully deleted, false otherwise
+     */
+    public boolean processDeleteAll(String input) {
+        input = input.toLowerCase();
+        if (input.equals("y") || input.equals("yes")) {
+            Processor.reset();
+            start();
+            refreshTables();
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Processes the Result Object and returns appropriate feedback messages
+     * about result object
+     * 
+     * @param result
+     *            Contains the details if a command was carried out
+     * @param input
+     *            input entered by user
+     * @return String containing the feedback messages about the result object
+     */
+    public String processResult(Result result, String input) {
+
+        if (result.isSuccess()) {
+
+            return processTaskBasedResult(result);
+
+        }
+        return String.format(FEEDBACK_UNSUCESSFUL, input);
+    }
+
+    /**
+     * Returns a previous input entered by user. Traverses up input history
+     */
+    public  String getUpKeyInput() {
+        return processor.fetchPreviousCommand();
+    }
+
+    /**
+     * Returns a previous input entered by user. Traverses down input history
+     */
+    public  String getDownKeyInput() {
+        return processor.fetchNextCommand();
+    }
+    
+    /**
+     * Gets tasks needed to update the table in the all tab
+     * @return tasks that the table needs to be updated with
+     */
+    public  List<Task> getAllTasks() {
+        List<Task> all = processor.fetchAllTasks();
+        return all;
+    }
+    
+    /**
+     * Gets tasks needed to update the table in the today tab
+     * @return tasks that the table needs to be updated with
+     */
+    public  List<Task> getTodayTasks() {
+        return processor.fetchTodayTasks();
+    }
+    
+    /**
+     * Gets tasks needed to update the table in the tomorrow tab
+     * @return tasks that the table needs to be updated with
+     */
+    public  List<Task> getTomorrowsTasks() {
+        return processor.fetchTomorrowTasks();
+    }
+    
+    /**
+     * Gets tasks needed to update the table in the upcoming tab
+     * @return tasks that the table needs to be updated with
+     */
+    public  List<Task> getUpcomingTasks() {
+        return processor.fetchNextWeekTasks();
+    }
+    
+    /**
+     * Gets tasks needed to update the table in the floating tab
+     * @return tasks that the table needs to be updated with
+     */
+    public  List<Task> getFloatingTasks() {
+        return processor.fetchFloatingTasks();
+    }
+    
+    /**
+     * Calls the processor class to initialize the rest of the application
+     */
+    private void initialiseAppilcation() {
+        processor = Processor.getInstance();
+    }
+    
+    /**
+     * Processes a result object which contains information on how a user command was completed
+     * @param result Result object to be processed
+     * @return a String contain messages showing feedback to the user about the command completed
+     */
+    private String processTaskBasedResult(Result result) {
+        List<Task> outputs = result.getTasks();
+        String tabName = result.getDisplayTab();
+
+        assert (result.getCommandType() != null);
+
+        switch (result.getCommandType()) {
+            case ADD:
+                refreshTables();
+                setTableSelectionSingleTask(tabName, outputs);
+                if (result.needsConfirmation()) {
+                    return FEEDBACK_ADD_CONFRIMATION;
+                }
+                return feedbackMessage(outputs, FEEDBACK_ADD);
+
+            case DELETE:
+                if (result.needsConfirmation()) {
+                    return FEEDBACK_DELETE_CONFRIMATION;
+                }
+                refreshTables();
+                setTableSelectionSingleTask(tabName, outputs);
+                return feedbackMessage(outputs, FEEDBACK_DELETE);
+
+            case BLOCK:
+                if (result.needsConfirmation()) {
+                    return FEEDBACK_BLOCK_CONFRIMATION;
+                }
+                refreshTables();
+                setTableSelectionSingleTask(tabName, outputs);
+                return feedbackSingleBlock(outputs, FEEDBACK_BLOCK);
+
+            case UNBLOCK:
+                refreshTables();
+                setTableSelectionSingleTask(tabName, outputs);
+                return feedbackSingleBlock(outputs, FEEDBACK_UNBLOCK);
+
+            case RESET:
+                if (result.needsConfirmation()) {
+                    return FEEDBACK_DELETE_CONFRIMATION;
+                }
+                refreshTables();
+                return FEEDBACK_DELETE_CONFRIMATION;
+
+            case EDIT:
+                refreshTables();
+                setTableSelectionSingleTask(tabName, outputs);
+                return feedbackMessage(outputs, FEEDBACK_EDIT);
+            case DISPLAY:
+                if (outputs.size() == 0) {
+                    setTableSelectionByName(tabName);
+                    return FEEDBACK_DISPLAY_NO_TASKS;
+                } else if (outputs.size() == 1) {
+                    setTableSelectionSingleTask(tabName, outputs);
+                }
+                processDisplay(result);
+                return feedbackMessageMultiResults(outputs, FEEDBACK_DISPLAY);
+            case SEARCH:
+                if (outputs.size() == 0) {
+                    setTableSelectionByName(tabName);
+                    return FEEDBACK_SEARCH_NO_TASKS;
+                } else if (outputs.size() == 1) {
+                    setTableSelectionSingleTask(tabName, outputs);
+                }
+                processDisplay(result);
+                return feedbackMessageMultiResults(outputs, FEEDBACK_SEARCH);
+            case TODO:
+                refreshTables();
+                setTableSelectionSingleTask(tabName, outputs);
+                return feedbackMessage(outputs, FEEDBACK_TODO);
+            case DONE:
+                refreshTables();
+                setTableSelectionSingleTask(tabName, outputs);
+                return feedbackMessage(outputs, FEEDBACK_DONE);
+            case UNDO:
+                refreshTables();
+                setTableSelectionSingleTask(tabName, outputs);
+                return FEEDBACK_UNDO;
+            case REDO:
+                if (result.needsConfirmation()) {
+                    setTableSelectionSingleTask(tabName, outputs);
+                    return FEEDBACK_REDO_CONFRIMATION;
+                }
+                refreshTables();
+                setTableSelectionSingleTask(tabName, outputs);
+                return FEEDBACK_REDO;
+            case RESTORE:
+                refreshTables();
+                setTableSelectionSingleTask(tabName, outputs);
+                return feedbackMessage(outputs, FEEDBACK_RESTORE);
+            case HELP:
+                return CODE_HELP;
+            case EXIT:
+                return CODE_EXIT;
+            default:
+                if(Log.LOGGING_ENABLED){
+                    Log.getLogger().warning("Unknown Command Type" + result.getCommandType());
+                }
+                throw new IllegalArgumentException("Illegal Command Type");
+        }
+    }
+
+    private String feedbackMessage(List<Task> tasks, String commandDone) {
+        assert (tasks.size() == 1);
+        Task taskDone = tasks.get(0);
+        if (taskDone.getName() == null || taskDone.getName().isEmpty()) {
+            return String.format(commandDone, NO_NAME);
+        }
+        checkValidName(taskDone);
+        return String.format(commandDone, taskDone.getName());
+    }
+
+    private String feedbackMessageMultiResults(List<Task> outputs,
+                                               String feedback) {
+        int size = outputs.size();
+        return String.format(feedback, size);
+    }
+    
+    
+    private String feedbackSingleBlock(List<Task> dates, String commandDone) {
+        Task date = dates.get(0);
+        return String.format(commandDone, date.getStart().toString(), date
+                .getDue().toString());
+    }
+
+    
+    private boolean checkValidName(Task task) {
+        if (isValidString(task.getName())) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean isValidString(String parameter) {
+        return parameter == null || parameter.isEmpty() ||
+               parameter.equals("null");
+    }
+    
+    /**
+     * This method processes the display command by updating the specific table
+     */
+    private void processDisplay(Result result) {
+        refreshTables();
+        String tabToSelect = result.getDisplayTab();
+        List<Task> outputs = result.getTasks();
+        tableManagement.updateTableByName(tabToSelect, outputs);
+    }
+
+    private void refreshTables() {
+        tableManagement.refreshTables();
+       
+    }
+
+    private void setTableSelectionByName(String tabName) {
+        tableManagement.setTableSelectionByName(tabName);
+    }
+    
+    private void setTableSelectionSingleTask(String tabName, List<Task> outputs) {
+        if (outputs == null || outputs.isEmpty()) {
+            tableManagement.setTableSelectionByName(tabName);
+            return;
+        }
+        tableManagement.setTableSelectionByTask(outputs.get(0), tabName);
+    }
+}
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\ResultGenerator.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\SidePane.java
+	 */
+
+package gui;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.DateTime;
+
+/**
+ * This Composite contains the user interfaces that show additional information
+ * about the tasks carried out. The controls include in this Composite include
+ * TimeUI and the Calendar
+ */
+public class SidePane extends Composite {
+
+    private static final int MIN_HEIGHT_SIDE_PANE = 500;
+
+    /**
+     * Creates the SidePane Composite and its children
+     * 
+     * @param parent
+     *            Composite where SidePane composite is located in
+     * @param style
+     *            Style that SidePane should have
+     */
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\SidePane.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\SidePane.java
+	 */
+
+    public SidePane(Composite parent, int style) {
+        super(parent, style);
+        setDimensions(parent);
+        setLayout(parent);
+        createChildren();
+    }
+
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\SidePane.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\SidePane.java
+	 */
+
+    private void setLayout(Composite parent) {
+        GridLayout sidePaneLayout = new GridLayout();
+        sidePaneLayout.numColumns = 1;
+        this.setLayout(sidePaneLayout);
+        this.setLayoutData(new GridData(GridData.FILL_VERTICAL));
+    }
+
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\SidePane.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\SidePane.java
+	 */
+
+    private void createChildren() {
+        addCalendar();
+        new ClockUI(this);
+    }
+
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\SidePane.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\SidePane.java
+	 */
+
+    private void addCalendar() {
+        new DateTime(this, SWT.CALENDAR);
+
+    }
+
+}
+
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\SidePane.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\TableColours.java
+	 */
+
+package gui;
+
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.widgets.Display;
+/**
+ * This class contains colours that was used in the table.
+ */
+public class TableColours {
+    
+    private static Color deletedColor;
+    private static Color todoColor;
+    private static Color tabFolderColor;
+    private static Color overdueColor;
+    private static Color blockDateColor;
+    private static Color doneColor;
+    
+    public TableColours(Display display){
+        createColours(display);
+    }
+    
+    public static Color getDeletedColor(){
+        return deletedColor;
+    }
+    
+    public static Color getToDoColor(){
+        return todoColor;
+    }
+    
+    public static Color getTabFolderColour(){
+        return tabFolderColor;
+    }
+    
+    public static Color getOverdueColour(){
+        return overdueColor;
+    }
+ 
+    public static Color getBlockDateColor(){
+        return blockDateColor;
+    }
+    
+    public static Color getDoneColor(){
+        return doneColor;
+    }
+    
+    private void createColours(Display display){
+        deletedColor = new Color(display,  255, 0, 0);   
+        todoColor = new Color(display, 146, 217, 110);
+        tabFolderColor = new Color(display, 220, 220, 220);
+        overdueColor = new Color(display, 255, 49, 117);
+        blockDateColor = new Color(display, 107, 229, 252);
+        doneColor = new Color(display, 252, 183, 117);
+    } 
+    
+    /**
+     * Disposes all the colours used in the table
+     */
+    public static void disposeAllColours(){
+        deletedColor.dispose();
+        todoColor.dispose();
+        tabFolderColor.dispose();
+        overdueColor.dispose();
+        blockDateColor.dispose();
+        doneColor.dispose();
+    }
+}   
+
+
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\TableColours.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\TableComposite.java
+	 */
+
+package gui;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import logic.Log;
+
+import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
+
+/**
+ * TableComposite contains a tabFolder containing all the tables used in the
+ * application.
+ */
+public class TableComposite extends Composite {
+
+    private static final int NUM_TAB_LABELS = 6; // Update this if adding new
+                                                 // labels
+    private static final String All_TABLE_TAB_LABEL = "All";
+    private static final String TODAY_TABLE_TAB_LABEL = "Today";
+    private static final String TOMORROW_TABLE_TAB_LABEL = "Tomorrow";
+    private static final String UPCOMING_TABLE_TAB_LABEL = "Upcoming";
+    private static final String FLOATING_TABLE_TAB_LABEL = "Someday";
+    private static final String RESULT_TABLE_TAB_LABEL = "Result";
+
+    private static CTabFolder tabFolder;
+    private static List<TableViewer> tables = new ArrayList<TableViewer>();
+
+    /**
+     * Creates the TableComposite and its children
+     * 
+     * @param parent
+     *            Composite where the TableComposite is located in
+     * @param style
+     *            Style that the TableComposite should follow
+     */
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\TableComposite.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\TableComposite.java
+	 */
+
+    public TableComposite(Composite parent, int style) {
+        super(parent, SWT.NONE);
+        setLayout();
+        createContents(parent);
+    }
+
+    /**
+     * Returns the tab folder used to contain the tables
+     */
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\TableComposite.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\TableComposite.java
+	 */
+
+    public static CTabFolder getTabFolder() {
+        assert (tabFolder != null);
+        return tabFolder;
+    }
+
+    /**
+     * Returns the list of tableViewers that was used to create the tables
+     */
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\TableComposite.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\TableComposite.java
+	 */
+
+    public static List<TableViewer> getTables() {
+        return tables;
+    }
+
+    /**
+     * Creates the layout of the composite which contains the table
+     */
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\TableComposite.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\TableComposite.java
+	 */
+
+    private void setLayout() {
+        GridLayout layout = new GridLayout();
+        this.setLayout(layout);
+        this.setLayoutData(new GridData(GridData.FILL_BOTH));
+
+    }
+
+    /**
+     * Creates the tab folder containing all the tables and adds all the tables
+     * to it
+     */
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\TableComposite.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\TableComposite.java
+	 */
+
+    private void createContents(Composite parent) {
+        tabFolder = new CTabFolder(this, SWT.NONE);
+        tabFolder.setLayoutData(new GridData(GridData.FILL_BOTH));
+        tabFolder.setBackground(TableColours.getTabFolderColour());
+        
+        if(Log.LOGGING_ENABLED){
+            Log.getLogger().info("creating tables" );
+        }
+        
+        createTabItem(tabFolder, All_TABLE_TAB_LABEL);
+        createTabItem(tabFolder, TODAY_TABLE_TAB_LABEL);
+        createTabItem(tabFolder, TOMORROW_TABLE_TAB_LABEL);
+        createTabItem(tabFolder, UPCOMING_TABLE_TAB_LABEL);
+        createTabItem(tabFolder, FLOATING_TABLE_TAB_LABEL);
+        createTabItem(tabFolder, RESULT_TABLE_TAB_LABEL);
+
+        addListener(tabFolder);
+        tabFolder.setSelection(0);
+    }
+    
+    /**
+     * Creates a tab item within the tab folder.
+     * @param folder folder containing all tabs
+     * @param tabLabel String containing tab name
+     */
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\TableComposite.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\TableComposite.java
+	 */
+
+    private void createTabItem(CTabFolder folder, String tabLabel) {
+        CTabItem item = new CTabItem(tabFolder, SWT.NONE);
+        item.setText(tabLabel);
+        TableViewer tableUI = createTable();
+        item.setControl(tableUI.getTable());
+        
+
+    }
+    
+    /**
+     * Creates  a Table
+     */
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\TableComposite.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\TableComposite.java
+	 */
+
+    private TableViewer createTable() {
+        TableViewer tableUI = new TableUI(tabFolder).getTableViewer();
+        tables.add(tableUI);
+        return tableUI;
+    }
+
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\TableComposite.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\TableManagement.java
+	 */
+
+package gui;
+
+import java.util.List;
+
+import objects.Task;
+
+import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.swt.custom.CTabFolder;
+/**
+ *This class manages the selection and updating of the Tables used to display the users task information
+ */
+public class TableManagement {
+    // The index numbers of the different tables 
+    private static final int INDEX_ALL = 0;
+    private static final int INDEX_TODAY = 1;
+    private static final int INDEX_TOMORROW = 2;
+    private static final int INDEX_UPCOMING = 3;
+    private static final int INDEX_SOMEDAY = 4;
+    private static final int INDEX_RESULT = 5;
+    // This represents that the tab should not change when selected
+    private static final int INDEX_NO_CHANGE = -1;
+    
+    // The tab names of the corresponding tables
+    private static final String TAB_NAME_TODAY = "today";
+    private static final String TAB_NAME_TOMORROW = "tomorrow";
+    private static final String TAB_NAME_UPCOMING = "upcoming";
+    private static final String TAB_NAME_SOMEDAY = "someday";
+    private static final String TAB_NAME_RESULT = "result";
+    private static final String TAB_NAME_NO_CHANGE = "nochange";
+
+    // The Tab folder that contains all the tables
+    private static CTabFolder folder;
+    
+    // A List containing the table viewers of all the tables
+    private static List<TableViewer> tables;
+    
+    private static ResultGenerator resultGenerator = ResultGenerator.getInstance();
+    
+    /**
+     * Creates an instance of the TableManagement class
+     */
+    public TableManagement() {
+        folder= TableComposite.getTabFolder();
+        tables = TableComposite.getTables();
+    }
+    
+    /**
+     * Updates all the information in all tables, except for the result table. 
+     * It then sets the tab selection to show All table
+     */
+    public void refreshTables() {
+        List<Task> all = resultGenerator.getAllTasks();
+        List<Task> todays = resultGenerator.getTodayTasks();
+        List<Task> tomorrow = resultGenerator.getTomorrowsTasks();
+        List<Task> upcoming = resultGenerator.getUpcomingTasks();
+        List<Task> floating = resultGenerator.getFloatingTasks();
+
+        updateTable(all, INDEX_ALL);
+        updateTable(todays, INDEX_TODAY);
+        updateTable(tomorrow, INDEX_TOMORROW);
+        updateTable(upcoming, INDEX_UPCOMING);
+        updateTable(floating, INDEX_SOMEDAY);
+        
+    }
+    
+    /**
+     * Updates the table in the result tab. The method selects a result table
+     * @param tasks Tasks that the table should be updated with
+     */
+    public void updateResultTable(List<Task> tasks){
+        assert(tasks!=null);
+        tables.get(INDEX_RESULT).setInput(tasks);
+        setSelection(INDEX_RESULT);
+    }
+    
+    /**
+     * Updates a specific table by its tab name. 
+     * @param tabName Tab name of the table to be updates
+     * @param tasks Tasks that tables should be updated with
+     */
+    public void updateTableByName(String tabName, List<Task> tasks){
+        int index = getTableIndex(tabName);
+        tables.get(index).setInput(tasks);
+        if(folder == null){
+            return;
+        }
+        setSelection(index);
+    }
+    
+    /**
+     * Selects a table tab by a specific name
+     * @param tabName
+     */
+    public void setTableSelectionByName(String tabName) {
+        int index = getTableIndex(tabName);
+        if (folder == null) {
+            return;
+        }
+        if (index == INDEX_NO_CHANGE){
+            return;
+        }
+        setSelection(index);
+    }
+    
+    /**
+     * Selects a specific table element in the table
+     * @param taskToSelect task that is to be selected
+     * @param tabName tabName of the table where the task should be selected from
+     */
+    public void setTableSelectionByTask(Task taskToSelect, String tabName) {
+        int index = getTableIndex(tabName);
+        if(index== INDEX_NO_CHANGE){
+            index = folder.getSelectionIndex();
+        }
+        setSelection(index);
+        TableViewer table = tables.get(index);
+        List<Task> tasks = getTableContent(index);
+        if (tasks == null) {
+            return;
+        }
+        setElementSelection(taskToSelect, tasks, table);
+    }
+    
+    private void updateTable(List<Task> tasks, int index) {
+        tables.get(index).setInput(tasks);
+    }
+    
+    /**
+     * Selects an element in the table. Default selection is the first element
+     */
+    private void setElementSelection(Task taskToSelect, List<Task> tasks,
+                                     TableViewer tableViewer) {
+
+        int size = tasks.size();
+        int indexToSelect = 0;
+        for (int index = 0; index < size; index++) {
+            Task currTask = tasks.get(index);
+            if (currTask.equals(taskToSelect)) {
+                indexToSelect = index;
+                break;
+            }
+        }
+
+        tableViewer.getTable().setSelection(indexToSelect);
+    }
+    
+    private int getTableIndex(String tabName){
+        if (tabName.equals(TAB_NAME_TODAY)) {
+            return INDEX_TODAY;
+        } else if (tabName.equals(TAB_NAME_TOMORROW)) {
+            return INDEX_TOMORROW;
+        } else if (tabName.equals(TAB_NAME_UPCOMING)) {
+            return INDEX_UPCOMING;
+        } else if (tabName.equals(TAB_NAME_SOMEDAY)) {
+            return INDEX_SOMEDAY;
+        } else if (tabName.equals(TAB_NAME_RESULT)) {
+            return INDEX_RESULT;
+        }else if(tabName.equals(TAB_NAME_NO_CHANGE)){
+            return INDEX_NO_CHANGE;
+        }
+
+        // default
+        return INDEX_ALL;
+    }
+    
+    private List<Task> getTableContent(int index){
+        switch(index){
+            case INDEX_TODAY:
+                return resultGenerator.getTodayTasks();
+            case INDEX_TOMORROW:
+                return resultGenerator.getTomorrowsTasks();
+            case INDEX_UPCOMING:
+                return resultGenerator.getUpcomingTasks();
+            case INDEX_SOMEDAY:
+                return resultGenerator.getFloatingTasks();
+            default:
+                return resultGenerator.getAllTasks();
+        }
+    }
+    
+    private void setSelection(int index) {
+        if(folder==null){
+            return;
+        }
+        folder.setSelection(index);
+    }
+}
+
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\TableManagement.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\TableUI.java
+	 */
+
+package gui;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
+import objects.DateTime;
+import objects.Task;
+
+import org.eclipse.jface.resource.FontRegistry;
+import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
+
+
+/**
+ * TableUI table interface located that is located in a Tab Folder.
+ * This class is shows the default format of building the table
+ */
+public class TableUI{
+    
+    private static final String HEADER_NAME_ID = "Id";
+    private static final String HEADER_NAME_NAME = "Task Description";
+    private static final String HEADER_NAME_DUE = "Due/End";
+    private static final String HEADER_NAME_START = "Start";
+    private static final String HEADER_NAME_TAGS = "Tags";
+    private static final String HEADER_NAME_STATUS = "Status";
+    private static final String PARA_STATUS_BLOCK = "Blocked Date";
+
+    private static final String CELL_EMPTY_DATE = "-";
+
+    private static final String PARA_STATUS_DELETED = "Deleted";
+    private static final String PARA_STATUS_TODO = "To do";
+    private static final String PARA_STATUS_DONE = "Done";
+
+    private static int colourIndex = 1;
+    private TableViewer tableViewer;
+    private static FontRegistry registry;
+    
+    /**
+     * Creates an instance of the TaskTableUI
+     * @param parent tab folder where the TaskTableUI is located in
+     */
+    public TableUI(CTabFolder parent) {
+        buildControls(parent);
+    }
+
+    public TableViewer getTableViewer() {
+        return tableViewer;
+    }
+    
+    private void buildControls(Composite parent) {
+        getRegistry(parent);
+        buildLabel(parent);
+        buildTable(parent);
+    }
+
+    private void getRegistry(Composite parent) {
+        registry = Fonts.getRegistry();
+    }
+
+    private void buildLabel(Composite parent) {
+        StyledText tableTitle = new StyledText(parent, SWT.READ_ONLY);
+        tableTitle.setText("Results:");
+        tableTitle.setEnabled(false);
+        tableTitle.setFont(registry.get("title"));
+    }
+
+    private void buildTable(Composite parent) {
+        tableViewer = new TableViewer(parent, SWT.BORDER |
+                                              SWT.FULL_SELECTION);
+
+        tableViewer.setContentProvider(new ArrayContentProvider());
+        tableViewer.setLabelProvider(new LabelProvider());
+        setUpColumns(parent);
+
+        Table table = tableViewer.getTable();
+        Color color = new Color(Display.getCurrent(), 255 - colourIndex*10, 255 - colourIndex, 255 - colourIndex*13);
+        table.setBackground(color);
+        colourIndex++;
+        color.dispose();
+        table.setLinesVisible(true);
+        table.setHeaderVisible(true);
+        table.setEnabled(true);
+        table.setFont(registry.get("table"));
+    }
+
+    private void setUpColumns(Composite parent) {
+        Table table = tableViewer.getTable();
+        int scrollBarWidth = table.getVerticalBar().getSize().x;
+        int screenWidth = parent.getDisplay().getBounds().width;
+        int spaceLeft;
+        int[] colWidths; // ID, start, due, tags, type/status
+        if (screenWidth<1920) {
+            int tableWidth = (int) (screenWidth * 0.8 * 0.70); //very rough approximation
+            spaceLeft = tableWidth - 30 - 120 - 120 - 120 - (120 + 40) - scrollBarWidth;
+            colWidths = new int[]{30, 120, 120, 120, 160};
+        } else {
+            int tableWidth = (int) (screenWidth * 0.8 * 0.78); //very rough approximation
+            spaceLeft = tableWidth - 40 - 150 - 150 - 200 - (150 + 50) - scrollBarWidth;
+            colWidths = new int[]{40, 150, 150, 200, 200};
+        }
+        
+        TableViewerColumn column = setColumnHeader(HEADER_NAME_ID, colWidths[0]);
+        column.setLabelProvider(new ColumnLabelProvider() {
+            @Override
+            public String getText(Object element) {
+                if (element instanceof Task) {
+                    Task task = (Task) element;
+                    assert (task != null);
+                    String id = task.getId() + "";
+                    return id + ".";
+                }
+                return "";
+            }
+            
+            @Override
+            public Color getForeground(Object element){
+                if(element instanceof Task){
+                    Task task = (Task) element;
+                    DateTime due = task.getDue();
+                    if(due == null){
+                        return Display.getCurrent().getSystemColor(SWT.COLOR_BLACK);
+                    }else if(isOverdue(due) && !task.isDone() ){
+                        return TableColours.getOverdueColour();
+                    }
+                }
+                return Display.getCurrent().getSystemColor(SWT.COLOR_BLACK);
+            }
+        });
+        
+        column = setColumnHeader(HEADER_NAME_NAME, spaceLeft);
+        column.setLabelProvider(new ColumnLabelProvider() {
+            @Override
+            public String getText(Object element) {
+                if (element instanceof Task) {
+                    Task task = (Task) element;
+                    String name = task.getName();
+                    assert (task != null);
+                    if (name == null || name.isEmpty() || name.equals("null")) {
+                        return "";
+                    }
+                    return task.getName();
+                }
+                return "";
+            }
+            
+            @Override
+            public Color getForeground(Object element){
+                if(element instanceof Task){
+                    Task task = (Task) element;
+                    DateTime due = task.getDue();
+                    if(due == null){
+                        return Display.getCurrent().getSystemColor(SWT.COLOR_BLACK);
+                    }else if(isOverdue(due) && !task.isDone() ){
+                        return TableColours.getOverdueColour();
+                    }
+                }
+                return Display.getCurrent().getSystemColor(SWT.COLOR_BLACK);
+            }
+        });
+
+        column = setColumnHeader(HEADER_NAME_START, colWidths[1]);
+        column.setLabelProvider(new ColumnLabelProvider() {
+            @Override
+            public String getText(Object element) {
+                if (element instanceof Task) {
+                    Task task = (Task) element;
+                    assert (task != null);
+                    DateTime start = task.getStart();
+                    assert (start != null);
+                    String startDate = start.toString();
+                    if (startDate == null || startDate.isEmpty()) {
+                        return CELL_EMPTY_DATE;
+                    }
+
+                    return startDate;
+                }
+                return "";
+            }
+            
+            @Override
+            public Color getForeground(Object element){
+                if(element instanceof Task){
+                    Task task = (Task) element;
+                    DateTime due = task.getDue();
+                    if(due == null){
+                        return Display.getCurrent().getSystemColor(SWT.COLOR_BLACK);
+                    }else if(isOverdue(due) && !task.isDone() ){
+
+                        return TableColours.getOverdueColour();
+                    }
+                }
+                return Display.getCurrent().getSystemColor(SWT.COLOR_BLACK);
+            }
+        });
+
+        column = setColumnHeader(HEADER_NAME_DUE, colWidths[2]);
+
+        column.setLabelProvider(new ColumnLabelProvider() {
+            @Override
+            public String getText(Object element) {
+                if (element instanceof Task) {
+                    Task task = (Task) element;
+                    assert (task != null);
+                    DateTime due = task.getDue();
+                    assert (due != null);
+                    String dueDate = due.toString();
+                    if (dueDate == null || dueDate.isEmpty()) {
+                        return CELL_EMPTY_DATE;
+                    }
+                    return dueDate;
+                }
+                return "";
+            }
+            
+            @Override
+            public Color getForeground(Object element){
+                if(element instanceof Task){
+                    Task task = (Task) element;
+                    DateTime due = task.getDue();
+                    if(due == null){
+                        return Display.getCurrent().getSystemColor(SWT.COLOR_BLACK);
+                    }else if(isOverdue(due) && !task.isDone() ){
+                        return TableColours.getOverdueColour();
+                    }
+                }
+                return Display.getCurrent().getSystemColor(SWT.COLOR_BLACK);
+            }
+        });
+
+        column = setColumnHeader(HEADER_NAME_TAGS, colWidths[3]);
+        column.setLabelProvider(new ColumnLabelProvider() {
+            @Override
+            public String getText(Object element) {
+                if (element instanceof Task) {
+                    Task task = (Task) element;
+                    assert (task != null);
+                    List<String> tags = task.getTags();
+                    String tag = "";
+
+                    if (tags == null || tags.isEmpty()) {
+                        return "";
+                    }
+                    for (String tempTag : tags) {
+                        tag += tempTag + " ";
+                    }
+                    return tag;
+                }
+                return "";
+            }
+            
+            @Override
+            public Color getForeground(Object element){
+                if(element instanceof Task){
+                    Task task = (Task) element;
+                    DateTime due = task.getDue();
+                    if(due == null){
+                        return Display.getCurrent().getSystemColor(SWT.COLOR_BLACK);
+                    }else if(isOverdue(due) && !task.isDone() ){
+                        return TableColours.getOverdueColour();
+                    }
+                }
+                return Display.getCurrent().getSystemColor(SWT.COLOR_BLACK);
+            }
+        });
+
+        column = setColumnHeader(HEADER_NAME_STATUS, colWidths[4]);
+        column.setLabelProvider(new ColumnLabelProvider() {
+            @Override
+            public String getText(Object element) {
+                if (element instanceof Task) {
+                    Task task = (Task) element;
+                    assert (task != null);
+                    String Status;
+                    if (task.isDeleted()) {
+                        Status = PARA_STATUS_DELETED;
+                    } else if (task.isDone()) {
+                        Status = PARA_STATUS_DONE + " " +
+                                 task.getCompletedOn().toString();
+                    } else if(task.isToDo()){
+                        Status = PARA_STATUS_TODO;
+                    }else{
+                        Status = PARA_STATUS_BLOCK;
+                    }
+                    return Status;
+                }
+                return "";
+            }
+            
+
+            @Override
+            public Color getBackground(Object element){
+                if(element instanceof Task){
+                    Task task = (Task) element;
+                    if(task.isDeleted()){
+                        return TableColours.getDeletedColor();
+                    }else if(task.isBlock()){
+                        return TableColours.getBlockDateColor();
+                    }else if(task.isToDo()){
+                        return TableColours.getToDoColor();
+                    }else if(task.isDone()){
+                        return TableColours.getDoneColor();
+                    }
+                }
+                return Display.getCurrent().getSystemColor(SWT.COLOR_WHITE);
+            }
+            
+        });
+
+        table.setLayoutData(new GridData(GridData.FILL_BOTH));
+
+    }
+
+    protected boolean isOverdue(DateTime date) {
+            DateTime now = getTodaysDate();
+            if (date.isEarlierThan(now) || date.equals(now)) {
+                return true;
+            }
+            return false;
+    }
+
+    private DateTime getTodaysDate() {
+        Date date = new Date();
+        String nowDate = new SimpleDateFormat("dd/MM/YYYY").format(date);
+        String nowTime = new SimpleDateFormat("HHmm").format(date);
+        DateTime today = new DateTime(nowDate, nowTime);
+        return today;
+    }
+
+
+    private TableViewerColumn setColumnHeader(String headerName, int colWidth) {
+        TableViewerColumn columnViewer = new TableViewerColumn(tableViewer, SWT.LEFT);
+        TableColumn column = columnViewer.getColumn();
+        column.setText(headerName);
+        column.setWidth(colWidth);
+        column.setResizable(true);
+        column.setMoveable(true);
+        return columnViewer;
+    }
+
+}
+
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\TableUI.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\TitleLabel.java
+	 */
+
+package gui;
+
+import org.eclipse.jface.resource.FontRegistry;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Cursor;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+
+/**
+ * This Composite contains the title of the program.
+ */
+public class TitleLabel extends Composite {
+
+    private static final String LABEL_TEXT = "      Haystack";
+    private static final int NUM_COLS_SCREEN = 2;
+    private FontRegistry registry;
+
+    /**
+     * Creates an instance of titleLabel
+     * @param parent Composite where TitleLabel is located
+     * @param style  Style that TitleLabel has
+     */
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\TitleLabel.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\TitleLabel.java
+	 */
+
+    public TitleLabel(Composite parent, int style) {
+        super(parent, SWT.NONE);
+        setLayout(parent);
+        createContents(parent);
+    }
+    /**
+     * Sets the layout of the TitleLabel Composite
+     * @param parent Composite where the Title Label is located
+     */
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\TitleLabel.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\TitleLabel.java
+	 */
+
+    private void setLayout(Composite parent) {
+        GridLayout layout = new GridLayout();
+        layout.numColumns = NUM_COLS_SCREEN;
+        this.setLayout(layout);
+        GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
+        //gridData.horizontalSpan = NUM_COLS_SCREEN;
+        gridData.horizontalAlignment = SWT.LEFT;
+        this.setLayoutData(gridData);
+    }
+    
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\TitleLabel.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\TitleLabel.java
+	 */
+
+    private void createContents(Composite parent) {
+        createTitle(parent);
+        createCloseButton(parent);
+    }
+
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\TitleLabel.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\TitleLabel.java
+	 */
+
+    private void createTitle(Composite parent) {
+        getFontRegistry();
+        Label title = new Label(this, SWT.SINGLE | SWT.CENTER);
+        title.setText(LABEL_TEXT);
+        title.setFont(registry.get("haystack title"));
+        Color color;
+        color = parent.getDisplay().getSystemColor(SWT.COLOR_BLACK);
+        title.setForeground(color);
+        color.dispose();
+    }
+    
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\TitleLabel.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\TitleLabel.java
+	 */
+
+    private void getFontRegistry() {
+        registry = Fonts.getRegistry();
+    }
+
+}
+
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\TitleLabel.java
+
+
+
+
+

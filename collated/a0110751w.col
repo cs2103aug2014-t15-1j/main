@@ -1,0 +1,4431 @@
+//@author: a0110751w
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\logic\Command.java
+	 */
+
+package logic;
+
+import objects.Task;
+import parser.Parser;
+
+/**
+ * This is an abstract class Command, for the implementation of Command Pattern.
+ * Different command type will be categorised and extends this class. This class
+ * also contains the common parameters used in the Command classes.
+ *
+ */
+
+public abstract class Command {
+
+    protected CommandType type = null;
+
+    /** Parameters used in the construction of Command object */
+    protected static final String PARAM_ID = "id";
+    protected static final String PARAM_NAME = "name";
+    protected static final String PARAM_DUE = "due";
+    protected static final String PARAM_START = "start";
+    protected static final String PARAM_TAG = "tag";
+    protected static final String PARAM_TO = "to";
+    protected static final String PARAM_FROM = "from";
+    protected static final String PARAM_RANGE_TYPE = "rangeType";
+    protected static final String PARAM_DATE = "date";
+    protected static final String PARAM_DELETE = "delete";
+    protected static final String PARAM_STATUS = "status";
+    protected static final String PARAM_WORD = "word";
+
+    /** Parameters applicable to CommandDelete only: */
+    protected static final String DELETE_NAME = "name";
+    protected static final String DELETE_DUE = "due";
+    protected static final String DELETE_START = "start";
+    protected static final String DELETE_TAGS = "tags";
+
+    /** Different Range Types available */
+    protected static final String RANGE_TYPE_ALL = "all";
+    protected static final String RANGE_TYPE_BLOCK = "block";
+    protected static final String RANGE_TYPE_SEARCH = "search";
+    protected static final String RANGE_TYPE_ID = "id";
+    protected static final String RANGE_TYPE_DONE = "done";
+    protected static final String RANGE_TYPE_DELETED = "deleted";
+    protected static final String RANGE_TYPE_TODO = "todo";
+    protected static final String RANGE_TYPE_DATE = "date";
+    protected static final String RANGE_TYPE_TODAY = "today";
+    protected static final String RANGE_TYPE_TOMORROW = "tomorrow";
+    protected static final String RANGE_TYPE_SOMEDAY = "someday";
+    protected static final String RANGE_TYPE_UPCOMING = "upcoming";
+
+    /** Display Tabs */
+    protected static final String DISPLAY_TAB_ALL = "all";
+    protected static final String DISPLAY_TAB_TODAY = "today";
+    protected static final String DISPLAY_TAB_TOMORROW = "tomorrow";
+    protected static final String DISPLAY_TAB_UPCOMING = "upcoming";
+    protected static final String DISPLAY_TAB_SOMEDAY = "someday";
+    protected static final String DISPLAY_TAB_RESULT = "result";
+    protected static final String DISPLAY_TAB_NO_CHANGE = "nochange";
+
+    /** Error messages */
+    protected static final String ERROR_BLOCK_ADD = "Unable to add Task, this clashes with a Block Task!";
+
+    public CommandType getType() {
+        assert this.type != null : "CommandType cannot be null!";
+        return this.type;
+    }
+
+    public String get(String str) {
+        return null;
+    }
+
+    abstract protected Result execute(boolean userInput);
+
+    abstract protected Result executeComplement();
+
+    /**
+     * This method returns the appropriate tab to change to for a Task. <br>
+     * For <code>Tasks</code> that have <code>due</code> dates due today, it
+     * should switch to the <code>"today"</code> tab. Else, it should switch to
+     * the <code>"all"</code> tab.
+     * <p>
+     * <i>Currently used only when dealing with only one Task in an
+     * operation.</i>
+     * 
+     * @param task
+     *            - Task
+     * @return String
+     */
+    protected String getDisplayTab(Task task) {
+        String displayTab = DISPLAY_TAB_ALL;
+        String todayDate = Parser.getCurrDateStr();
+        if (task.getDue().getDate().equals(todayDate) ||
+            task.getStart().getDate().equals(todayDate)) {
+            displayTab = DISPLAY_TAB_TODAY;
+        }
+        return displayTab;
+    }
+}
+
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\logic\Command.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\logic\CommandAdd.java
+	 */
+
+package logic;
+
+import java.util.List;
+import java.util.ArrayList;
+
+import objects.DateTime;
+import objects.Task;
+import objects.TaskParam;
+import objects.TaskType;
+import parser.Parser;
+
+/**
+ * This class extends Command and is associated with the Add Operation. It
+ * supports the addition of new Tasks as well as the deletion of that newly
+ * added task.
+ * 
+ */
+public class CommandAdd extends Command {
+
+    private String name = "";
+    private DateTime start = new DateTime();
+    private DateTime due = new DateTime();
+    private DateTime completedOn = new DateTime();
+
+    private List<String> tags = new ArrayList<String>();
+
+    public CommandAdd(List<TaskParam> content) {
+        assert content != null : "Constructor param is null";
+        this.type = CommandType.ADD;
+        for (TaskParam param : content) {
+            constructUsingParam(param);
+        }
+    }
+
+    private void constructUsingParam(TaskParam param) {
+        switch (param.getName()) {
+            case PARAM_NAME:
+                this.name = param.getField();
+                break;
+
+            case PARAM_START:
+                this.start = Parser.parseToDateTime(param.getField());
+                break;
+
+            case PARAM_DUE:
+                this.due = Parser.parseToDateTime(param.getField());
+                break;
+
+            case PARAM_TAG:
+                this.tags.add(param.getField());
+                break;
+
+            default:
+                assert false : "Invalid constructor param - Received: " +
+                               param.getName();
+        }
+    }
+
+    /**
+     * Executes 'add' operation of a task<br>
+     * This method adds a new Task to the Todo List; goes through a check to
+     * certify whether it can be added.
+     * 
+     * @return {@link logic.Result#Result(List, boolean, CommandType, boolean, String)
+     *         Result}
+     */
+    @Override
+    protected Result execute(boolean userInput) {
+        Processor.log("Executing 'Add' Command...");
+        boolean success = false;
+        List<Task> list = new ArrayList<Task>();
+
+        boolean isBlock = isBlocked();
+        if (!isBlock) {
+            success = addNewTask(list);
+        } else {
+            throw new Error(ERROR_BLOCK_ADD);
+        }
+
+        assert (list.size() == 1);
+        String displayTab = getDisplayTab(list.get(0));
+
+        return new Result(list, success, getType(), false, displayTab);
+    }
+
+    private boolean addNewTask(List<Task> list) {
+        boolean success = false;
+        Task newTask = new Task(name, start, due, completedOn, tags,
+                TaskType.TODO);
+        success = Processor.getInstance().getFile().add(newTask);
+        list.add(newTask);
+        return success;
+    }
+
+    /**
+     * This method checks if the Task contains dates that are already blocked.
+     * 
+     * @return boolean - {@code True} if when trying to add a Task with a
+     *         specified date that fall within a blocked date range, else
+     *         {@code False}.
+     */
+    private boolean isBlocked() {
+        boolean blocked = false;
+        if (!due.isEmpty() || !start.isEmpty()) {
+            Processor processor = Processor.getInstance();
+            List<Task> blockDates = processor.fetchBlockTasks();
+            for (Task blockDate : blockDates) {
+                if (overlapsWithBlockTask(blockDate)) {
+                    return true;
+                }
+            }
+        }
+        return blocked;
+    }
+
+    /**
+     * This method checks if the current <code>CommandAdd</code> object is
+     * trying to add to to a date that is blocked. Returns True if this object
+     * overlaps with one or more <code>Block Task</code>.
+     * 
+     * @return boolean
+     */
+    private boolean overlapsWithBlockTask(Task blockDate) {
+        if (!start.isEmpty() && !due.isEmpty()) {
+            return !(due.isEarlierThan(blockDate.getStart()) || !start
+                    .isEarlierThan(blockDate.getDue()));
+        } else if (!start.isEmpty()) {
+            return hasOverlaps(start, blockDate);
+        } else {
+            return hasOverlaps(due, blockDate);
+        }
+    }
+
+    private boolean hasOverlaps(DateTime date, Task blockDate) {
+        return (date.getDate().equals(blockDate.getDue().getDate()) || date
+                .getDate().equals(blockDate.getStart().getDate())) ||
+               (date.isLaterThan(blockDate.getStart()) && date
+                       .isEarlierThan(blockDate.getDue()));
+    }
+
+    /**
+     * Executes complement for 'add' operation of a task<br>
+     * This method deletes the newly added Task to the Todo List
+     * 
+     * @return {@link logic.Result#Result(List, boolean, CommandType, boolean)
+     *         Result}
+     */
+    @Override
+    protected Result executeComplement() {
+        Processor processor = Processor.getInstance();
+        List<Task> tasks = new ArrayList<Task>();
+        int taskId = processor.fetchAllTasks().size();
+        Task toDelete = processor.fetchTaskById(taskId);
+        boolean success = processor.getFile().permanentlyDelete(toDelete);
+        if (success) {
+            tasks.add(toDelete);
+        }
+
+        return new Result(tasks, success, getType(), DISPLAY_TAB_NO_CHANGE);
+    }
+
+    @Override
+    public String get(String paramName) {
+        switch (paramName) {
+            case PARAM_NAME:
+                return this.name;
+
+            case PARAM_START:
+                return this.start.toString();
+
+            case PARAM_DUE:
+                return this.due.toString();
+
+            default:
+                return null;
+        }
+    }
+
+    public List<String> getTags() {
+        return this.tags;
+    }
+
+    @Override
+    public String toString() {
+        return "cmdadd name: " + this.name + " start: " + this.start +
+               " due: " + this.due + " tags: " + this.tags;
+    }
+
+}
+
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\logic\CommandAdd.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\logic\CommandBlock.java
+	 */
+
+package logic;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import objects.DateTime;
+import objects.Task;
+import objects.TaskParam;
+import objects.TaskType;
+import parser.Parser;
+
+/**
+ * This class extends Command and performs the addition of new Tasks (with
+ * TaskType TaskType.BLOCK). Each of these Task should not be allowed to have
+ * overlapping date range with another Task with TaskType TaskType.BLOCK.
+ *
+ */
+public class CommandBlock extends Command {
+
+    private String name = "";
+    private DateTime from = new DateTime();
+    private DateTime to = new DateTime();
+    private List<String> tags = new ArrayList<String>();
+
+    public CommandBlock(List<TaskParam> content) {
+        this(content, false);
+    }
+
+    protected CommandBlock(List<TaskParam> content, boolean isComplement) {
+        assert content != null : "Constructor param is null";
+        assert !content.isEmpty() : "Constructor param is empty";
+        
+        this.type = CommandType.BLOCK;
+
+        for (TaskParam param : content) {
+            constructUsingParam(param);
+        }
+    }
+
+    private void constructUsingParam(TaskParam param) {
+        switch (param.getName()) {
+            case PARAM_NAME:
+                this.name = name.concat(" " + param.getField()).trim();
+                break;
+
+            case PARAM_FROM:
+                this.from = Parser.parseToDateTime(param.getField());
+                break;
+
+            case PARAM_TO:
+                this.to = Parser.parseToDateTime(param.getField());
+                break;
+
+            case PARAM_TAG:
+                this.tags.add(param.getField());
+                break;
+
+            default:
+                assert false : "Invalid constructor param - Received: " +
+                               param.getName();
+        }
+    }
+
+    /**
+     * This method executes the Block Command. It adds a <code>Task</code> with
+     * <code>TaskType.BLOCK</code>. This <code>Task</code> is intended to
+     * reserved the specified date range for the user and will prevents the user
+     * from adding any other Task to the same date range.
+     * 
+     * @param userInput
+     * @return{@link logic.Result#Result(List, boolean, CommandType, boolean,
+     *               String) Result}
+     */
+    @Override
+    protected Result execute(boolean userInput) {
+        Processor.log("Executing 'Block' Command...");
+        Processor processor = Processor.getInstance();
+        List<Task> blockRange = processor.fetchBlockTasks();
+
+        List<Task> outputs = new ArrayList<Task>();
+        boolean noOverlap = hasNoOverlapWithBlockTasks(blockRange, outputs);
+        return addBlockTask(outputs, noOverlap);
+    }
+
+    private boolean hasNoOverlapWithBlockTasks(List<Task> blockRange,
+                                               List<Task> outputs) {
+        boolean success = true;
+        for (Task blockedDate : blockRange) {
+            if (hasOverlaps(blockedDate)) {
+                outputs.add(blockedDate);
+                success = false;
+                break;
+            }
+        }
+        return success;
+    }
+
+    private boolean hasOverlaps(Task blockedDate) {
+        boolean overlap = false;
+        if (from.isEarlierThan(blockedDate.getStart()) &&
+            to.isLaterThan(blockedDate.getDue())) {
+            overlap = true;
+        } else if (blockedDate.getStart().isEarlierThan(from) &&
+                   blockedDate.getDue().isLaterThan(to)) {
+            overlap = true;
+        } else if (from.getDate().equals(blockedDate.getStart().getDate()) || to.getDate().equals(blockedDate.getDue().getDate())) {
+            overlap = true;
+        }
+        return overlap;
+    }
+
+    private Result addBlockTask(List<Task> outputs, boolean noOverlap)
+            throws Error {
+        Processor processor = Processor.getInstance();
+        boolean success = false;
+        String displayTab = "";
+
+        if (noOverlap) {
+            Task currBlock = new Task(name, from, to, new DateTime(), tags,
+                    TaskType.BLOCK);
+            success = processor.getFile().add(currBlock);
+            outputs.add(currBlock);
+            displayTab = getDisplayTab(currBlock);
+        } else {
+            throw new Error("This Task overlaps with another Block Task!");
+        }
+
+        return new Result(outputs, success, CommandType.BLOCK, displayTab);
+    }
+    
+    /**
+     * This method executes the complement operation for 'block' of a
+     * <code>Task</code>.<br>
+     * It deletes the last added <code>Block Task</code>.
+     * 
+     * @return {@link logic.Result#Result(List, boolean, CommandType, boolean)
+     *         Result}
+     */
+    @Override
+    protected Result executeComplement() {
+        Processor processor = Processor.getInstance();
+        List<Task> tasks = new ArrayList<Task>();
+        boolean success = false;
+
+        int taskId = processor.fetchAllTasks().size();
+        Task toDelete = processor.fetchTaskById(taskId);
+
+        success = processor.getFile().permanentlyDelete(toDelete);
+
+        if (success) {
+            tasks.add(toDelete);
+        }
+
+        String displayTab = getDisplayTab(toDelete);
+
+        return new Result(tasks, success, getType(), displayTab);
+    }
+
+    @Override
+    public String get(String field) {
+        switch (field) {
+            case PARAM_FROM:
+                return this.from.toString();
+
+            case PARAM_TO:
+                return this.to.toString();
+
+            default:
+                return null;
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "cmdblock name: " + this.name + " from: " + this.from + " to: " +
+               this.to + " tags: " + this.tags;
+    }
+
+}
+
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\logic\CommandBlock.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\logic\CommandDelete.java
+	 */
+
+package logic;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import objects.Task;
+import objects.TaskParam;
+
+/**
+ * This class extends Command and performs the deletion of Tasks. Allows
+ * deletion by Id, by search results or to wipe the file.
+ * 
+ */
+public class CommandDelete extends Command {
+
+    private String rangeType = "";
+
+    private String id = "";
+
+    /* Complement Command object of this Command Object */
+    private CommandRestore cmdRestore = null;
+
+    public CommandDelete(List<TaskParam> content) {
+        this(content, false);
+    }
+
+    protected CommandDelete(List<TaskParam> content, boolean isComplement) {
+        assert content != null : "Constructor param is null";
+        assert !content.isEmpty() : "Constructor param is empty";
+        
+        this.type = CommandType.DELETE;
+
+        for (TaskParam param : content) {
+            constructUsingParam(param);
+        }
+        if (!isComplement) {
+            initialiseComplementCommand((List<TaskParam>) content);
+        }
+    }
+
+    private void constructUsingParam(TaskParam param) {
+        switch (param.getName()) {
+            case PARAM_RANGE_TYPE:
+                this.rangeType = param.getField();
+                break;
+
+            case PARAM_ID:
+                this.id = param.getField();
+                break;
+
+            default:
+                assert false : "Invalid constructor param - Received: " +
+                               param.getName();
+        }
+    }
+
+    private void initialiseComplementCommand(List<TaskParam> content) {
+        this.cmdRestore = new CommandRestore(content, true);
+    }
+
+    /**
+     * Executes "delete" operation<br>
+     * Deletes a task<br>
+     * Allows delete {@literal<id>}, delete search, delete all
+     * 
+     * @return {@link logic.Result#Result(List, boolean, CommandType, boolean, String)
+     *         Result}
+     */
+    @Override
+    protected Result execute(boolean userInput) {
+        Processor.log("Executing 'Delete' Command...");
+        Processor processor = Processor.getInstance();
+        List<Task> list = new ArrayList<Task>();
+        boolean success = false;
+        boolean confirmation = false;
+
+        switch (rangeType) {
+            case RANGE_TYPE_ID:
+                success = deleteTaskUsingID(list);
+                break;
+
+            case RANGE_TYPE_SEARCH:
+                updateSearchListHistory(processor, userInput);
+                success = deleteSearchedTasks(list);
+                break;
+
+            case RANGE_TYPE_ALL:
+                success = true;
+                confirmation = true;
+                break;
+
+            default:
+                assert false : "Invalid rangeType - Received: " + rangeType;
+        }
+
+        return new Result(list, success, this.getType(), confirmation,
+                DISPLAY_TAB_NO_CHANGE);
+    }
+
+    private void updateSearchListHistory(Processor processor, boolean userInput) {
+        if (userInput) {
+            List<Task> lastSearch = processor.fetchLastSearch();
+            processor.getForwardSearchListHistory().push(lastSearch);
+        }
+    }
+
+    /** Deletes Task using Id */
+    private boolean deleteTaskUsingID(List<Task> list) {
+        Processor processor = Processor.getInstance();
+        Task task = processor.fetchTaskById(Integer.parseInt(id));
+        boolean success = processor.getFile().delete(task);
+        if (success) {
+            list.add(task);
+        }
+        return success;
+    }
+
+    /** Deletes all Tasks in searchList */
+    private boolean deleteSearchedTasks(List<Task> list) {
+        try {
+            Processor processor = Processor.getInstance();
+            List<Task> deleteList = processor.getForwardSearchListHistory()
+                    .pop();
+            for (Task t : deleteList) {
+                processor.getFile().delete(t);
+                list.add(t);
+            }
+            processor.getBackwardSearchListHistory().push(deleteList);
+        } catch (NullPointerException e) {
+            Log.getLogger().severe("forwardSearchListHistory is empty!");
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * This method executes the "Restore" operation.<br>
+     * It restores a deleted <code>Task</code>.<br>
+     * Does <i>restore {@literal<id>}</i> or <i> restore search</i> depending on
+     * the <code>CommandDelete</code> object
+     * 
+     * @return {@link logic.Result#Result(List, boolean, CommandType, boolean)
+     *         Result}
+     */
+    @Override
+    protected Result executeComplement() {
+        return cmdRestore.execute(false);
+    }
+
+    @Override
+    public String get(String field) {
+        switch (field) {
+            case PARAM_RANGE_TYPE:
+                return this.rangeType;
+
+            case PARAM_ID:
+                return this.id;
+
+            default:
+                return null;
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "cmddelete rangetype: " + this.rangeType + " id: " + this.id;
+    }
+}
+
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\logic\CommandDelete.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\logic\CommandDisplay.java
+	 */
+
+package logic;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import objects.Task;
+import objects.TaskParam;
+
+/**
+ * This class extends Command and does the display operations. The display
+ * ranges from a single Task to upcoming/todo Tasks.
+
+ */
+public class CommandDisplay extends Command {
+
+    private String rangeType = "";
+
+    private String id = "";
+
+    public CommandDisplay(List<TaskParam> content) {
+        assert content != null : "Constructor param is null";
+        assert !content.isEmpty() : "Constructor param is empty";
+        
+        this.type = CommandType.DISPLAY;
+        for (TaskParam param : content) {
+            constructUsingParam(param);
+        }
+    }
+
+    private void constructUsingParam(TaskParam param) {
+        switch (param.getName()) {
+            case PARAM_RANGE_TYPE:
+                this.rangeType = param.getField();
+                break;
+
+            case PARAM_ID:
+                this.id = param.getField();
+                break;
+
+            default:
+                assert false : "Invalid constructor param - Received: " +
+                               param.getName();
+        }
+    }
+
+    /**
+     * This method executes the "display" operation. It displays a list of
+     * <code>Task</code>. Depending on the rangeType specified, the display tab
+     * will differ from one another.
+     * <p>
+     * Allows <i>display</i>, <i>display {@literal <id>}</i>, <i>display
+     * {@literal <rangeType>}</i> <br>
+     * Allows <i>show</i>, <i>show {@literal <id>}</i>, <i>show
+     * {@literal <rangeType>}</i>
+     * 
+     * @param userInput
+     *            - Default is True (When user entered a command)
+     * 
+     * @return {@link logic.Result#Result(List, boolean, CommandType, boolean, String)
+     *         Result}
+     */
+    @Override
+    protected Result execute(boolean userInput) {
+        Processor.log("Executing 'Display' Command...");
+
+        Processor processor = Processor.getInstance();
+        List<Task> list = new ArrayList<Task>();
+        boolean success = true;
+        String displayTab = DISPLAY_TAB_RESULT;
+
+        switch (rangeType) {
+            case RANGE_TYPE_ALL:
+                displayTab = DISPLAY_TAB_ALL;
+                list = processor.fetchAllTasks();
+                break;
+
+            case RANGE_TYPE_ID:
+                int taskId = Integer.parseInt(id);
+                list.add(processor.fetchTaskById(taskId));
+                break;
+
+            case RANGE_TYPE_BLOCK:
+                list = processor.fetchBlockTasks();
+                break;
+
+            case RANGE_TYPE_DONE:
+                list = processor.fetchDoneTasks();
+                break;
+
+            case RANGE_TYPE_DELETED:
+                list = processor.fetchDeletedTasks();
+                break;
+
+            case RANGE_TYPE_TODO:
+                list = processor.fetchToDoTasks();
+                break;
+
+            case RANGE_TYPE_TODAY:
+                displayTab = DISPLAY_TAB_TODAY;
+                list = processor.fetchTodayTasks();
+                break;
+
+            case RANGE_TYPE_TOMORROW:
+                displayTab = DISPLAY_TAB_TOMORROW;
+                list = processor.fetchTomorrowTasks();
+                break;
+
+            case RANGE_TYPE_UPCOMING:
+                displayTab = DISPLAY_TAB_UPCOMING;
+                list = processor.fetchNextWeekTasks();
+                break;
+
+            case RANGE_TYPE_SOMEDAY:
+                displayTab = DISPLAY_TAB_SOMEDAY;
+                list = processor.fetchFloatingTasks();
+                break;
+
+            case RANGE_TYPE_SEARCH:
+                list = processor.fetchLastSearch();
+                break;
+
+            default:
+                assert false : "Invalid rangeType - Received: " + rangeType;
+
+        }
+
+        return new Result(list, success, getType(), displayTab);
+    }
+
+    @Override
+    public String get(String field) {
+        switch (field) {
+            case PARAM_RANGE_TYPE:
+                return this.rangeType;
+
+            case PARAM_ID:
+                return this.id;
+
+            default:
+                return null;
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "cmddisplay rangetype: " + this.rangeType + " id: " + this.id;
+    }
+
+    @Override
+    protected Result executeComplement() {
+        return new Result();
+    }
+}
+
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\logic\CommandDisplay.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\logic\CommandDone.java
+	 */
+
+package logic;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import objects.DateTime;
+import objects.Task;
+import objects.TaskParam;
+import parser.Parser;
+
+/**
+ * This class extends abstract class Command. CommandDone class is associated
+ * with operations related to the done/todo operations
+ *
+ */
+public class CommandDone extends Command {
+
+    private static List<Task> lastTasksRange = new ArrayList<Task>();
+
+    private String rangeType = "";
+
+    private String id = "";
+
+    private DateTime dateTime = new DateTime();
+
+    /* Complement Command object of this Command Object */
+    private CommandTodo cmdTodo = null;
+
+    public CommandDone(List<TaskParam> content) {
+        this(content, false);
+    }
+
+    protected CommandDone(List<TaskParam> content, boolean isComplement) {
+        assert content != null : "Constructor param is null";
+        assert !content.isEmpty() : "Constructor param is empty";
+        
+        this.type = CommandType.DONE;
+
+        for (TaskParam param : content) {
+            constructUsingParam(param);
+        }
+        initialiseComplementCommand(content);
+    }
+
+    private void constructUsingParam(TaskParam param) {
+        switch (param.getName()) {
+            case PARAM_RANGE_TYPE:
+                this.rangeType = param.getField();
+                break;
+
+            case PARAM_ID:
+                this.id = param.getField();
+                break;
+
+            case PARAM_DATE:
+                assert (Parser.isValidDate(param.getField())) : "Invalid date for done";
+                this.dateTime = Parser.parseToDateTime(param.getField());
+                break;
+
+            default:
+                assert false : "Invalid input - Received: " + param.getName();
+        }
+    }
+
+    /**
+     * This method initialises the CommandTodo object.
+     * <p>
+     * This object is used when performing when performing complement
+     * operations.
+     * 
+     * @param content
+     *            - Contains a list of TaskParam objects similar to it's parent
+     *            Command
+     */
+    private void initialiseComplementCommand(List<TaskParam> content) {
+        this.cmdTodo = new CommandTodo(content, true);
+    }
+
+    /**
+     * This method executes the "done" operation
+     * <p>
+     * This is executed using the command:<br>
+     * <i>done {@literal<id>}</i> or <i>done {@literal<date>}</i>
+     * <p>
+     * This method marks either one/several Tasks as "done"
+     * 
+     * @return {@link logic.Result#Result(List, boolean, CommandType, boolean, String)
+     *         Result}
+     */
+    @Override
+    protected Result execute(boolean userInput) {
+        Processor.log("Executing 'Done' Command...");
+        List<Task> list = new ArrayList<Task>();
+        boolean success = false;
+
+        switch (rangeType) {
+            case RANGE_TYPE_ID:
+                success = doneById(list);
+                break;
+
+            case RANGE_TYPE_DATE:
+                success = doneByDate(list);
+                break;
+
+            default:
+                assert false : "Invalid input - Received: " + rangeType;
+
+        }
+
+        return new Result(list, success, getType(), DISPLAY_TAB_NO_CHANGE);
+    }
+
+    private boolean doneById(List<Task> list) {
+        Processor processor = Processor.getInstance();
+        int taskId = Integer.parseInt(id);
+        Task task = processor.getFile().getTask(taskId);
+        boolean success = processor.getFile().markDone(task);
+        if (success) {
+            list.add(task);
+        }
+        return success;
+    }
+
+    private boolean doneByDate(List<Task> list) {
+        boolean success = false;
+        selectTasks(list);
+        if (list.size() > 0) {
+            success = true;
+        }
+        markSelectedTasksAsDone(list);
+        return success;
+    }
+
+    private void selectTasks(List<Task> list) {
+        Processor processor = Processor.getInstance();
+        for (Task task : processor.getFile().getToDoTasks()) {
+            if (task.getDue().getDate().equals(this.dateTime.getDate())) {
+                list.add(task);
+            }
+        }
+    }
+
+    private void markSelectedTasksAsDone(List<Task> list) {
+        Processor processor = Processor.getInstance();
+        for (Task task : list) {
+            lastTasksRange.add(task);
+            processor.getFile().markDone(task);
+        }
+    }
+
+    /**
+     * This method executes the "todo" operation
+     * <p>
+     * Marks a "done" task as "todo"
+     * <p>
+     * Refer to {@link logic.CommandTodo#execute(boolean)
+     * CommandTodo.execute(boolean)}
+     * 
+     * @return {@link logic.Result#Result(List, boolean, CommandType, boolean)
+     *         Result}
+     */
+    @Override
+    protected Result executeComplement() {
+        Result result = this.cmdTodo.execute(false);
+        if (result.isSuccess()) {
+            lastTasksRange.clear();
+        }
+        return result;
+    }
+
+    /**
+     * This method fetches a list of Tasks which are done in the last 'done'
+     * operation
+     * <p>
+     * For <i>done {@literal<id>}</i>, the list will contain only one Task.<br>
+     * For <i>done {@literal<date>}</i>, the list will contain only several
+     * Tasks.
+     * 
+     * @return List{@literal<Task>}
+     */
+    protected static List<Task> fetchLastDoneTasks() {
+        return lastTasksRange;
+    }
+
+    @Override
+    public String get(String field) {
+        switch (field) {
+            case PARAM_RANGE_TYPE:
+                return this.rangeType;
+
+            case PARAM_ID:
+                return this.id;
+
+            case PARAM_DATE:
+                return this.dateTime.toString();
+
+            default:
+                return null;
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "cmddone rangetype: " + this.rangeType + " id: " + this.id +
+               " date: " + this.dateTime.toString();
+    }
+}
+
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\logic\CommandDone.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\logic\CommandEdit.java
+	 */
+
+package logic;
+
+import java.util.List;
+import java.util.ArrayList;
+
+import objects.DateTime;
+import objects.Task;
+import objects.TaskParam;
+import parser.Parser;
+
+/**
+ * This class extends abstract class Command. CommandEdit performs operations
+ * related to the changing of Task parameters (excludes it's 'done' status).
+ * 
+ */
+public class CommandEdit extends Command {
+
+    private String id = "";
+    private String name = "";
+    private DateTime due = new DateTime();
+    private DateTime start = new DateTime();
+    private List<String> tags = new ArrayList<String>();
+    private List<String> delete = new ArrayList<String>();
+
+    public CommandEdit(List<TaskParam> content) {
+        assert content != null : "Constructor param is null";
+        assert !content.isEmpty() : "Constructor param is empty";
+        
+        this.type = CommandType.EDIT;
+        for (TaskParam param : content) {
+            constructUsingParam(param);
+        }
+    }
+
+    private void constructUsingParam(TaskParam param) {
+        switch (param.getName()) {
+            case PARAM_ID:
+                this.id = param.getField();
+                break;
+
+            case PARAM_NAME:
+                this.name = param.getField();
+                break;
+
+            case PARAM_DUE:
+                this.due = Parser.parseToDateTime(param.getField());
+                break;
+
+            case PARAM_START:
+                this.start = Parser.parseToDateTime(param.getField());
+                break;
+
+            case PARAM_TAG:
+                this.tags.add(param.getField());
+                break;
+
+            case PARAM_DELETE:
+                this.delete.add(param.getField());
+                break;
+
+            default:
+                assert false : "Invalid constructor param - Received: " +
+                               param.getName();
+        }
+    }
+
+    @Override
+    public String get(String paramName) {
+        switch (paramName) {
+            case PARAM_ID:
+                return this.id;
+
+            case PARAM_NAME:
+                return this.name;
+
+            case PARAM_START:
+                return this.start.toString();
+
+            case PARAM_DUE:
+                return this.due.toString();
+
+            default:
+                return null;
+        }
+    }
+
+    public List<String> getTags() {
+        return this.tags;
+    }
+
+    /** Returns delete parameter names (Task fields to delete). */
+    public List<String> getDelete() {
+        return this.delete;
+    }
+
+    /**
+     * This method executes the "edit" operation. It performs edit/deletion of
+     * parameters of a Task
+     * 
+     * @return {@link logic.Result#Result(List, boolean, CommandType, boolean, String)
+     *         Result}
+     */
+    @Override
+    protected Result execute(boolean userInput) {
+        Processor.log("Executing 'Edit' Command...");
+        Processor processor = Processor.getInstance();
+        List<Task> list = new ArrayList<Task>();
+        boolean success = false;
+
+        int taskId = getTaskId();
+        Task existingTask = processor.getFile().getTask(taskId);
+        
+        if (existingTask != null) {
+            Task oldTask = new Task(existingTask);
+            updateDeletedParam();
+            success = canEditTask(list, existingTask, oldTask);
+        }
+        return new Result(list, success, getType(), DISPLAY_TAB_NO_CHANGE);
+    }
+
+    private boolean canEditTask(List<Task> list, Task existingTask, Task oldTask) {
+        Processor processor = Processor.getInstance();
+        boolean success = processor.getFile().edit(existingTask, name, start,
+                                                   due, tags);
+        if (success) {
+            updateProcessorInfo(list, oldTask, existingTask);
+        }
+        return success;
+    }
+
+    private void updateDeletedParam() {
+        for (String deleteParam : delete) {
+            switch (deleteParam) {
+                case DELETE_NAME:
+                    name = null;
+                    break;
+
+                case DELETE_DUE:
+                    due = null;
+                    break;
+
+                case DELETE_START:
+                    start = null;
+                    break;
+
+                case DELETE_TAGS:
+                    tags = null;
+                    break;
+
+                default:
+                    assert false : "Invalid delete param - Received: " +
+                                   deleteParam;
+            }
+        }
+    }
+
+    private int getTaskId() {
+        int taskId = 0;
+        try {
+            taskId = Integer.parseInt(id);
+        } catch (Exception e) {
+            if (Log.LOGGING_ENABLED) {
+                Log.getLogger().warning("Invalid Task Id!");
+            }
+        }
+        return taskId;
+    }
+
+    private void updateProcessorInfo(List<Task> list, Task oldTask,
+                                     Task existingTask) {
+        Processor processor = Processor.getInstance();
+        processor.getEditedTaskHistory().push(oldTask);
+        list.add(existingTask);
+    }
+
+    /**
+     * This method reverts the last 'Edit' operation performed.
+     * 
+     * @return {@link logic.Result#Result(List, boolean, CommandType, String)
+     *         Result}
+     */
+    @Override
+    protected Result executeComplement() {
+        Processor processor = Processor.getInstance();
+        boolean success = false;
+        List<Task> tasks = new ArrayList<Task>();
+
+        Task prevTask = processor.getEditedTaskHistory().pop();
+
+        String taskName = prevTask.getName();
+        DateTime taskStart = prevTask.getStart();
+        DateTime taskDue = prevTask.getDue();
+        List<String> taskTags = prevTask.getTags();
+
+        tasks.add(prevTask);
+        success = processor.getFile().edit(prevTask.getId(), taskName,
+                                           taskStart, taskDue, taskTags);
+        return new Result(tasks, success, getType(), DISPLAY_TAB_NO_CHANGE);
+    }
+
+    @Override
+    public String toString() {
+        return "cmdedit id: " + this.id + " name: " + this.name + " start: " +
+               this.start + " due: " + this.due + " tags: " + this.tags +
+               " delete: " + this.delete;
+    }
+}
+
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\logic\CommandEdit.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\logic\CommandOthers.java
+	 */
+
+package logic;
+
+import java.util.List;
+
+/**
+ * This Command object encompasses the commands that need no other parameter
+ * inputs.
+ * <p>
+ * The following commands are included: "undo", "redo", "reset", "help", "exit".
+ * 
+ */
+public class CommandOthers extends Command {
+    private static final String TYPE_HELP = "help";
+    private static final String TYPE_RESET = "reset";
+    private static final String TYPE_UNDO = "undo";
+    private static final String TYPE_REDO = "redo";
+    private static final String TYPE_EXIT = "exit";
+
+    public CommandOthers(String type) {
+        assert type != null : "Constructor param is null";
+        assert !type.isEmpty() : "Constructor param is empty";
+
+        switch (type.toLowerCase()) {
+            case TYPE_EXIT:
+                this.type = CommandType.EXIT;
+                break;
+
+            case TYPE_REDO:
+                this.type = CommandType.REDO;
+                break;
+
+            case TYPE_UNDO:
+                this.type = CommandType.UNDO;
+                break;
+
+            case TYPE_RESET:
+                this.type = CommandType.RESET;
+                break;
+
+            case TYPE_HELP:
+                this.type = CommandType.HELP;
+                break;
+
+            default:
+                assert false : "Invalid constructor param - Received: " + type;
+        }
+    }
+
+    @Override
+    protected Result execute(boolean userInput) {
+        switch (getType()) {
+            case UNDO:
+                return executeUndo();
+
+            case REDO:
+                return executeRedo();
+
+            case EXIT:
+                return executeExit();
+
+            case RESET:
+                return executeReset();
+
+            case HELP:
+                return executeHelp();
+
+            default:
+                assert false : "Invalid command type - Received: " + getType();
+                return new Result();
+        }
+    }
+
+    protected Result executeUndo() {
+        Processor.log("Executing 'Undo' Command...");
+        Processor processor = Processor.getInstance();
+        Result r = new Result(null, false, CommandType.UNDO, "");
+        if (!processor.getBackwardCommandHistory().isEmpty()) {
+            Command backwardCommand = processor.getBackwardCommandHistory()
+                    .pop();
+            r = executeComplement(backwardCommand);
+            modifyHistory(backwardCommand, r.isSuccess(), false);
+        }
+        r.setCommandType(CommandType.UNDO);
+        return r;
+    }
+
+    private Result executeComplement(Command backwardCommand) {
+        switch (backwardCommand.getType()) {
+            case ADD:
+            case EDIT:
+            case DELETE:
+            case RESTORE:
+            case BLOCK:
+            case UNBLOCK:
+            case TODO:
+            case DONE:
+                return backwardCommand.executeComplement();
+
+            default:
+                return new Result(null, false, null, "");
+        }
+    }
+
+    /**
+     * This method executes the "redo" operation. It is applicable for 'Add',
+     * 'Edit', 'Delete', 'Restore', 'Block', 'Unblock', 'Done', 'Todo'
+     * operations.
+     * 
+     * @return {@link logic.Result#Result(List, boolean, CommandType, boolean, String)
+     *         Result}
+     */
+    protected Result executeRedo() {
+        Processor.log("Executing 'Redo' Command...");
+        Processor processor = Processor.getInstance();
+        if (!processor.getForwardCommandHistory().isEmpty()) {
+            Command forwardCommand = processor.getForwardCommandHistory().pop();
+            Result result = processor.processCommand(forwardCommand, false);
+            modifyHistory(forwardCommand, result.isSuccess(), true);
+            result.setCommandType(CommandType.REDO);
+            return result;
+        }
+        return new Result(null, false, getType(), false, DISPLAY_TAB_NO_CHANGE);
+    }
+
+    /**
+     * This method pushes command to the respective stack after undo/redo
+     * operation. Unsuccessful operations are taken into account.
+     * 
+     * @param cmd
+     *            - <code>Command</code> object
+     * @param success
+     *            - True if operation is successful.
+     * @param redo
+     *            - True for "redo" operations, False for "undo" operations.
+     */
+    private void modifyHistory(Command cmd, boolean success, boolean redo) {
+        Processor processor = Processor.getInstance();
+        if (success && redo || !success && !redo) {
+            processor.getBackwardCommandHistory().push(cmd);
+        } else {
+            processor.getForwardCommandHistory().push(cmd);
+        }
+    }
+
+    private Result executeExit() {
+        return new Result(null, true, getType(), DISPLAY_TAB_NO_CHANGE);
+    }
+
+    private Result executeReset() {
+        return new Result(null, true, getType(), DISPLAY_TAB_ALL);
+    }
+
+    private Result executeHelp() {
+        return new Result(null, true, getType(), DISPLAY_TAB_NO_CHANGE);
+    }
+
+    @Override
+    public String toString() {
+        return "cmdothers type: " + this.type;
+    }
+
+    @Override
+    protected Result executeComplement() {
+        return new Result();
+    }
+}
+
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\logic\CommandOthers.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\logic\CommandRestore.java
+	 */
+
+package logic;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import objects.Task;
+import objects.TaskParam;
+
+/**
+ * This class extends abstract class Command. CommandRestore performs operations
+ * related to the restoration of deleted Tasks only.
+ * 
+ */
+public class CommandRestore extends Command {
+
+    protected String rangeType = "";
+
+    protected String id = "";
+
+    /* Complement Command object of this Command Object */
+    protected CommandDelete cmdDelete = null;
+
+    public CommandRestore(List<TaskParam> content) {
+        this(content, false);
+    }
+
+    protected CommandRestore(List<TaskParam> content, boolean isComplement) {
+        assert content != null : "Constructor param is null";
+        assert !content.isEmpty() : "Constructor param is empty";
+        
+        this.type = CommandType.RESTORE;
+
+        for (TaskParam param : content) {
+            constructUsingParam(param);
+        }
+        if (!isComplement) {
+            initialiseComplementCommand(content);
+        }
+    }
+
+    private void constructUsingParam(TaskParam param) {
+        switch (param.getName()) {
+            case PARAM_RANGE_TYPE:
+                this.rangeType = param.getField();
+                break;
+
+            case PARAM_ID:
+                this.id = param.getField();
+                break;
+
+            default:
+                assert false : "Invalid constructor param - Received: " +
+                               param.getName();
+        }
+    }
+
+    private void initialiseComplementCommand(List<TaskParam> content) {
+        this.cmdDelete = new CommandDelete(content, true);
+    }
+
+    @Override
+    public String get(String field) {
+        switch (field) {
+            case PARAM_RANGE_TYPE:
+                return this.rangeType;
+
+            case PARAM_ID:
+                return this.id;
+
+            default:
+                return null;
+        }
+    }
+
+    /**
+     * This method executes the "Restore" operation.<br>
+     * It restores a deleted <code>Task</code>.<br>
+     * Does <i>restore {@literal<id>}</i> or <i> restore search</i> depending on
+     * the <code>CommandDelete</code> object
+     * 
+     * @return {@link logic.Result#Result(List, boolean, CommandType, boolean, String)
+     *         Result}
+     */
+    @Override
+    protected Result execute(boolean userInput) {
+        Processor.log("Executing 'Restore' Command...");
+        List<Task> list = new ArrayList<Task>();
+        boolean success = false;
+        switch (rangeType) {
+            case RANGE_TYPE_ID:
+                success = restoreUsingId(list);
+                break;
+
+            case RANGE_TYPE_SEARCH:
+                updateSearchListHistory(userInput);
+                success = restoreUsingSearch(list);
+                break;
+
+            default:
+                assert false : "Invalid rangeType - Received: " + rangeType;
+
+        }
+        return new Result(list, success, getType(), DISPLAY_TAB_NO_CHANGE);
+    }
+
+    private void updateSearchListHistory(boolean userInput) {
+        Processor processor = Processor.getInstance();
+        if (userInput) {
+            processor.getBackwardSearchListHistory()
+                    .push(processor.fetchLastSearch());
+        }
+    }
+
+    /** Restores a deleted Task using Id */
+    private boolean restoreUsingId(List<Task> list) {
+        Processor processor = Processor.getInstance();
+        int taskId = Integer.parseInt(id);
+        boolean success = false;
+        Task task = processor.getFile().getTask(taskId);
+
+        if (task != null) {
+            success = processor.getFile().restore(task);
+            if (success) {
+                list.add(task);
+            }
+        }
+        return success;
+    }
+
+    /** Restores all deleted Tasks due to 'delete search' */
+    private boolean restoreUsingSearch(List<Task> list) {
+        try {
+            Processor processor = Processor.getInstance();
+            List<Task> restoreList = processor.getBackwardSearchListHistory()
+                    .pop();
+            if (restoreList != null) {
+                restoreLastSearch(list, processor, restoreList);
+            }
+            processor.getForwardSearchListHistory().push(restoreList);
+        } catch (NullPointerException e) {
+            Log.getLogger().severe("backwardSearchListHistory is empty!");
+            return false;
+        }
+        return true;
+    }
+
+    private void restoreLastSearch(List<Task> list, Processor processor,
+                                   List<Task> restoreList) {
+        for (Task t : restoreList) {
+            boolean success = processor.getFile().restore(t);
+            if (success) {
+                list.add(t);
+            }
+        }
+    }
+
+    /**
+     * Executes "delete" operation<br>
+     * Deletes a task<br>
+     * Allows delete {@literal<id>}, delete search, delete all
+     * 
+     * @return {@link logic.Result#Result(List, boolean, CommandType, boolean)
+     *         Result}
+     */
+    @Override
+    protected Result executeComplement() {
+        return cmdDelete.execute(false);
+    }
+
+    @Override
+    public String toString() {
+        return "cmdrestore rangetype: " + this.rangeType + " id: " + this.id;
+    }
+}
+
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\logic\CommandRestore.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\logic\CommandSearch.java
+	 */
+
+package logic;
+
+import java.util.List;
+import java.util.ArrayList;
+
+import objects.Task;
+import objects.TaskParam;
+
+/**
+ * This class extends abstract class Command. CommandSearch performs search operations.
+ * Allows searching of Tasks through the use of Keywords and Dates and Tags.
+ * 
+ */
+public class CommandSearch extends Command {
+
+    private List<String> tags = new ArrayList<String>();
+
+    private List<String> keywords = new ArrayList<String>();
+
+    private String date = "";
+
+    private String status = "todo";
+
+    public CommandSearch(List<TaskParam> content) {
+        assert content != null : "Constructor param is null";
+        assert !content.isEmpty() : "Constructor param is empty";
+        
+        this.type = CommandType.SEARCH;
+
+        for (TaskParam param : content) {
+            constructUsingParam(param);
+        }
+    }
+
+    private void constructUsingParam(TaskParam param) {
+        switch (param.getName()) {
+            case PARAM_STATUS:
+                this.status = param.getField();
+                break;
+
+            case PARAM_DATE:
+                this.date = param.getField();
+                break;
+
+            case PARAM_TAG:
+                this.tags.add(param.getField());
+                break;
+
+            case PARAM_WORD:
+                this.keywords.add(param.getField());
+                break;
+
+            default:
+                assert false : "Invalid input - Received: " + param.getName();
+        }
+    }
+
+    @Override
+    public String get(String field) {
+        switch (field) {
+            case PARAM_DATE:
+                return date;
+
+            case PARAM_STATUS:
+                return status;
+
+            default:
+                return null;
+        }
+    }
+
+    public List<String> getTags() {
+        return this.tags;
+    }
+
+    public List<String> getKeywords() {
+        return this.keywords;
+    }
+
+    /**
+     * Executes "search" operation.
+     * <p>
+     * It will perform search operation based on the criteria of the search.
+     * Criteria of search can include <u>Keywords</u> and <u>Date</u> and
+     * <u>Tags</u><br>
+     * <code>Task</code> will have to meet all the specified criterias.<br>
+     * 
+     * @return {@link logic.Result#Result(List, boolean, CommandType, boolean)
+     *         Result}
+     */
+    @Override
+    protected Result execute(boolean userInput) {
+        Processor.log("Executing 'Search' Command...");
+
+        Processor.getInstance().initialiseNewSearchList();
+        searchUsingDateAndKeyAndTags(date, keywords, tags);
+        return new Result(Processor.getInstance().fetchLastSearch(), true,
+                getType(), DISPLAY_TAB_RESULT);
+    }
+
+    /**
+     * This method adds Tasks that matches the search criteria into the search
+     * list
+     * 
+     * @param date
+     * @param keywords
+     * @param tags
+     */
+    private void searchUsingDateAndKeyAndTags(String date,
+                                              List<String> keywords,
+                                              List<String> tags) {
+        int criteriaCount = getCriteriaCount(date, keywords, tags);
+        if (criteriaCount >= 0) {
+            List<Task> searchRange = getSearchBoundary(status);
+
+            for (Task task : searchRange) {
+                addTaskMatchingCriteria(date, keywords, tags, criteriaCount,
+                                        task);
+            }
+        }
+    }
+
+    private void addTaskMatchingCriteria(String date, List<String> keywords,
+                                         List<String> tags, int criteriaCount,
+                                         Task task) {
+        int found = criteriaCount;
+        found = getMatchingDateCount(date, task, found);
+        found = getMatchingCount(keywords, task, found);
+        found = getMatchingCount(tags, task, found);
+        // Meets all criteria
+        if (found == 0) {
+            Processor.getInstance().fetchLastSearch().add(task);
+        }
+    }
+
+    private int getMatchingDateCount(String date, Task task, int found) {
+        if (date != "") {
+            if (task.getSummary().contains(date)) {
+                found--;
+            }
+        }
+        return found;
+    }
+
+    private int getMatchingCount(List<String> list, Task task, int found) {
+        if (!list.isEmpty()) {
+            for (String key : list) {
+                if (task.getSummary().toLowerCase().contains(key.toLowerCase())) {
+                    found--;
+                    break;
+                }
+            }
+        }
+        return found;
+    }
+
+    private int getCriteriaCount(String date, List<String> keywords,
+                                 List<String> tags) {
+        int count = 0;
+        if (date != "") {
+            count++;
+        }
+
+        if (!keywords.isEmpty()) {
+            count++;
+        }
+
+        if (!tags.isEmpty()) {
+            count++;
+        }
+
+        return count;
+    }
+
+    private List<Task> getSearchBoundary(String status) {
+        List<Task> searchRange = new ArrayList<Task>();
+        
+        switch (status) {
+            case RANGE_TYPE_ALL:
+                searchRange = Processor.getInstance().getFile().getAllTasks();
+                break;
+
+            case RANGE_TYPE_DONE:
+                searchRange = Processor.getInstance().getFile().getDoneTasks();
+                break;
+
+            case RANGE_TYPE_DELETED:
+                searchRange = Processor.getInstance().getFile()
+                        .getDeletedTasks();
+                break;
+
+            case RANGE_TYPE_TODO:
+                searchRange = Processor.getInstance().getFile()
+                .getToDoTasks();
+                break;
+                
+            default:
+                assert false : "Invalid search range boundary - Received: " +
+                               status;
+        }
+        return searchRange;
+    }
+
+    @Override
+    public String toString() {
+        return "cmdsearch status: " + this.status + " date: " + this.date +
+               " tags: " + this.tags + " keywords: " + this.keywords;
+    }
+
+    @Override
+    protected Result executeComplement() {
+        return new Result();
+    }
+    /*
+     * Obsolete Codes below, due to changing of conditions for Search Command
+     * 
+     * /* Performs search using date private void searchUsingDate(String date) {
+     * List<Task> toDoTasks = Processor.getInstance().getFile().getToDoTasks();
+     * for (Task t: toDoTasks) { if (t.getDue().equals(date)) {
+     * Processor.getInstance().getLastSearch().add(t); } } }
+     * 
+     * /** Performs search using Keywords or Tags Tries to find if tags is
+     * present first before searching for keywords
+     * 
+     * private void searchUsingKeyOrTags(List<String> keywords, List<String>
+     * tags) { /*List<Task> toDoTasks =
+     * Processor.getInstance().getFile().getToDoTasks(); for (Task task:
+     * toDoTasks) { boolean found = isTagged(task, tags); if (!found) { found =
+     * containsKeyword(task, keywords); } } }
+     * 
+     * /** Checks if a Task is tagged under a tag in a List of tags private
+     * boolean isTagged(Task task, List<String> tags) { for (String tag: tags) {
+     * for (String taskTag : task.getTags()) { if (taskTag.contains(tag)) {
+     * Processor.getInstance().getLastSearch().add(task); return true; } } }
+     * return false; }
+     * 
+     * /** Checks if a Task contains a certain keyword in the List of keywords
+     * private boolean containsKeyword(Task task, List<String> keywords) { for
+     * (String key: keywords) { if
+     * (task.getName().toLowerCase().contains(key.toLowerCase())) {
+     * Processor.getInstance().getLastSearch().add(task); return true; } }
+     * return false; }
+     */
+
+}
+
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\logic\CommandSearch.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\logic\CommandTodo.java
+	 */
+
+package logic;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import objects.DateTime;
+import objects.Task;
+import objects.TaskParam;
+import parser.Parser;
+
+/**
+ * This class extends abstract class Command. CommandTodo class is associated
+ * with operations related to the done/todo operations
+ * 
+ */
+public class CommandTodo extends Command {
+
+    private String rangeType = "";
+
+    private String id = "";
+
+    private DateTime dateTime = new DateTime();
+
+    /* Complement Command object of this Command Object */
+    private CommandDone cmdDone = null;
+
+    public CommandTodo(List<TaskParam> content) {
+        this(content, false);
+    }
+
+    protected CommandTodo(List<TaskParam> content, boolean isComplement) {
+        assert content != null : "Constructor param is null";
+        assert !content.isEmpty() : "Constructor param is empty";
+        
+        this.type = CommandType.TODO;
+
+        for (TaskParam param : content) {
+            constructUsingParam(param);
+        }
+        if (!isComplement) {
+            initialiseComplementCommand(content);
+        }
+    }
+
+    private void constructUsingParam(TaskParam param) {
+        switch (param.getName()) {
+            case PARAM_RANGE_TYPE:
+                this.rangeType = param.getField();
+                break;
+
+            case PARAM_ID:
+                this.id = param.getField();
+                break;
+
+            case PARAM_DATE:
+                assert (Parser.isValidDate(param.getField())) : "Invalid date for done";
+                this.dateTime = Parser.parseToDateTime(param.getField());
+                break;
+
+            default:
+                assert false : "Invalid constructor param - Received: " +
+                               param.getName();
+        }
+    }
+
+    private void initialiseComplementCommand(List<TaskParam> content) {
+        this.cmdDone = new CommandDone(content, true);
+    }
+
+    @Override
+    public String get(String field) {
+        switch (field) {
+            case PARAM_RANGE_TYPE:
+                return this.rangeType;
+
+            case PARAM_ID:
+                return this.id;
+
+            case PARAM_DATE:
+                return this.dateTime.toString();
+
+            default:
+                return null;
+        }
+    }
+
+    /**
+     * This method executes the "todo" operation.
+     * <p>
+     * Marks a 'done' task as 'todo' or marks a range of tasks in the same
+     * 'done' date as 'todo'.
+     * 
+     * @return {@link logic.Result#Result(List, boolean, CommandType, boolean)
+     *         Result}
+     */
+    @Override
+    protected Result execute(boolean userInput) {
+        Processor.log("Executing 'Todo' Command...");
+
+        Result result = new Result(null, false, getType(),
+                DISPLAY_TAB_NO_CHANGE);
+        switch (rangeType) {
+            case RANGE_TYPE_ID:
+                result = todoById();
+                break;
+
+            case RANGE_TYPE_DATE:
+                if (!userInput) {
+                    result = todoByDate();
+                }
+                break;
+
+            default:
+                assert false : "Invalid rangeType - Received: " + rangeType;
+        }
+        return result;
+    }
+
+    private Result todoById() {
+        List<Task> list = new ArrayList<Task>();
+        boolean success = false;
+        try {
+            success = markTaskAsTodo(list);
+        } catch (NumberFormatException e) {
+            if (Log.LOGGING_ENABLED) {
+                Log.getLogger().warning("Error parsing Integer!");
+            }
+        }
+
+        return new Result(list, success, getType(), DISPLAY_TAB_NO_CHANGE);
+    }
+
+    private boolean markTaskAsTodo(List<Task> list) {
+        Processor processor = Processor.getInstance();
+        int taskId = Integer.parseInt(id);
+        Task task = processor.getFile().getTask(taskId);
+        boolean success = processor.getFile().markToDo(task);
+        if (success) {
+            list.add(task);
+        }
+        return success;
+    }
+
+    private Result todoByDate() {
+        Processor processor = Processor.getInstance();
+        List<Task> list = new ArrayList<Task>();
+        boolean success = false;
+        for (Task task : CommandDone.fetchLastDoneTasks()) {
+            success = processor.getFile().markToDo(task);
+            if (success) {
+                list.add(task);
+            }
+        }
+        return new Result(list, success, getType(), DISPLAY_TAB_NO_CHANGE);
+    }
+
+    /**
+     * This method executes the "done" operation
+     * <p>
+     * Refer to {@link logic.CommandDone#execute(boolean)
+     * CommandDone.execute(boolean)}
+     * 
+     * @return {@link logic.Result#Result(List, boolean, CommandType, boolean, String)
+     *         Result}
+     */
+    @Override
+    protected Result executeComplement() {
+        return this.cmdDone.execute(false);
+    }
+
+    @Override
+    public String toString() {
+        return "cmdtodo rangeType: " + this.rangeType + " id: " + this.id +
+               " date: " + this.dateTime;
+    }
+}
+
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\logic\CommandTodo.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\logic\CommandType.java
+	 */
+
+package logic;
+
+/**
+ * List below are the Command Type available for the different operations:
+ * <p>
+ * HELP - Displays a list of Commands to user<br>
+ * ADD - Add a Task<br>
+ * EDIT - Edit an existing Task<br>
+ * DELETE - Deletes an existing Task<br>
+ * RESTORE - Restores a deleted Task<br>
+ * SEARCH - Search using keywords/tags of existing Task<br>
+ * DISPLAY - Shows/Displays existing Tasks<br>
+ * BLOCK - Blocks a date<br>
+ * UNBLOCK - Unblocks a blocked date<br>
+ * DONE - Marks a task as done<br>
+ * TODO - Marks a task as todo<br>
+ * UNDO - Undo last action<br>
+ * REDO - Redo last action undone<br>
+ * EXIT - Exits from program<br>
+ * RESET - Wipes all existing data<br>
+ * 
+ */
+public enum CommandType {
+    HELP, ADD, EDIT, DELETE, RESTORE, SEARCH, DISPLAY, BLOCK, UNBLOCK, DONE, TODO, UNDO, REDO, EXIT, RESET;
+}
+
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\logic\CommandType.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\logic\CommandUnblock.java
+	 */
+
+package logic;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import objects.Task;
+import objects.TaskParam;
+
+/**
+ * OBSOLETE CLASS
+ * 
+ */
+public class CommandUnblock extends Command {
+
+    protected String id;
+
+    public CommandUnblock(List<TaskParam> content) {
+        this(content, false);
+    }
+
+    protected CommandUnblock(List<TaskParam> content, boolean isComplement) {
+        assert (content != null);
+        assert (!content.isEmpty());
+        this.type = CommandType.UNBLOCK;
+
+        for (TaskParam param : (List<TaskParam>) content) {
+            constructUsingParam(param);
+        }
+    }
+
+    private void constructUsingParam(TaskParam param) {
+        switch (param.getName()) {
+            case "id":
+                this.id = param.getField();
+                break;
+
+            default:
+                assert false : "Invalid constructor param - Received: " +
+                               param.getName();
+        }
+    }
+
+    @Override
+    public String get(String field) {
+        switch (field) {
+            case "id":
+                return this.id;
+
+            default:
+                return null;
+        }
+    }
+
+    /**
+     * Executes Block Command
+     * 
+     * @param userInput
+     * @return Result
+     */
+    @Override
+    protected Result execute(boolean userInput) {
+        Processor.log("Executing 'Unblock' Command...");
+        Processor processor = Processor.getInstance();
+        boolean success = false;
+        int unblockId = Integer.parseInt(id);
+        List<Task> outputs = new ArrayList<Task>();
+
+        if (unblockId > 0) {
+            Task blockDate = processor.getFile().getTask(unblockId);
+            if (blockDate != null) {
+                success = processor.getFile().delete(blockDate);
+                outputs.add(blockDate);
+                success = true;
+            }
+        }
+
+        return new Result(outputs, success, CommandType.UNBLOCK,
+                DISPLAY_TAB_NO_CHANGE);
+    }
+
+    @Override
+    protected Result executeComplement() {
+        boolean success = false;
+        Processor processor = Processor.getInstance();
+        List<Task> outputs = new ArrayList<Task>();
+        int unblockId = Integer.parseInt(id);
+        success = processor.getFile().restore(unblockId);
+        Task blockDate = processor.getFile().getTask(unblockId);
+        outputs.add(blockDate);
+        return new Result(outputs, success, CommandType.BLOCK,
+                DISPLAY_TAB_NO_CHANGE);
+    }
+
+    @Override
+    public String toString() {
+        return "cmdunblock id: " + this.id;
+    }
+}
+
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\logic\CommandUnblock.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\logic\Log.java
+	 */
+
+package logic;
+
+import java.util.logging.FileHandler;
+import java.util.logging.Formatter;
+import java.util.logging.Logger;
+
+public class Log {
+
+    /** Logger for monitoring purposes */
+    public final static boolean LOGGING_ENABLED = true;
+    private static final Logger log = Logger.getLogger("Logger");
+    
+    protected static void initialiseLogger() {
+        if (LOGGING_ENABLED) {
+            try {
+                FileHandler fh = new FileHandler("System.log", true);
+                Formatter format = new LogFormatter();
+                fh.setFormatter(format);
+                log.addHandler(fh);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    
+    public static Logger getLogger() {
+        return log;
+    }
+
+}
+
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\logic\Log.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\logic\LogFormatter.java
+	 */
+
+package logic;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.logging.Formatter;
+import java.util.logging.LogRecord;
+
+/**
+ * Formatter for the Logger. Overrides <code>format</code> method
+ * 
+ */
+public class LogFormatter extends Formatter {
+
+    private static final DateFormat df = new SimpleDateFormat(
+            "dd/MM/yyyy hh:mm:ss");
+
+    @Override
+    public String format(LogRecord record) {
+        String date = df.format(new Date(record.getMillis())).toString();
+        String className = record.getSourceClassName();
+        String methodName = record.getSourceMethodName();
+        String level = record.getLevel().toString();
+        String message = record.getMessage();
+        return "[" + date + "] - " + level + ": " + message + " ::: " +
+               className + " - " + methodName + "\n";
+    }
+}
+
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\logic\LogFormatter.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\logic\Processor.java
+	 */
+
+package logic;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Stack;
+
+import objects.DatabaseFacadeStub;
+import objects.DateTime;
+import objects.Task;
+import parser.Parser;
+import database.DatabaseFacade;
+
+//import java.util.Observable; - Observer pattern not implemented
+
+/**
+ * This class handles inputs from UI and interacts with other components for the
+ * necessary operations. It is dependent on <code>database</code> package for
+ * operations related to the management of storage of <code>Task</code>. It is
+ * also dependent on <code>parser</code> package to decipher the user input.
+ * <p>
+ * <i>Singleton pattern is applied and only <u>one</u> instance of Processor is
+ * available per thread.</i>
+ * <p>
+ * Result object is being returned to the user interface for display purposes.
+ * 
+ */
+public class Processor {
+
+    protected static boolean IS_UNIT_TEST = false;
+
+    /** Instance of Processor */
+    private static Processor processor;
+
+    /** Instance of DatabaseFacade */
+    private DatabaseFacade file;
+
+    /** Stores Command History for Undo */
+    private Stack<Command> backwardCommandHistory;
+
+    /** Stores Command History for Redo */
+    private Stack<Command> forwardCommandHistory;
+
+    /** Stores Search History for Undo Operations */
+    private Stack<List<Task>> backwardSearchListHistory;
+
+    /** Stores Search History for Redo Operations */
+    private Stack<List<Task>> forwardSearchListHistory;
+
+    /** Stores Task objects that are being edited */
+    private Stack<Task> editedTaskHistory;
+
+    /** Last search performed */
+    private List<Task> lastSearch;
+
+    /** List of Tasks without Due date/time */
+    private List<Task> floatingTasks;
+
+    /** Stores input string for 'up' key **/
+    private Stack<String> inputStringBackwardHistory;
+
+    private String currentInputString;
+
+    /** Stores input string for 'down' key **/
+    private Stack<String> inputStringForwardHistory;
+
+    /**
+     * Default Constructor for Processor.
+     * <p>
+     * Injects dependency to the UI
+     */
+    private Processor() {
+        this(IS_UNIT_TEST);
+    }
+
+    private Processor(boolean isTest) {
+        if (isTest) {
+            file = new DatabaseFacadeStub();
+        } else {
+            file = new DatabaseFacade();
+        }
+        initialiseProcessor();
+        Log.initialiseLogger();
+        updateFloatingTasksList();
+    }
+
+    private void initialiseProcessor() {
+        backwardCommandHistory = new Stack<Command>();
+        forwardCommandHistory = new Stack<Command>();
+        backwardSearchListHistory = new Stack<List<Task>>();
+        forwardSearchListHistory = new Stack<List<Task>>();
+        editedTaskHistory = new Stack<Task>();
+        lastSearch = new ArrayList<Task>();
+        floatingTasks = new ArrayList<Task>();
+        inputStringBackwardHistory = new Stack<String>();
+        inputStringForwardHistory = new Stack<String>();
+        currentInputString = "";
+    }
+
+    /**
+     * This method returns an instance of Processor
+     * 
+     * @return Instance of Processor
+     */
+    public static Processor getInstance() {
+        if (processor == null) {
+            processor = new Processor();
+        }
+        return processor;
+    }
+
+    /**
+     * This method resets the instance of Processor By resetting the instance of
+     * processor, the DataFile is also wiped. This bring the program back to its
+     * initial state.
+     * 
+     * @return Instance of Processor
+     */
+    public static Processor reset() {
+        processor.wipeFile();
+        processor = new Processor();
+        return processor;
+    }
+
+    /**
+     * This method processes the input that is typed in by the user through the
+     * text box provided in the interface.
+     * 
+     * @param input
+     *            - Input given by the user.
+     * @return {@link logic.Result#Result(List, boolean, CommandType, boolean)
+     *         Result}
+     * @throws IllegalArgumentException
+     */
+    public Result processInput(String input) throws IllegalArgumentException {
+        assert input != null;
+        if (Log.LOGGING_ENABLED) {
+            Log.getLogger().warning("Command entered: " + input);
+        }
+        updateInputHistory(input);
+        Command cmd = Parser.parse(input);
+        assert cmd != null;
+        return processCommand(cmd);
+    }
+
+    private void updateInputHistory(String input) {
+        for (String strInput : inputStringForwardHistory) {
+            if (!strInput.isEmpty()) {
+                inputStringBackwardHistory.push(strInput);
+            }
+        }
+        inputStringForwardHistory.clear();
+        inputStringBackwardHistory.push(input);
+    }
+
+    /**
+     * Overloaded by method processCommand(Command, boolean)
+     * 
+     * @param Cmd
+     */
+    protected Result processCommand(Command cmd) {
+        return processCommand(cmd, true);
+    }
+
+    /**
+     * Executes the appropriate actions for each command.
+     * 
+     * @param cmd
+     *            - Command object returned from Parser.
+     * @param userInput
+     *            - True if the command was given by the user.
+     * 
+     * @return {@link logic.Result#Result(List, boolean, CommandType, boolean)
+     *         Result}
+     */
+    protected Result processCommand(Command cmd, boolean userInput) {
+        if (cmd == null || cmd.getType() == null) {
+            if (Log.LOGGING_ENABLED) {
+                Log.getLogger().warning("Error in the input, unable to perform operation.");
+            }
+            return new Result(null, false, null, "");
+        } else {
+            Result result = cmd.execute(userInput);
+            if (result.isSuccess() && !result.needsConfirmation() && userInput) {
+                updateCommandHistory(cmd);
+                log(result.getCommandType() + " Command executed successfully");
+            }
+            updateFloatingTasksList();
+            return result;
+        }
+    }
+
+    protected static void log(String output) {
+        if (Log.LOGGING_ENABLED) {
+            Log.getLogger().info(output);
+        }
+    }
+
+    /**
+     * This method updates the command history. Only commands that modifies
+     * <code>Task</code> objects will be added into the history. Forward command
+     * history will be cleared when a <code>Command</code> is added, similar to
+     * how a web browser history works.
+     * 
+     * @param cmd
+     */
+    private void updateCommandHistory(Command cmd) {
+        if (hasModifiedData(cmd)) {
+            forwardCommandHistory.clear();
+            backwardCommandHistory.push(cmd);
+        }
+    }
+
+    private boolean hasModifiedData(Command cmd) {
+        switch (cmd.getType()) {
+            case ADD:
+            case DELETE:
+            case EDIT:
+            case RESTORE:
+            case BLOCK:
+            case UNBLOCK:
+            case DONE:
+            case TODO:
+            case RESET:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    private void updateFloatingTasksList() {
+        clearFloatingTaskList();
+        for (Task task : file.getToDoTasks()) {
+            if (task.getDue().isEmpty()) {
+                floatingTasks.add(task);
+            }
+        }
+    }
+
+    private void clearFloatingTaskList() {
+        floatingTasks.clear();
+    }
+
+    private boolean wipeFile() {
+        return file.resetData();
+    }
+
+    /**
+     * This method fetches the previous command entered. Returns an empty string
+     * if there is no last command entered
+     * 
+     * @return String
+     */
+    public String fetchPreviousCommand() {
+        if (!inputStringBackwardHistory.isEmpty()) {
+            inputStringForwardHistory.push(currentInputString);
+            currentInputString = inputStringBackwardHistory.pop();
+        }
+        return currentInputString;
+    }
+
+    /**
+     * This method fetches the next command entered. Returns an empty string if
+     * there is no last command entered.
+     * 
+     * @return String
+     */
+    public String fetchNextCommand() {
+        if (!inputStringForwardHistory.isEmpty()) {
+            inputStringBackwardHistory.push(currentInputString);
+            currentInputString = inputStringForwardHistory.pop();
+        }
+        return currentInputString;
+    }
+
+    /**
+     * This method fetches results from the last search performed.
+     * 
+     * @return List{@literal<Task>} - Last search result
+     */
+    public List<Task> fetchSearchList() {
+        return Collections.unmodifiableList(lastSearch);
+    }
+
+    /**
+     * This method fetches all the tasks (inclusive of todo, done, block).
+     * 
+     * @return List{@literal<Task>} - All Tasks
+     */
+    public List<Task> fetchAllTasks() {
+        return file.getAllTasks();
+    }
+
+    /**
+     * This method fetches the task by Id.
+     * 
+     * @return {@link objects.Task#Task(String, DateTime, DateTime, DateTime, List, database.TaskType)
+     *         Task}
+     */
+    public Task fetchTaskById(int taskId) {
+        return processor.getFile().getTask(taskId);
+    }
+
+    /**
+     * This method fetches tasks that have no due dates
+     * 
+     * @return List{@literal<Task>} - Someday/Floating tasks
+     */
+    public List<Task> fetchFloatingTasks() {
+        log("Fetching Floating Tasks");
+        return Collections.unmodifiableList(floatingTasks);
+    }
+
+    /**
+     * This method fetches tasks that have status marked as {@code Todo}
+     * 
+     * @return List{@literal<Task>} - {@code Todo} tasks
+     */
+    public List<Task> fetchToDoTasks() {
+        log("Fetching Todo Tasks");
+        return file.getToDoTasks();
+    }
+
+    /**
+     * This method fetches tasks that have status marked as {@code Done}
+     * 
+     * @return List{@literal<Task>} - {@code Done} tasks
+     */
+    public List<Task> fetchDoneTasks() {
+        log("Fetching Done Tasks");
+        return file.getDoneTasks();
+    }
+
+    /**
+     * This method fetches tasks that have status marked as {@code Deleted}
+     * 
+     * @return List{@literal<Task>} - {@code Deleted} tasks
+     */
+    public List<Task> fetchDeletedTasks() {
+        log("Fetching Deleted Tasks");
+        return file.getDeletedTasks();
+    }
+
+    /**
+     * This method fetches tasks that have status marked as {@code Block}
+     * 
+     * @return List{@literal<Task>} - {@code Block} tasks
+     */
+    public List<Task> fetchBlockTasks() {
+        log("Fetching Block Tasks");
+        return file.getBlockTasks();
+    }
+
+    /**
+     * This method fetches tasks that start or end today
+     * 
+     * @return List{@literal<Task>} - Tasks which start/due today
+     */
+    public List<Task> fetchTodayTasks() {
+        log("Fetching Today Tasks");
+        String todayDateStr = Parser.getCurrDateStr();
+        DateTime todayDate = new DateTime(Parser.getCurrDateStr(), "2359");
+        List<Task> output = new ArrayList<Task>();
+        for (Task task : file.getAllTasks()) {
+            if (hasSameDueOrStart(todayDateStr, task)) {
+                output.add(task);
+            } else if (isLaterThanDate(todayDate, task)) {
+                break;
+            }
+        }
+        return output;
+    }
+
+    private boolean hasSameDueOrStart(String dateStr, Task task) {
+        return task.getStart().getDate().equals(dateStr) ||
+                task.getDue().getDate().equals(dateStr);
+    }
+
+    private boolean isLaterThanDate(DateTime date, Task task) {
+        return !task.getDue().isEarlierThan(date) &&
+                   !task.getStart().isEarlierThan(date);
+    }
+
+    /**
+     * This method fetches tasks that have start/due dates tomorrow
+     * 
+     * @return List{@literal<Task>} - Tasks which have start/due tomorrow
+     */
+    public List<Task> fetchTomorrowTasks() {
+        log("Fetching Tomorrow Tasks");
+        String tmrDateStr = Parser.getTmrDateStr();
+        DateTime tmrDate = new DateTime(tmrDateStr, "2359");
+        List<Task> output = new ArrayList<Task>();
+        for (Task task : file.getAllTasks()) {
+            if (hasSameDueOrStart(tmrDateStr, task)) {
+                output.add(task);
+            } else if (isLaterThanDate(tmrDate, task)) {
+                break;
+            }
+        }
+        return output;
+    }
+
+    /**
+     * This method fetches tasks that have start/due dates within the next 2
+     * weeks, but do not fall in today or tomorrow.
+     * 
+     * @return List{@literal<Task>} - Tasks which have start/due within the next
+     *         2 weeks
+     */
+    public List<Task> fetchNextWeekTasks() {
+        log("Fetching Next Week Tasks");
+        // Anything that falls after tomorrow but is earlier than 15 days later
+        // is "within the next 2 weeks"
+        String tmrDate = Parser.getDateFromNowStr(2);
+        DateTime tmr = new DateTime(tmrDate, "2359");
+        String fifteenDaysLaterDate = Parser.getDateFromNowStr(15);
+        DateTime fifteenDaysLater = new DateTime(fifteenDaysLaterDate, "0000");
+
+        List<Task> output = new ArrayList<Task>();
+        for (Task task : file.getAllTasks()) {
+            DateTime currDue = task.getDue();
+            DateTime currStart = task.getStart();
+            if (dateIsBetween(tmr, fifteenDaysLater, currDue) ||
+                dateIsBetween(tmr, fifteenDaysLater, currStart)) {
+                output.add(task);
+            }
+        }
+        return output;
+    }
+
+    /**
+     * Returns true if input <code>date</code> is later than
+     * <code>rangeStartEx</code> and is earlier than <code>rangeEndEx</code>.
+     * <p>
+     * <i>Note that the range is "exclusive"; dates equal to start/end DateTimes
+     * are <u>not</u> considered "between" them.</i>
+     */
+    private boolean dateIsBetween(DateTime rangeStartEx, DateTime rangeEndEx,
+                                  DateTime date) {
+        return date.isLaterThan(rangeStartEx) && date.isEarlierThan(rangeEndEx);
+    }
+
+    protected DatabaseFacade getFile() {
+        return file;
+    }
+
+    protected Stack<Task> getEditedTaskHistory() {
+        return editedTaskHistory;
+    }
+
+    protected Stack<Command> getBackwardCommandHistory() {
+        return backwardCommandHistory;
+    }
+
+    protected Stack<Command> getForwardCommandHistory() {
+        return forwardCommandHistory;
+    }
+
+    protected Stack<List<Task>> getBackwardSearchListHistory() {
+        return backwardSearchListHistory;
+    }
+
+    protected Stack<List<Task>> getForwardSearchListHistory() {
+        return forwardSearchListHistory;
+    }
+
+    protected List<Task> fetchLastSearch() {
+        return lastSearch;
+    }
+
+    protected void initialiseNewSearchList() {
+        lastSearch = new ArrayList<Task>();
+    }
+
+    /*-- OBSOLETE CODE -- 
+    private void updateUIPaneWindow() {
+        updateFloatingAndTimedTasks();
+        setChanged(); notifyObservers("updateui"); 
+        if (LOGGING_ENABLED) {
+            log.info("Updated side panel.");
+        }
+    }
+    
+    /*
+     * This method fetches tasks that have due dates
+     * 
+     * @return List{@literal<Task>} - Tasks which contains time
+     *
+    public List<Task> fetchTimedTasks() {
+        if (LOGGING_ENABLED) {
+            log.info("Fetching Timed Tasks");
+        }
+        return Collections.unmodifiableList(timedTasks);
+    }
+     */
+}
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\logic\Processor.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\logic\Result.java
+	 */
+
+package logic;
+
+import java.util.List;
+
+import objects.Task;
+
+/**
+ * A Result object contains the necessary information of an operation. These
+ * information that is being held inside the Result object consists of <i>the
+ * Task(s) affected</i>, the <i>successfulness of the operation performed</i>,
+ * the <i>type of operation</i> performed, the <i>display tab that the UI should
+ * switch to</i> after the operation and whether the <i>operation requires a
+ * confirmation check</i> from the user. <br>
+ * It is being returned from Processor via processInput(String).
+ *
+ */
+public class Result {
+
+    // Contains Task Objects that are affected in an operation
+    private List<Task> outputs;
+
+    // True if the operation performed is successful, else False.
+    private boolean success;
+
+    private CommandType cmdType;
+
+    private boolean confirmation;
+
+    private String displayTab;
+
+    /**
+     * Default Constructor for Result.
+     * <p>
+     * Used as an invalid Result
+     * 
+     */
+    public Result() {
+        this(null, false, null, false, null);
+    }
+
+    /**
+     * Constructor for Result Object
+     * <p>
+     * Calls {@link #Result(List, boolean, CommandType, boolean, displayTab)
+     * Result(List, boolean, CommandType, boolean, false, displayTab)}<br>
+     * <code> </code>
+     * <p>
+     * 
+     * @param outputs
+     *            - Contains relevant outputs for the user
+     * @param success
+     *            - {@code true} if operation is successful, else {@code false}.
+     * @param cmdType
+     *            - CommandType of the operation performed.
+     * @param displayTab
+     *            - The tab that the result is suppose to be displayed on.
+     *
+     */
+    public Result(List<Task> outputs, boolean success, CommandType cmdType,
+            String displayTab) {
+        this(outputs, success, cmdType, false, displayTab);
+    }
+
+    /**
+     * Overloaded Constructor for Result Object
+     * 
+     * @param outputs
+     *            - Contains relevant outputs for the user
+     * @param success
+     *            - {@code true} if operation is successful, else {@code false}.
+     * @param cmdType
+     *            - CommandType of the operation performed.
+     * @param confirmation
+     *            - {@code true} if requires confirmation from user,
+     *            {@code false} if no further action is require from the user.
+     * @param displayTab
+     *            - The tab that the result is suppose to be displayed on
+     */
+    public Result(List<Task> outputs, boolean success, CommandType cmdType,
+            boolean confirmation, String displayTab) {
+        this.outputs = outputs;
+        this.success = success;
+        this.cmdType = cmdType;
+        this.confirmation = confirmation;
+        this.displayTab = displayTab;
+    }
+
+    /** Accessors */
+    public List<Task> getTasks() {
+        return outputs;
+    }
+    
+    public boolean isSuccess() {
+        return success;
+    }
+
+    public CommandType getCommandType() {
+        return cmdType;
+    }
+
+    public boolean needsConfirmation() {
+        return confirmation;
+    }
+
+    public String getDisplayTab() {
+        return displayTab;
+    }
+
+    /** Mutators */
+    public void setSuccess(boolean success) {
+        this.success = success;
+    }
+
+    public void setCommandType(CommandType cmdType) {
+        this.cmdType = cmdType;
+    }
+
+    @Override
+    public String toString() {
+        return outputs + "[" + success + "][" + cmdType + "][" + confirmation +
+               "][" + displayTab + "]";
+    }
+}
+
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\logic\Result.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\test\logic\LogicUnitTest.java
+	 */
+
+package logic;
+
+import static org.junit.Assert.*;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import objects.TaskParam;
+import objects.TaskParamStub;
+
+import org.junit.Before;
+import org.junit.Test;
+
+/** 
+ * Unit Testing for Logic Component.
+ * Tested using some dependency injection.
+ * 
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\test\logic\LogicUnitTest.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\test\logic\LogicUnitTest.java
+	 */
+
+ */
+public class LogicUnitTest {
+
+    public Processor processor;
+
+    @Before
+    public void initialise() {
+        Processor.IS_UNIT_TEST = true;
+        processor = Processor.getInstance();
+        Processor.reset();
+    }
+    
+    @Test
+    public void testAddCommand() {
+        TaskParamStub name = new TaskParamStub("name", "Do CS2103 Homework");
+        TaskParamStub due = new TaskParamStub("due", "10/10/2014 1200");
+        TaskParamStub start = new TaskParamStub("start", "09/10/2014 1200");
+        TaskParamStub tag = new TaskParamStub("tag", "#CS2103");
+        List<TaskParam> contents = new ArrayList<TaskParam>();
+
+        // Add with Name
+        CommandAdd cmd = new CommandAdd(contents);
+        Result result = cmd.execute(true);
+        contents.add(name);
+        cmd = new CommandAdd(contents);
+        result = cmd.execute(true);
+        assertTrue(result.isSuccess());
+        // ------ Test path for complement
+        result = cmd.executeComplement();
+        assertTrue(result.isSuccess());
+
+        // Add with Name, due
+        contents.add(due);
+        cmd = new CommandAdd(contents);
+        result = cmd.execute(true);
+        assertTrue(result.isSuccess());
+        // ------ Test path for complement
+        result = cmd.executeComplement();
+        assertTrue(result.isSuccess());
+
+        // Add with Name, due, start
+        contents.add(start);
+        cmd = new CommandAdd(contents);
+        result = cmd.execute(true);
+        assertTrue(result.isSuccess());
+        // ------ Test path for complement
+        result = cmd.executeComplement();
+        assertTrue(result.isSuccess());
+
+        // Add with Name, due, start, tag
+        contents.add(tag);
+        cmd = new CommandAdd(contents);
+        result = cmd.execute(true);
+        assertTrue(result.isSuccess());
+        // ------ Test path for complement
+        result = cmd.executeComplement();
+        assertTrue(result.isSuccess());
+        result = cmd.executeComplement();
+        assertTrue(result.isSuccess());
+
+        // Test Retrieval of Information
+        assertTrue(cmd.get("name").equals("Do CS2103 Homework"));
+        assertTrue(cmd.get("start").equals("09/10/2014 1200"));
+        assertTrue(cmd.get("due").equals("10/10/2014 1200"));
+        assertTrue(cmd.getTags().contains("#CS2103"));
+        assertNull(cmd.get("random"));
+
+        // Other combinations of Task Parameters
+
+        // Add with Name, due, tag
+        contents.remove(start);
+        cmd = new CommandAdd(contents);
+        result = cmd.execute(true);
+        assertTrue(result.isSuccess());
+        // ------ Test path for complement
+        result = cmd.executeComplement();
+        assertTrue(result.isSuccess());
+
+        // Add with Name, start, tag
+        contents.add(start);
+        contents.remove(due);
+        cmd = new CommandAdd(contents);
+        result = cmd.execute(true);
+        assertTrue(result.isSuccess());
+        // ------ Test path for complement
+        result = cmd.executeComplement();
+        assertTrue(result.isSuccess());
+
+        // Add with Name, tag
+        contents.remove(start);
+        cmd = new CommandAdd(contents);
+        result = cmd.execute(true);
+        assertTrue(result.isSuccess());
+        // ------ Test path for complement
+        result = cmd.executeComplement();
+        assertTrue(result.isSuccess());
+
+        // Add with Name, start
+        contents.remove(tag);
+        contents.add(start);
+        cmd = new CommandAdd(contents);
+        result = cmd.execute(true);
+        assertTrue(result.isSuccess());
+        // ------ Test path for complement
+        result = cmd.executeComplement();
+        assertTrue(result.isSuccess());
+
+        // Add with start, due
+        contents.add(start);
+        contents.add(due);
+        contents.remove(name);
+        cmd = new CommandAdd(contents);
+        result = cmd.execute(true);
+        assertTrue(result.isSuccess());
+        // ------ Test path for complement
+        result = cmd.executeComplement();
+        assertTrue(result.isSuccess());
+
+        // Add with start, due, tag
+        contents.add(tag);
+        cmd = new CommandAdd(contents);
+        result = cmd.execute(true);
+        assertTrue(result.isSuccess());
+        // ------ Test path for complement
+        result = cmd.executeComplement();
+        assertTrue(result.isSuccess());
+
+        // Add with start, tag
+        contents.remove(due);
+        cmd = new CommandAdd(contents);
+        result = cmd.execute(true);
+        assertTrue(result.isSuccess());
+        // ------ Test path for complement
+        result = cmd.executeComplement();
+        assertTrue(result.isSuccess());
+
+        // Add with due, tag
+        contents.remove(start);
+        contents.add(due);
+        cmd = new CommandAdd(contents);
+        result = cmd.execute(true);
+        assertTrue(result.isSuccess());
+        // ------ Test path for complement
+        result = cmd.executeComplement();
+        assertTrue(result.isSuccess());
+
+        // Add with due
+        contents.remove(tag);
+        cmd = new CommandAdd(contents);
+        result = cmd.execute(true);
+        assertTrue(result.isSuccess());
+        // ------ Test path for complement
+        result = cmd.executeComplement();
+        assertTrue(result.isSuccess());
+
+        // Add with tag
+        contents.remove(due);
+        contents.add(tag);
+        cmd = new CommandAdd(contents);
+        result = cmd.execute(true);
+        assertTrue(result.isSuccess());
+        // ------ Test path for complement
+        result = cmd.executeComplement();
+        assertTrue(result.isSuccess());
+
+        // Test to String
+        assertNotNull(cmd.toString());
+
+    }
+
+    @Test(expected = AssertionError.class)
+    public void testEditCommand() {
+        TaskParamStub id = new TaskParamStub("id", "1");
+        TaskParamStub name = new TaskParamStub("name", "Do CS2103 Homework");
+        TaskParamStub due = new TaskParamStub("due", "10/10/2014 1200");
+        TaskParamStub start = new TaskParamStub("start", "09/10/2014 1200");
+        TaskParamStub tag = new TaskParamStub("tag", "#CS2103");
+        List<TaskParam> contents = new ArrayList<TaskParam>();
+        TaskParamStub deleteDue = new TaskParamStub("delete", "due");
+        TaskParamStub deleteStart = new TaskParamStub("delete", "start");
+        TaskParamStub deleteTags = new TaskParamStub("delete", "tags");
+
+        // Expect: Fails when ID is not given
+        CommandEdit cmd = new CommandEdit(contents);
+        Result result = cmd.execute(true);
+        assertFalse(result.isSuccess());
+
+        // Expect: Successes
+
+        // - Id
+        contents.add(id);
+        cmd = new CommandEdit(contents);
+        result = cmd.execute(true);
+        assertTrue(result.isSuccess());
+        // ------ Test path for complement
+        result = cmd.executeComplement();
+        assertTrue(result.isSuccess());
+        assertTrue(cmd.get("id").equals("1"));
+
+        // - Name
+        contents.add(name);
+        cmd = new CommandEdit(contents);
+        result = cmd.execute(true);
+        assertTrue(result.isSuccess());
+        // ------ Test path for complement
+        result = cmd.executeComplement();
+        assertTrue(result.isSuccess());
+
+        // Test Retrieval of Information - name
+        assertTrue(cmd.get("name").equals("Do CS2103 Homework"));
+
+        // - Due
+        contents.remove(name);
+        contents.add(due);
+        cmd = new CommandEdit(contents);
+        result = cmd.execute(true);
+        assertTrue(result.isSuccess());
+        // ------ Test path for complement
+        result = cmd.executeComplement();
+        assertTrue(result.isSuccess());
+
+        // Test Retrieval of Information - due
+        assertTrue(cmd.get("due").equals("10/10/2014 1200"));
+
+        // - Start
+        contents.remove(due);
+        contents.add(start);
+        cmd = new CommandEdit(contents);
+        result = cmd.execute(true);
+        assertTrue(result.isSuccess());
+        // ------ Test path for complement
+        result = cmd.executeComplement();
+        assertTrue(result.isSuccess());
+
+        // Test Retrieval of Information - start
+        assertTrue(cmd.get("start").equals("09/10/2014 1200"));
+
+        // - Tags
+        contents.remove(start);
+        contents.add(tag);
+        cmd = new CommandEdit(contents);
+        result = cmd.execute(true);
+        assertTrue(result.isSuccess());
+        // ------ Test path for complement
+        result = cmd.executeComplement();
+        assertTrue(result.isSuccess());
+
+        // Test Retrieval Information - Tags
+        assertTrue(cmd.getTags().contains("#CS2103"));
+
+        // - Delete Due
+        contents.remove(tag);
+        contents.add(deleteDue);
+        cmd = new CommandEdit(contents);
+        result = cmd.execute(true);
+        assertTrue(result.isSuccess());
+        // ------ Test path for complement
+        result = cmd.executeComplement();
+        assertTrue(result.isSuccess());
+
+        // - Delete Start
+        contents.remove(deleteDue);
+        contents.add(deleteStart);
+        cmd = new CommandEdit(contents);
+        result = cmd.execute(true);
+        assertTrue(result.isSuccess());
+        // ------ Test path for complement
+        result = cmd.executeComplement();
+        assertTrue(result.isSuccess());
+
+        // - Delete Tags
+        contents.remove(deleteStart);
+        contents.add(deleteTags);
+        cmd = new CommandEdit(contents);
+        result = cmd.execute(true);
+        assertTrue(result.isSuccess());
+        // ------ Test path for complement
+        result = cmd.executeComplement();
+        assertTrue(result.isSuccess());
+
+        // Test to String
+        assertNotNull(cmd.toString());
+    }
+
+    @Test(expected = AssertionError.class)
+    public void testDeleteCommand() {
+        List<TaskParam> contents = new ArrayList<TaskParam>();
+        CommandDelete cmd = new CommandDelete(contents);
+        Result result = cmd.execute(true);
+        // Expect: Fails when no parameter is not given
+        assertFalse(result.isSuccess());
+
+        // Expect: Success
+
+        // - Delete using <id>
+
+        // ------ Valid id: 1
+        TaskParamStub rangeType = new TaskParamStub("rangeType", "id");
+        contents.add(rangeType);
+        TaskParamStub id = new TaskParamStub("id", "1");
+        contents.add(id);
+        cmd = new CommandDelete(contents);
+        result = cmd.execute(true);
+        assertTrue(result.isSuccess());
+        // ------ Test path for complement
+        result = cmd.executeComplement();
+        assertTrue(result.isSuccess());
+        assertTrue(cmd.get("rangeType").equals("id"));
+        assertTrue(cmd.get("id").equals("1"));
+
+        // ------ Valid id (Positive id)
+        contents.remove(id);
+        id = new TaskParamStub("id", "20");
+        contents.add(id);
+        cmd = new CommandDelete(contents);
+        result = cmd.execute(true);
+        assertTrue(result.isSuccess());
+
+        // ------ Invalid id (Negative id)
+        contents.remove(id);
+        id = new TaskParamStub("id", "-1");
+        contents.add(id);
+        cmd = new CommandDelete(contents);
+        result = cmd.execute(true);
+        assertFalse(result.isSuccess());
+
+        // ------ Invalid id (Zero)
+        contents.remove(id);
+        id = new TaskParamStub("id", "0");
+        contents.add(id);
+        cmd = new CommandDelete(contents);
+        result = cmd.execute(true);
+        assertFalse(result.isSuccess());
+
+        // - Delete search
+        contents = new ArrayList<TaskParam>();
+        rangeType = new TaskParamStub("rangeType", "search");
+        contents.add(rangeType);
+        cmd = new CommandDelete(contents);
+        result = cmd.execute(true);
+        assertTrue(result.isSuccess());
+        // ------ Test path for complement
+        result = cmd.executeComplement();
+        assertTrue(result.isSuccess());
+        assertTrue(cmd.get("rangeType").equals("search"));
+
+        // - Delete all
+        contents = new ArrayList<TaskParam>();
+        rangeType = new TaskParamStub("rangeType", "all");
+        contents.add(rangeType);
+        cmd = new CommandDelete(contents);
+        result = cmd.execute(true);
+        assertTrue(result.isSuccess());
+        assertTrue(result.needsConfirmation());
+        assertTrue(cmd.get("rangeType").equals("all"));
+
+        assertNotNull(cmd.toString());
+    }
+
+    @Test(expected = AssertionError.class)
+    public void testRestoreCommand() {
+        List<TaskParam> contents = new ArrayList<TaskParam>();
+        CommandRestore cmd = new CommandRestore(contents);
+        Result result = cmd.execute(true);
+
+        // Expect: Fails when no parameter is not given
+        assertFalse(result.isSuccess());
+
+        // Expect: Success
+
+        // - Restore using <id>
+        // ------ Valid id
+        TaskParamStub rangeType = new TaskParamStub("rangeType", "id");
+        contents.add(rangeType);
+        TaskParamStub id = new TaskParamStub("id", "1");
+        contents.add(id);
+        cmd = new CommandRestore(contents);
+        result = cmd.execute(true);
+        assertTrue(result.isSuccess());
+        // ------ Test path for complement
+        result = cmd.executeComplement();
+        assertTrue(result.isSuccess());
+        assertTrue(cmd.get("rangeType").equals("id"));
+        assertTrue(cmd.get("id").equals("1"));
+
+        // ------ Invalid id (Negative value)
+        contents.remove(id);
+        id = new TaskParamStub("id", "-1");
+        contents.add(id);
+        cmd = new CommandRestore(contents);
+        result = cmd.execute(true);
+        assertFalse(result.isSuccess());
+
+        // ------ Invalid id (Zero value)
+        contents.remove(id);
+        id = new TaskParamStub("id", "0");
+        contents.add(id);
+        cmd = new CommandRestore(contents);
+        result = cmd.execute(true);
+        assertFalse(result.isSuccess());
+
+        // - Restore search
+        contents = new ArrayList<TaskParam>();
+        rangeType = new TaskParamStub("rangeType", "search");
+        contents.add(rangeType);
+        cmd = new CommandRestore(contents);
+        result = cmd.execute(true);
+        assertTrue(result.isSuccess());
+        // ------ Test path for complement
+        result = cmd.executeComplement();
+        assertTrue(result.isSuccess());
+        assertTrue(cmd.get("rangeType").equals("search"));
+
+        assertNotNull(cmd.toString());
+    }
+
+    @Test(expected = AssertionError.class)
+    public void testDoneCommand() {
+        List<TaskParam> contents = new ArrayList<TaskParam>();
+        CommandDone cmd = new CommandDone(contents);
+        Result result = cmd.execute(true);
+
+        // Expect: Fails when insufficient parameter is given
+        assertFalse(result.isSuccess());
+        TaskParamStub id = new TaskParamStub("id", "1");
+        contents.add(id);
+        assertFalse(result.isSuccess());
+
+        // Expect: Successes
+        // - Done using <id>
+        // ------ Valid id (Positive value > 1)
+        TaskParamStub rangeType = new TaskParamStub("rangeType", "id");
+        contents.add(rangeType);
+        cmd = new CommandDone(contents);
+        result = cmd.execute(true);
+        assertTrue(result.isSuccess());
+        // ------ Test path for complement
+        result = cmd.executeComplement();
+        assertTrue(result.isSuccess());
+
+        assertTrue(cmd.get("rangeType").equals("id"));
+        assertTrue(cmd.get("id").equals("1"));
+
+        // ------ Invalid id (Negative)
+        contents.remove(id);
+        id = new TaskParamStub("id", "-1");
+        contents.add(id);
+        cmd = new CommandDone(contents);
+        result = cmd.execute(true);
+        assertFalse(result.isSuccess());
+
+        // ------ Invalid id (Zero value)
+        contents.remove(id);
+        id = new TaskParamStub("id", "0");
+        contents.add(id);
+        cmd = new CommandDone(contents);
+        result = cmd.execute(true);
+        assertFalse(result.isSuccess());
+
+        // - Done using date
+        contents = new ArrayList<TaskParam>();
+        rangeType = new TaskParamStub("rangeType", "date");
+        contents.add(rangeType);
+        TaskParamStub date = new TaskParamStub("date", "");
+        contents.add(date);
+        cmd = new CommandDone(contents);
+        result = cmd.execute(true);
+        assertTrue(result.isSuccess());
+        // ------ Test path for complement
+        result = cmd.executeComplement();
+        assertTrue(result.isSuccess());
+
+        assertTrue(cmd.get("rangeType").equals("date"));
+        assertNotNull(cmd.get("date"));
+
+        assertNotNull(cmd.toString());
+    }
+
+    @Test(expected = AssertionError.class)
+    public void testTodoCommand() {
+        List<TaskParam> contents = new ArrayList<TaskParam>();
+        CommandTodo cmd = new CommandTodo(contents);
+        Result result = cmd.execute(true);
+
+        // Expect: Fails when insufficient parameter is given
+        assertFalse(result.isSuccess());
+        TaskParamStub id = new TaskParamStub("id", "1");
+        contents.add(id);
+        assertFalse(result.isSuccess());
+
+        // Expect: Successes
+        // - Done using <id>
+        // ------ Valid id
+        TaskParamStub rangeType = new TaskParamStub("rangeType", "id");
+        contents.add(rangeType);
+        cmd = new CommandTodo(contents);
+        result = cmd.execute(true);
+        assertTrue(result.isSuccess());
+        // ------ Test path for complement
+        result = cmd.executeComplement();
+        assertTrue(result.isSuccess());
+
+        // ------ Invalid id (Negative value)
+        contents.remove(id);
+        id = new TaskParamStub("id", "-1");
+        contents.add(id);
+        cmd = new CommandTodo(contents);
+        result = cmd.execute(true);
+        assertFalse(result.isSuccess());
+
+        // ------ Invalid id (Zero value)
+        contents.remove(id);
+        id = new TaskParamStub("id", "0");
+        contents.add(id);
+        cmd = new CommandTodo(contents);
+        result = cmd.execute(true);
+        assertFalse(result.isSuccess());
+
+        assertNotNull(cmd.toString());
+    }
+
+    @Test
+    public void testBlockCommand() {
+        // Block
+        List<TaskParam> contents = new ArrayList<TaskParam>();
+        TaskParamStub start = new TaskParamStub("from", "11/10/2014 0000");
+        TaskParamStub due = new TaskParamStub("to", "12/10/2014 2359");
+        contents.add(start);
+        contents.add(due);
+        // Test blocking of date range
+        CommandBlock cmd = new CommandBlock(contents);
+        Result result = cmd.execute(true);
+
+        assertTrue(result.isSuccess());
+        // ------ Test path for complement
+        result = cmd.executeComplement();
+        assertTrue(result.isSuccess());
+
+        // Test Retrieval of Information
+        assertTrue(cmd.get("from").toString().equals("11/10/2014 0000"));
+        assertTrue(cmd.get("to").toString().equals("12/10/2014 2359"));
+
+        assertNotNull(cmd.toString());
+    }
+
+    //CommandUnblock class is obsolete. 
+    @Test
+    public void testUnblockCommand() {
+        List<TaskParam> contents = new ArrayList<TaskParam>();
+        // Unblock
+        // ------ Valid id (Positive values > 0)
+        TaskParamStub id = new TaskParamStub("id", "1");
+        contents.add(id);
+        CommandUnblock cmd = new CommandUnblock(contents);
+        Result result = cmd.execute(true);
+        assertTrue(result.isSuccess());
+        result = cmd.executeComplement();
+        assertTrue(result.isSuccess());
+        assertTrue(cmd.get("id").equals("1"));
+
+        // ------ Invalid id (Zero Value)
+        contents.remove(id);
+        id = new TaskParamStub("id", "0");
+        contents.add(id);
+        cmd = new CommandUnblock(contents);
+        result = cmd.execute(true);
+        assertFalse(result.isSuccess());
+
+        // ------ Invalid id (Negative Value)
+        contents.remove(id);
+        id = new TaskParamStub("id", "-1");
+        contents.add(id);
+        cmd = new CommandUnblock(contents);
+        result = cmd.execute(true);
+        assertFalse(result.isSuccess());
+
+        assertNotNull(cmd.toString());
+    }
+
+    @Test
+    public void testOthers() {
+        // Test creation of CommandOther object
+        CommandOthers cmd = new CommandOthers("help");
+        Result result = cmd.execute(true);
+        assertTrue(result.isSuccess());
+        cmd = new CommandOthers("reset");
+        result = cmd.execute(true);
+        assertTrue(result.isSuccess());
+        cmd = new CommandOthers("undo");
+        result = cmd.execute(true);
+        assertFalse(result.isSuccess());
+        cmd = new CommandOthers("redo");
+        result = cmd.execute(true);
+        assertFalse(result.isSuccess());
+        cmd = new CommandOthers("exit");
+        result = cmd.execute(true);
+        assertTrue(result.isSuccess());
+        assertNotNull(cmd.toString());
+    }
+
+    @Test
+    public void testSearch() {
+        // Test search
+        List<TaskParam> contents = new ArrayList<TaskParam>();
+        TaskParamStub status = new TaskParamStub("status", "todo");
+        TaskParamStub date = new TaskParamStub("date", "09/10/2014");
+        TaskParamStub tag = new TaskParamStub("tag", "#CS2103");
+        TaskParamStub word = new TaskParamStub("word", "homework");
+        contents.add(status);
+        contents.add(date);
+        contents.add(tag);
+        contents.add(word);
+
+        // Search todo Range
+        CommandSearch cmd = new CommandSearch(contents);
+        Result result = cmd.execute(true);
+        assertTrue(result.isSuccess());
+        assertTrue(cmd.getTags().contains("#CS2103"));
+        assertTrue(cmd.getKeywords().contains("homework"));
+        assertNotNull(cmd.toString());
+        
+        contents.remove(status);
+        status = new TaskParamStub("status", "all");
+        contents.add(status);
+        cmd = new CommandSearch(contents);
+        result = cmd.execute(true);
+        assertTrue(result.isSuccess());
+        assertTrue(cmd.getTags().contains("#CS2103"));
+        assertTrue(cmd.getKeywords().contains("homework"));
+        assertNotNull(cmd.toString());
+
+        contents.remove(status);
+        status = new TaskParamStub("status", "done");
+        contents.add(status);
+        cmd = new CommandSearch(contents);
+        result = cmd.execute(true);
+        assertTrue(result.isSuccess());
+        assertTrue(cmd.getTags().contains("#CS2103"));
+        assertTrue(cmd.getKeywords().contains("homework"));
+        assertNotNull(cmd.toString());
+
+        contents.remove(status);
+        status = new TaskParamStub("status", "deleted");
+        contents.add(status);
+        cmd = new CommandSearch(contents);
+        result = cmd.execute(true);
+        assertTrue(result.isSuccess());
+        assertTrue(cmd.getTags().contains("#CS2103"));
+        assertTrue(cmd.getKeywords().contains("homework"));
+        assertNotNull(cmd.toString());
+    }
+
+    @Test
+    public void testDisplay() {
+        // Test creation of CommandDisplay object
+        List<TaskParam> contents = new ArrayList<TaskParam>();
+        TaskParamStub rangeType = new TaskParamStub("rangeType", "todo");
+        contents.add(rangeType);
+        CommandDisplay cmd = new CommandDisplay(contents);
+        Result result = cmd.execute(true);
+        assertTrue(result.isSuccess());
+
+        // RangeType of Search
+        contents.remove(rangeType);
+        rangeType = new TaskParamStub("rangeType", "search");
+        contents.add(rangeType);
+        cmd = new CommandDisplay(contents);
+        result = cmd.execute(true);
+        assertTrue(result.isSuccess());
+
+        // RangeType of Block Dates
+        contents.remove(rangeType);
+        rangeType = new TaskParamStub("rangeType", "block");
+        contents.add(rangeType);
+        cmd = new CommandDisplay(contents);
+        result = cmd.execute(true);
+        assertTrue(result.isSuccess());
+
+        // RangeType of Done Tasks
+        contents.remove(rangeType);
+        rangeType = new TaskParamStub("rangeType", "done");
+        contents.add(rangeType);
+        cmd = new CommandDisplay(contents);
+        result = cmd.execute(true);
+        assertTrue(result.isSuccess());
+
+        // RangeType of Deleted Tasks
+        contents.remove(rangeType);
+        rangeType = new TaskParamStub("rangeType", "deleted");
+        contents.add(rangeType);
+        cmd = new CommandDisplay(contents);
+        result = cmd.execute(true);
+        assertTrue(result.isSuccess());
+
+        // RangeType of All Tasks
+        contents.remove(rangeType);
+        rangeType = new TaskParamStub("rangeType", "all");
+        contents.add(rangeType);
+        cmd = new CommandDisplay(contents);
+        result = cmd.execute(true);
+        assertTrue(result.isSuccess());
+
+        // RangeType of id
+        contents.remove(rangeType);
+        rangeType = new TaskParamStub("rangeType", "id");
+        contents.add(rangeType);
+        TaskParamStub id = new TaskParamStub("id", "1");
+        contents.add(rangeType);
+        contents.add(id);
+        cmd = new CommandDisplay(contents);
+        result = cmd.execute(true);
+        assertTrue(result.isSuccess());
+
+        // RangeType of Today Tasks
+        contents.remove(rangeType);
+        rangeType = new TaskParamStub("rangeType", "today");
+        contents.add(rangeType);
+        cmd = new CommandDisplay(contents);
+        result = cmd.execute(true);
+
+        // RangeType of Tomorrow Tasks
+        contents.remove(rangeType);
+        rangeType = new TaskParamStub("rangeType", "tomorrow");
+        contents.add(rangeType);
+        cmd = new CommandDisplay(contents);
+        result = cmd.execute(true);
+
+        // RangeType of Upcoming Tasks
+        contents.remove(rangeType);
+        rangeType = new TaskParamStub("rangeType", "upcoming");
+        contents.add(rangeType);
+        cmd = new CommandDisplay(contents);
+        result = cmd.execute(true);
+
+        // RangeType of Someday Tasks
+        contents.remove(rangeType);
+        rangeType = new TaskParamStub("rangeType", "someday");
+        contents.add(rangeType);
+        cmd = new CommandDisplay(contents);
+        result = cmd.execute(true);
+
+        assertNotNull(cmd.toString());
+    }
+
+    @Test
+    public void testFetchKeys() {
+        assertTrue(processor.fetchNextCommand() instanceof String);
+        assertTrue(processor.fetchPreviousCommand() instanceof String);
+    }
+}
+
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\test\logic\LogicUnitTest.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\test\logic\ProcessorTest.java
+	 */
+
+package logic;
+
+import static org.junit.Assert.*;
+import objects.DateTime;
+import objects.Task;
+import objects.TaskType;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Integration Testing Note: Does not include gui
+ * 
+ */
+
+public class ProcessorTest {
+
+    public static Processor TestProcessor = Processor.getInstance();
+    private static DateTime testTime = new DateTime("10/10/2012", "1010");
+    private static List<String> testTags = new ArrayList<String>();
+
+    private static Task testTask1 = new Task("Do CS2103 Homework",
+            new DateTime(), new DateTime(), new DateTime(), testTags,
+            TaskType.TODO);
+    private static Task testTask2 = new Task("", testTime, new DateTime(),
+            new DateTime(), new ArrayList<String>(), TaskType.TODO);
+    private static Task testTask3 = new Task("", new DateTime(), testTime,
+            new DateTime(), new ArrayList<String>(), TaskType.TODO);
+    private static Task testTask5 = new Task("", new DateTime(),
+            new DateTime(), new DateTime(), testTags, TaskType.TODO);
+    private static Task testTask6 = new Task("Do CS2103 Homework", testTime,
+            testTime, new DateTime(), testTags, TaskType.TODO);
+    private static Task testTask7 = new Task("Do EE2020 Homework",
+            new DateTime(), new DateTime(), new DateTime(),
+            new ArrayList<String>(), TaskType.TODO);
+    private static Task testTask8 = new Task("Do EE2020 Homework", testTime,
+            new DateTime(), new DateTime(), new ArrayList<String>(),
+            TaskType.TODO);
+    private static Task testTask9 = new Task("Do EE2020 Homework", testTime,
+            testTime, new DateTime(), new ArrayList<String>(), TaskType.TODO);
+    private static Task testTask11 = new Task("Do EE2020 Homework", testTime,
+            testTime, new DateTime(), testTags, TaskType.TODO);
+
+    @Before
+    public void initialiseProcessor() {
+        Processor.IS_UNIT_TEST = false;
+        testTags.clear();
+        TestProcessor = Processor.reset();
+    }
+
+    // This method check if between task1 and task2 is identical (in terms of
+    // parameters)
+    public boolean equalsObj(Task task1, Task task2) {
+        boolean equal = true;
+        try {
+            if (!task1.getName().equals(task2.getName()))
+                equal = false;
+            if (task1.getDue() != null && task2.getDue() != null &&
+                !task1.getDue().toString().equals(task2.getDue().toString()))
+                equal = false;
+            if (task1.getStart() != null &&
+                task2.getStart() != null &&
+                !task1.getStart().toString()
+                        .equals(task2.getStart().toString()))
+                equal = false;
+            if (task1.getCompletedOn() != null &&
+                task2.getCompletedOn() != null &&
+                !task1.getCompletedOn().toString()
+                        .equals(task2.getCompletedOn().toString()))
+                equal = false;
+            if (task1.getTags() != null && task2.getTags() != null &&
+                !task1.getTags().toString().equals(task2.getTags().toString()))
+                equal = false;
+        } catch (NullPointerException e) {
+        }
+        return equal;
+    }
+
+    @Test
+    // Test for 'Add' Command & Inclusive of Undo/Redo
+    public void testAdd() throws Exception {
+        // Add with name
+        TestProcessor = Processor.reset();
+        Result r1 = TestProcessor.processInput("add Do CS2103 Homework");
+        assertTrue(equalsObj(testTask1, r1.getTasks().get(0)));
+        TestProcessor.processInput("undo");
+        assertTrue(TestProcessor.fetchAllTasks().size() == 0);
+        Result r1a = TestProcessor.processInput("redo");
+        assertTrue(equalsObj(testTask1, r1a.getTasks().get(0)));
+
+        // Add with start
+        Result r2 = TestProcessor.processInput("add start 10/10/2012 1010");
+        assertTrue(equalsObj(testTask2, r2.getTasks().get(0)));
+        TestProcessor.processInput("undo");
+        Result r2a = TestProcessor.processInput("redo");
+        assertTrue(equalsObj(testTask2, r2a.getTasks().get(0)));
+
+        // Add with due
+        Result r3 = TestProcessor.processInput("add due 10/10/2012 1010");
+        assertTrue(equalsObj(testTask3, r3.getTasks().get(0)));
+        TestProcessor.processInput("undo");
+        Result r3a = TestProcessor.processInput("redo");
+        assertTrue(equalsObj(testTask3, r3a.getTasks().get(0)));
+
+        // Add with end
+        Result r4 = TestProcessor.processInput("add end 10/10/2012 1010");
+        assertTrue(equalsObj(testTask3, r4.getTasks().get(0)));
+        TestProcessor.processInput("undo");
+        Result r4a = TestProcessor.processInput("redo");
+        assertTrue(equalsObj(testTask3, r4a.getTasks().get(0)));
+
+        // Add with tags
+        List<String> tagsList = new ArrayList<String>();
+        Result r5 = TestProcessor.processInput("add #homework");
+        tagsList.add("#homework");
+        testTask5.setTags(tagsList);
+
+        assertTrue(equalsObj(testTask5, r5.getTasks().get(0)));
+        TestProcessor.processInput("undo");
+        Result r5a = TestProcessor.processInput("redo");
+        assertTrue(equalsObj(testTask5, r5a.getTasks().get(0)));
+
+        // All valid parameters
+        Result r6 = TestProcessor
+                .processInput("add Do CS2103 Homework due 10/10/2012 1010 start 10/10/2012 1010 #homework");
+        testTask6.setTags(tagsList);
+        assertTrue(equalsObj(testTask6, r6.getTasks().get(0)));
+        TestProcessor.processInput("undo");
+        Result r6a = TestProcessor.processInput("redo");
+        assertTrue(equalsObj(testTask6, r6a.getTasks().get(0)));
+
+        // Test undo & redo of Add
+        TestProcessor.processInput("undo");
+        Result r8 = TestProcessor.processInput("redo");
+        assertTrue(equalsObj(testTask6, r8.getTasks().get(0)));
+    }
+
+    @Test
+    // Test for 'Edit' Command
+    public void testEdit() throws Exception {
+        TestProcessor.processInput("add Do CS2103 Homework");
+        // Edit Name
+        Result r1 = TestProcessor.processInput("edit 1 Do EE2020 Homework");
+        assertTrue(equalsObj(r1.getTasks().get(0), testTask7));
+
+        // Test undo & redo of Edit Name
+        Result r2 = TestProcessor.processInput("undo");
+        assertTrue(equalsObj(r2.getTasks().get(0), testTask1));
+        Result r3 = TestProcessor.processInput("redo");
+        assertTrue(equalsObj(r3.getTasks().get(0), testTask7));
+
+        // Test Edit of Start
+        TestProcessor.processInput("edit 1 start 10/10/2012 1010");
+        TestProcessor.processInput("undo");
+        Result r6 = TestProcessor.processInput("redo");
+        assertTrue(equalsObj(r6.getTasks().get(0), testTask8));
+        TestProcessor.processInput("edit 1 due 10/10/2012 1010");
+        TestProcessor.processInput("undo");
+        Result r9 = TestProcessor.processInput("redo");
+        assertTrue(equalsObj(r9.getTasks().get(0), testTask9));
+
+        // Test Edit Tags
+        List<String> tagsList = new ArrayList<String>();
+        tagsList.add("#homework");
+        testTask11.setTags(tagsList);
+        TestProcessor.processInput("edit 1 #homework");
+        TestProcessor.processInput("undo");
+        Result r15 = TestProcessor.processInput("redo");
+        assertTrue(equalsObj(r15.getTasks().get(0), testTask11));
+
+        // Test Edit of Delete:
+        // Delete tag
+        Result r16 = TestProcessor.processInput("edit 1 delete tags");
+        assertTrue(equalsObj(r16.getTasks().get(0), testTask9));
+        // Delete due
+        Result r17 = TestProcessor.processInput("edit 1 delete due");
+        assertTrue(equalsObj(r17.getTasks().get(0), testTask8));
+        // Delete start
+        Result r18 = TestProcessor.processInput("edit 1 delete start");
+        assertTrue(equalsObj(r18.getTasks().get(0), testTask7));
+    }
+
+    @Test
+    // Test for 'Delete' Command
+    public void testDelete() throws Exception {
+        TestProcessor.processInput("add Do CS2103 Homework");
+        TestProcessor.processInput("add Do EE2020 Homework");
+        Result r2 = TestProcessor.processInput("delete 1");
+        assertTrue(equalsObj(r2.getTasks().get(0), testTask1));
+        assertTrue(equalsObj(TestProcessor.fetchToDoTasks().get(0), testTask7));
+
+        // 2. Test delete <id> where id is negative
+        Result r3 = TestProcessor.processInput("delete -1");
+        assertTrue(!r3.isSuccess());
+
+        // 3. Test delete <id> where id does not exist
+        Result r4 = TestProcessor.processInput("delete 3");
+        assertTrue(!r4.isSuccess());
+
+        // Test Undo & Redo of Delete <id>
+        TestProcessor.processInput("undo");
+        assertTrue(TestProcessor.fetchDeletedTasks().size() == 0);
+
+        TestProcessor.processInput("redo");
+        assertTrue(equalsObj(TestProcessor.fetchToDoTasks().get(0), testTask7));
+
+        // Test delete search
+        TestProcessor.processInput("add Task2");
+        TestProcessor.processInput("add Task2");
+        TestProcessor.processInput("add Task3");
+        TestProcessor.processInput("search task2");
+        TestProcessor.processInput("delete search");
+        assertTrue(TestProcessor.fetchToDoTasks().size() == 2);
+
+        // Undo & Redo of Delete Search
+        TestProcessor.processInput("undo");
+        assertTrue(TestProcessor.fetchToDoTasks().size() == 4);
+
+        TestProcessor.processInput("redo");
+        assertTrue(TestProcessor.fetchToDoTasks().size() == 2);
+
+    }
+
+    @Test
+    // Test for 'Restore' Command
+    public void testRestore() throws Exception {
+        TestProcessor.processInput("add Do CS2103 Homework");
+        TestProcessor.processInput("delete 1");
+
+        Result r1 = TestProcessor.processInput("restore 1");
+        assertTrue(equalsObj(r1.getTasks().get(0), testTask1));
+        assertTrue(equalsObj(TestProcessor.fetchToDoTasks().get(0), testTask1));
+        assertTrue(TestProcessor.fetchDeletedTasks().size() == 0);
+        assertTrue(TestProcessor.fetchToDoTasks().size() == 1);
+
+        // Begins Undo & Redo Test of Restore <id>
+        TestProcessor.processInput("undo");
+        assertTrue(equalsObj(TestProcessor.fetchDeletedTasks().get(0),
+                             testTask1));
+        assertTrue(TestProcessor.fetchDeletedTasks().size() == 1);
+        assertTrue(TestProcessor.fetchToDoTasks().size() == 0);
+
+        TestProcessor.processInput("redo");
+        assertTrue(equalsObj(TestProcessor.fetchToDoTasks().get(0), testTask1));
+        assertTrue(TestProcessor.fetchDeletedTasks().size() == 0);
+        assertTrue(TestProcessor.fetchToDoTasks().size() == 1);
+    }
+
+    @Test
+    // Test for 'Display'/'Show' Command
+    public void testDisplay() throws Exception {
+        // Test display
+        TestProcessor.processInput("add Do CS2103 Homework");
+        Result r1 = TestProcessor.processInput("display");
+        assertTrue(equalsObj(r1.getTasks().get(0), testTask1));
+        assertEquals(r1.getTasks().size(), 1);
+
+        TestProcessor.processInput("add Do EE2020 Homework");
+        Result r4 = TestProcessor.processInput("display 2");
+        assertTrue(equalsObj(r4.getTasks().get(0), testTask7));
+        assertEquals(r4.getTasks().size(), 1);
+
+        // Test show
+        Result r5 = TestProcessor.processInput("show");
+        assertEquals(r5.getTasks().size(), 2);
+    }
+
+    @Test
+    // Test for 'Search' Command
+    public void testSearch() throws Exception {
+        TestProcessor.processInput("add Do CS2103 Homework #cshomework");
+        TestProcessor.processInput("add Do CS2103 Homework #cshomework");
+        TestProcessor.processInput("add Do CS2103 Homework #cshomework");
+        TestProcessor.processInput("add Do CS2103 Homework");
+        TestProcessor.processInput("add Do CS2103 Homework");
+        TestProcessor.processInput("add Do CS2103 Homework");
+
+        // Test search by tags
+        Result r6 = TestProcessor.processInput("search #cshomework");
+        assertTrue(r6.getTasks().size() == 3);
+
+        // Test search by keyword
+        Result r7 = TestProcessor.processInput("search cs2103");
+        assertTrue(r7.getTasks().size() == 6);
+
+        // Test search by keyword OR tags
+        Result r8 = TestProcessor.processInput("search cs2103 #cshomework");
+        assertTrue(r8.getTasks().size() == 3);
+    }
+
+    @Test
+    // Boundary Test Case: Consecutive undo/redo for delete search
+    public void testDeleteSearchUndoRedo() throws Exception {
+        TestProcessor.processInput("add Task1");
+        TestProcessor.processInput("add Task1");
+        TestProcessor.processInput("add Task2");
+        TestProcessor.processInput("add Task2");
+        TestProcessor.processInput("add Task2");
+        TestProcessor.processInput("add Task3");
+
+        Result r6 = TestProcessor.processInput("search task2");
+        assertTrue(r6.getTasks().size() == 3);
+        TestProcessor.processInput("delete search");
+
+        TestProcessor.processInput("search task1");
+        TestProcessor.processInput("delete search");
+        TestProcessor.processInput("undo");
+        assertTrue(TestProcessor.fetchToDoTasks().size() == 3);
+        TestProcessor.processInput("undo");
+        assertTrue(TestProcessor.fetchToDoTasks().size() == 6);
+        TestProcessor.processInput("redo");
+        assertTrue(TestProcessor.fetchToDoTasks().size() == 3);
+        TestProcessor.processInput("redo");
+        assertTrue(TestProcessor.fetchToDoTasks().size() == 1);
+    }
+
+    @Test
+    public void testDone() throws Exception {
+        TestProcessor.processInput("add Task1");
+        TestProcessor.processInput("add Task2");
+        TestProcessor.processInput("add Task3");
+
+        // Equivalence Partition
+        assertTrue(TestProcessor.fetchToDoTasks().size() == 3);
+        // 1. Test done <id>
+        TestProcessor.processInput("done 1");
+        assertTrue(TestProcessor.fetchToDoTasks().size() == 2);
+        TestProcessor.processInput("done 3");
+        assertTrue(TestProcessor.fetchToDoTasks().size() == 1);
+        // 2. Test invalid done <id>
+        TestProcessor.processInput("done -1");
+        assertTrue(TestProcessor.fetchToDoTasks().size() == 1);
+        TestProcessor.processInput("done 0");
+        assertTrue(TestProcessor.fetchToDoTasks().size() == 1);
+        TestProcessor.processInput("done 3");
+        assertTrue(TestProcessor.fetchToDoTasks().size() == 1);
+        TestProcessor.processInput("done 5");
+        assertTrue(TestProcessor.fetchToDoTasks().size() == 1);
+
+        // Test undo and redo of done
+        TestProcessor.processInput("undo");
+        assertTrue(TestProcessor.fetchToDoTasks().size() == 2);
+        TestProcessor.processInput("redo");
+        assertTrue(TestProcessor.fetchToDoTasks().size() == 1);
+        TestProcessor.processInput("undo");
+        assertTrue(TestProcessor.fetchToDoTasks().size() == 2);
+        TestProcessor.processInput("undo");
+        assertTrue(TestProcessor.fetchToDoTasks().size() == 3);
+    }
+
+    @Test
+    public void testTodo() throws Exception {
+        TestProcessor.processInput("add Task1");
+        TestProcessor.processInput("add Task2");
+        TestProcessor.processInput("add Task3");
+
+        // Test todo <id>
+        TestProcessor.processInput("done 1");
+        TestProcessor.processInput("done 2");
+        TestProcessor.processInput("done 3");
+        assertTrue(TestProcessor.fetchToDoTasks().size() == 0);
+
+        // Test todo <id>
+        TestProcessor.processInput("todo 1");
+        assertTrue(TestProcessor.fetchToDoTasks().size() == 1);
+        TestProcessor.processInput("todo 2");
+        assertTrue(TestProcessor.fetchToDoTasks().size() == 2);
+        TestProcessor.processInput("todo 2");
+        assertTrue(TestProcessor.fetchToDoTasks().size() == 2);
+        TestProcessor.processInput("todo 0");
+        assertTrue(TestProcessor.fetchToDoTasks().size() == 2);
+        TestProcessor.processInput("todo -1");
+        assertTrue(TestProcessor.fetchToDoTasks().size() == 2);
+
+        // Test undo and redo of Todo
+        TestProcessor.processInput("undo");
+        assertTrue(TestProcessor.fetchToDoTasks().size() == 1);
+        TestProcessor.processInput("redo");
+        assertTrue(TestProcessor.fetchToDoTasks().size() == 2);
+        TestProcessor.processInput("undo");
+        assertTrue(TestProcessor.fetchToDoTasks().size() == 1);
+        TestProcessor.processInput("undo");
+        assertTrue(TestProcessor.fetchToDoTasks().size() == 0);
+    }
+
+    @Test
+    public void testDoneDate() throws Exception {
+        TestProcessor.processInput("add Task1 due 11/10/2014");
+        TestProcessor.processInput("add Task2 due 11/10/2014");
+        TestProcessor.processInput("add Task3");
+        assertTrue(TestProcessor.fetchToDoTasks().size() == 3);
+        TestProcessor.processInput("done 11/10/2014");
+        assertTrue(TestProcessor.fetchToDoTasks().size() == 1);
+
+        // Test Undo and Redo of Done by date
+        TestProcessor.processInput("undo");
+        assertTrue(TestProcessor.fetchToDoTasks().size() == 3);
+        TestProcessor.processInput("redo");
+        assertTrue(TestProcessor.fetchToDoTasks().size() == 1);
+    }
+
+    @Test
+    public void testDisplayShowValid() throws Exception {
+        TestProcessor.processInput("block Task1 from 09/10/2014 to 09/10/2014");
+        TestProcessor.processInput("add Task2 due 11/10/2014");
+        TestProcessor.processInput("add Task3");
+        // Test Show Block
+        Result r1 = TestProcessor.processInput("show block");
+        assertTrue(r1.getTasks().size() == 1);
+
+        // Test Show All
+        Result r2 = TestProcessor.processInput("show");
+        assertTrue(r2.getTasks().size() == 3);
+
+        // Test Show Done
+        Result r3 = TestProcessor.processInput("show done");
+        assertTrue(r3.getTasks().size() == 0);
+        TestProcessor.processInput("done 2");
+        Result r4 = TestProcessor.processInput("show done");
+        assertTrue(r4.getTasks().size() == 1);
+
+        // Test Show Deleted
+        Result r5 = TestProcessor.processInput("show deleted");
+        assertTrue(r5.getTasks().size() == 0);
+        TestProcessor.processInput("delete 2");
+        Result r6 = TestProcessor.processInput("show deleted");
+        assertTrue(r6.getTasks().size() == 1);
+
+        // Test Show Search
+        TestProcessor.processInput("search task");
+        Result r7 = TestProcessor.processInput("show search");
+        assertTrue(r7.getTasks().size() == 1);
+
+        // Test Show Someday
+        Result r8 = TestProcessor.processInput("show someday");
+        assertTrue(r8.getTasks().size() == 1);
+
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testDisplayShowInvalid() throws Exception {
+        TestProcessor.processInput("block Task1 from 09/10/2014 to 09/10/2014");
+        TestProcessor.processInput("add Task2 due 11/10/2014");
+        TestProcessor.processInput("add Task3");
+
+        // Test Invalid input
+        Result r9 = TestProcessor.processInput("show somday");
+        assertFalse(r9.isSuccess());
+    }
+
+    @Test(expected = Error.class)
+    public void testAddWithBlock() throws Exception {
+        TestProcessor
+                .processInput("block Block1 from 09/10/2014 to 09/10/2014");
+        TestProcessor.processInput("add Task2 due 09/10/2014");
+    }
+
+    @Test
+    public void testAddWithBlock2() throws Exception {
+        // Test Addition of more than one block date
+        TestProcessor
+                .processInput("block Block1 from 09/10/2014 to 09/10/2014");
+        TestProcessor
+                .processInput("block Block2 from 10/10/2014 to 10/10/2014");
+    }
+
+    @Test(expected = Error.class)
+    public void testAddWithBlock3() throws Exception {
+        // Boundary case test - Tasks with time and no time
+        // Expected to fail
+        TestProcessor
+                .processInput("block Block1 from 09/10/2014 to 09/10/2014");
+        TestProcessor
+                .processInput("block Block2 from 10/10/2014 to 10/10/2014");
+        TestProcessor
+                .processInput("block Block3 from 09/10/2014 0900 to 10/10/2014 1000");
+    }
+
+    @Test
+    public void testBlockUndoRedo() throws Exception {
+        TestProcessor.processInput("block Task1 from 09/10/2014 to 09/10/2014");
+        assertTrue(TestProcessor.fetchBlockTasks().size() == 1);
+        TestProcessor.processInput("undo");
+        assertTrue(TestProcessor.fetchBlockTasks().size() == 0);
+        TestProcessor.processInput("redo");
+        assertTrue(TestProcessor.fetchBlockTasks().size() == 1);
+    }
+}
+
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\test\logic\ProcessorTest.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\test\objects\DatabaseFacadeStub.java
+	 */
+
+package objects;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import database.DatabaseFacade;
+
+public class DatabaseFacadeStub extends DatabaseFacade {
+
+    List<Task> tasks;
+
+    public DatabaseFacadeStub() {
+        tasks = new ArrayList<Task>();
+        tasks.add(new TaskStub("name", new DateTimeStub("", ""),
+                new DateTimeStub("", ""), new DateTimeStub("", ""),
+                new ArrayList<String>(), TaskType.TODO));
+    }
+
+    @Override
+    public List<Task> getToDoTasks() {
+        return tasks;
+    }
+
+    @Override
+    public List<Task> getDoneTasks() {
+        return tasks;
+    }
+
+    @Override
+    public List<Task> getDeletedTasks() {
+        return tasks;
+    }
+
+    @Override
+    public List<Task> getBlockTasks() {
+        List<Task> blockTasks = new ArrayList<Task>();
+        return blockTasks;
+    }
+
+    @Override
+    public List<Task> getAllTasks() {
+        return tasks;
+    }
+
+    @Override
+    public Task getTask(int id) {
+        if (id > 0) {
+            return tasks.get(0);
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public boolean add(Task task) {
+        if (task != null) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean edit(Task task, String name, DateTime due, DateTime start,
+                        List<String> tags) {
+        if (task != null) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean edit(int id, String name, DateTime due, DateTime start,
+                        List<String> tags) {
+        if (id > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean delete(Task task) {
+        if (task != null) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean delete(int id) {
+        if (id > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean restore(Task task) {
+        if (task != null) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean restore(int id) {
+        if (id > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean permanentlyDelete(Task task) {
+        if (task != null) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean permanentlyDelete(int id) {
+        if (id > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean resetData() {
+        return true;
+    }
+
+    @Override
+    public boolean markToDo(Task task) {
+        if (task != null) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean markToDo(int id) {
+        if (id > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean markDone(Task task) {
+        if (task != null) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean markDone(int id) {
+        if (id > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+}
+
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\test\objects\DatabaseFacadeStub.java
+
+
+
+
+

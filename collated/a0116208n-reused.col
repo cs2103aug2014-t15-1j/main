@@ -1,0 +1,49 @@
+//@author: a0116208n-reused
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\MainScreen.java
+	 */
+
+    /**
+     * Create drag controls along the shell's borders.
+     * 
+     * Code taken from <a href=
+     * "http://stackoverflow.com/questions/23126313/removing-window-border-in-swt-ui-disables-re-positioning"
+     * >Stack Overflow</a>
+     */
+    private static void createDragControls(final Shell shell) {
+        Listener l = new Listener() {
+            Point origin;
+
+            public void handleEvent(Event e) {
+                switch (e.type) {
+                    case SWT.MouseDown:
+                        origin = new Point(e.x, e.y);
+                        break;
+                    case SWT.MouseUp:
+                        origin = null;
+                        break;
+                    case SWT.MouseMove:
+                        if (origin != null) {
+                            Point p = shell.getDisplay().map(shell, null, e.x,
+                                                             e.y);
+                            shell.setLocation(p.x - origin.x, p.y - origin.y);
+                        }
+                        break;
+                }
+            }
+        };
+
+        shell.addListener(SWT.MouseDown, l);
+        shell.addListener(SWT.MouseUp, l);
+        shell.addListener(SWT.MouseMove, l);
+    }
+    
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\gui\MainScreen.java
+
+
+
+
+

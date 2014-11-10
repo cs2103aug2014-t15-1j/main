@@ -1,0 +1,3973 @@
+//@author: a0116373j
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\database\DatabaseFacade.java
+	 */
+
+package database;
+
+import java.util.List;
+
+import logic.Log;
+import objects.DateTime;
+import objects.Task;
+
+/**
+ * This facade class handles the classes involved in reading and writing of
+ * tasks to the file for storage, and managing the data structure of tasks.
+ * 
+ * DatabaseFacade serves as the Application Program Interface (API) to the
+ * database component, by hiding complexities and providing a simplified
+ * interface to the larger body of code.
+ */
+
+public class DatabaseFacade {
+
+    /** For logging purposes */
+    private static void log(String output) {
+        if (Log.LOGGING_ENABLED) {
+            Log.getLogger().info(output);
+        }
+    }
+    
+    /** Name of file to write tasks to. */
+    private final static String FILENAME = "data_tasks.txt";
+
+    /** Handles task data structure logic. */
+    private DatabaseLogic databaseLogic;
+
+    /** Reads from file containing tasks */
+    private TaskReader taskReader;
+
+    /** Writes to file containing tasks */
+    private TaskWriter taskWriter;
+
+    /**
+     * Default constructor.
+     * 
+     * Checks if allTasks list is empty before populating list. If allTasks list
+     * is already populated, it signals that other DatabaseLogic instances
+     * exist, and avoids populating task lists with duplicate Task objects from
+     * file.
+     */
+    public DatabaseFacade() {
+        log("Instantiating DatabaseFacade");
+        databaseLogic = new DatabaseLogic();
+        taskReader = new TaskReader(FILENAME);
+        taskWriter = new TaskWriter(FILENAME);
+        if (databaseLogic.getAllTasks().isEmpty()) {
+            log("Populating DatabaseLogic Task lists");
+            databaseLogic.populateTaskLists(taskReader.read());
+        }
+    }
+
+    /**
+     * Returns a list of undeleted todo Task objects.
+     * 
+     * @return List of undeleted todo Task objects.
+     */
+    public List<Task> getToDoTasks() {
+        return databaseLogic.getToDoTasks();
+    }
+
+    /**
+     * Returns a list of undeleted done Task objects.
+     * 
+     * @return List of undeleted done Task objects.
+     */
+    public List<Task> getDoneTasks() {
+        return databaseLogic.getDoneTasks();
+    }
+
+    /**
+     * Returns a list of undeleted block Task objects.
+     * 
+     * @return List of undeleted block Task objects.
+     */
+    public List<Task> getBlockTasks() {
+        return databaseLogic.getBlockTasks();
+    }
+
+    /**
+     * Returns a list of deleted todo, done, and block Task objects.
+     * 
+     * @return List of deleted todo, done, and block Task objects.
+     */
+    public List<Task> getDeletedTasks() {
+        return databaseLogic.getDeletedTasks();
+    }
+
+    /**
+     * Returns a list all Task objects. Contains references to to-do, done, and
+     * block Task objects. Does not contain duplicate Task objects.
+     * 
+     * @return List of all Task objects.
+     */
+    public List<Task> getAllTasks() {
+        return databaseLogic.getAllTasks();
+    }
+
+    /**
+     * Given id, returns Task object of matching id.
+     * 
+     * @param id
+     *            The task's unique id.
+     * @return Task object of matching id, or null if id is invalid.
+     */
+    public Task getTask(int id) {
+        return databaseLogic.searchTaskById(id);
+    }
+
+    /**
+     * Writes all current Task information to file for storage. Deleted tasks
+     * are not stored. Tasks are written in this order: todo, done, block.
+     * 
+     * @return True, if successfully written to file.
+     */
+    private boolean updateFile() {
+        log("Updating file data");
+        String allTaskInfo = databaseLogic.getAllTaskInfo();
+        return taskWriter.write(allTaskInfo);
+    }
+
+    /**
+     * Adds a new Task object into Task data structure and file.
+     * 
+     * @param task
+     *            New Task object to be added.
+     * @return True, if successfully added to data structure and file.
+     */
+    public boolean add(Task task) {
+        log("Adding Task:" + task);
+        boolean logicSuccess = databaseLogic.add(task);
+        return logicSuccess && updateFile();
+    }
+
+    /**
+     * Based on id provided, updates Task object's attributes with provided
+     * arguments. Changes are saved to data structure and file. Provide null
+     * arguments for attributes to be reset to empty values. Provide empty
+     * arguments for attributes to keep the same.
+     * 
+     * Overloaded function.
+     * 
+     * @param id
+     *            Id of Task object to modify.
+     * @param name
+     *            New description, if any.
+     * @param start
+     *            New start date and time, if any.
+     * @param due
+     *            New due date and time, if any.
+     * @param tags
+     *            New tags, if any.
+     * @return True, if successfully edited Task object in data structure and
+     *         file.
+     */
+    public boolean edit(int id, String name, DateTime start, DateTime due,
+                        List<String> tags) {
+        Task task = getTask(id);
+        return edit(task, name, start, due, tags);
+    }
+
+    /**
+     * Based on object provided, updates Task object's attributes with provided
+     * arguments. Changes are saved to data structure and file. Provide null
+     * arguments for attributes to be reset to empty values. Provide empty
+     * arguments for attributes to keep the same.
+     * 
+     * Overloaded function.
+     * 
+     * @param task
+     *            Task object to modify.
+     * @param name
+     *            New description, if any.
+     * @param start
+     *            New start date and time, if any.
+     * @param due
+     *            New due date and time, if any.
+     * @param tags
+     *            New tags, if any.
+     * @return True, if successfully edited Task object in data structure and
+     *         file.
+     */
+    public boolean edit(Task task, String name, DateTime start, DateTime due,
+                        List<String> tags) {
+        log("Editing Task: " + task);
+        boolean logicSuccess = databaseLogic.edit(task, name, start, due, tags);
+        return logicSuccess && updateFile();
+    }
+
+    /**
+     * Based on id provided, deletes undeleted Task object. Changes are saved to
+     * data structure and file.
+     * 
+     * Overloaded function.
+     * 
+     * @param id
+     *            Id of Task object to delete.
+     * @return True, if successfully deleted Task object in data structure and
+     *         file.
+     */
+    public boolean delete(int id) {
+        Task task = getTask(id);
+        return delete(task);
+    }
+
+    /**
+     * Based on object provided, deletes undeleted Task object. Changes are
+     * saved to data structure and file.
+     * 
+     * Overloaded function.
+     * 
+     * @param task
+     *            Task object to delete.
+     * @return True, if successfully deleted Task object in data structure and
+     *         file.
+     */
+    public boolean delete(Task task) {
+        log("Deleting Task: " + task);
+        boolean logicSuccess = databaseLogic.delete(task);
+        return logicSuccess && updateFile();
+    }
+
+    /**
+     * Based on id provided, restores deleted Task object. Changes are saved to
+     * data structure and file.
+     * 
+     * Overloaded function.
+     * 
+     * @param id
+     *            Id of Task object to restore.
+     * @return True, if successfully restored Task object in data structure and
+     *         file.
+     */
+    public boolean restore(int id) {
+        Task task = getTask(id);
+        return restore(task);
+    }
+
+    /**
+     * Based on object provided, restores deleted Task object. Changes are saved
+     * to data structure and file.
+     * 
+     * Overloaded function.
+     * 
+     * @param task
+     *            Task object to restore.
+     * @return True, if successfully restored Task object in data structure and
+     *         file.
+     */
+    public boolean restore(Task task) {
+        log("Restoring Task: " + task);
+        boolean logicSuccess = databaseLogic.restore(task);
+        return logicSuccess && updateFile();
+    }
+
+    /**
+     * Based on id provided, permanently deletes Task object. Cannot be undone.
+     * Used when undoing add commands. Decrements Task ID counter. Changes are
+     * saved to data structure and file.
+     * 
+     * Overloaded function.
+     * 
+     * @param id
+     *            Id of Task object to permanently delete.
+     * @return True, if successfully deleted Task object in data structure and
+     *         file permanently.
+     */
+    public boolean permanentlyDelete(int id) {
+        Task task = getTask(id);
+        return permanentlyDelete(task);
+    }
+
+    /**
+     * Based on object provided, permanently deletes Task object. Cannot be
+     * undone. Used when undoing add commands. Decrements Task ID counter.
+     * Changes are saved to data structure and file.
+     * 
+     * Overloaded function.
+     * 
+     * @param task
+     *            Task object to permanently delete.
+     * @return True, if successfully deleted Task object in data structure and
+     *         file permanently.
+     */
+    public boolean permanentlyDelete(Task task) {
+        log("Permanently deleting Task: " + task);
+        boolean logicSuccess = databaseLogic.permanentlyDelete(task);
+        return logicSuccess && updateFile();
+    }
+
+    /**
+     * Permanently deletes all Task objects in data structure and file. Cannot
+     * be undone. User should be prompted for confirmation before executing this
+     * function.
+     * 
+     * @return True, if successfully permanently cleared of all Task data.
+     */
+    public boolean resetData() {
+        log("Clearing all Task data");
+        boolean logicSuccess = databaseLogic.permanentlyDeleteAllTasks();
+        return logicSuccess && updateFile();
+    }
+
+    /**
+     * Based on id provided, marks Task object as todo. If Task was deleted,
+     * restores it, and marks as todo. Changes are saved to data structure and
+     * file.
+     * 
+     * Overloaded function.
+     * 
+     * @param id
+     *            Id of Task object to be marked as todo.
+     * @return True, if successfully marked Task object in data structure and
+     *         file as todo.
+     */
+    public boolean markToDo(int id) {
+        Task task = getTask(id);
+        return markToDo(task);
+    }
+
+    /**
+     * Based on object provided, marks Task object as todo. If Task was deleted,
+     * restores it, and marks as todo. Changes are saved to data structure and
+     * file.
+     * 
+     * Overloaded function.
+     * 
+     * @param task
+     *            Task object to be marked as todo.
+     * @return True, if successfully marked Task object in data structure and
+     *         file as todo.
+     */
+    public boolean markToDo(Task task) {
+        log("Mark todo Task: " + task);
+        boolean logicSuccess = databaseLogic.markToDo(task);
+        return logicSuccess && updateFile();
+    }
+
+    /**
+     * Based on id provided, marks Task object as done. If Task was deleted,
+     * restores it, and marks as done. Changes are saved to data structure and
+     * file.
+     * 
+     * Overloaded function.
+     * 
+     * @param id
+     *            Id of Task object to be marked as done.
+     * @return True, if successfully marked Task object in data structure and
+     *         file as done.
+     */
+    public boolean markDone(int id) {
+        Task task = getTask(id);
+        return markDone(task);
+    }
+
+    /**
+     * Based on object provided, marks Task object as done. If Task was deleted,
+     * restores it, and marks as done. Changes are saved to data structure and
+     * file.
+     * 
+     * Overloaded function.
+     * 
+     * @param task
+     *            Task object to be marked as done.
+     * @return True, if successfully marked Task object in data structure and
+     *         file as done.
+     */
+    public boolean markDone(Task task) {
+        log("Mark done Task: " + task);
+        boolean logicSuccess = databaseLogic.markDone(task);
+        return logicSuccess && updateFile();
+    }
+
+    /**
+     * Based on id provided, marks Task object as block. If Task was deleted,
+     * restores it, and marks as block. Changes are saved to data structure and
+     * file.
+     * 
+     * Overloaded function.
+     * 
+     * @param id
+     *            Id of Task object to be marked as block.
+     * @return True, if successfully marked Task object in data structure and
+     *         file as block.
+     */
+    public boolean markBlock(int id) {
+        Task task = getTask(id);
+        return markBlock(task);
+    }
+
+    /**
+     * Based on object provided, marks Task object as block. If Task was
+     * deleted, restores it, and marks as block. Changes are saved to data
+     * structure and file.
+     * 
+     * Overloaded function.
+     * 
+     * @param task
+     *            Task object to be marked as block.
+     * @return True, if successfully marked Task object in data structure and
+     *         file as block.
+     */
+    public boolean markBlock(Task task) {
+        log("Mark block Task: " + task);
+        boolean logicSuccess = databaseLogic.markBlock(task);
+        return logicSuccess && updateFile();
+    }
+}
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\database\DatabaseFacade.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\database\DatabaseLogic.java
+	 */
+
+package database;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.ArrayList;
+
+import objects.DateTime;
+import objects.Task;
+import objects.TaskType;
+
+/**
+ * This class handles the logic involved in managing the data structure of
+ * tasks.
+ * 
+ * Do not apply the singleton pattern to this class. Even if multiple instances
+ * are created, all task data in lists and on file will still be synchronized.
+ * For more details, view GitHub issue #64
+ * (https://github.com/cs2103aug2014-t15-1j/main/issues/64).
+ */
+
+public class DatabaseLogic {
+
+    /** Only contains undeleted todo tasks. */
+    private static List<Task> toDoTasks = new ArrayList<Task>();
+
+    /** Only contains undeleted done tasks. */
+    private static List<Task> doneTasks = new ArrayList<Task>();
+
+    /** Only contains undeleted block tasks. */
+    private static List<Task> blockTasks = new ArrayList<Task>();
+
+    /** Only contains deleted todo, done, and block tasks. */
+    private static List<Task> deletedTasks = new ArrayList<Task>();
+
+    /**
+     * Contains references to all Task objects in toDoTasks, doneTasks,
+     * blockTasks, and deletedTasks lists. Does not contain duplicate objects.
+     */
+    private static List<Task> allTasks = new ArrayList<Task>();
+
+    /** Default constructor. */
+    public DatabaseLogic() {
+    }
+
+    /**
+     * Populates Task lists at DatabaseFacade instantiation. Deleted tasks are
+     * not saved to file, hence the deleted task list is not populated.
+     * 
+     * @param tasks
+     *            The list of Tasks objects used to populate the Task lists in
+     *            DatabaseLogic with.
+     */
+    public void populateTaskLists(List<Task> tasks) {
+        allTasks.addAll(tasks);
+        for (Task task : allTasks) {
+            switch (task.getType()) {
+                case TODO:
+                    toDoTasks.add(task);
+                    break;
+                case DONE:
+                    doneTasks.add(task);
+                    break;
+                case BLOCK:
+                    blockTasks.add(task);
+                    break;
+                default:
+                    assert false : "Is not todo, done, or block type Task object";
+                    break;
+            }
+        }
+    }
+
+    /**
+     * Returns a list of undeleted todo Task objects.
+     * 
+     * @return List of undeleted todo Task objects.
+     */
+    public List<Task> getToDoTasks() {
+        Collections.sort(toDoTasks);
+        return Collections.unmodifiableList(toDoTasks);
+    }
+
+    /**
+     * Returns a list of undeleted done Task objects.
+     * 
+     * @return List of undeleted done Task objects.
+     */
+    public List<Task> getDoneTasks() {
+        Collections.sort(doneTasks);
+        return Collections.unmodifiableList(doneTasks);
+    }
+
+    /**
+     * Returns a list of undeleted block Task objects.
+     * 
+     * @return List of undeleted block Task objects.
+     */
+    public List<Task> getBlockTasks() {
+        Collections.sort(blockTasks);
+        return Collections.unmodifiableList(blockTasks);
+    }
+
+    /**
+     * Returns a list of deleted todo, done, and block Task objects.
+     * 
+     * @return List of deleted todo, done, and block Task objects.
+     */
+    public List<Task> getDeletedTasks() {
+        Collections.sort(deletedTasks);
+        return Collections.unmodifiableList(deletedTasks);
+    }
+
+    /**
+     * Returns a list all Task objects. Contains references to to-do, done, and
+     * block Task objects. Does not contain duplicate Task objects.
+     * 
+     * @return List of all Task objects.
+     */
+    public List<Task> getAllTasks() {
+        Collections.sort(allTasks);
+        return Collections.unmodifiableList(allTasks);
+    }
+
+    /**
+     * Given id, returns Task object of matching id.
+     * 
+     * @param id
+     *            The task's unique id.
+     * @return Task object of matching id, or null if id is invalid.
+     */
+    public Task searchTaskById(int id) {
+        for (Task task : allTasks) {
+            if (task.getId() == id) {
+                return task;
+            }
+        }
+        return null; // Invalid id
+    }
+
+    /**
+     * Converts all Task objects into a single String. For writing to file.
+     * 
+     * @return A single String containing all Task objects' info.
+     */
+    public String getAllTaskInfo() {
+        String allTaskInfo = getTaskInfo(toDoTasks);
+        allTaskInfo += getTaskInfo(doneTasks);
+        allTaskInfo += getTaskInfo(blockTasks);
+        return allTaskInfo;
+    }
+
+    /**
+     * Converts Task objects from specified list into a single String. For
+     * writing to file.
+     * 
+     * @param tasks
+     *            The specified list to get Task objects from.
+     * @return A single String containing Task objects' info.
+     */
+    private String getTaskInfo(List<Task> tasks) {
+        String allTaskInfo = "";
+        for (Task task : tasks) {
+            allTaskInfo += task.toString() + "\n";
+        }
+        return allTaskInfo;
+    }
+
+    /**
+     * Adds a new Task object into respective Task lists.
+     * 
+     * @param task
+     *            New Task object to be added to Task lists.
+     * @return True, if successfully added to Task lists.
+     */
+    public boolean add(Task task) {
+        assert !allTasks.contains(task) : "Should not add duplicates";
+        assert !task.isDeleted() : "Add is meant to handle new, undeleted tasks only";
+
+        allTasks.add(task);
+        switch (task.getType()) {
+            case TODO:
+                return toDoTasks.add(task);
+            case DONE:
+                return doneTasks.add(task);
+            case BLOCK:
+                return blockTasks.add(task);
+            default:
+                assert false : "Is not todo, done, or block type Task object";
+                return false;
+        }
+    }
+
+    /**
+     * Based on object provided, updates Task object's attributes with provided
+     * arguments. Changes are saved to Task lists. Provide null arguments for
+     * attributes to be reset to empty values. Provide empty arguments for
+     * attributes to keep the same.
+     * 
+     * @param task
+     *            Task object to modify.
+     * @param name
+     *            New description, if any.
+     * @param start
+     *            New start date and time, if any.
+     * @param due
+     *            New due date and time, if any.
+     * @param tags
+     *            New tags, if any.
+     * @return True, if successfully edited Task object in Task lists.
+     */
+    public boolean edit(Task task, String name, DateTime start, DateTime due,
+                        List<String> tags) {
+        if (task == null) {
+            return false; // Invalid ID
+        }
+
+        if (name == null) {
+            task.resetName();
+        } else if (!name.isEmpty()) {
+            task.setName(name);
+        }
+
+        if (start == null) {
+            task.resetStart();
+        } else if (!start.toString().isEmpty()) {
+            task.setStart(start);
+        }
+
+        if (due == null) {
+            task.resetDue();
+        } else if (!due.toString().isEmpty()) {
+            task.setDue(due);
+        }
+
+        if (tags == null) {
+            task.resetTags();
+        } else if (!tags.isEmpty()) {
+            task.setTags(tags);
+        }
+        return true;
+    }
+
+    /**
+     * Based on object provided, deletes undeleted Task object. Remove from
+     * respective Task lists, and add to deleted Task list.
+     * 
+     * @param task
+     *            Task object to delete.
+     * @return True, if successfully deleted Task object.
+     */
+    public boolean delete(Task task) {
+        if (task == null || task.isDeleted()) {
+            return false; // Invalid ID or already deleted
+        }
+
+        task.setDeleted(true);
+        deletedTasks.add(task);
+        switch (task.getType()) {
+            case TODO:
+                return toDoTasks.remove(task);
+            case DONE:
+                return doneTasks.remove(task);
+            case BLOCK:
+                return blockTasks.remove(task);
+            default:
+                assert false : "Is not todo, done, or block type Task object";
+                return false;
+        }
+    }
+
+    /**
+     * Based on object provided, restores deleted Task object. Remove from
+     * deleted Task list, and add to respective Task lists.
+     * 
+     * @param task
+     *            Task object to restore.
+     * @return True, if successfully restored Task object.
+     */
+    public boolean restore(Task task) {
+        if (task == null || !task.isDeleted()) {
+            return false; // Invalid ID or is not deleted task
+        }
+
+        task.setDeleted(false);
+        deletedTasks.remove(task);
+        switch (task.getType()) {
+            case TODO:
+                return toDoTasks.add(task);
+            case DONE:
+                return doneTasks.add(task);
+            case BLOCK:
+                return blockTasks.add(task);
+            default:
+                assert false : "Is not todo, done, or block type Task object";
+                return false;
+        }
+    }
+
+    /**
+     * Based on object provided, permanently deletes Task object. Cannot be
+     * undone. Used when undoing add commands. Decrements Task ID counter.
+     * Remove from every Task list.
+     * 
+     * @param task
+     *            Task object to permanently delete.
+     * @return True, if successfully deleted Task object permanently.
+     */
+    public boolean permanentlyDelete(Task task) {
+        if (task == null) {
+            return false; // Invalid ID
+        }
+
+        Task.decrementId();
+        allTasks.remove(task);
+        if (task.isDeleted()) {
+            return deletedTasks.remove(task);
+        } else {
+            switch (task.getType()) {
+                case TODO:
+                    return toDoTasks.remove(task);
+                case DONE:
+                    return doneTasks.remove(task);
+                case BLOCK:
+                    return blockTasks.remove(task);
+                default:
+                    assert false : "Is not todo, done, or block type Task object";
+                    return false;
+            }
+        }
+    }
+
+    /**
+     * Permanently deletes all Task objects in every Task list. Cannot be
+     * undone. User should be prompted for confirmation before executing this
+     * function.
+     * 
+     * @return True, if successfully permanently cleared of all Task data.
+     */
+    public boolean permanentlyDeleteAllTasks() {
+        Task.resetId();
+        allTasks.clear();
+        toDoTasks.clear();
+        doneTasks.clear();
+        blockTasks.clear();
+        deletedTasks.clear();
+        return true;
+    }
+
+    /**
+     * Based on object provided, marks Task object as todo. If Task was deleted,
+     * restores it, and marks as todo. Removed from respective Task lists, and
+     * added to todo Task list.
+     * 
+     * Overloaded function.
+     * 
+     * @param task
+     *            Task object to be marked as todo.
+     * @return True, if successfully marked Task object as todo.
+     */
+    public boolean markToDo(Task task) {
+        if (task == null || (task.isToDo() && !task.isDeleted())) {
+            return false; // Invalid ID or is undeleted to-do task
+        }
+
+        if (task.isDeleted()) {
+            task.setType(TaskType.TODO);
+            return restore(task);
+        }
+        switch (task.getType()) {
+            case DONE:
+                doneTasks.remove(task);
+                break;
+            case BLOCK:
+                blockTasks.remove(task);
+                break;
+            default:
+                assert false : "Is not todo, done, or block type Task object";
+                break;
+        }
+        task.setType(TaskType.TODO);
+        return toDoTasks.add(task);
+    }
+
+    /**
+     * Based on object provided, marks Task object as done. If Task was deleted,
+     * restores it, and marks as done. Removed from respective Task lists, and
+     * added to done Task list.
+     * 
+     * Overloaded function.
+     * 
+     * @param task
+     *            Task object to be marked as done.
+     * @return True, if successfully marked Task object as done.
+     */
+    public boolean markDone(Task task) {
+        if (task == null || (task.isDone() && !task.isDeleted())) {
+            return false; // Invalid ID or is undeleted done task
+        }
+
+        if (task.isDeleted()) {
+            task.setType(TaskType.DONE);
+            return restore(task);
+        }
+        switch (task.getType()) {
+            case TODO:
+                toDoTasks.remove(task);
+                break;
+            case BLOCK:
+                blockTasks.remove(task);
+                break;
+            default:
+                assert false : "Is not todo, done, or block type Task object";
+                break;
+        }
+        task.setType(TaskType.DONE);
+        return doneTasks.add(task);
+    }
+
+    /**
+     * Based on object provided, marks Task object as block. If Task was
+     * deleted, restores it, and marks as block. Removed from respective Task
+     * lists, and added to block Task list.
+     * 
+     * Overloaded function.
+     * 
+     * @param task
+     *            Task object to be marked as block.
+     * @return True, if successfully marked Task object as block.
+     */
+    public boolean markBlock(Task task) {
+        if (task == null || (task.isBlock() && !task.isDeleted())) {
+            return false; // Invalid ID or is undeleted block task
+        }
+
+        if (task.isDeleted()) {
+            task.setType(TaskType.BLOCK);
+            return restore(task);
+        }
+        switch (task.getType()) {
+            case TODO:
+                toDoTasks.remove(task);
+                break;
+            case DONE:
+                doneTasks.remove(task);
+                break;
+            default:
+                assert false : "Is not todo, done, or block type Task object";
+                break;
+        }
+        task.setType(TaskType.BLOCK);
+        return blockTasks.add(task);
+    }
+}
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\database\DatabaseLogic.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\database\TaskReader.java
+	 */
+
+package database;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+import logic.Log;
+import objects.Task;
+import parser.Parser;
+
+/**
+ * This class is in charge of reading task data from file, and returning a list
+ * of Task objects. Only run once at instantiation of the DatabaseFacade class.
+ */
+
+public class TaskReader {
+
+    /** For logging purposes */
+    private static void log(String output) {
+        if (Log.LOGGING_ENABLED) {
+            Log.getLogger().info(output);
+        }
+    }
+    
+    /** The file object to read from. */
+    private File file;
+
+    /**
+     * Default constructor.
+     * 
+     * Made private to prevent instantiation without providing filename.
+     */
+    private TaskReader() {
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param filename
+     *            The name of the file to read from.
+     */
+    public TaskReader(String filename) {
+        this();
+        file = new File(filename);
+    }
+
+    /**
+     * Reads task info from file, and returns a list of Task objects. Creates
+     * file with provided filename if it does not exist.
+     * 
+     * @return List of tasks from file, or null if an error was encountered.
+     */
+    public List<Task> read() {
+        if (file.exists()) {
+            try {
+                List<Task> tasksFromFile = new ArrayList<Task>();
+
+                // Read tasks from file
+                Scanner scanner = new Scanner(file);
+                while (scanner.hasNextLine()) {
+                    String unparsedText = scanner.nextLine();
+                    Task tempTask = Parser.parseToTask(unparsedText);
+                    tasksFromFile.add(tempTask);
+                }
+                scanner.close();
+
+                return tasksFromFile;
+            } catch (FileNotFoundException e) {
+                log("File not found exception");
+                System.out.println("File not found: " + e);
+                e.printStackTrace();
+            }
+        } else { // File does not exist
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                log("IOException, cannot create new file");
+                System.out.println("Unhandled IOException: " + e);
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Checks if file exists. Filename is provided in constructor.
+     * 
+     * @return True if file exists.
+     */
+    public boolean fileExists() {
+        return file.exists();
+    }
+}
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\database\TaskReader.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\database\TaskWriter.java
+	 */
+
+package database;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+
+import logic.Log;
+
+/**
+ * This class is in charge of writing task data to file.
+ */
+
+public class TaskWriter {
+
+    /** For logging purposes */
+    private static void log(String output) {
+        if (Log.LOGGING_ENABLED) {
+            Log.getLogger().info(output);
+        }
+    }
+    
+    /** The file object to write to. */
+    private File file;
+
+    /**
+     * Default constructor.
+     * 
+     * Made private to prevent instantiation without providing filename.
+     */
+    private TaskWriter() {
+    }
+
+    /**
+     * Constructor. Creates file with provided filename if it does not exist.
+     * 
+     * @param filename
+     *            The name of the file to write to.
+     */
+    public TaskWriter(String filename) {
+        this();
+        file = new File(filename);
+        if (!file.exists()) {
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                log("IOException, cannot create new file");
+                System.out.println("Unhandled IOException: " + e);
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Writes String containing task info to file.
+     * 
+     * @param allTaskInfo
+     *            Info of tasks to write to file.
+     * @return True, if successfully written to file.
+     */
+    public boolean write(String allTaskInfo) {
+        try {
+            FileWriter newFile = new FileWriter(file, false);
+            newFile.write(allTaskInfo);
+            newFile.close();
+            return true;
+        } catch (IOException e) {
+            log("IOException, failed writing to file");
+            System.out.println("Unhandled IOException: " + e);
+            e.printStackTrace();
+            return false;
+        }
+    }
+}
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\database\TaskWriter.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\objects\DateTime.java
+	 */
+
+
+package objects;
+
+/**
+ * The DateTime class encapsulates date and time attributes in a single class.
+ * Date and time attributes are managed as Strings. Date String is internally
+ * split into day, month, and year integer attributes for easier management.
+ * 
+ * Date and time formats, respectively: "DD/MM/YYYY" and "HHMM".
+ */
+
+public class DateTime implements Comparable<DateTime> {
+
+    /** Values used in comparison functions. */
+    private final int EARLIER = -1;
+    private final int EQUAL = 0;
+    private final int LATER = 1;
+
+    /** Regex to check for empty Strings as valid input. */
+    private final static String OR_EMPTY_PATTERN = "|^$";
+
+    /** Regex for valid date values and format: "DD/MM/YYYY" or empty String. */
+    private final static String DATE_PATTERN = "((((((0[1-9]|[12][0-9]|3[0-1])/(0[13578]|1[02]))|" +
+                                               "((0[1-9]|[12][0-9]|30)/(0[469]|11))|" +
+                                               "((0[1-9]|1[0-9]|2[0-8])/02))/\\d{4})|" +
+                                               "(29/02/((\\d{2}(0[48]|[2468][048]|[13579][26]))|" +
+                                               "(([02468][048]|[13579][26])00))))" +
+                                               OR_EMPTY_PATTERN + ")";
+
+    /** Regex for valid time values and format: "HHMM" or empty String. */
+    private final static String TIME_PATTERN = "(((([0-1][0-9])|(2[0-3]))[0-5][0-9])" +
+                                               OR_EMPTY_PATTERN + ")";
+
+    /**
+     * Regex for valid date and time values and format: "DD/MM/YYYY HHMM",
+     * "DD/MM/YYYY", "HHMM", or empty String.
+     */
+    private final static String DATE_TIME_PATTERN = "(" + DATE_PATTERN + " " +
+                                                    TIME_PATTERN + ")|" +
+                                                    DATE_PATTERN + "|" +
+                                                    TIME_PATTERN +
+                                                    OR_EMPTY_PATTERN;
+
+    /** Date format: "DD/MM/YYYY" */
+    private String date = "";
+
+    /** Automatically parsed from date value. */
+    private int day = 0;
+
+    /** Automatically parsed from date value. */
+    private int month = 0;
+
+    /** Automatically parsed from date value. */
+    private int year = 0;
+
+    /** Time format: "HHMM" */
+    private String time = "";
+
+    /**
+     * Default constructor. Attributes are initialized as empty Strings and
+     * zeroed integers.
+     */
+    public DateTime() {
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param date
+     *            Format: "DD/MM/YYYY" or empty String.
+     * @param time
+     *            Format: "HHMM" or empty String.
+     */
+    public DateTime(String date, String time) {
+        assert date != null : "date mustn't be null";
+        assert time != null : "time mustn't be null";
+        assert date.matches(DATE_PATTERN) : "date must have correct format and value";
+        assert time.matches(TIME_PATTERN) : "time must have correct format and value";
+
+        this.date = date;
+        this.time = time;
+        if (!date.isEmpty()) {
+            parseAndSplitDate(date);
+        }
+    }
+
+    /**
+     * Parses and splits date string for storing in day, month, and year integer
+     * attributes.
+     * 
+     * @param date
+     *            Is non-empty String, format: "DD/MM/YYYY".
+     */
+    private void parseAndSplitDate(String date) {
+        assert date.matches(DATE_PATTERN) : "date must have right format and value";
+        assert !date.isEmpty() : "date mustn't be empty";
+        String[] splitDate = date.split("/");
+        day = Integer.parseInt(splitDate[0]);
+        month = Integer.parseInt(splitDate[1]);
+        year = Integer.parseInt(splitDate[2]);
+    }
+
+    /**
+     * Copy constructor.
+     * 
+     * Creates a deep copy of provided DateTime object.
+     * 
+     * @param dateTime
+     *            The existing DateTime object to create a deep copy from.
+     */
+    public DateTime(DateTime dateTime) {
+        assert dateTime != null : "dateTime mustn't be null";
+        assert dateTime.toString().matches(DATE_TIME_PATTERN) : "dateTime's attributes must have correct format and value";
+
+        this.date = dateTime.date;
+        this.day = dateTime.day;
+        this.month = dateTime.month;
+        this.year = dateTime.year;
+        this.time = dateTime.time;
+    }
+
+    /** Checks if DateTime object has empty attributes. */
+    public boolean isEmpty() {
+        return date.isEmpty() && time.isEmpty();
+    }
+
+    /**
+     * Returns a String object representing this DateTime's value.
+     * 
+     * @return A String representation of the date and time value of this
+     *         object. Format: "DD/MM/YYYY HHMM", ""DD/MM/YYYY", "HHMM", or
+     *         empty String.
+     */
+    @Override
+    public String toString() {
+        if (this.isEmpty()) {
+            return "";
+        } else if (date.isEmpty()) {
+            return time;
+        } else if (time.isEmpty()) {
+            return date;
+        } else {
+            return date + " " + time;
+        }
+    }
+
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\objects\DateTime.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\objects\DateTime.java
+	 */
+
+    /**
+     * Indicates whether some other object is "equal to" this one.
+     * 
+     * The equals method implements an equivalence relation on non-null object
+     * references:
+     * <ul>
+     * <li>It is reflexive: for any non-null reference value x, x.equals(x)
+     * should return true.
+     * <li>It is symmetric: for any non-null reference values x and y,
+     * x.equals(y) should return true if and only if y.equals(x) returns true.
+     * <li>It is transitive: for any non-null reference values x, y, and z, if
+     * x.equals(y) returns true and y.equals(z) returns true, then x.equals(z)
+     * should return true.
+     * <li>It is consistent: for any non-null reference values x and y, multiple
+     * invocations of x.equals(y) consistently return true or consistently
+     * return false, provided no information used in equals comparisons on the
+     * objects is modified.
+     * <li>For any non-null reference value x, x.equals(null) should return
+     * false.
+     * </ul>
+     * 
+     * The equals method for class Object implements the most discriminating
+     * possible equivalence relation on objects; that is, for any non-null
+     * reference values x and y, this method returns true if and only if x and y
+     * refer to the same object (x == y has the value true).
+     * 
+     * Note that it is generally necessary to override the hashCode method
+     * whenever this method is overridden, so as to maintain the general
+     * contract for the hashCode method, which states that equal objects must
+     * have equal hash codes.
+     * 
+     * 
+     * @param obj
+     *            The reference object with which to compare.
+     * 
+     * @returns True if this object is the same as the obj argument; false
+     *          otherwise.
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof DateTime)) {
+            return false;
+        } else if (obj == this) {
+            return true;
+        }
+
+        DateTime otherDateTime = (DateTime) obj;
+        return (compareTo(otherDateTime) == EQUAL);
+    }
+
+    /**
+     * Returns a hash code value for the object. This method is supported for
+     * the benefit of hash tables such as those provided by HashMap.
+     * 
+     * The general contract of hashCode is:
+     * <ul>
+     * <li>Whenever it is invoked on the same object more than once during an
+     * execution of a Java application, the hashCode method must consistently
+     * return the same integer, provided no information used in equals
+     * comparisons on the object is modified. This integer need not remain
+     * consistent from one execution of an application to another execution of
+     * the same application.
+     * <li>If two objects are equal according to the equals(Object) method, then
+     * calling the hashCode method on each of the two objects must produce the
+     * same integer result.
+     * <li>It is not required that if two objects are unequal according to the
+     * equals(java.lang.Object) method, then calling the hashCode method on each
+     * of the two objects must produce distinct integer results. However, the
+     * programmer should be aware that producing distinct integer results for
+     * unequal objects may improve the performance of hash tables.
+     * </ul>
+     * 
+     * As much as is reasonably practical, the hashCode method defined by class
+     * Object does return distinct integers for distinct objects.
+     * 
+     * @return A hash code value for this object.
+     */
+    @Override
+    public int hashCode() {
+        return date.hashCode() + time.hashCode();
+    }
+
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\objects\DateTime.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\objects\DateTime.java
+	 */
+
+    /**
+     * Date getter.
+     * 
+     * @return Date, format: "DD/MM/YYYY" or empty String.
+     */
+    public String getDate() {
+        return date;
+    }
+
+    /**
+     * Date setter.
+     * 
+     * @param date
+     *            Format: "DD/MM/YYYY" or empty String.
+     */
+    public void setDate(String date) {
+        assert date != null : "date mustn't be null";
+        assert date.matches(DATE_PATTERN) : "date must have correct format and value";
+        if (date.isEmpty()) {
+            resetDate();
+        } else {
+            this.date = date;
+            parseAndSplitDate(date);
+        }
+    }
+
+    /** Resets date attribute to empty String. */
+    public void resetDate() {
+        date = "";
+        resetDay();
+        resetMonth();
+        resetYear();
+    }
+
+    /**
+     * Gets day value parsed from date value.
+     * 
+     * @return Day value in integer type.
+     */
+    public int getDay() {
+        return day;
+    }
+
+    /** Zeroes day attribute. */
+    private void resetDay() {
+        day = 0;
+    }
+
+    /**
+     * Gets month value parsed from date value.
+     * 
+     * @return Month value in integer type.
+     */
+    public int getMonth() {
+        return month;
+    }
+
+    /** Zeroes month attribute. */
+    private void resetMonth() {
+        month = 0;
+    }
+
+    /**
+     * Gets year value parsed from date value.
+     * 
+     * @return Year value in integer type.
+     */
+    public int getYear() {
+        return year;
+    }
+
+    /** Zeroes year attribute. */
+    private void resetYear() {
+        year = 0;
+    }
+
+    /**
+     * Time getter.
+     * 
+     * @return Time, format: "HHMM" or empty String.
+     */
+    public String getTime() {
+        return time;
+    }
+
+    /**
+     * Time setter.
+     * 
+     * @param time
+     *            Format: "HHMM" or empty String.
+     */
+    public void setTime(String time) {
+        assert time != null : "time mustn't be null";
+        assert time.matches(TIME_PATTERN) : "time must have right format and value";
+        this.time = time;
+    }
+
+    /** Resets time attribute to empty String. */
+    public void resetTime() {
+        time = "";
+    }
+
+    /** Resets date and time attributes to empty Strings. */
+    public void resetDateTime() {
+        resetDate();
+        resetTime();
+    }
+
+    /**
+     * Regex for valid date values and format: "DD/MM/YYYY HHMM"
+     * 
+     * @return Regex for valid date values and format: "DD/MM/YYYY HHMM"
+     */
+    public static String getDatePattern() {
+        return DATE_PATTERN;
+    }
+
+    /**
+     * Regex for valid time values and format: "DD/MM/YYYY HHMM"
+     * 
+     * @return Regex for valid time values and format: "DD/MM/YYYY HHMM"
+     */
+    public static String getTimePattern() {
+        return TIME_PATTERN;
+    }
+
+    /**
+     * Returns regex for valid date and time values and format:
+     * "DD/MM/YYYY HHMM"
+     * 
+     * @return Regex for valid date and time values and format:
+     *         "DD/MM/YYYY HHMM"
+     */
+    public static String getDateTimePattern() {
+        return DATE_TIME_PATTERN;
+    }
+}
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\objects\DateTime.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\objects\Task.java
+	 */
+
+package objects;
+
+import java.util.List;
+import java.util.ArrayList;
+
+import parser.Parser;
+
+/**
+ * A Task object contains attributes to store a task's unique id, description,
+ * start date and time, due date and time, completed date and time, relevant
+ * tags to ease searching and categorizing, task type, and deletion state.
+ */
+
+public class Task implements Comparable<Task> {
+
+    /**
+     * Unique id for each new Task object. Increments at new Task instantiation.
+     * Should be decremented when undoing an object creation.
+     */
+    private static int newId = 1;
+
+    /** Id is set at object instantiation. */
+    private final int ID;
+
+    /** Description of task. */
+    private String name = "";
+
+    /** Scheduled start date and time, format: DD/MM/YYYY HHMM. */
+    private DateTime start = new DateTime();
+
+    /** Scheduled end or due date and time, format: DD/MM/YYYY HHMM. */
+    private DateTime due = new DateTime();
+
+    /** Date and time at which task was marked as done, format: DD/MM/YYYY HHMM. */
+    private DateTime completedOn = new DateTime();
+
+    /** Each stored tag contains a # before the word. */
+    private List<String> tags = new ArrayList<String>();
+
+    /** Tasks can be of todo, done, or block type. */
+    private TaskType type = TaskType.TODO;
+
+    /** Deleted status takes precedence over type. */
+    private boolean deleted = false;
+
+    /** Default constructor. Empty object attributes. Doesn't increment id. */
+    public Task() {
+        ID = 0;
+    }
+
+    /**
+     * Constructor. Used when creating a new Task. Increments ID counter.
+     * 
+     * @param name
+     *            Task description.
+     * @param start
+     *            Start date and time, format: DD/MM/YYYY HHMM
+     * @param due
+     *            End/due date and time, format: DD/MM/YYYY HHMM
+     * @param completedOn
+     *            Date and time task was completed on, format: DD/MM/YYYY HHMM
+     * @param tags
+     *            To aid searching and categorizing. Each tag contains #.
+     * @param type
+     *            Type of task.
+     */
+    public Task(String name, DateTime start, DateTime due,
+            DateTime completedOn, List<String> tags, TaskType type) {
+        assert name != null : "Name cannot be null";
+        assert start != null : "Start cannot be null";
+        assert start.toString().matches(DateTime.getDateTimePattern()) : "Start must have correct format & value";
+        assert due != null : "Due cannot be null";
+        assert due.toString().matches(DateTime.getDateTimePattern()) : "Due must have correct format & value";
+        assert completedOn != null : "CompletedOn cannot be null";
+        assert completedOn.toString().matches(DateTime.getDateTimePattern()) : "CompletedOn must have correct format & value";
+        assert tags != null : "Tags cannot be null";
+        assert type != null : "Type cannot be null";
+        if (type == TaskType.BLOCK) {
+            assert !start.isEmpty() : "Block types must have start";
+            assert !due.isEmpty() : "Block types must have due";
+        }
+
+        this.ID = newId++;
+        this.name = name;
+        this.start = new DateTime(start);
+        this.due = new DateTime(due);
+        this.completedOn = new DateTime(completedOn);
+        this.tags.addAll(tags);
+        this.type = type;
+    }
+
+    /**
+     * Copy constructor. Does not increment ID counter.
+     * 
+     * Creates a deep copy of provided Task object.
+     * 
+     * @param task
+     *            The existing Task object to create a deep copy from.
+     */
+    public Task(Task task) {
+        assert task != null : "Cannot clone null";
+
+        ID = task.ID;
+        name = task.name;
+        start = new DateTime(task.start);
+        due = new DateTime(task.due);
+        completedOn = new DateTime(task.completedOn);
+        tags.addAll(task.tags);
+        type = task.type;
+        deleted = task.deleted;
+    }
+
+    /**
+     * Compares this Task object with the argument Task object for ordering.
+     * Returns a negative integer, zero, or a positive integer if this object's
+     * DateTime is earlier than, equal to, or later than that of the specified
+     * object. Start DateTimes are first used in the comparison if they are not
+     * empty, otherwise due DateTimes are used. Implementation is dependent on
+     * DateTime's compareTo().
+     * 
+     * @return A negative integer, zero, or a positive integer if this object's
+     *         date is earlier than, equal to, or later than that of the
+     *         argument object.
+     */
+    @Override
+    public int compareTo(Task otherTask) {
+        DateTime taskDate = this.due;
+        DateTime otherTaskDate = otherTask.due;
+        if (!this.start.isEmpty()) {
+            taskDate = this.start;
+        }
+        if (!otherTask.start.isEmpty()) {
+            otherTaskDate = otherTask.start;
+        }
+        return taskDate.compareTo(otherTaskDate);
+    }
+
+    /**
+     * Indicates whether some other object is "equal to" this Task object.
+     * 
+     * The equals method implements an equivalence relation on non-null object
+     * references:
+     * <ul>
+     * <li>It is reflexive: for any non-null reference value x, x.equals(x)
+     * should return true.
+     * <li>It is symmetric: for any non-null reference values x and y,
+     * x.equals(y) should return true if and only if y.equals(x) returns true.
+     * <li>It is transitive: for any non-null reference values x, y, and z, if
+     * x.equals(y) returns true and y.equals(z) returns true, then x.equals(z)
+     * should return true.
+     * <li>It is consistent: for any non-null reference values x and y, multiple
+     * invocations of x.equals(y) consistently return true or consistently
+     * return false, provided no information used in equals comparisons on the
+     * objects is modified.
+     * <li>For any non-null reference value x, x.equals(null) should return
+     * false.
+     * </ul>
+     * 
+     * The equals method for class Object implements the most discriminating
+     * possible equivalence relation on objects; that is, for any non-null
+     * reference values x and y, this method returns true if and only if x and y
+     * refer to the same object (x == y has the value true).
+     * 
+     * Note that it is generally necessary to override the hashCode method
+     * whenever this method is overridden, so as to maintain the general
+     * contract for the hashCode method, which states that equal objects must
+     * have equal hash codes.
+     * 
+     * @param obj
+     *            The reference object with which to compare.
+     * 
+     * @returns True if this object is the same as the obj argument; false
+     *          otherwise.
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Task)) {
+            return false;
+        } else if (obj == this) {
+            return true;
+        }
+
+        Task otherTask = (Task) obj;
+        return ID == otherTask.ID && type.equals(otherTask.type) &&
+               name.equals(otherTask.name) && start.equals(otherTask.start) &&
+               due.equals(otherTask.due) &&
+               completedOn.equals(otherTask.completedOn) &&
+               tags.equals(otherTask.tags);
+    }
+
+    /**
+     * Returns a hash code value for the object. This method is supported for
+     * the benefit of hash tables such as those provided by HashMap.
+     * 
+     * The general contract of hashCode is:
+     * <ul>
+     * <li>Whenever it is invoked on the same object more than once during an
+     * execution of a Java application, the hashCode method must consistently
+     * return the same integer, provided no information used in equals
+     * comparisons on the object is modified. This integer need not remain
+     * consistent from one execution of an application to another execution of
+     * the same application.
+     * <li>If two objects are equal according to the equals(Object) method, then
+     * calling the hashCode method on each of the two objects must produce the
+     * same integer result.
+     * <li>It is not required that if two objects are unequal according to the
+     * equals(java.lang.Object) method, then calling the hashCode method on each
+     * of the two objects must produce distinct integer results. However, the
+     * programmer should be aware that producing distinct integer results for
+     * unequal objects may improve the performance of hash tables.
+     * </ul>
+     * 
+     * As much as is reasonably practical, the hashCode method defined by class
+     * Object does return distinct integers for distinct objects.
+     * 
+     * @return A hash code value for this object.
+     */
+    @Override
+    public int hashCode() {
+        return this.toString().hashCode();
+    }
+
+    /**
+     * Converts Task object to a single String. Parameters are added to aid in
+     * parsing text when reading from file.
+     * 
+     * @return Task object in String format with parameters.
+     */
+    @Override
+    public String toString() {
+        String tempString = "";
+        tempString += name + " ### ";
+        tempString += "start: " + start.toString() + " ";
+        tempString += "due: " + due.toString() + " ";
+        tempString += "completed: " + completedOn.toString() + " ";
+        tempString += concatanateTags();
+        tempString += "type: " + type.toString();
+
+        return tempString;
+    }
+
+    /**
+     * Concatenates list of tags into a single String.
+     * 
+     * @return Concatenated String of tags.
+     */
+    private String concatanateTags() {
+        String concatanatedTags = "";
+        for (String tempTag : tags) {
+            concatanatedTags += tempTag + " ";
+        }
+        return concatanatedTags;
+    }
+
+    /**
+     * Stores searchable Task attributes in a single String. To be processed by
+     * a search function matching search terms.
+     * 
+     * @return String containing searchable Task object attributes.
+     */
+    public String getSummary() {
+        String summary = name + " ";
+        summary += start + " ";
+        summary += due + " ";
+        summary += concatanateTags();
+        summary += type;
+        return summary;
+    }
+
+    /**
+     * Task object id getter.
+     * 
+     * @return Task object's id.
+     */
+    public int getId() {
+        return ID;
+    }
+
+    /** Reduces ID counter by one. */
+    public static void decrementId() {
+        --newId;
+    }
+
+    /** Resets ID counter. */
+    public static void resetId() {
+        newId = 1;
+    }
+
+    /**
+     * Task object name getter.
+     * 
+     * @return Task object's name.
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Task object name setter
+     * 
+     * @param name
+     *            The new name to set the Task object to.
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /** Resets task description to an empty String. */
+    public void resetName() {
+        name = "";
+    }
+
+    /**
+     * Task object start getter.
+     * 
+     * @return Task object's start.
+     */
+    public DateTime getStart() {
+        DateTime copyOfStart = new DateTime(start);
+        return copyOfStart;
+    }
+
+    /**
+     * Task object start setter.
+     * 
+     * @param start
+     *            The new start to set the Task object to.
+     */
+    public void setStart(DateTime start) {
+        this.start = new DateTime(start);
+    }
+
+    /** Resets scheduled start date and time to an empty String. */
+    public void resetStart() {
+        start.resetDateTime();
+    }
+
+    /**
+     * Task object due getter.
+     * 
+     * @return Task object's due.
+     */
+    public DateTime getDue() {
+        DateTime copyOfDue = new DateTime(due);
+        return copyOfDue;
+    }
+
+    /**
+     * Task object due setter.
+     * 
+     * @param due
+     *            The new due to set the Task object to.
+     */
+    public void setDue(DateTime due) {
+        this.due = new DateTime(due);
+    }
+
+    /** Resets due date and time to an empty String. */
+    public void resetDue() {
+        due.resetDateTime();
+    }
+
+    /**
+     * Task object completedOn getter.
+     * 
+     * @return Task object's completedOn.
+     */
+    public DateTime getCompletedOn() {
+        DateTime copyOfCompletedOn = new DateTime(completedOn);
+        return copyOfCompletedOn;
+    }
+
+    /**
+     * Task object tags getter.
+     * 
+     * @return Task object's tags.
+     */
+    public List<String> getTags() {
+        List<String> copyOfTags = new ArrayList<String>();
+        copyOfTags.addAll(tags);
+        return copyOfTags;
+    }
+
+    /**
+     * Task object tags setter.
+     * 
+     * @param tags
+     *            The new tags to set the Task object to.
+     */
+    public void setTags(List<String> tags) {
+        this.tags.clear();
+        this.tags.addAll(tags);
+    }
+
+    /** Resets list of tags to an empty list. */
+    public void resetTags() {
+        tags.clear();
+    }
+
+    /** Checks if is todo type */
+    public boolean isToDo() {
+        return type == TaskType.TODO;
+    }
+
+    /** Checks if is done type */
+    public boolean isDone() {
+        return type == TaskType.DONE;
+    }
+
+    /** Checks if is block type */
+    public boolean isBlock() {
+        return type == TaskType.BLOCK;
+    }
+
+    /**
+     * Task object type getter.
+     * 
+     * @return Task object's type.
+     */
+    public TaskType getType() {
+        return type;
+    }
+
+    /**
+     * Task object type setter. If set to done, completedOn is set to that
+     * instant. If set to todo or block, completedOn is reset.
+     * 
+     * @param type
+     *            The new type to set the Task object to.
+     */
+    public void setType(TaskType type) {
+        this.type = type;
+        if (type == TaskType.DONE && completedOn.isEmpty()) {
+            completedOn = new DateTime(Parser.getCurrDateTime());
+            assert completedOn.toString()
+                    .matches(DateTime.getDateTimePattern()) : "CompletedOn must have correct format & value";
+        } else if (type == TaskType.TODO || type == TaskType.BLOCK) {
+            completedOn.resetDateTime();
+        }
+    }
+
+    /** Checks if is deleted */
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    /**
+     * Task object deleted setter.
+     * 
+     * @param deleted
+     *            The deleted status to set the Task object to.
+     */
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    /** Checks if is floating task, i.e. has no start or end date. */
+    public boolean isFloating() {
+        return start.isEmpty() && due.isEmpty();
+    }
+}
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\objects\Task.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\objects\TaskType.java
+	 */
+
+package objects;
+
+/**
+ * The types of Task objects available are:
+ * <ul>
+ * <li>TODO
+ * <li>DONE
+ * <li>BLOCK
+ * </ul>
+ */
+
+public enum TaskType {
+    TODO, DONE, BLOCK
+}
+
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\src\objects\TaskType.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\test\database\DatabaseLogicTest.java
+	 */
+
+
+package database;
+
+import static org.junit.Assert.*;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import objects.DateTime;
+import objects.Task;
+import objects.TaskType;
+
+import org.junit.Test;
+
+/**
+ * Unit tests for the DatabaseLogic class.
+ */
+
+public class DatabaseLogicTest {
+
+    private final DateTime EMPTY_DT = new DateTime();
+    private final DateTime START = new DateTime("01/01/2014", "0000");
+    private final DateTime DUE = new DateTime("02/01/2014", "0000");
+    private final DateTime COMPLETE = new DateTime("03/01/2014", "0000");
+    private final List<String> EMPTY_TAGS = new ArrayList<>();
+
+    @Test
+    public void testPopulationOfTaskLists() {
+        // Clear static lists containing Task objects
+        DatabaseLogic db = new DatabaseLogic();
+        db.permanentlyDeleteAllTasks();
+
+        Task toDoTask = new Task("", EMPTY_DT, EMPTY_DT, EMPTY_DT, EMPTY_TAGS,
+                TaskType.TODO);
+        Task doneTask = new Task("", EMPTY_DT, EMPTY_DT, COMPLETE, EMPTY_TAGS,
+                TaskType.DONE);
+        Task blockTask = new Task("", START, DUE, EMPTY_DT, EMPTY_TAGS,
+                TaskType.BLOCK);
+
+        List<Task> tasks = new ArrayList<>();
+        tasks.add(toDoTask);
+        tasks.add(doneTask);
+        tasks.add(blockTask);
+
+        db.populateTaskLists(tasks);
+
+        assertTrue("allTasks list contains all 3 Task objects", db
+                .getAllTasks().containsAll(tasks));
+
+        assertTrue("toDoTasks list contains todo Task object", db
+                .getToDoTasks().contains(toDoTask));
+
+        assertTrue("doneTasks list contains done Task object", db
+                .getDoneTasks().contains(doneTask));
+
+        assertTrue("blockTasks list contains block Task object", db
+                .getBlockTasks().contains(blockTask));
+
+        assertTrue("deletedTasks list is empty", db.getDeletedTasks().isEmpty());
+    }
+
+    @Test
+    public void testPermanentlyDeleteAllTasks() {
+        // Clear static lists containing Task objects
+        DatabaseLogic db = new DatabaseLogic();
+        db.permanentlyDeleteAllTasks();
+
+        Task toDoTask = new Task("", EMPTY_DT, EMPTY_DT, EMPTY_DT, EMPTY_TAGS,
+                TaskType.TODO);
+        Task doneTask = new Task("", EMPTY_DT, EMPTY_DT, COMPLETE, EMPTY_TAGS,
+                TaskType.DONE);
+        Task blockTask = new Task("", START, DUE, EMPTY_DT, EMPTY_TAGS,
+                TaskType.BLOCK);
+        Task deletedTask = new Task("", EMPTY_DT, EMPTY_DT, EMPTY_DT,
+                EMPTY_TAGS, TaskType.TODO);
+
+        db.add(toDoTask);
+        db.add(doneTask);
+        db.add(blockTask);
+        db.add(deletedTask);
+
+        db.delete(deletedTask);
+
+        assertFalse("allTasks list is not empty", db.getAllTasks().isEmpty());
+        assertFalse("toDoTasks list is not empty", db.getToDoTasks().isEmpty());
+        assertFalse("doneTasks list is not empty", db.getDoneTasks().isEmpty());
+        assertFalse("blockTasks list is not empty", db.getBlockTasks()
+                .isEmpty());
+        assertFalse("deletedTasks list is not empty", db.getDeletedTasks()
+                .isEmpty());
+
+        // Clear static lists containing Task objects
+        db.permanentlyDeleteAllTasks();
+
+        assertTrue("allTasks list is empty", db.getAllTasks().isEmpty());
+        assertTrue("toDoTasks list is empty", db.getToDoTasks().isEmpty());
+        assertTrue("doneTasks list is empty", db.getDoneTasks().isEmpty());
+        assertTrue("blockTasks list is empty", db.getBlockTasks().isEmpty());
+        assertTrue("deletedTasks list is empty", db.getDeletedTasks().isEmpty());
+    }
+
+    @Test
+    public void testSearchTaskById() {
+        // Clear static lists containing Task objects
+        DatabaseLogic db = new DatabaseLogic();
+        db.permanentlyDeleteAllTasks();
+
+        Task task1 = new Task("", EMPTY_DT, EMPTY_DT, EMPTY_DT, EMPTY_TAGS,
+                TaskType.TODO);
+        Task task2 = new Task("", EMPTY_DT, EMPTY_DT, EMPTY_DT, EMPTY_TAGS,
+                TaskType.TODO);
+        Task task3 = new Task("", EMPTY_DT, EMPTY_DT, EMPTY_DT, EMPTY_TAGS,
+                TaskType.TODO);
+
+        db.add(task1);
+        db.add(task2);
+        db.add(task3);
+
+        assertEquals(task2, db.searchTaskById(2));
+        assertEquals(task3, db.searchTaskById(3));
+        assertEquals(task1, db.searchTaskById(1));
+
+        // Erroneous boundary cases
+        assertNull("Task object does not exist", db.searchTaskById(0));
+        assertNull("Task object does not exist", db.searchTaskById(4));
+    }
+
+    @Test
+    public void testGetAllTaskInfo() {
+        // Clear static lists containing Task objects
+        DatabaseLogic db = new DatabaseLogic();
+        db.permanentlyDeleteAllTasks();
+
+        String name = "Do more unit tests";
+        DateTime start = new DateTime("11/12/2014", "1111");
+        DateTime due = new DateTime("13/12/2014", "2222");
+        DateTime completedOn = new DateTime("14/12/2014", "2359");
+        List<String> tags = new ArrayList<>();
+        tags.add("#tests4lyfe");
+        TaskType type = TaskType.DONE;
+
+        Task task1 = new Task(name, start, due, completedOn, tags, type);
+
+        name = "Recess week";
+        start = new DateTime("15/11/2014", "0000");
+        due = new DateTime("23/11/2014", "2359");
+        completedOn = EMPTY_DT;
+        tags.clear();
+        tags.add("#funStuff");
+        tags.add("#studystudystudy");
+        type = TaskType.BLOCK;
+
+        Task task2 = new Task(name, start, due, completedOn, tags, type);
+
+        name = "Testing is time consuming";
+        start = new DateTime("01/01/2015", "0000");
+        due = new DateTime("31/01/2015", "1000");
+        completedOn = EMPTY_DT;
+        tags.clear();
+        tags.add("#hahaha");
+        type = TaskType.TODO;
+
+        Task task3 = new Task(name, start, due, completedOn, tags, type);
+
+        db.add(task1);
+        db.add(task2);
+        db.add(task3);
+
+        assertEquals("Testing is time consuming ### start: 01/01/2015 0000 "
+                             + "due: 31/01/2015 1000 completed:  #hahaha type: TODO\n"
+                             + "Do more unit tests ### start: 11/12/2014 1111 "
+                             + "due: 13/12/2014 2222 completed: 14/12/2014 2359 #tests4lyfe type: DONE\n"
+                             + "Recess week ### start: 15/11/2014 0000 "
+                             + "due: 23/11/2014 2359 completed:  #funStuff #studystudystudy type: BLOCK\n",
+                     db.getAllTaskInfo());
+    }
+
+    @Test
+    public void testAdd() {
+        // Clear static lists containing Task objects
+        DatabaseLogic db = new DatabaseLogic();
+        db.permanentlyDeleteAllTasks();
+
+        String name = "Do more unit tests";
+        DateTime start = new DateTime("11/12/2014", "1111");
+        DateTime due = new DateTime("13/12/2014", "2222");
+        DateTime completedOn = new DateTime("14/12/2014", "2359");
+        List<String> tags = new ArrayList<>();
+        tags.add("#tests4lyfe");
+        TaskType type = TaskType.DONE;
+
+        Task task1 = new Task(name, start, due, completedOn, tags, type);
+
+        name = "Recess week";
+        start = new DateTime("15/11/2014", "0000");
+        due = new DateTime("23/11/2014", "2359");
+        completedOn = EMPTY_DT;
+        tags.clear();
+        tags.add("#funStuff");
+        tags.add("#studystudystudy");
+        type = TaskType.BLOCK;
+
+        Task task2 = new Task(name, start, due, completedOn, tags, type);
+
+        name = "Testing is time consuming";
+        start = new DateTime("01/01/2015", "0000");
+        due = new DateTime("31/01/2015", "1000");
+        completedOn = EMPTY_DT;
+        tags.clear();
+        tags.add("#hahaha");
+        type = TaskType.TODO;
+
+        Task task3 = new Task(name, start, due, completedOn, tags, type);
+
+        db.add(task1);
+        assertTrue("Added to all list", db.getAllTasks().contains(task1));
+        assertTrue("Added to done list", db.getDoneTasks().contains(task1));
+        assertFalse("Not in toDo list", db.getToDoTasks().contains(task1));
+        assertFalse("Not in block list", db.getBlockTasks().contains(task1));
+        assertFalse("Not in deleted list", db.getDeletedTasks().contains(task1));
+
+        db.add(task2);
+        assertTrue("Added to all list", db.getAllTasks().contains(task2));
+        assertTrue("Added to block list", db.getBlockTasks().contains(task2));
+        assertFalse("Not in toDo list", db.getToDoTasks().contains(task2));
+        assertFalse("Not in done list", db.getDoneTasks().contains(task2));
+        assertFalse("Not in deleted list", db.getDeletedTasks().contains(task2));
+
+        db.add(task3);
+        assertTrue("Added to all list", db.getAllTasks().contains(task3));
+        assertTrue("Added to toDo list", db.getToDoTasks().contains(task3));
+        assertFalse("Not in done list", db.getDoneTasks().contains(task3));
+        assertFalse("Not in block list", db.getBlockTasks().contains(task3));
+        assertFalse("Not in deleted list", db.getDeletedTasks().contains(task3));
+    }
+
+    @Test(expected = java.lang.AssertionError.class)
+    public void testAddingExistingTaskAssertionError() {
+        // Clear static lists containing Task objects
+        DatabaseLogic db = new DatabaseLogic();
+        db.permanentlyDeleteAllTasks();
+
+        String name = "Do more unit tests";
+        DateTime start = new DateTime("11/12/2014", "1111");
+        DateTime due = new DateTime("13/12/2014", "2222");
+        DateTime completedOn = new DateTime("14/12/2014", "2359");
+        List<String> tags = new ArrayList<>();
+        tags.add("#tests4lyfe");
+        TaskType type = TaskType.DONE;
+
+        Task task1 = new Task(name, start, due, completedOn, tags, type);
+        Task task2 = new Task(task1);
+        assertTrue(task1.equals(task2));
+
+        db.add(task1);
+        db.add(task2); // Adding equal object, should trigger assert
+    }
+
+    @Test
+    public void testEditNull() {
+        // Clear static lists containing Task objects
+        DatabaseLogic db = new DatabaseLogic();
+        db.permanentlyDeleteAllTasks();
+
+        assertFalse("Cannot edit null", db.edit(null, null, null, null, null));
+    }
+
+    @Test
+    public void testEditResetName() {
+        // Clear static lists containing Task objects
+        DatabaseLogic db = new DatabaseLogic();
+        db.permanentlyDeleteAllTasks();
+
+        String name = "Do more unit tests";
+        DateTime start = new DateTime("11/12/2014", "1111");
+        DateTime due = new DateTime("13/12/2014", "2222");
+        DateTime completedOn = new DateTime("14/12/2014", "2359");
+        List<String> tags = new ArrayList<>();
+        tags.add("#tests4lyfe");
+        TaskType type = TaskType.DONE;
+
+        Task task = new Task(name, start, due, completedOn, tags, type);
+
+        db.add(task);
+        assertTrue("Edited obj",
+                   db.edit(task, null, EMPTY_DT, EMPTY_DT, EMPTY_TAGS));
+        assertEquals("Name reset", "", task.getName());
+        assertEquals("No change to start", start, task.getStart());
+        assertEquals("No change to due", due, task.getDue());
+        assertEquals("No change to completedOn", completedOn,
+                     task.getCompletedOn());
+        assertEquals("No change to tags", tags, task.getTags());
+        assertEquals("No change to type", type, task.getType());
+    }
+
+    @Test
+    public void testEditSetName() {
+        // Clear static lists containing Task objects
+        DatabaseLogic db = new DatabaseLogic();
+        db.permanentlyDeleteAllTasks();
+
+        String name = "Do more unit tests";
+        DateTime start = new DateTime("11/12/2014", "1111");
+        DateTime due = new DateTime("13/12/2014", "2222");
+        DateTime completedOn = new DateTime("14/12/2014", "2359");
+        List<String> tags = new ArrayList<>();
+        tags.add("#tests4lyfe");
+        TaskType type = TaskType.DONE;
+
+        Task task = new Task(name, start, due, completedOn, tags, type);
+
+        db.add(task);
+        assertTrue("Edited obj",
+                   db.edit(task, "hi", EMPTY_DT, EMPTY_DT, EMPTY_TAGS));
+        assertEquals("Changed name", "hi", task.getName());
+        assertEquals("No change to start", start, task.getStart());
+        assertEquals("No change to due", due, task.getDue());
+        assertEquals("No change to completedOn", completedOn,
+                     task.getCompletedOn());
+        assertEquals("No change to tags", tags, task.getTags());
+        assertEquals("No change to type", type, task.getType());
+    }
+
+    @Test
+    public void testEditResetStart() {
+        // Clear static lists containing Task objects
+        DatabaseLogic db = new DatabaseLogic();
+        db.permanentlyDeleteAllTasks();
+
+        String name = "Do more unit tests";
+        DateTime start = new DateTime("11/12/2014", "1111");
+        DateTime due = new DateTime("13/12/2014", "2222");
+        DateTime completedOn = new DateTime("14/12/2014", "2359");
+        List<String> tags = new ArrayList<>();
+        tags.add("#tests4lyfe");
+        TaskType type = TaskType.DONE;
+
+        Task task = new Task(name, start, due, completedOn, tags, type);
+
+        db.add(task);
+        assertTrue("Edited obj", db.edit(task, "", null, EMPTY_DT, EMPTY_TAGS));
+        assertEquals("Reset start", EMPTY_DT, task.getStart());
+        assertEquals("No change to name", name, task.getName());
+        assertEquals("No change to due", due, task.getDue());
+        assertEquals("No change to completedOn", completedOn,
+                     task.getCompletedOn());
+        assertEquals("No change to tags", tags, task.getTags());
+        assertEquals("No change to type", type, task.getType());
+    }
+
+    @Test
+    public void testEditSetStart() {
+        // Clear static lists containing Task objects
+        DatabaseLogic db = new DatabaseLogic();
+        db.permanentlyDeleteAllTasks();
+
+        String name = "Do more unit tests";
+        DateTime start = new DateTime("11/12/2014", "1111");
+        DateTime due = new DateTime("13/12/2014", "2222");
+        DateTime completedOn = new DateTime("14/12/2014", "2359");
+        List<String> tags = new ArrayList<>();
+        tags.add("#tests4lyfe");
+        TaskType type = TaskType.DONE;
+
+        Task task = new Task(name, start, due, completedOn, tags, type);
+
+        db.add(task);
+        assertTrue("Edited obj", db.edit(task, "", due, EMPTY_DT, EMPTY_TAGS));
+        assertEquals("Changed start", due, task.getStart());
+        assertEquals("No change to name", name, task.getName());
+        assertEquals("No change to due", due, task.getDue());
+        assertEquals("No change to completedOn", completedOn,
+                     task.getCompletedOn());
+        assertEquals("No change to tags", tags, task.getTags());
+        assertEquals("No change to type", type, task.getType());
+    }
+
+    @Test
+    public void testEditResetDue() {
+        // Clear static lists containing Task objects
+        DatabaseLogic db = new DatabaseLogic();
+        db.permanentlyDeleteAllTasks();
+
+        String name = "Do more unit tests";
+        DateTime start = new DateTime("11/12/2014", "1111");
+        DateTime due = new DateTime("13/12/2014", "2222");
+        DateTime completedOn = new DateTime("14/12/2014", "2359");
+        List<String> tags = new ArrayList<>();
+        tags.add("#tests4lyfe");
+        TaskType type = TaskType.DONE;
+
+        Task task = new Task(name, start, due, completedOn, tags, type);
+
+        db.add(task);
+        assertTrue("Edited obj", db.edit(task, "", EMPTY_DT, null, EMPTY_TAGS));
+        assertEquals("Reset due", EMPTY_DT, task.getDue());
+        assertEquals("No change to name", name, task.getName());
+        assertEquals("No change to start", start, task.getStart());
+        assertEquals("No change to completedOn", completedOn,
+                     task.getCompletedOn());
+        assertEquals("No change to tags", tags, task.getTags());
+        assertEquals("No change to type", type, task.getType());
+    }
+
+    @Test
+    public void testEditSetDue() {
+        // Clear static lists containing Task objects
+        DatabaseLogic db = new DatabaseLogic();
+        db.permanentlyDeleteAllTasks();
+
+        String name = "Do more unit tests";
+        DateTime start = new DateTime("11/12/2014", "1111");
+        DateTime due = new DateTime("13/12/2014", "2222");
+        DateTime completedOn = new DateTime("14/12/2014", "2359");
+        List<String> tags = new ArrayList<>();
+        tags.add("#tests4lyfe");
+        TaskType type = TaskType.DONE;
+
+        Task task = new Task(name, start, due, completedOn, tags, type);
+
+        db.add(task);
+        assertTrue("Edited obj", db.edit(task, "", EMPTY_DT, start, EMPTY_TAGS));
+        assertEquals("Changed due", start, task.getDue());
+        assertEquals("No change to name", name, task.getName());
+        assertEquals("No change to start", start, task.getStart());
+        assertEquals("No change to completedOn", completedOn,
+                     task.getCompletedOn());
+        assertEquals("No change to tags", tags, task.getTags());
+        assertEquals("No change to type", type, task.getType());
+    }
+
+    @Test
+    public void testEditResetTags() {
+        // Clear static lists containing Task objects
+        DatabaseLogic db = new DatabaseLogic();
+        db.permanentlyDeleteAllTasks();
+
+        String name = "Do more unit tests";
+        DateTime start = new DateTime("11/12/2014", "1111");
+        DateTime due = new DateTime("13/12/2014", "2222");
+        DateTime completedOn = new DateTime("14/12/2014", "2359");
+        List<String> tags = new ArrayList<>();
+        tags.add("#tests4lyfe");
+        TaskType type = TaskType.DONE;
+
+        Task task = new Task(name, start, due, completedOn, tags, type);
+
+        db.add(task);
+        assertTrue("Edited obj", db.edit(task, "", EMPTY_DT, EMPTY_DT, null));
+        assertEquals("Reset tags", EMPTY_TAGS, task.getTags());
+        assertEquals("No change to name", name, task.getName());
+        assertEquals("No change to start", start, task.getStart());
+        assertEquals("No change to due", due, task.getDue());
+        assertEquals("No change to completedOn", completedOn,
+                     task.getCompletedOn());
+        assertEquals("No change to type", type, task.getType());
+    }
+
+    @Test
+    public void testEditSetTags() {
+        // Clear static lists containing Task objects
+        DatabaseLogic db = new DatabaseLogic();
+        db.permanentlyDeleteAllTasks();
+
+        String name = "Do more unit tests";
+        DateTime start = new DateTime("11/12/2014", "1111");
+        DateTime due = new DateTime("13/12/2014", "2222");
+        DateTime completedOn = new DateTime("14/12/2014", "2359");
+        List<String> tags = new ArrayList<>();
+        tags.add("#tests4lyfe");
+        TaskType type = TaskType.DONE;
+
+        Task task = new Task(name, start, due, completedOn, tags, type);
+
+        List<String> newTags = new ArrayList<>();
+        newTags.add("#haha");
+        newTags.add("#NO");
+
+        db.add(task);
+        assertTrue("Edited obj", db.edit(task, "", EMPTY_DT, EMPTY_DT, newTags));
+        assertEquals("Changed tags", newTags, task.getTags());
+        assertEquals("No change to name", name, task.getName());
+        assertEquals("No change to start", start, task.getStart());
+        assertEquals("No change to due", due, task.getDue());
+        assertEquals("No change to completedOn", completedOn,
+                     task.getCompletedOn());
+        assertEquals("No change to type", type, task.getType());
+    }
+
+    @Test
+    public void testDelete() {
+        // Clear static lists containing Task objects
+        DatabaseLogic db = new DatabaseLogic();
+        db.permanentlyDeleteAllTasks();
+
+        Task toDoTask = new Task("", EMPTY_DT, EMPTY_DT, EMPTY_DT, EMPTY_TAGS,
+                TaskType.TODO);
+        Task doneTask = new Task("", EMPTY_DT, EMPTY_DT, COMPLETE, EMPTY_TAGS,
+                TaskType.DONE);
+        Task blockTask = new Task("", START, DUE, EMPTY_DT, EMPTY_TAGS,
+                TaskType.BLOCK);
+
+        db.add(toDoTask);
+        db.add(doneTask);
+        db.add(blockTask);
+
+        assertTrue("Deleted toDo obj", db.delete(toDoTask));
+        assertTrue("In all list", db.getAllTasks().contains(toDoTask));
+        assertTrue("In deleted list", db.getDeletedTasks().contains(toDoTask));
+        assertFalse("Not in toDo list", db.getToDoTasks().contains(toDoTask));
+        assertFalse("Not in done list", db.getDoneTasks().contains(toDoTask));
+        assertFalse("Not in block list", db.getBlockTasks().contains(toDoTask));
+
+        assertTrue("Deleted done obj", db.delete(doneTask));
+        assertTrue("In all list", db.getAllTasks().contains(doneTask));
+        assertTrue("In deleted list", db.getDeletedTasks().contains(doneTask));
+        assertFalse("Not in toDo list", db.getToDoTasks().contains(doneTask));
+        assertFalse("Not in done list", db.getDoneTasks().contains(doneTask));
+        assertFalse("Not in block list", db.getBlockTasks().contains(doneTask));
+
+        assertTrue("Deleted toDo obj", db.delete(blockTask));
+        assertTrue("In all list", db.getAllTasks().contains(blockTask));
+        assertTrue("In deleted list", db.getDeletedTasks().contains(blockTask));
+        assertFalse("Not in toDo list", db.getToDoTasks().contains(blockTask));
+        assertFalse("Not in done list", db.getDoneTasks().contains(blockTask));
+        assertFalse("Not in block list", db.getBlockTasks().contains(blockTask));
+
+        assertFalse("Cannot delete null obj", db.delete(null));
+        assertFalse("Cannot delete deleted obj", db.delete(toDoTask));
+    }
+
+    @Test
+    public void testRestore() {
+        // Clear static lists containing Task objects
+        DatabaseLogic db = new DatabaseLogic();
+        db.permanentlyDeleteAllTasks();
+
+        Task toDoTask = new Task("", EMPTY_DT, EMPTY_DT, EMPTY_DT, EMPTY_TAGS,
+                TaskType.TODO);
+        Task doneTask = new Task("", EMPTY_DT, EMPTY_DT, COMPLETE, EMPTY_TAGS,
+                TaskType.DONE);
+        Task blockTask = new Task("", START, DUE, EMPTY_DT, EMPTY_TAGS,
+                TaskType.BLOCK);
+
+        db.add(toDoTask);
+        db.add(doneTask);
+        db.add(blockTask);
+
+        db.delete(toDoTask);
+        db.delete(doneTask);
+        db.delete(blockTask);
+
+        assertTrue("Restored toDo obj", db.restore(toDoTask));
+        assertTrue("In all list", db.getAllTasks().contains(toDoTask));
+        assertTrue("In toDo list", db.getToDoTasks().contains(toDoTask));
+        assertFalse("Not in done list", db.getDoneTasks().contains(toDoTask));
+        assertFalse("Not in block list", db.getBlockTasks().contains(toDoTask));
+        assertFalse("Not in deleted list",
+                    db.getDeletedTasks().contains(toDoTask));
+
+        assertTrue("Restored done obj", db.restore(doneTask));
+        assertTrue("In all list", db.getAllTasks().contains(doneTask));
+        assertTrue("In done list", db.getDoneTasks().contains(doneTask));
+        assertFalse("Not in toDo list", db.getToDoTasks().contains(doneTask));
+        assertFalse("Not in block list", db.getBlockTasks().contains(doneTask));
+        assertFalse("Not in deleted list",
+                    db.getDeletedTasks().contains(doneTask));
+
+        assertTrue("Restored toDo obj", db.restore(blockTask));
+        assertTrue("In all list", db.getAllTasks().contains(blockTask));
+        assertTrue("In block list", db.getBlockTasks().contains(blockTask));
+        assertFalse("Not in toDo list", db.getToDoTasks().contains(blockTask));
+        assertFalse("Not in done list", db.getDoneTasks().contains(blockTask));
+        assertFalse("Not in deleted list",
+                    db.getDeletedTasks().contains(blockTask));
+
+        assertFalse("Cannot restore null obj", db.restore(null));
+        assertFalse("Cannot restore restored obj", db.restore(toDoTask));
+    }
+
+    @Test
+    public void testPermanentlyDelete() {
+        // Clear static lists containing Task objects
+        DatabaseLogic db = new DatabaseLogic();
+        db.permanentlyDeleteAllTasks();
+
+        Task toDoTask = new Task("", EMPTY_DT, EMPTY_DT, EMPTY_DT, EMPTY_TAGS,
+                TaskType.TODO);
+        Task doneTask = new Task("", EMPTY_DT, EMPTY_DT, COMPLETE, EMPTY_TAGS,
+                TaskType.DONE);
+        Task blockTask = new Task("", START, DUE, EMPTY_DT, EMPTY_TAGS,
+                TaskType.BLOCK);
+        Task deletedTask = new Task("", EMPTY_DT, EMPTY_DT, EMPTY_DT,
+                EMPTY_TAGS, TaskType.TODO);
+
+        db.add(toDoTask);
+        db.add(doneTask);
+        db.add(blockTask);
+        db.add(deletedTask);
+        db.delete(deletedTask);
+
+        assertTrue("Perm deleted toDo obj", db.permanentlyDelete(toDoTask));
+        assertFalse("Not in all list", db.getAllTasks().contains(toDoTask));
+        assertFalse("Not in toDo list", db.getToDoTasks().contains(toDoTask));
+        assertFalse("Not in done list", db.getDoneTasks().contains(toDoTask));
+        assertFalse("Not in block list", db.getBlockTasks().contains(toDoTask));
+        assertFalse("Not in deleted list",
+                    db.getDeletedTasks().contains(toDoTask));
+
+        assertTrue("Perm deleted done obj", db.permanentlyDelete(doneTask));
+        assertFalse("Not in all list", db.getAllTasks().contains(doneTask));
+        assertFalse("Not in toDo list", db.getToDoTasks().contains(doneTask));
+        assertFalse("Not in done list", db.getDoneTasks().contains(doneTask));
+        assertFalse("Not in block list", db.getBlockTasks().contains(doneTask));
+        assertFalse("Not in deleted list",
+                    db.getDeletedTasks().contains(doneTask));
+
+        assertTrue("Perm deleted block obj", db.permanentlyDelete(blockTask));
+        assertFalse("Not in all list", db.getAllTasks().contains(blockTask));
+        assertFalse("Not in toDo list", db.getToDoTasks().contains(blockTask));
+        assertFalse("Not in done list", db.getDoneTasks().contains(blockTask));
+        assertFalse("Not in block list", db.getBlockTasks().contains(blockTask));
+        assertFalse("Not in deleted list",
+                    db.getDeletedTasks().contains(blockTask));
+
+        assertTrue("Perm deleted deleted obj",
+                   db.permanentlyDelete(deletedTask));
+        assertFalse("Not in all list", db.getAllTasks().contains(deletedTask));
+        assertFalse("Not in toDo list", db.getToDoTasks().contains(deletedTask));
+        assertFalse("Not in done list", db.getDoneTasks().contains(deletedTask));
+        assertFalse("Not in block list",
+                    db.getBlockTasks().contains(deletedTask));
+        assertFalse("Not in deleted list",
+                    db.getDeletedTasks().contains(deletedTask));
+
+        assertFalse("Cannot delete null obj", db.permanentlyDelete(null));
+    }
+
+    @Test
+    public void testMarkToDo() {
+        // Clear static lists containing Task objects
+        DatabaseLogic db = new DatabaseLogic();
+        db.permanentlyDeleteAllTasks();
+
+        Task toDoTask = new Task("", EMPTY_DT, EMPTY_DT, EMPTY_DT, EMPTY_TAGS,
+                TaskType.TODO);
+        Task doneTask = new Task("", EMPTY_DT, EMPTY_DT, COMPLETE, EMPTY_TAGS,
+                TaskType.DONE);
+        Task blockTask = new Task("", START, DUE, EMPTY_DT, EMPTY_TAGS,
+                TaskType.BLOCK);
+        Task deletedTask = new Task("", EMPTY_DT, EMPTY_DT, EMPTY_DT,
+                EMPTY_TAGS, TaskType.TODO);
+
+        db.add(toDoTask);
+        db.add(doneTask);
+        db.add(blockTask);
+        db.add(deletedTask);
+        db.delete(deletedTask);
+
+        assertFalse("Cannot mark null obj as todo", db.markToDo(null));
+        assertFalse("Cannot mark undeleted todo obj", db.markToDo(toDoTask));
+
+        assertTrue("Marked done obj as todo", db.markToDo(doneTask));
+        assertTrue("In all list", db.getAllTasks().contains(doneTask));
+        assertTrue("In toDo list", db.getToDoTasks().contains(doneTask));
+        assertFalse("Not in done list", db.getDoneTasks().contains(doneTask));
+        assertFalse("Not in block list", db.getBlockTasks().contains(doneTask));
+        assertFalse("Not in deleted list",
+                    db.getDeletedTasks().contains(doneTask));
+
+        assertTrue("Marked block obj as todo", db.markToDo(blockTask));
+        assertTrue("In all list", db.getAllTasks().contains(blockTask));
+        assertTrue("In toDo list", db.getToDoTasks().contains(blockTask));
+        assertFalse("Not in done list", db.getDoneTasks().contains(blockTask));
+        assertFalse("Not in block list", db.getBlockTasks().contains(blockTask));
+        assertFalse("Not in deleted list",
+                    db.getDeletedTasks().contains(blockTask));
+
+        assertTrue("Marked deleted obj as todo", db.markToDo(deletedTask));
+        assertTrue("In all list", db.getAllTasks().contains(deletedTask));
+        assertTrue("In toDo list", db.getToDoTasks().contains(deletedTask));
+        assertFalse("Not in done list", db.getDoneTasks().contains(deletedTask));
+        assertFalse("Not in block list",
+                    db.getBlockTasks().contains(deletedTask));
+        assertFalse("Not in deleted list",
+                    db.getDeletedTasks().contains(deletedTask));
+    }
+
+    @Test
+    public void testMarkDone() {
+        // Clear static lists containing Task objects
+        DatabaseLogic db = new DatabaseLogic();
+        db.permanentlyDeleteAllTasks();
+
+        Task toDoTask = new Task("", EMPTY_DT, EMPTY_DT, EMPTY_DT, EMPTY_TAGS,
+                TaskType.TODO);
+        Task doneTask = new Task("", EMPTY_DT, EMPTY_DT, COMPLETE, EMPTY_TAGS,
+                TaskType.DONE);
+        Task blockTask = new Task("", START, DUE, EMPTY_DT, EMPTY_TAGS,
+                TaskType.BLOCK);
+        Task deletedTask = new Task("", EMPTY_DT, EMPTY_DT, COMPLETE,
+                EMPTY_TAGS, TaskType.DONE);
+
+        db.add(toDoTask);
+        db.add(doneTask);
+        db.add(blockTask);
+        db.add(deletedTask);
+        db.delete(deletedTask);
+
+        assertFalse("Cannot mark null obj as done", db.markDone(null));
+        assertFalse("Cannot mark undeleted done obj", db.markDone(doneTask));
+
+        assertTrue("Marked toDo obj as done", db.markDone(toDoTask));
+        assertTrue("In all list", db.getAllTasks().contains(toDoTask));
+        assertTrue("In done list", db.getDoneTasks().contains(toDoTask));
+        assertFalse("Not in toDo list", db.getToDoTasks().contains(toDoTask));
+        assertFalse("Not in block list", db.getBlockTasks().contains(toDoTask));
+        assertFalse("Not in deleted list",
+                    db.getDeletedTasks().contains(doneTask));
+
+        assertTrue("Marked block obj as done", db.markDone(blockTask));
+        assertTrue("In all list", db.getAllTasks().contains(blockTask));
+        assertTrue("In done list", db.getDoneTasks().contains(blockTask));
+        assertFalse("Not in toDo list", db.getToDoTasks().contains(blockTask));
+        assertFalse("Not in block list", db.getBlockTasks().contains(blockTask));
+        assertFalse("Not in deleted list",
+                    db.getDeletedTasks().contains(blockTask));
+
+        assertTrue("Marked deleted obj as done", db.markDone(deletedTask));
+        assertTrue("In all list", db.getAllTasks().contains(deletedTask));
+        assertTrue("In done list", db.getDoneTasks().contains(deletedTask));
+        assertFalse("Not in toDo list", db.getToDoTasks().contains(deletedTask));
+        assertFalse("Not in block list",
+                    db.getBlockTasks().contains(deletedTask));
+        assertFalse("Not in deleted list",
+                    db.getDeletedTasks().contains(deletedTask));
+    }
+
+    @Test
+    public void testMarkBlock() {
+        // Clear static lists containing Task objects
+        DatabaseLogic db = new DatabaseLogic();
+        db.permanentlyDeleteAllTasks();
+
+        Task toDoTask = new Task("", EMPTY_DT, EMPTY_DT, EMPTY_DT, EMPTY_TAGS,
+                TaskType.TODO);
+        Task doneTask = new Task("", EMPTY_DT, EMPTY_DT, COMPLETE, EMPTY_TAGS,
+                TaskType.DONE);
+        Task blockTask = new Task("", START, DUE, EMPTY_DT, EMPTY_TAGS,
+                TaskType.BLOCK);
+        Task deletedTask = new Task("", START, DUE, EMPTY_DT, EMPTY_TAGS,
+                TaskType.BLOCK);
+
+        db.add(toDoTask);
+        db.add(doneTask);
+        db.add(blockTask);
+        db.add(deletedTask);
+        db.delete(deletedTask);
+
+        assertFalse("Cannot mark null obj as block", db.markBlock(null));
+        assertFalse("Cannot mark undeleted block obj", db.markBlock(blockTask));
+
+        assertTrue("Marked toDo obj as block", db.markBlock(toDoTask));
+        assertTrue("In all list", db.getAllTasks().contains(toDoTask));
+        assertTrue("In block list", db.getBlockTasks().contains(toDoTask));
+        assertFalse("Not in toDo list", db.getToDoTasks().contains(toDoTask));
+        assertFalse("Not in done list", db.getDoneTasks().contains(toDoTask));
+        assertFalse("Not in deleted list",
+                    db.getDeletedTasks().contains(toDoTask));
+
+        assertTrue("Marked done obj as block", db.markBlock(doneTask));
+        assertTrue("In all list", db.getAllTasks().contains(doneTask));
+        assertTrue("In block list", db.getBlockTasks().contains(doneTask));
+        assertFalse("Not in toDo list", db.getToDoTasks().contains(doneTask));
+        assertFalse("Not in done list", db.getDoneTasks().contains(doneTask));
+        assertFalse("Not in deleted list",
+                    db.getDeletedTasks().contains(doneTask));
+
+        assertTrue("Marked deleted obj as block", db.markBlock(deletedTask));
+        assertTrue("In all list", db.getAllTasks().contains(deletedTask));
+        assertTrue("In block list", db.getBlockTasks().contains(deletedTask));
+        assertFalse("Not in toDo list", db.getToDoTasks().contains(deletedTask));
+        assertFalse("Not in done list", db.getDoneTasks().contains(deletedTask));
+        assertFalse("Not in deleted list",
+                    db.getDeletedTasks().contains(deletedTask));
+    }
+}
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\test\database\DatabaseLogicTest.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\test\database\DatabaseTestSuite.java
+	 */
+
+
+package database;
+
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+
+/**
+ * Unit tests for the database component classes.
+ */
+
+@RunWith(Suite.class)
+@Suite.SuiteClasses({ TaskReaderTest.class, TaskWriterTest.class,
+                     DatabaseLogicTest.class })
+public class DatabaseTestSuite {
+}
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\test\database\DatabaseTestSuite.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\test\database\TaskReaderTest.java
+	 */
+
+
+package database;
+
+import static org.junit.Assert.*;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+
+import objects.DateTime;
+import objects.Task;
+import objects.TaskType;
+
+import org.junit.Test;
+
+/**
+ * Unit tests for the TaskReader class.
+ */
+
+public class TaskReaderTest {
+
+    private final String FILENAME = "testFile.txt";
+
+    @Test
+    public void testReadNonExistentFile() {
+        try {
+            // Deletion, if any exists
+            Path filePath = Paths.get(FILENAME);
+            Files.deleteIfExists(filePath);
+        } catch (IOException e) {
+            System.out.println("Unhandled IOException: " + e);
+            e.printStackTrace();
+        }
+
+        File file = new File(FILENAME);
+
+        assertFalse("File does not exist", file.exists());
+
+        TaskReader reader = new TaskReader(FILENAME);
+        assertNull("Null return for nonexistent file", reader.read());
+        assertTrue("File has been created", file.exists());
+    }
+
+    @Test
+    public void testReadExistingFile() {
+        try {
+            // Deletion, if any exists
+            Path filePath = Paths.get(FILENAME);
+            Files.deleteIfExists(filePath);
+        } catch (IOException e) {
+            System.out.println("Unhandled IOException: " + e);
+            e.printStackTrace();
+        }
+
+        try {
+            File file = new File(FILENAME);
+            file.createNewFile();
+
+            // Create new Task obj for writing and comparison
+            Task tempTask = new Task("", new DateTime(), new DateTime(),
+                    new DateTime(), new ArrayList<String>(), TaskType.TODO);
+            Task.decrementId(); // To facilitate Task.equals()
+
+            // Write to file
+            FileWriter newFile = new FileWriter(file, false);
+            newFile.write(tempTask.toString());
+            newFile.close();
+
+            // Read from file
+            TaskReader reader = new TaskReader(FILENAME);
+            List<Task> tasks = reader.read();
+
+            assertTrue("Task was successfully read from file",
+                       tasks.contains(tempTask));
+        } catch (IOException e) {
+            System.out.println("Unhandled IOException: " + e);
+            e.printStackTrace();
+        }
+    }
+}
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\test\database\TaskReaderTest.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\test\database\TaskWriterTest.java
+	 */
+
+
+package database;
+
+import static org.junit.Assert.*;
+
+import org.junit.Test;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Scanner;
+
+/**
+ * Unit tests for the TaskWriter class.
+ */
+
+public class TaskWriterTest {
+
+    private final String FILENAME = "testFile.txt";
+
+    /**
+     * Checks if constructor is capable of creating a new file, if it does not
+     * exist beforehand. Deletes file if it already exists, to allow a new one
+     * to be created.
+     */
+    @Test
+    public void testTaskWriterConstructorNewFile() {
+        try {
+            File file = new File(FILENAME);
+
+            // Deletion, if any exists
+            Path filePath = Paths.get(FILENAME);
+            Files.deleteIfExists(filePath);
+
+            // Creation
+            TaskWriter writer = new TaskWriter(FILENAME);
+
+            assertTrue("File has been created", file.exists());
+
+            // Getting rid of garbage files
+            Files.deleteIfExists(filePath);
+        } catch (IOException e) {
+            System.out.println("Unhandled IOException: " + e);
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Checks if constructor is capable of working with an existing file.
+     */
+    @Test
+    public void testTaskWriterConstructorExistingFile() {
+        try {
+            // Creation
+            File file = new File(FILENAME);
+            file.createNewFile();
+
+            assertTrue("File has been created", file.exists());
+
+            TaskWriter writer = new TaskWriter(FILENAME);
+
+            assertTrue("File still exists", file.exists());
+
+            // Getting rid of garbage files
+            Path filePath = Paths.get(FILENAME);
+            Files.deleteIfExists(filePath);
+        } catch (IOException e) {
+            System.out.println("Unhandled IOException: " + e);
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Checks that TaskWriter can write to file,
+     */
+    @Test
+    public void testWrite() {
+        try {
+            // Getting rid of garbage files
+            Path filePath = Paths.get(FILENAME);
+            Files.deleteIfExists(filePath);
+        } catch (IOException e1) {
+            System.out.println("Unhandled IOException: " + e1);
+            e1.printStackTrace();
+        }
+
+        try {
+            // Initializing
+            File file = new File(FILENAME);
+            TaskWriter writer = new TaskWriter(FILENAME);
+
+            // Writing to file
+            String testInfo = "test\n123###\n";
+            assertTrue("Info is written", writer.write(testInfo));
+
+            // Reading from file
+            Scanner scanner = new Scanner(file);
+            String readInfo = "";
+            while (scanner.hasNextLine()) {
+                readInfo += scanner.nextLine() + "\n";
+            }
+
+            // Checking equality
+            assertEquals("Written and read info is equal", testInfo, readInfo);
+
+            scanner.close();
+        } catch (FileNotFoundException e2) {
+            System.out.println("File not found: " + e2);
+            e2.printStackTrace();
+        }
+    }
+}
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\test\database\TaskWriterTest.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\test\objects\DateTimeTest.java
+	 */
+
+
+package objects;
+
+import static org.junit.Assert.*;
+import objects.DateTime;
+import objects.Task;
+
+import org.junit.Test;
+
+/**
+ * Unit tests for the DateTime class.
+ */
+
+public class DateTimeTest {
+
+    private String datePattern() {
+        return DateTime.getDatePattern();
+    }
+
+    private String timePattern() {
+        return DateTime.getTimePattern();
+    }
+
+    private String dateTimePattern() {
+        return DateTime.getDateTimePattern();
+    }
+
+    /**
+     * Checks if regex String used to assert that dates provided as arguments
+     * have valid formats and values.
+     */
+    @Test
+    public void testGetDatePattern() {
+        // True cases
+        // This is the boundary case for empty values.
+        assertTrue("Empty string", "".matches(datePattern()));
+
+        // This is a boundary case for both minimum day and month partition.
+        assertTrue("Min day and month", "01/01/2014".matches(datePattern()));
+
+        // This is a boundary case for the maximum day in months with 30 days.
+        assertTrue("Max day, Jun", "30/06/2014".matches(datePattern()));
+
+        // This is a boundary case for both maximum day and month partition.
+        assertTrue("Max day, Dec", "31/12/2014".matches(datePattern()));
+
+        // This is a boundary case for the maximum day in non-leap February.
+        assertTrue("Max day, Feb", "28/02/2014".matches(datePattern()));
+
+        // This is a boundary case for the maximum day in leap year February.
+        assertTrue("Max day, leap Feb", "29/02/2016".matches(datePattern()));
+
+        // This is a boundary case for the maximum day in leap year February.
+        assertTrue("Max day, leap Feb", "29/02/2000".matches(datePattern()));
+
+        // This is a boundary case for the maximum day in leap year February.
+        assertTrue("Max day, leap Feb", "29/02/2400".matches(datePattern()));
+
+        // False cases
+        // This is a boundary case for the maximum day in non-leap February.
+        assertFalse("Not leap year", "29/02/2014".matches(datePattern()));
+
+        // This is a boundary case for the maximum day in non-leap February.
+        assertFalse("Not leap year", "29/02/2100".matches(datePattern()));
+
+        // This is a boundary case for the minimum day value partition.
+        assertFalse("Not valid day", "00/01/2014".matches(datePattern()));
+
+        // This is a boundary case for the maximum day value partition.
+        assertFalse("Not valid day", "32/01/2014".matches(datePattern()));
+
+        // This is a boundary case for the maximum day in months with 30 days.
+        assertFalse("Not valid day", "31/06/2014".matches(datePattern()));
+
+        // This is a boundary case for the minimum month value partition.
+        assertFalse("Not valid month", "01/00/2014".matches(datePattern()));
+
+        // This is a boundary case for the maximum month value partition.
+        assertFalse("Not valid month", "01/13/2014".matches(datePattern()));
+    }
+
+    /**
+     * Checks if regex String used to assert that times provided as arguments
+     * have valid formats and values.
+     */
+    @Test
+    public void testGetTimePattern() {
+        // True cases
+        // This is the boundary case for empty values.
+        assertTrue("Empty string", "".matches(timePattern()));
+
+        // This is the boundary case for the minimum hour and minute partition.
+        assertTrue("Min time", "0000".matches(timePattern()));
+
+        // This is the boundary case for the maximum hour and minute partition.
+        assertTrue("Max time", "2359".matches(timePattern()));
+
+        // False cases
+        // This is the boundary case for the maximum hour partition.
+        assertFalse("More than 23 H", "2400".matches(timePattern()));
+
+        // This is the boundary case for the maximum hour partition.
+        assertFalse("More than 2X H", "3000".matches(timePattern()));
+
+        // This is the boundary case for the maximum minute partition.
+        assertFalse("More than 59 min", "2360".matches(timePattern()));
+    }
+
+    /**
+     * Checks if regex String used to assert that DateTimes provided as
+     * arguments have valid formats and values.
+     */
+    @Test
+    public void testGetDateTimePattern() {
+        // True cases
+        // This is the boundary case for empty formats.
+        assertTrue("Empty string", "".matches(dateTimePattern()));
+
+        // This is the boundary case for empty date formats.
+        assertTrue("Empty date string", "2359".matches(dateTimePattern()));
+
+        // This is the boundary case for empty time formats.
+        assertTrue("Empty time string", "11/11/2014".matches(dateTimePattern()));
+
+        // This is the boundary case for date and time formats.
+        assertTrue("Date time string",
+                   "11/11/2014 2359".matches(dateTimePattern()));
+
+        // False cases
+        // This is the boundary case for empty date formats.
+        assertFalse("Residual space", " 2359".matches(dateTimePattern()));
+
+        // This is the boundary case for empty time formats.
+        assertFalse("Residual space", "11/11/2014 ".matches(dateTimePattern()));
+
+        // This is the boundary case for empty date and time formats.
+        assertFalse("Residual space", " ".matches(dateTimePattern()));
+    }
+
+    /**
+     * Checks if default constructor initializes objects with empty attributes.
+     */
+    @Test
+    public void testDefaultConstructorHasEmptyAttributes() {
+        DateTime dT = new DateTime();
+        assertEquals("Empty date String", "", dT.getDate());
+        assertEquals("Zeroed day", 0, dT.getDay());
+        assertEquals("Zeroed month", 0, dT.getMonth());
+        assertEquals("Zeroed year", 0, dT.getYear());
+        assertEquals("Empty time String", "", dT.getTime());
+        assertTrue("Empty DateTime object", dT.isEmpty());
+    }
+
+    /**
+     * Checks if constructor, that takes in Strings for date and time as
+     * arguments, initializes date and time values correctly, and that
+     * attributes have been cloned by value, not reference.
+     */
+    @Test
+    public void testConstructorStoreStringArgs() {
+        String date = "10/11/2014";
+        String time = "2359";
+        DateTime dT = new DateTime(date, time);
+        date = "";
+        time = "";
+        assertEquals("Stored date by value", "10/11/2014", dT.getDate());
+        assertEquals("Parsed day from date", 10, dT.getDay());
+        assertEquals("Parsed month from date", 11, dT.getMonth());
+        assertEquals("Parsed year from date", 2014, dT.getYear());
+        assertEquals("Stored time by value", "2359", dT.getTime());
+    }
+
+    /**
+     * Checks if constructor is able to handle empty String arguments correctly.
+     * Boundary test for constructor arguments.
+     */
+    @Test
+    public void testConstructorTakesEmptyStringsArgs() {
+        String date = "10/11/2014";
+        String time = "2359";
+        DateTime dT1 = new DateTime(date, "");
+        DateTime dT2 = new DateTime("", time);
+        assertEquals("Stored date by value", "10/11/2014", dT1.getDate());
+        assertEquals("Parsed day from date", 10, dT1.getDay());
+        assertEquals("Parsed month from date", 11, dT1.getMonth());
+        assertEquals("Parsed year from date", 2014, dT1.getYear());
+        assertEquals("Stored empty time", "", dT1.getTime());
+
+        assertEquals("Stored empty date", "", dT2.getDate());
+        assertEquals("Did not parse day", 0, dT2.getDay());
+        assertEquals("Did not parse month", 0, dT2.getMonth());
+        assertEquals("Did not parse year", 0, dT2.getYear());
+        assertEquals("Stored time by value", "2359", dT2.getTime());
+    }
+
+    /**
+     * Checks if constructor that takes in a DateTime object argument creates a
+     * new object with correct attributes, and that attributes have been cloned
+     * by value, not reference.
+     */
+    @Test
+    public void testConstructorClonesByValue() {
+        String date = "10/11/2014";
+        String time = "2359";
+        DateTime dT1 = new DateTime(date, time);
+        DateTime dT2 = new DateTime(dT1);
+        date = "";
+        time = "";
+
+        // Check that attributes have been cloned successfully
+        assertEquals("Cloned date", dT1.getDate(), dT2.getDate());
+        assertEquals("Cloned day", dT1.getDay(), dT2.getDay());
+        assertEquals("Cloned month", dT1.getMonth(), dT2.getMonth());
+        assertEquals("Cloned year", dT1.getYear(), dT2.getYear());
+        assertEquals("Cloned time", dT1.getTime(), dT2.getTime());
+
+        dT1.resetDateTime();
+        assertTrue("Empty DateTime", dT1.isEmpty());
+
+        // Check that attributes have been cloned by value
+        assertEquals("Cloned date by value", "10/11/2014", dT2.getDate());
+        assertEquals("Cloned day by value", 10, dT2.getDay());
+        assertEquals("Cloned month by value", 11, dT2.getMonth());
+        assertEquals("Cloned year by value", 2014, dT2.getYear());
+        assertEquals("Cloned time by value", "2359", dT2.getTime());
+    }
+
+    /**
+     * Checks if toString function works as intended, and that spaces only occur
+     * when appropriate.
+     */
+    @Test
+    public void testToString() {
+        // Case for partition with non-empty date and non-empty time args.
+        String date = "10/11/2014";
+        String time = "2359";
+        DateTime dT = new DateTime(date, time);
+        assertEquals("Non-empty date and time", "10/11/2014 2359",
+                     dT.toString());
+        assertFalse("Object is not empty", dT.isEmpty());
+
+        // Boundary case for partition with empty date and non-empty time args.
+        dT.setDate("");
+        assertEquals("Empty date, non-empty time", "2359", dT.toString());
+        assertFalse("Object is not empty", dT.isEmpty());
+
+        // Boundary case for partition with non-empty date and empty time args.
+        dT.setDate(date);
+        dT.setTime("");
+        assertEquals("Non-empty date, empty time", "10/11/2014", dT.toString());
+        assertFalse("Object is not empty", dT.isEmpty());
+
+        // Boundary case for partition with empty date and empty time args.
+        dT.setDate("");
+        assertEquals("Empty date and time", "", dT.toString());
+        assertTrue("Object is empty", dT.isEmpty());
+    }
+
+    /**
+     * Checks if compareTo function is correct and reflexive across the
+     * following cases:
+     * <ul>
+     * <li>Different year values.
+     * <li>Different month values.
+     * <li>Different day values.
+     * <li>Equal date values.
+     * <li>Equal date but different time values.
+     * <li>Equal date and time values.
+     * <li>One has time values, but the other doesn't.
+     * <li>One has date values, but the other doesn't.
+     * </ul>
+     */
+    @Test
+    public void testCompareTo() {
+        String date1 = "10/10/2010";
+        String date2 = "10/10/2011";
+        String time1 = "0000";
+        String time2 = "2359";
+
+        // Different year, empty time
+        DateTime dT1 = new DateTime(date1, "");
+        DateTime dT2 = new DateTime(date2, "");
+        assertTrue("First is earlier than second", dT1.compareTo(dT2) < 0);
+        assertTrue("Second is later than first", dT2.compareTo(dT1) > 0);
+
+        // Different month, empty time
+        date2 = "10/11/2010";
+        dT2.setDate(date2);
+        assertTrue("First is earlier than second", dT1.compareTo(dT2) < 0);
+        assertTrue("Second is later than first", dT2.compareTo(dT1) > 0);
+
+        // Different day, empty time
+        date2 = "11/10/2010";
+        dT2.setDate(date2);
+        assertTrue("First is earlier than second", dT1.compareTo(dT2) < 0);
+        assertTrue("Second is later than first", dT2.compareTo(dT1) > 0);
+
+        // Equal date, empty time
+        dT2.setDate(date1);
+        assertTrue("First is equal to second", dT1.compareTo(dT2) == 0);
+        assertTrue("Second is equal to first", dT2.compareTo(dT1) == 0);
+
+        // Equal date, different time
+        dT1.setTime(time1);
+        dT2.setTime(time2);
+        assertTrue("First is earlier than second", dT1.compareTo(dT2) < 0);
+        assertTrue("Second is later than first", dT2.compareTo(dT1) > 0);
+
+        // Equal date, equal time
+        dT2.setTime(time1);
+        assertTrue("First is equal to second", dT1.compareTo(dT2) == 0);
+        assertTrue("Second is equal to first", dT2.compareTo(dT1) == 0);
+
+        // Equal date, first with time, second without
+        dT2.resetTime();
+        assertTrue("First is earlier than second", dT1.compareTo(dT2) < 0);
+        assertTrue("Second is later than first", dT2.compareTo(dT1) > 0);
+
+        // First with DateTime value, second without
+        dT2.resetDateTime();
+        assertTrue("First is earlier than second", dT1.compareTo(dT2) < 0);
+        assertTrue("Second is later than first", dT2.compareTo(dT1) > 0);
+
+        // Both without DateTime values
+        dT1.resetDateTime();
+        assertTrue("First is equal to second", dT1.compareTo(dT2) == 0);
+        assertTrue("Second is equal to first", dT2.compareTo(dT1) == 0);
+    }
+
+    /**
+     * Checks if equals function is correct across the following cases:
+     * <ul>
+     * <li>Not equal to non-DateTime types.
+     * <li>Equals to self.
+     * <li>Equals to another object with equal attribute values.
+     * <li>Not equal to another object with different attribute values.
+     * </ul>
+     */
+    @Test
+    public void testEquals() {
+        String date1 = "10/10/2010";
+        String date2 = "11/11/2011";
+        DateTime dT1 = new DateTime(date1, "");
+        DateTime dT2 = new DateTime(date1, "");
+        DateTime dT3 = new DateTime(date2, "");
+
+        assertFalse("Different types", dT1.equals(new Task()));
+        assertTrue("Identical to self", dT1.equals(dT1));
+        assertTrue("Equal values", dT1.equals(dT2));
+        assertFalse("Not equal values", dT1.equals(dT3));
+    }
+
+    /**
+     * Checks if hashCode function follows the following general contracts of
+     * hashCode:
+     * <ul>
+     * <li>Whenever it is invoked on the same object more than once during an
+     * execution of a Java application, the hashCode method must consistently
+     * return the same integer
+     * <li>Check if two DateTime objects are equal according to the
+     * equals(DateTime) method, then calling the hashCode method on each of the
+     * two objects must produce the same integer result.
+     * </ul>
+     */
+    @Test
+    public void testHashCode() {
+        String date1 = "10/10/2010";
+        String date2 = "11/11/2011";
+        DateTime dT1 = new DateTime(date1, "");
+        DateTime dT2 = new DateTime(date1, "");
+        DateTime dT3 = new DateTime(date2, "");
+
+        // Testing equal self, i.e. consistent value across different calls.
+        assertTrue("Equal values", dT1.equals(dT1));
+        assertEquals("Equal hashcodes", dT1.hashCode(), dT1.hashCode());
+
+        // Testing equal values.
+        assertTrue("Equal values", dT1.equals(dT2));
+        assertEquals("Equal hashcodes", dT1.hashCode(), dT2.hashCode());
+
+        // Testing non-equal values.
+        assertFalse("Equal values", dT1.equals(dT3));
+        assertNotEquals("Not equal hashcodes", dT1.hashCode(), dT3.hashCode());
+    }
+
+    /**
+     * Checks if isEarlierThan function returns correct boolean values and
+     * reflexivity.
+     */
+    @Test
+    public void testIsEarlierThan() {
+        String date1 = "10/10/2010";
+        String date2 = "11/11/2011";
+        DateTime dT1 = new DateTime(date1, "");
+        DateTime dT2 = new DateTime(date2, "");
+
+        assertTrue("dT1 is earlier than dT2", dT1.isEarlierThan(dT2));
+        assertFalse("dT2 is not earlier than dT1", dT2.isEarlierThan(dT1));
+        assertFalse("dT1 is not earlier than itself", dT1.isEarlierThan(dT1));
+    }
+
+    /**
+     * Checks if isLaterThan function returns correct boolean values and
+     * reflexivity.
+     */
+    @Test
+    public void testIsLaterThan() {
+        String date1 = "10/10/2010";
+        String date2 = "11/11/2011";
+        DateTime dT1 = new DateTime(date1, "");
+        DateTime dT2 = new DateTime(date2, "");
+
+        assertTrue("dT2 is later than dT1", dT2.isLaterThan(dT1));
+        assertFalse("dT1 is not later than dT2", dT1.isLaterThan(dT2));
+        assertFalse("dT2 is not later than itself", dT2.isLaterThan(dT2));
+    }
+
+    /**
+     * Checks if resetDate function sets date attributes to empty value, without
+     * affecting time attribute.
+     */
+    @Test
+    public void testResetDate() {
+        String date = "10/11/2014";
+        String time = "2359";
+        DateTime dT = new DateTime(date, time);
+        dT.resetDate();
+        date = "";
+        time = "";
+        assertEquals("Empty date String", "", dT.getDate());
+        assertEquals("Zeroed day", 0, dT.getDay());
+        assertEquals("Zeroed month", 0, dT.getMonth());
+        assertEquals("Zeroed year", 0, dT.getYear());
+        assertEquals("Stored time by value", "2359", dT.getTime());
+        assertFalse("Non-empty DateTime object", dT.isEmpty());
+    }
+
+    /**
+     * Checks if resetTime function sets time attributes to empty value, without
+     * affecting date attribute.
+     */
+    @Test
+    public void testResetTime() {
+        String date = "10/11/2014";
+        String time = "2359";
+        DateTime dT = new DateTime(date, time);
+        dT.resetTime();
+        date = "";
+        time = "";
+        assertEquals("Stored date by value", "10/11/2014", dT.getDate());
+        assertEquals("Stored day by value", 10, dT.getDay());
+        assertEquals("Stored month by value", 11, dT.getMonth());
+        assertEquals("Stored year by value", 2014, dT.getYear());
+        assertEquals("Empty time String", "", dT.getTime());
+        assertFalse("Non-empty DateTime object", dT.isEmpty());
+    }
+
+    /**
+     * Checks if resetDateTime function sets both date and time attributes to
+     * empty values.
+     */
+    @Test
+    public void testResetDateTime() {
+        String date = "10/10/2014";
+        String time = "2359";
+        DateTime dT = new DateTime(date, time);
+        dT.resetDateTime();
+        date = "";
+        time = "";
+        assertEquals("Empty date String", "", dT.getDate());
+        assertEquals("Zeroed day", 0, dT.getDay());
+        assertEquals("Zeroed month", 0, dT.getMonth());
+        assertEquals("Zeroed year", 0, dT.getYear());
+        assertEquals("Empty time String", "", dT.getTime());
+        assertTrue("Empty DateTime object", dT.isEmpty());
+    }
+}
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\test\objects\DateTimeTest.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\test\objects\ObjectsTestSuite.java
+	 */
+
+ */
+
+@RunWith(Suite.class)
+@Suite.SuiteClasses({ TaskTest.class, DateTimeTest.class })
+public class ObjectsTestSuite {
+}
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\test\objects\ObjectsTestSuite.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\test\objects\TaskTest.java
+	 */
+
+
+package objects;
+
+import static org.junit.Assert.*;
+
+import java.util.List;
+import java.util.ArrayList;
+
+import objects.Task;
+
+import org.junit.Test;
+
+/**
+ * Unit tests for the Task class.
+ */
+
+public class TaskTest {
+
+    @Test
+    public void testDefaultConstructorHasEmptyAttributes() {
+        Task task = new Task();
+        assertEquals("Blank ID", 0, task.getId());
+        assertTrue("Empty name", task.getName().isEmpty());
+        assertTrue("Empty start DateTime", task.getStart().isEmpty());
+        assertTrue("Empty due DateTime", task.getDue().isEmpty());
+        assertTrue("Empty completedOn DateTime", task.getCompletedOn()
+                .isEmpty());
+        assertTrue("Empty tags", task.getTags().isEmpty());
+        assertTrue("Default type", task.isToDo());
+        assertFalse("Not deleted", task.isDeleted());
+    }
+
+    @Test
+    public void testConstructorStoresArgs() {
+        String name = "Do more unit tests";
+        DateTime start = new DateTime("11/12/2014", "1111");
+        DateTime due = new DateTime("13/12/2014", "2222");
+        DateTime completedOn = new DateTime("14/12/2014", "2359");
+        List<String> tags = new ArrayList<>();
+        tags.add("#tests4lyfe");
+        TaskType type = TaskType.DONE;
+
+        Task task = new Task(name, start, due, completedOn, tags, type);
+
+        assertEquals("Same name", name, task.getName());
+        assertEquals("Same start", start, task.getStart());
+        assertEquals("Same due", due, task.getDue());
+        assertEquals("Same completedOn", completedOn, task.getCompletedOn());
+        assertEquals("Same tags", tags, task.getTags());
+        assertEquals("Same type", type, task.getType());
+
+        name = "";
+        start.resetDateTime();
+        due.resetDateTime();
+        completedOn.resetDateTime();
+        tags.clear();
+        type = TaskType.BLOCK;
+
+        // Check that values are cloned by value
+        assertEquals("Cloned name by value", "Do more unit tests",
+                     task.getName());
+        assertEquals("Cloned start by value", "11/12/2014 1111", task
+                .getStart().toString());
+        assertEquals("Cloned due by value", "13/12/2014 2222", task.getDue()
+                .toString());
+        assertEquals("Cloned completedOn by value", "14/12/2014 2359", task
+                .getCompletedOn().toString());
+        assertTrue("Cloned tags by value",
+                   task.getTags().contains("#tests4lyfe"));
+        assertTrue("Cloned type by value", task.isDone());
+    }
+
+    @Test
+    public void testCloningConstructorClonesByValue() {
+        String name = "Do more unit tests";
+        DateTime start = new DateTime("11/12/2014", "1111");
+        DateTime due = new DateTime("13/12/2014", "2222");
+        DateTime completedOn = new DateTime("14/12/2014", "2359");
+        List<String> tags = new ArrayList<>();
+        tags.add("#tests4lyfe");
+        TaskType type = TaskType.DONE;
+
+        Task task1 = new Task(name, start, due, completedOn, tags, type);
+        Task task2 = new Task(task1);
+
+        assertEquals("Same name", task1.getName(), task2.getName());
+        assertEquals("Same start", task1.getStart(), task2.getStart());
+        assertEquals("Same due", task1.getDue(), task2.getDue());
+        assertEquals("Same completedOn", task1.getCompletedOn(),
+                     task2.getCompletedOn());
+        assertEquals("Same tags", task1.getTags(), task2.getTags());
+        assertEquals("Same type", task1.getType(), task2.getType());
+        assertTrue("Equal objects", task1.equals(task2));
+
+        name = "";
+        start.resetDateTime();
+        due.resetDateTime();
+        completedOn.resetDateTime();
+        tags.add("haystack");
+        type = TaskType.BLOCK;
+
+        task1.setName(name);
+        task1.setStart(start);
+        task1.setDue(due);
+        task1.setTags(tags);
+        task1.setType(TaskType.TODO);
+
+        // Check that values are cloned by value
+        assertEquals("Cloned name by value", "Do more unit tests",
+                     task2.getName());
+        assertEquals("Cloned start by value", "11/12/2014 1111", task2
+                .getStart().toString());
+        assertEquals("Cloned due by value", "13/12/2014 2222", task2.getDue()
+                .toString());
+        assertEquals("Cloned completedOn by value", "14/12/2014 2359", task2
+                .getCompletedOn().toString());
+        assertFalse("Cloned tags by value",
+                    task2.getTags().contains("#haystack"));
+        assertTrue("Cloned type by value", task2.isDone());
+        assertFalse("Not equal objects", task1.equals(task2));
+    }
+
+    @Test
+    public void testCompareTo() {
+        final String DATE1 = "01/01/2014";
+        final String DATE2 = "02/01/2014";
+        final String TIME = "0000";
+
+        final DateTime DT1 = new DateTime(DATE1, TIME);
+        final DateTime DT2 = new DateTime(DATE2, TIME);
+        final DateTime emptyDT = new DateTime();
+
+        String name = "";
+        DateTime completedOn = emptyDT;
+        List<String> tags = new ArrayList<>();
+        TaskType type = TaskType.TODO;
+
+        // Comparing due DateTimes only
+        Task task1 = new Task(name, emptyDT, DT1, completedOn, tags, type);
+        Task task2 = new Task(name, emptyDT, DT2, completedOn, tags, type);
+        assertTrue("First is earlier than second", task1.compareTo(task2) < 0);
+        assertTrue("Second is later than first", task2.compareTo(task1) > 0);
+
+        // Comparing start DateTimes only
+        task1 = new Task(name, DT1, emptyDT, completedOn, tags, type);
+        task2 = new Task(name, DT2, emptyDT, completedOn, tags, type);
+        assertTrue("First is earlier than second", task1.compareTo(task2) < 0);
+        assertTrue("Second is later than first", task2.compareTo(task1) > 0);
+
+        // Comparing start with due DateTimes
+        task1 = new Task(name, DT1, emptyDT, completedOn, tags, type);
+        task2 = new Task(name, emptyDT, DT2, completedOn, tags, type);
+        assertTrue("First is earlier than second", task1.compareTo(task2) < 0);
+        assertTrue("Second is later than first", task2.compareTo(task1) > 0);
+
+        // Comparing due with start DateTimes
+        task1 = new Task(name, emptyDT, DT1, completedOn, tags, type);
+        task2 = new Task(name, DT2, emptyDT, completedOn, tags, type);
+        assertTrue("First is earlier than second", task1.compareTo(task2) < 0);
+        assertTrue("Second is later than first", task2.compareTo(task1) > 0);
+    }
+
+    @Test
+    public void testContains() {
+    }
+
+    @Test
+    public void testEquals() {
+        String name = "Do more unit tests";
+        DateTime start = new DateTime("11/12/2014", "1111");
+        DateTime due = new DateTime("13/12/2014", "2222");
+        DateTime completedOn = new DateTime("14/12/2014", "2359");
+        List<String> tags = new ArrayList<>();
+        tags.add("#tests4lyfe");
+        TaskType type = TaskType.DONE;
+
+        // Empty values
+        String emptyName = "";
+        DateTime emptyDateTime = new DateTime();
+        List<String> emptyTags = new ArrayList<>();
+
+        Task task1 = new Task(name, start, due, completedOn, tags, type);
+        Task task2 = new Task(name, start, due, completedOn, tags, type);
+
+        Task task3 = new Task(task1);
+        task3.setName(emptyName);
+
+        Task task4 = new Task(task1);
+        task4.setStart(emptyDateTime);
+
+        Task task5 = new Task(task1);
+        task5.setDue(emptyDateTime);
+
+        Task task6 = new Task(task1);
+        task6.setType(TaskType.TODO);
+        task6.setType(TaskType.DONE);
+
+        Task task7 = new Task(task1);
+        task7.setTags(emptyTags);
+
+        Task task8 = new Task(task1);
+        task8.setType(TaskType.BLOCK);
+
+        assertFalse("Different types", task1.equals(new DateTime()));
+        assertTrue("Equals to self", task1.equals(task1));
+        assertFalse("Not equal to similar object", task1.equals(task2));
+        assertFalse("Different name", task1.equals(task3));
+        assertFalse("Different start", task1.equals(task4));
+        assertFalse("Different due", task1.equals(task5));
+        assertFalse("Different completedOn", task1.equals(task6));
+        assertFalse("Different tags", task1.equals(task7));
+        assertFalse("Different type", task1.equals(task8));
+    }
+
+    /**
+     * Checks if hashCode function follows the following general contracts of
+     * hashCode:
+     * <ul>
+     * <li>Whenever it is invoked on the same object more than once during an
+     * execution of a Java application, the hashCode method must consistently
+     * return the same integer
+     * <li>Check if two DateTime objects are equal according to the equals(Task)
+     * method, then calling the hashCode method on each of the two objects must
+     * produce the same integer result.
+     * </ul>
+     */
+    @Test
+    public void testHashCode() {
+        String name = "Do more unit tests";
+        DateTime start = new DateTime("11/12/2014", "1111");
+        DateTime due = new DateTime("13/12/2014", "2222");
+        DateTime completedOn = new DateTime("14/12/2014", "2359");
+        List<String> tags = new ArrayList<>();
+        tags.add("#tests4lyfe");
+        TaskType type = TaskType.DONE;
+
+        Task task1 = new Task(name, start, due, completedOn, tags, type);
+        Task task2 = new Task(name, start, due, completedOn, tags, type);
+        Task task3 = new Task("", start, due, completedOn, tags, type);
+
+        // Testing equal self, i.e. consistent value across different calls.
+        assertTrue("Equal to self", task1.equals(task1));
+        assertEquals("Equal hashcodes", task1.hashCode(), task1.hashCode());
+
+        // Testing equal values.
+        assertFalse("Not equal to similar object", task1.equals(task2));
+        assertEquals("Equal hashcodes", task1.hashCode(), task2.hashCode());
+
+        // Testing non-equal values.
+        assertFalse("Equal values", task1.equals(task3));
+        assertNotEquals("Not equal hashcodes", task1.hashCode(),
+                        task3.hashCode());
+    }
+
+    @Test
+    public void testToString() {
+        String name = "Do more unit tests";
+        DateTime start = new DateTime("11/12/2014", "1111");
+        DateTime due = new DateTime("13/12/2014", "2222");
+        DateTime completedOn = new DateTime("14/12/2014", "2359");
+        List<String> tags = new ArrayList<>();
+        tags.add("#tests4lyfe");
+        TaskType type = TaskType.DONE;
+
+        Task task = new Task(name, start, due, completedOn, tags, type);
+
+        assertEquals("Matches toString pattern",
+                     "Do more unit tests ### start: 11/12/2014 1111 due: 13/12/2014 2222 "
+                             + "completed: 14/12/2014 2359 #tests4lyfe type: DONE",
+                     task.toString());
+
+        name = "";
+        start = new DateTime();
+        due = new DateTime();
+        completedOn = new DateTime();
+        tags.clear();
+        type = TaskType.TODO;
+
+        task = new Task(name, start, due, completedOn, tags, type);
+
+        assertEquals("Matches toString pattern",
+                     " ### start:  due:  completed:  type: TODO",
+                     task.toString());
+    }
+
+    @Test
+    public void testGetSummary() {
+        String name = "Do more unit tests";
+        DateTime start = new DateTime("11/12/2014", "1111");
+        DateTime due = new DateTime("13/12/2014", "2222");
+        DateTime completedOn = new DateTime("14/12/2014", "2359");
+        List<String> tags = new ArrayList<>();
+        tags.add("#tests4lyfe");
+        TaskType type = TaskType.DONE;
+
+        Task task = new Task(name, start, due, completedOn, tags, type);
+
+        assertEquals("Matches summary format",
+                     "Do more unit tests 11/12/2014 1111 13/12/2014 2222 "
+                             + "#tests4lyfe DONE", task.getSummary());
+    }
+
+    @Test
+    public void testDecrementId() {
+        String name = "Do more unit tests";
+        DateTime start = new DateTime("11/12/2014", "1111");
+        DateTime due = new DateTime("13/12/2014", "2222");
+        DateTime completedOn = new DateTime("14/12/2014", "2359");
+        List<String> tags = new ArrayList<>();
+        tags.add("#tests4lyfe");
+        TaskType type = TaskType.DONE;
+
+        Task task1 = new Task(name, start, due, completedOn, tags, type);
+        Task task2 = new Task(name, start, due, completedOn, tags, type);
+        assertTrue("Newer object has higher ID", task2.getId() > task1.getId());
+
+        Task.decrementId();
+        Task task3 = new Task(name, start, due, completedOn, tags, type);
+        assertTrue("ID decremented by 1", task2.getId() == task3.getId());
+    }
+
+    @Test
+    public void testResetId() {
+        String name = "Do more unit tests";
+        DateTime start = new DateTime("11/12/2014", "1111");
+        DateTime due = new DateTime("13/12/2014", "2222");
+        DateTime completedOn = new DateTime("14/12/2014", "2359");
+        List<String> tags = new ArrayList<>();
+        tags.add("#tests4lyfe");
+        TaskType type = TaskType.DONE;
+
+        Task task1 = new Task(name, start, due, completedOn, tags, type);
+        Task task2 = new Task(name, start, due, completedOn, tags, type);
+        assertTrue("Newer object has higher ID", task2.getId() > task1.getId());
+
+        Task.resetId();
+        Task task3 = new Task(name, start, due, completedOn, tags, type);
+        assertTrue("ID reset to 1", task3.getId() == 1);
+    }
+
+    @Test
+    public void testResetAttributes() {
+        String name = "Do more unit tests";
+        DateTime start = new DateTime("11/12/2014", "1111");
+        DateTime due = new DateTime("13/12/2014", "2222");
+        DateTime completedOn = new DateTime("14/12/2014", "2359");
+        List<String> tags = new ArrayList<>();
+        tags.add("#tests4lyfe");
+        TaskType type = TaskType.DONE;
+
+        Task task = new Task(name, start, due, completedOn, tags, type);
+
+        task.resetName();
+        assertTrue("Name is reset", task.getName().isEmpty());
+        assertFalse("Original varaible is not affected", name.isEmpty());
+
+        task.resetStart();
+        assertTrue("Start is reset", task.getStart().isEmpty());
+        assertFalse("Original varaible is not affected", start.isEmpty());
+
+        task.resetDue();
+        assertTrue("Due is reset", task.getDue().isEmpty());
+        assertFalse("Original varaible is not affected", due.isEmpty());
+
+        task.setType(TaskType.TODO);
+        assertTrue("CompletedOn is reset", task.getCompletedOn().isEmpty());
+        assertFalse("Original varaible is not affected", completedOn.isEmpty());
+
+        task.resetTags();
+        assertTrue("Tags are reset", task.getTags().isEmpty());
+        assertFalse("Original varaible is not affected", tags.isEmpty());
+    }
+
+    @Test
+    public void testTypeGettersAndSetters() {
+        String name = "Do more unit tests";
+        DateTime start = new DateTime("11/12/2014", "1111");
+        DateTime due = new DateTime("13/12/2014", "2222");
+        DateTime completedOn = new DateTime();
+        List<String> tags = new ArrayList<>();
+        tags.add("#tests4lyfe");
+        TaskType type = TaskType.TODO;
+
+        Task task = new Task(name, start, due, completedOn, tags, type);
+        assertTrue("Is todo task", task.isToDo());
+        assertFalse("Not done task", task.isDone());
+        assertFalse("Not block task", task.isBlock());
+        assertTrue("CompletedOn is empty", task.getCompletedOn().isEmpty());
+
+        task.setType(TaskType.DONE);
+        assertFalse("Not todo task", task.isToDo());
+        assertTrue("Is done task", task.isDone());
+        assertFalse("Not block task", task.isBlock());
+        assertFalse("CompletedOn is not empty", task.getCompletedOn().isEmpty());
+
+        DateTime originalCompletedOn = task.getCompletedOn();
+        task.setType(TaskType.DONE);
+        assertEquals("CompletedOn did not change", originalCompletedOn,
+                     task.getCompletedOn());
+
+        task.setType(TaskType.BLOCK);
+        assertFalse("Not todo task", task.isToDo());
+        assertFalse("Not done task", task.isDone());
+        assertTrue("Is block task", task.isBlock());
+        assertTrue("CompletedOn is empty", task.getCompletedOn().isEmpty());
+    }
+
+    @Test
+    public void testDeletedGetterAndSetter() {
+        String name = "Do more unit tests";
+        DateTime start = new DateTime("11/12/2014", "1111");
+        DateTime due = new DateTime("13/12/2014", "2222");
+        DateTime completedOn = new DateTime("14/12/2014", "2359");
+        List<String> tags = new ArrayList<>();
+        tags.add("#tests4lyfe");
+        TaskType type = TaskType.DONE;
+
+        Task task = new Task(name, start, due, completedOn, tags, type);
+        assertFalse("Task is not deleted", task.isDeleted());
+
+        task.setDeleted(true);
+        assertTrue("Task is deleted", task.isDeleted());
+    }
+
+    @Test
+    public void testIsFloating() {
+        String name = "Do more unit tests";
+        DateTime start = new DateTime("11/12/2014", "1111");
+        DateTime due = new DateTime("13/12/2014", "2222");
+        DateTime completedOn = new DateTime("14/12/2014", "2359");
+        List<String> tags = new ArrayList<>();
+        tags.add("#tests4lyfe");
+        TaskType type = TaskType.DONE;
+
+        Task task = new Task(name, start, due, completedOn, tags, type);
+        assertFalse("Not floating task", task.isFloating());
+
+        task.resetStart();
+        assertFalse("Not floating task", task.isFloating());
+
+        task.setStart(start);
+        task.resetDue();
+        assertFalse("Not floating task", task.isFloating());
+
+        task.resetStart();
+        assertTrue("Is floating task", task.isFloating());
+    }
+}
+	// End of segment: C:\Users\Yao Xiang\Desktop\CS2103T_PROJECT\main\test\objects\TaskTest.java
+
+
+
+
+
