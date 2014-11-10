@@ -41,8 +41,9 @@ public class TimeUI{
     private void startTimer(final Composite parent) {
         Runnable timer = new Runnable(){
             public void run(){
-                if(!parent.getShell().isDisposed()){
-                    
+                if(parent.isDisposed() || parent.getShell().isDisposed()){
+                return;
+                }
                 parent.getDisplay().timerExec(1000, this);
                 Calendar cal = Calendar.getInstance();
                 SimpleDateFormat formatTime = new SimpleDateFormat("EEEE h:mm:ss");
@@ -58,7 +59,6 @@ public class TimeUI{
                     (new TableManagement()).refreshTables();
                 }
                 
-                }
             }
         };
         if(!parent.getShell().isDisposed()){

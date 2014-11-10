@@ -177,6 +177,9 @@ public class TableManagement {
     }
     
     private void setSelection(int index) {
+        if(folder==null){
+            return;
+        }
         folder.setSelection(index);
     }
 }
