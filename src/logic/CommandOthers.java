@@ -21,8 +21,8 @@ public class CommandOthers extends Command {
     private static final String TYPE_EXIT = "exit";
 
     public CommandOthers(String type) {
-        assert (type != null);
-        assert (!type.isEmpty());
+        assert type != null : "Constructor param is null";
+        assert !type.isEmpty() : "Constructor param is empty";
 
         switch (type.toLowerCase()) {
             case TYPE_EXIT:

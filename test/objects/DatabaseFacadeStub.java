@@ -37,9 +37,6 @@ public class DatabaseFacadeStub extends DatabaseFacade {
     @Override
     public List<Task> getBlockTasks() {
         List<Task> blockTasks = new ArrayList<Task>();
-        blockTasks.add(new TaskStub("name", new DateTimeStub("", ""),
-                new DateTimeStub("", ""), new DateTimeStub("", ""),
-                new ArrayList<String>(), TaskType.BLOCK));
         return blockTasks;
     }
 

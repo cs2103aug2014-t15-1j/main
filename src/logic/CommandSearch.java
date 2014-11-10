@@ -24,7 +24,9 @@ public class CommandSearch extends Command {
     private String status = "todo";
 
     public CommandSearch(List<TaskParam> content) {
-        assert (!content.isEmpty());
+        assert content != null : "Constructor param is null";
+        assert !content.isEmpty() : "Constructor param is empty";
+        
         this.type = CommandType.SEARCH;
 
         for (TaskParam param : content) {
@@ -173,8 +175,8 @@ public class CommandSearch extends Command {
     }
 
     private List<Task> getSearchBoundary(String status) {
-        List<Task> searchRange = Processor.getInstance().getFile()
-                .getToDoTasks();
+        List<Task> searchRange = new ArrayList<Task>();
+        
         switch (status) {
             case RANGE_TYPE_ALL:
                 searchRange = Processor.getInstance().getFile().getAllTasks();
@@ -189,6 +191,11 @@ public class CommandSearch extends Command {
                         .getDeletedTasks();
                 break;
 
+            case RANGE_TYPE_TODO:
+                searchRange = Processor.getInstance().getFile()
+                .getToDoTasks();
+                break;
+                
             default:
                 assert false : "Invalid search range boundary - Received: " +
                                status;

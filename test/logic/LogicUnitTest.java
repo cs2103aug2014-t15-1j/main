@@ -28,7 +28,7 @@ public class LogicUnitTest {
         processor = Processor.getInstance();
         Processor.reset();
     }
-
+    
     @Test
     public void testAddCommand() {
         TaskParamStub name = new TaskParamStub("name", "Do CS2103 Homework");
@@ -187,7 +187,7 @@ public class LogicUnitTest {
 
     }
 
-    @Test
+    @Test(expected = AssertionError.class)
     public void testEditCommand() {
         TaskParamStub id = new TaskParamStub("id", "1");
         TaskParamStub name = new TaskParamStub("name", "Do CS2103 Homework");
@@ -301,12 +301,11 @@ public class LogicUnitTest {
         assertNotNull(cmd.toString());
     }
 
-    @Test
+    @Test(expected = AssertionError.class)
     public void testDeleteCommand() {
         List<TaskParam> contents = new ArrayList<TaskParam>();
         CommandDelete cmd = new CommandDelete(contents);
         Result result = cmd.execute(true);
-
         // Expect: Fails when no parameter is not given
         assertFalse(result.isSuccess());
 
@@ -377,7 +376,7 @@ public class LogicUnitTest {
         assertNotNull(cmd.toString());
     }
 
-    @Test
+    @Test(expected = AssertionError.class)
     public void testRestoreCommand() {
         List<TaskParam> contents = new ArrayList<TaskParam>();
         CommandRestore cmd = new CommandRestore(contents);
@@ -434,7 +433,7 @@ public class LogicUnitTest {
         assertNotNull(cmd.toString());
     }
 
-    @Test
+    @Test(expected = AssertionError.class)
     public void testDoneCommand() {
         List<TaskParam> contents = new ArrayList<TaskParam>();
         CommandDone cmd = new CommandDone(contents);
@@ -496,7 +495,7 @@ public class LogicUnitTest {
         assertNotNull(cmd.toString());
     }
 
-    @Test
+    @Test(expected = AssertionError.class)
     public void testTodoCommand() {
         List<TaskParam> contents = new ArrayList<TaskParam>();
         CommandTodo cmd = new CommandTodo(contents);
@@ -631,8 +630,39 @@ public class LogicUnitTest {
         contents.add(tag);
         contents.add(word);
 
+        // Search todo Range
         CommandSearch cmd = new CommandSearch(contents);
         Result result = cmd.execute(true);
+        assertTrue(result.isSuccess());
+        assertTrue(cmd.getTags().contains("#CS2103"));
+        assertTrue(cmd.getKeywords().contains("homework"));
+        assertNotNull(cmd.toString());
+        
+        contents.remove(status);
+        status = new TaskParamStub("status", "all");
+        contents.add(status);
+        cmd = new CommandSearch(contents);
+        result = cmd.execute(true);
+        assertTrue(result.isSuccess());
+        assertTrue(cmd.getTags().contains("#CS2103"));
+        assertTrue(cmd.getKeywords().contains("homework"));
+        assertNotNull(cmd.toString());
+
+        contents.remove(status);
+        status = new TaskParamStub("status", "done");
+        contents.add(status);
+        cmd = new CommandSearch(contents);
+        result = cmd.execute(true);
+        assertTrue(result.isSuccess());
+        assertTrue(cmd.getTags().contains("#CS2103"));
+        assertTrue(cmd.getKeywords().contains("homework"));
+        assertNotNull(cmd.toString());
+
+        contents.remove(status);
+        status = new TaskParamStub("status", "deleted");
+        contents.add(status);
+        cmd = new CommandSearch(contents);
+        result = cmd.execute(true);
         assertTrue(result.isSuccess());
         assertTrue(cmd.getTags().contains("#CS2103"));
         assertTrue(cmd.getKeywords().contains("homework"));
@@ -647,6 +677,7 @@ public class LogicUnitTest {
         contents.add(rangeType);
         CommandDisplay cmd = new CommandDisplay(contents);
         Result result = cmd.execute(true);
+        assertTrue(result.isSuccess());
 
         // RangeType of Search
         contents.remove(rangeType);
@@ -654,6 +685,7 @@ public class LogicUnitTest {
         contents.add(rangeType);
         cmd = new CommandDisplay(contents);
         result = cmd.execute(true);
+        assertTrue(result.isSuccess());
 
         // RangeType of Block Dates
         contents.remove(rangeType);
@@ -661,6 +693,7 @@ public class LogicUnitTest {
         contents.add(rangeType);
         cmd = new CommandDisplay(contents);
         result = cmd.execute(true);
+        assertTrue(result.isSuccess());
 
         // RangeType of Done Tasks
         contents.remove(rangeType);
@@ -668,6 +701,7 @@ public class LogicUnitTest {
         contents.add(rangeType);
         cmd = new CommandDisplay(contents);
         result = cmd.execute(true);
+        assertTrue(result.isSuccess());
 
         // RangeType of Deleted Tasks
         contents.remove(rangeType);
@@ -675,6 +709,7 @@ public class LogicUnitTest {
         contents.add(rangeType);
         cmd = new CommandDisplay(contents);
         result = cmd.execute(true);
+        assertTrue(result.isSuccess());
 
         // RangeType of All Tasks
         contents.remove(rangeType);
@@ -682,6 +717,7 @@ public class LogicUnitTest {
         contents.add(rangeType);
         cmd = new CommandDisplay(contents);
         result = cmd.execute(true);
+        assertTrue(result.isSuccess());
 
         // RangeType of id
         contents.remove(rangeType);

@@ -27,7 +27,7 @@ public class CommandAdd extends Command {
     private List<String> tags = new ArrayList<String>();
 
     public CommandAdd(List<TaskParam> content) {
-        assert (content != null);
+        assert content != null : "Constructor param is null";
         this.type = CommandType.ADD;
         for (TaskParam param : content) {
             constructUsingParam(param);
@@ -151,17 +151,14 @@ public class CommandAdd extends Command {
     protected Result executeComplement() {
         Processor processor = Processor.getInstance();
         List<Task> tasks = new ArrayList<Task>();
-
-        int taskId = processor.fetchToDoTasks().size() - 1;
-        Task toDelete = processor.fetchToDoTasks().get(taskId);
+        int taskId = processor.fetchAllTasks().size();
+        Task toDelete = processor.fetchTaskById(taskId);
         boolean success = processor.getFile().permanentlyDelete(toDelete);
-
         if (success) {
             tasks.add(toDelete);
         }
 
-        String displayTab = getDisplayTab(toDelete);
-        return new Result(tasks, success, getType(), displayTab);
+        return new Result(tasks, success, getType(), DISPLAY_TAB_NO_CHANGE);
     }
 
     @Override
