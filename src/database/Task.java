@@ -72,18 +72,18 @@ public class Task implements Comparable<Task> {
      */
     public Task(String name, DateTime start, DateTime due,
             DateTime completedOn, List<String> tags, TaskType type) {
-        assert name != null;
-        assert start != null;
-        assert start.toString().matches(DateTime.getDateTimePattern());
-        assert due != null;
-        assert due.toString().matches(DateTime.getDateTimePattern());
-        assert completedOn != null;
-        assert completedOn.toString().matches(DateTime.getDateTimePattern());
-        assert tags != null;
-        assert type != null;
+        assert name != null : "Name cannot be null";
+        assert start != null : "Start cannot be null";
+        assert start.toString().matches(DateTime.getDateTimePattern()) : "Start must have correct format & value";
+        assert due != null : "Due cannot be null";
+        assert due.toString().matches(DateTime.getDateTimePattern()) : "Due must have correct format & value";
+        assert completedOn != null : "CompletedOn cannot be null";
+        assert completedOn.toString().matches(DateTime.getDateTimePattern()) : "CompletedOn must have correct format & value";
+        assert tags != null : "Tags cannot be null";
+        assert type != null : "Type cannot be null";
         if (type == TaskType.BLOCK) {
-            assert !start.isEmpty();
-            assert !due.isEmpty();
+            assert !start.isEmpty() : "Block types must have start";
+            assert !due.isEmpty() : "Block types must have due";
         }
         this.ID = newId++;
         this.name = name;
@@ -371,8 +371,7 @@ public class Task implements Comparable<Task> {
         this.type = type;
         if (type == TaskType.DONE && completedOn.isEmpty()) {
             completedOn = new DateTime(Parser.getCurrDateTime());
-            assert completedOn.getDate().matches(DateTime.getDatePattern());
-            assert completedOn.getTime().matches(DateTime.getTimePattern());
+            assert completedOn.toString().matches(DateTime.getDatePattern()) : "CompletedOn must have correct format & value";
         } else if (type == TaskType.TODO || type == TaskType.BLOCK) {
             completedOn.resetDateTime();
         }

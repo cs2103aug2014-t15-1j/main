@@ -320,7 +320,7 @@ public class DateTimeTest {
         dT2.resetDateTime();
         assertTrue("First is earlier than second", dT1.compareTo(dT2) < 0);
         assertTrue("Second is later than first", dT2.compareTo(dT1) > 0);
-        
+
         // Both without DateTime values
         dT1.resetDateTime();
         assertTrue("First is equal to second", dT1.compareTo(dT2) == 0);
@@ -398,7 +398,7 @@ public class DateTimeTest {
         assertFalse("dT2 is not earlier than dT1", dT2.isEarlierThan(dT1));
         assertFalse("dT1 is not earlier than itself", dT1.isEarlierThan(dT1));
     }
-    
+
     /**
      * Checks if isLaterThan function returns correct boolean values and
      * reflexivity.

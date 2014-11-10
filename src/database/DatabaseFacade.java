@@ -342,7 +342,7 @@ public class DatabaseFacade {
      * 
      * @param task
      *            The Task object to be marked as done.
-     * @return True, if file has been successfully updated with change. 
+     * @return True, if file has been successfully updated with change.
      */
     public boolean markDone(Task task) {
         boolean logicSuccess = databaseLogic.markDone(task);

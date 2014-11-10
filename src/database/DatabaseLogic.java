@@ -176,9 +176,9 @@ public class DatabaseLogic {
      * @return True, if successfully written to file.
      */
     public boolean add(Task task) {
-        assert !allTasks.contains(task);
-        assert !task.isDeleted();
-        
+        assert !allTasks.contains(task) : "Should not add duplicates";
+        assert !task.isDeleted() : "Add is meant to handle new tasks only";
+
         allTasks.add(task);
         switch (task.getType()) {
             case TODO:

@@ -252,10 +252,10 @@ public class DatabaseLogicTest {
         // Clear static lists containing Task objects
         DatabaseLogic db = new DatabaseLogic();
         db.permanentlyDeleteAllTasks();
-        
+
         assertFalse("Cannot edit null", db.edit(null, null, null, null, null));
     }
-    
+
     @Test
     public void testEditResetName() {
         // Clear static lists containing Task objects
@@ -283,7 +283,7 @@ public class DatabaseLogicTest {
         assertEquals("No change to tags", tags, task.getTags());
         assertEquals("No change to type", type, task.getType());
     }
-    
+
     @Test
     public void testEditSetName() {
         // Clear static lists containing Task objects
@@ -311,6 +311,7 @@ public class DatabaseLogicTest {
         assertEquals("No change to tags", tags, task.getTags());
         assertEquals("No change to type", type, task.getType());
     }
+
     @Test
     public void testEditResetStart() {
         // Clear static lists containing Task objects
@@ -328,8 +329,7 @@ public class DatabaseLogicTest {
         Task task = new Task(name, start, due, completedOn, tags, type);
 
         db.add(task);
-        assertTrue("Edited obj",
-                   db.edit(task, "", null, EMPTY_DT, EMPTY_TAGS));
+        assertTrue("Edited obj", db.edit(task, "", null, EMPTY_DT, EMPTY_TAGS));
         assertEquals("Reset start", EMPTY_DT, task.getStart());
         assertEquals("No change to name", name, task.getName());
         assertEquals("No change to due", due, task.getDue());
@@ -338,7 +338,7 @@ public class DatabaseLogicTest {
         assertEquals("No change to tags", tags, task.getTags());
         assertEquals("No change to type", type, task.getType());
     }
-    
+
     @Test
     public void testEditSetStart() {
         // Clear static lists containing Task objects
@@ -356,8 +356,7 @@ public class DatabaseLogicTest {
         Task task = new Task(name, start, due, completedOn, tags, type);
 
         db.add(task);
-        assertTrue("Edited obj",
-                   db.edit(task, "", due, EMPTY_DT, EMPTY_TAGS));
+        assertTrue("Edited obj", db.edit(task, "", due, EMPTY_DT, EMPTY_TAGS));
         assertEquals("Changed start", due, task.getStart());
         assertEquals("No change to name", name, task.getName());
         assertEquals("No change to due", due, task.getDue());
@@ -366,6 +365,7 @@ public class DatabaseLogicTest {
         assertEquals("No change to tags", tags, task.getTags());
         assertEquals("No change to type", type, task.getType());
     }
+
     @Test
     public void testEditResetDue() {
         // Clear static lists containing Task objects
@@ -383,8 +383,7 @@ public class DatabaseLogicTest {
         Task task = new Task(name, start, due, completedOn, tags, type);
 
         db.add(task);
-        assertTrue("Edited obj",
-                   db.edit(task, "", EMPTY_DT, null, EMPTY_TAGS));
+        assertTrue("Edited obj", db.edit(task, "", EMPTY_DT, null, EMPTY_TAGS));
         assertEquals("Reset due", EMPTY_DT, task.getDue());
         assertEquals("No change to name", name, task.getName());
         assertEquals("No change to start", start, task.getStart());
@@ -393,7 +392,7 @@ public class DatabaseLogicTest {
         assertEquals("No change to tags", tags, task.getTags());
         assertEquals("No change to type", type, task.getType());
     }
-    
+
     @Test
     public void testEditSetDue() {
         // Clear static lists containing Task objects
@@ -411,8 +410,7 @@ public class DatabaseLogicTest {
         Task task = new Task(name, start, due, completedOn, tags, type);
 
         db.add(task);
-        assertTrue("Edited obj",
-                   db.edit(task, "", EMPTY_DT, start, EMPTY_TAGS));
+        assertTrue("Edited obj", db.edit(task, "", EMPTY_DT, start, EMPTY_TAGS));
         assertEquals("Changed due", start, task.getDue());
         assertEquals("No change to name", name, task.getName());
         assertEquals("No change to start", start, task.getStart());
@@ -421,6 +419,7 @@ public class DatabaseLogicTest {
         assertEquals("No change to tags", tags, task.getTags());
         assertEquals("No change to type", type, task.getType());
     }
+
     @Test
     public void testEditResetTags() {
         // Clear static lists containing Task objects
@@ -438,8 +437,7 @@ public class DatabaseLogicTest {
         Task task = new Task(name, start, due, completedOn, tags, type);
 
         db.add(task);
-        assertTrue("Edited obj",
-                   db.edit(task, "", EMPTY_DT, EMPTY_DT, null));
+        assertTrue("Edited obj", db.edit(task, "", EMPTY_DT, EMPTY_DT, null));
         assertEquals("Reset tags", EMPTY_TAGS, task.getTags());
         assertEquals("No change to name", name, task.getName());
         assertEquals("No change to start", start, task.getStart());
@@ -448,7 +446,7 @@ public class DatabaseLogicTest {
                      task.getCompletedOn());
         assertEquals("No change to type", type, task.getType());
     }
-    
+
     @Test
     public void testEditSetTags() {
         // Clear static lists containing Task objects
@@ -468,10 +466,9 @@ public class DatabaseLogicTest {
         List<String> newTags = new ArrayList<>();
         newTags.add("#haha");
         newTags.add("#NO");
-        
+
         db.add(task);
-        assertTrue("Edited obj",
-                   db.edit(task, "", EMPTY_DT, EMPTY_DT, newTags));
+        assertTrue("Edited obj", db.edit(task, "", EMPTY_DT, EMPTY_DT, newTags));
         assertEquals("Changed tags", newTags, task.getTags());
         assertEquals("No change to name", name, task.getName());
         assertEquals("No change to start", start, task.getStart());
@@ -480,8 +477,6 @@ public class DatabaseLogicTest {
                      task.getCompletedOn());
         assertEquals("No change to type", type, task.getType());
     }
-    
-    
 
     @Test
     public void testDelete() {

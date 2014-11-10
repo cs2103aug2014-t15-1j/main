@@ -313,7 +313,7 @@ public class DateTime implements Comparable<DateTime> {
         assert otherDateTime.toString().matches(DATE_TIME_PATTERN) : "dateTime's attributes must have correct format and value";
         return (this.compareTo(otherDateTime) == EARLIER);
     }
-    
+
     /**
      * Compares this <code>DateTime</code> with an input <code>DateTime</code>.<br>
      * Returns <code>true</code> if it is later than the other
