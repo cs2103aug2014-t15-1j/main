@@ -77,11 +77,7 @@ public abstract class Command {
     protected Result executeComplement() {
         return new Result();
     }
-
-    protected void setType(CommandType type) {
-        this.type = type;
-    }
-
+    
     /**
      * This method returns the appropriate tab to change to for a Task. <br>
      * For <code>Tasks</code> that have <code>due</code> dates due today, it

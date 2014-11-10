@@ -144,8 +144,8 @@ public class CommandBlock extends Command {
         List<Task> tasks = new ArrayList<Task>();
         boolean success = false;
 
-        int taskId = processor.fetchAllTasks().size() - 1;
-        Task toDelete = processor.fetchAllTasks().get(taskId);
+        int taskId = processor.fetchAllTasks().size();
+        Task toDelete = processor.fetchTaskById(taskId);
 
         success = processor.getFile().permanentlyDelete(toDelete);
 
