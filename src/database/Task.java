@@ -138,16 +138,6 @@ public class Task implements Comparable<Task> {
         return taskDate.compareTo(otherTaskDate);
     }
 
-    // TODO remove if not needed
-    public boolean contains(Task otherTask) {
-        // Within Range of days
-        if (this.getStart().compareTo(otherTask.getStart()) <= 0 &&
-            this.getDue().compareTo(otherTask.getDue()) >= 0) {
-            return true;
-        }
-        return false;
-    }
-
     /**
      * Indicates whether some other object is "equal to" this one.
      * 

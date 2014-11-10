@@ -177,6 +177,8 @@ public class DatabaseLogic {
      */
     public boolean add(Task task) {
         assert !allTasks.contains(task);
+        assert !task.isDeleted();
+        
         allTasks.add(task);
         switch (task.getType()) {
             case TODO:
@@ -340,19 +342,13 @@ public class DatabaseLogic {
      * @return True, if successfully cleared file of data.
      */
     public boolean permanentlyDeleteAllTasks() {
-        try {
-            Task.resetId();
-            allTasks.clear();
-            toDoTasks.clear();
-            doneTasks.clear();
-            blockTasks.clear();
-            deletedTasks.clear();
-            return true;
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            return false;
-        }
+        Task.resetId();
+        allTasks.clear();
+        toDoTasks.clear();
+        doneTasks.clear();
+        blockTasks.clear();
+        deletedTasks.clear();
+        return true;
     }
 
     /**

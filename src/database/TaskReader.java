@@ -43,7 +43,24 @@ public class TaskReader {
      * @return List of tasks from file, or null if an error was encountered.
      */
     public List<Task> read() {
-        if (!file.exists()) {
+        if (file.exists()) {
+            try {
+                List<Task> tasksFromFile = new ArrayList<Task>();
+
+                Scanner scanner = new Scanner(file);
+                while (scanner.hasNextLine()) {
+                    String unparsedText = scanner.nextLine();
+                    Task tempTask = Parser.parseToTask(unparsedText);
+                    tasksFromFile.add(tempTask);
+                }
+                scanner.close();
+
+                return tasksFromFile;
+            } catch (FileNotFoundException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        } else {
             try {
                 file.createNewFile();
             } catch (IOException e) {
@@ -51,21 +68,7 @@ public class TaskReader {
                 e.printStackTrace();
             }
         }
-
-        List<Task> tasksFromFile = new ArrayList<Task>();
-        try {
-            Scanner scanner = new Scanner(file);
-            while (scanner.hasNextLine()) {
-                String unparsedText = scanner.nextLine();
-                Task tempTask = Parser.parseToTask(unparsedText);
-                tasksFromFile.add(tempTask);
-            }
-            scanner.close();
-        } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return tasksFromFile;
+        return null;
     }
 
     /**
