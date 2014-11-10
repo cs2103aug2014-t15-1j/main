@@ -13,9 +13,8 @@ import logic.Command;
  * because they store no instance data at all. There is no benefit in making
  * them instance objects; in fact, doing so will complicate code unnecessarily.
  * 
- * @author Yeo Zi Xian, Justin (A0116208N)
- *
  */
+//@author A0116208N
 public class Parser {
 
     /**

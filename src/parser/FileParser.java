@@ -9,6 +9,12 @@ import objects.DateTime;
 import objects.Task;
 import database.TaskType;
 
+/**
+ * The FileParser handles parsing Strings that have been stored by Storage,
+ * which it uses to create Tasks. It relies on the DateParser for date-related
+ * methods.
+ */
+//@author A0116208N
 public class FileParser {
 
     /** Used to initialise string values to empty string */

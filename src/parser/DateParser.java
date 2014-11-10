@@ -8,35 +8,42 @@ import java.text.SimpleDateFormat;
 
 import objects.DateTime;
 
+/**
+ * The DateParser handles all date-related functions, from generating current
+ * date/time Strings, checking validity of Strings as DateTimes, and parsing
+ * Strings to DateTimes. It does not call any other classes' methods, but uses
+ * the DateTime object.
+ */
+//@author A0116208N
 public class DateParser {
 
-    private static final String TYPE_TIME_NOW = "now";
-
+    // Date formats (i.e. inclusive of day and month only? Or with year?)
     private static final int LENGTH_DATE_LONG = 3;
-
     private static final int LENGTH_DATE_SHORT = 2;
 
     /** <i>Everything began with 1819...</i> */
     private static final int YEAR_MINIMUM = 1819;
 
+    // Types of DateTime formats
     private static final String TYPE_TIME_DATE = "time-date";
     private static final String TYPE_DATE_TIME = "date-time";
     private static final String TYPE_TIME_ONLY = "time-only";
     private static final String TYPE_DATE_ONLY = "date-only";
-    private static final String TYPE_DATE_TODAY = "today";
-    private static final String TYPE_DATE_TOMORROW = "tomorrow";
-    private static final String TYPE_DATE_TMR = "tmr";
+    // Alternative words for numerical time/dates
+    private static final String ALT_TIME_NOW = "now";
+    private static final String ALT_DATE_TODAY = "today";
+    private static final String ALT_DATE_TOMORROW = "tomorrow";
+    private static final String ALT_DATE_TMR = "tmr";
+    // List of words that substitute dates
+    private static final String[] LIST_DATE_WORDS = { ALT_DATE_TODAY,
+                                                     ALT_DATE_TOMORROW,
+                                                     ALT_DATE_TMR };
 
-    private static final String[] LIST_DATE_WORDS = { TYPE_DATE_TODAY,
-                                                     TYPE_DATE_TOMORROW,
-                                                     TYPE_DATE_TMR };
-
-    /**
-     * The date/time format DateParser will use.
-     */
+    /** The date/time format DateParser will use. */
     private static final DateFormat FORMAT_DATE_TIME = new SimpleDateFormat(
             "dd/MM/yyyy HHmm");
 
+    
     /** See {@link Parser#getCurrDateTime()}. */
     static DateTime getCurrDateTime() {
         Calendar cal = Calendar.getInstance();
@@ -271,12 +278,12 @@ public class DateParser {
         String result = str;
         if (isValidWordDate(str)) {
             switch (str.toLowerCase()) {
-                case TYPE_DATE_TODAY:
+                case ALT_DATE_TODAY:
                     result = getCurrDateStr();
                     break;
 
-                case TYPE_DATE_TOMORROW:
-                case TYPE_DATE_TMR:
+                case ALT_DATE_TOMORROW:
+                case ALT_DATE_TMR:
                     result = getTmrDateStr();
                     break;
             }
@@ -295,9 +302,10 @@ public class DateParser {
 
         return result;
     }
-    
+
     /**
-     * Converts an input time, which may be "now" or 24Hr time, to 24Hr time.
+     * Converts an input time, if it is "now", to 24Hr time. Returns the input
+     * itself otherwise.
      */
     private static String formatTime(String str) {
         String result = str;
@@ -359,7 +367,7 @@ public class DateParser {
      * method currently only accepts "now" as a valid word-based time.
      */
     private static boolean isValidWordTime(String timeStr) {
-        return timeStr.equalsIgnoreCase(TYPE_TIME_NOW);
+        return timeStr.equalsIgnoreCase(ALT_TIME_NOW);
     }
 
     /**

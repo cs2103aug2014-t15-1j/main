@@ -1,7 +1,12 @@
 package parser.objects;
 
+/**
+ * This object represents a Task Parameter, which is a pairing of a parameter
+ * name and its related content (field).
+ */
+// @author A0116208N
 public class TaskParam {
-    
+
     private String name = "";
     private String field = "";
 

@@ -19,7 +19,11 @@ import logic.CommandRestore;
 import logic.CommandSearch;
 import logic.CommandTodo;
 
-// TODO: Class description with reason why it's static
+/**
+ * The InputParser handles the parsing of Strings input by the user. It is
+ * mostly self-contained, but relies on DateParser for date-related methods.
+ */
+//@author A0116208N
 public class InputParser {
 
     // All possible Command types (in string)
@@ -40,8 +44,6 @@ public class InputParser {
     private static final String TYPE_EXIT = "exit";
     private static final String TYPE_RESET = "reset";
 
-    // TODO: REFACTOR MAGIC STRINGS
-    // TODO: CONSIDER USING PARAM_FIRST_WORD = 1
     private static final String[] STR_ARRAY_EMPTY = new String[0];
 
     private static final String[] PARAMS_EDIT = { "due", "start", "tags" };
@@ -408,7 +410,6 @@ public class InputParser {
     private static Command parseSearch(String[] commandParams) {
         List<TaskParam> searchFields = new ArrayList<TaskParam>();
 
-        // TODO: REFACTOR
         try {
             // Get index of the first word
             int firstWordIndex = 0;
@@ -426,7 +427,6 @@ public class InputParser {
                 startIndex = firstWordIndex + 1;
             }
 
-            // TODO:
             // Categorise the rest of the string
             boolean dateIndicated = false;
             for (int i = startIndex; i < commandParams.length; i++) {
@@ -458,7 +458,7 @@ public class InputParser {
         String id;
         List<TaskParam> editFields = new ArrayList<TaskParam>();
 
-        // try saveEditIdToField() catch return CommandOthers
+        // TODO: Refactor to saveEditIdToField(); throw exceptions
         int firstWord = 0;
         try {
             id = commandParams[firstWord];
@@ -482,6 +482,7 @@ public class InputParser {
         boolean currHasTime = false;
         boolean currHasDelete = false;
 
+        // TODO: Refactor
         for (int j = 1; j < commandParams.length; j++) {
             currWord = commandParams[j];
             if (hasValidHashTag(currWord)) {
@@ -523,7 +524,6 @@ public class InputParser {
                     addToFieldParam(editFields, "name", currFieldOrig);
                 }
                 // Reassign currField values
-                // TODO: rename method to getParamEquiv?
                 currField = getDateParamEquiv(currWord);
                 // Save the original word (with capitalisation)
                 currFieldOrig = currWord;
