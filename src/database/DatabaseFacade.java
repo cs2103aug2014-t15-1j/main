@@ -20,7 +20,7 @@ public class DatabaseFacade {
     private DatabaseLogic databaseLogic;
 
     /** Name of file to write tasks to. */
-    final private static String FILENAME_TASK = "data_tasks.txt";
+    private final static String FILENAME = "data_tasks.txt";
 
     /** Reads from file containing tasks */
     private TaskReader taskReader;
@@ -38,9 +38,9 @@ public class DatabaseFacade {
      */
     public DatabaseFacade() {
         databaseLogic = new DatabaseLogic();
-        taskReader = new TaskReader(FILENAME_TASK);
-        taskWriter = new TaskWriter(FILENAME_TASK);
-        if (taskReader.fileExists() && databaseLogic.getAllTasks().isEmpty()) {
+        taskReader = new TaskReader(FILENAME);
+        taskWriter = new TaskWriter(FILENAME);
+        if (databaseLogic.getAllTasks().isEmpty()) {
             databaseLogic.populateTaskLists(taskReader.read());
         }
     }
@@ -158,8 +158,7 @@ public class DatabaseFacade {
     public boolean edit(int id, String name, DateTime start, DateTime due,
                         List<String> tags) {
         Task task = getTask(id);
-        boolean logicSuccess = databaseLogic.edit(task, name, start, due, tags);
-        return logicSuccess && updateFile();
+        return edit(task, name, start, due, tags);
     }
 
     /**
@@ -199,8 +198,7 @@ public class DatabaseFacade {
      */
     public boolean delete(int id) {
         Task task = getTask(id);
-        boolean logicSuccess = databaseLogic.delete(task);
-        return logicSuccess && updateFile();
+        return delete(task);
     }
 
     /**
@@ -229,8 +227,7 @@ public class DatabaseFacade {
      */
     public boolean restore(int id) {
         Task task = getTask(id);
-        boolean logicSuccess = databaseLogic.restore(task);
-        return logicSuccess && updateFile();
+        return restore(task);
     }
 
     /**
@@ -261,8 +258,7 @@ public class DatabaseFacade {
      */
     public boolean permanentlyDelete(int id) {
         Task task = getTask(id);
-        boolean logicSuccess = databaseLogic.permanentlyDelete(task);
-        return logicSuccess && updateFile();
+        return permanentlyDelete(task);
     }
 
     /**
@@ -305,8 +301,7 @@ public class DatabaseFacade {
      */
     public boolean markToDo(int id) {
         Task task = getTask(id);
-        boolean logicSuccess = databaseLogic.markToDo(task);
-        return logicSuccess && updateFile();
+        return markToDo(task);
     }
 
     /**
@@ -336,8 +331,7 @@ public class DatabaseFacade {
      */
     public boolean markDone(int id) {
         Task task = getTask(id);
-        boolean logicSuccess = databaseLogic.markDone(task);
-        return logicSuccess && updateFile();
+        return markDone(task);
     }
 
     /**
@@ -368,8 +362,7 @@ public class DatabaseFacade {
      */
     public boolean markBlock(int id) {
         Task task = getTask(id);
-        boolean logicSuccess = databaseLogic.markBlock(task);
-        return logicSuccess && updateFile();
+        return markBlock(task);
     }
 
     /**
